@@ -24,6 +24,31 @@ namespace Retail.Api.Products.Data
 
         }
 
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            // Initialize data
+            modelBuilder.Entity<Sku>().HasData(
+                new Sku
+                {
+                    Id = 1,
+                    Name = "Rice",
+                    UnitPrice = 50,
+                },
+                new Sku
+                {
+                    Id = 2,
+                    Name = "Salt",
+                    UnitPrice = 30,
+                },
+                new Sku
+                {
+                    Id = 3,
+                    Name = "Sugar",
+                    UnitPrice = 60,
+                }
+            );
+        }
+
         /// <summary>
         /// Gets or sets customers.
         /// </summary>
