@@ -10,29 +10,26 @@ namespace Retail.Api.Orders.Model
     /// <summary>
     /// Defines Order item entity.
     /// </summary>
-    public class LineItem
+    public class LineItemDto
     {
         /// <summary>
         /// Gets or sets the Id.
         /// </summary>
-        [Key]
-        public long Id { get; set; }
+        public string? Id { get; set; }
 
         /// <summary>
         /// Gets or sets the Order Id.
         /// </summary>
-        [ForeignKey("OrderId")]
-        public long OrderId { get; set; }
-        public OrderDto? Order { get; set; }
+        public string? OrderId { get; set; }
 
         /// <summary>
         /// Gets or sets the Sku Id.
         /// </summary>
-        public long SkuId { get; set; }
+        public string? SkuId { get; set; }
 
         /// <summary>
         /// Gets or sets the Qty.
         /// </summary>
-        public int Qty { get; set; }
+        public string? Qty { get; set; }
     }
 }

@@ -65,6 +65,6 @@ namespace Retail.Api.Orders.Data
         /// <summary>
         /// Gets or sets customers.
         /// </summary>
-        public DbSet<Order> Orders { get; set; }
+        public DbSet<OrderDto> Orders { get; set; }
     }
 }

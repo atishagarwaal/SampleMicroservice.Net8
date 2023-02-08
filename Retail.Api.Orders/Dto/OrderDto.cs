@@ -1,0 +1,39 @@
+﻿// <copyright file="Customer.cs" company="PlaceholderCompany">
+// Copyright (c) PlaceholderCompany. All rights reserved.
+// </copyright>
+
+namespace Retail.Api.Orders.Model
+{
+    using System.ComponentModel.DataAnnotations;
+
+    /// <summary>
+    /// Defines Order entity.
+    /// </summary>
+    public class OrderDto
+    {
+        /// <summary>
+        /// Gets or sets the Id.
+        /// </summary>
+        public string? Id { get; set; }
+
+        /// <summary>
+        /// Gets or sets the customer Id.
+        /// </summary>
+        public string? CustomerId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the order date.
+        /// </summary>
+        public string? OrderDate { get; set; }
+
+        /// <summary>
+        /// Gets or sets the total amount.
+        /// </summary>
+        public string? TotalAmount { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Line Items.
+        /// </summary>
+        public IEnumerable<LineItem>? LineItems { get; set; }
+    }
+}

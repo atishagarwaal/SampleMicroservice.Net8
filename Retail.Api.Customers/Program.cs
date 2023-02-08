@@ -20,6 +20,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 var context = builder.Services.BuildServiceProvider().GetRequiredService<ApplicationDbContext>();
 context.Database.EnsureCreatedAsync();
 
+builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.AddControllers();
 
 var app = builder.Build();
