@@ -21,6 +21,7 @@ namespace Retail.Api.Products.Data
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
+
         }
 
         /// <summary>

@@ -5,9 +5,11 @@
 namespace Retail.Api.Customers.Data
 {
     using Microsoft.EntityFrameworkCore;
+    using Microsoft.EntityFrameworkCore.Infrastructure.Internal;
     using Microsoft.Extensions.Hosting;
     using Retail.Api.Customers.Model;
     using System.Data;
+    using System.Xml;
 
     /// <summary>
     /// Application db context class.
@@ -21,6 +23,32 @@ namespace Retail.Api.Customers.Data
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
+
+        }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            // Initialize data
+            modelBuilder.Entity<Customer>().HasData(
+                new Customer
+                {
+                    Id = 1,
+                    FirstName = "Mahesh",
+                    LastName = "Kumar",
+                },
+                new Customer
+                {
+                    Id = 2,
+                    FirstName = "Ramesh",
+                    LastName = "Kumar",
+                },
+                new Customer
+                {
+                    Id = 3,
+                    FirstName = "Himesh",
+                    LastName = "Kumar",
+                }
+            );
         }
 
         /// <summary>
