@@ -14,7 +14,7 @@ namespace Retail.Api.Customers.Model
         /// <summary>
         /// Gets or sets the Id.
         /// </summary>
-        public string? Id { get; set; }
+        public long Id { get; set; }
 
         /// <summary>
         /// Gets or sets the first name.

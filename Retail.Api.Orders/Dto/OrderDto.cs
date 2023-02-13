@@ -14,22 +14,22 @@ namespace Retail.Api.Orders.Model
         /// <summary>
         /// Gets or sets the Id.
         /// </summary>
-        public string? Id { get; set; }
+        public long Id { get; set; }
 
         /// <summary>
         /// Gets or sets the customer Id.
         /// </summary>
-        public string? CustomerId { get; set; }
+        public long CustomerId { get; set; }
 
         /// <summary>
         /// Gets or sets the order date.
         /// </summary>
-        public string? OrderDate { get; set; }
+        public DateTime OrderDate { get; set; }
 
         /// <summary>
         /// Gets or sets the total amount.
         /// </summary>
-        public string? TotalAmount { get; set; }
+        public double TotalAmount { get; set; }
 
         /// <summary>
         /// Gets or sets the Line Items.

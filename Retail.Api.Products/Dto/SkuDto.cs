@@ -14,7 +14,7 @@ namespace Retail.Api.Products.Dto
         /// <summary>
         /// Gets or sets the Id.
         /// </summary>
-        public string? Id { get; set; }
+        public long Id { get; set; }
 
         /// <summary>
         /// Gets or sets the name.
@@ -24,6 +24,6 @@ namespace Retail.Api.Products.Dto
         /// <summary>
         /// Gets or sets the total amount.
         /// </summary>
-        public string? UnitPrice { get; set; }
+        public double UnitPrice { get; set; }
     }
 }

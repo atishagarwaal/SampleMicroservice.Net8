@@ -15,21 +15,21 @@ namespace Retail.Api.Orders.Model
         /// <summary>
         /// Gets or sets the Id.
         /// </summary>
-        public string? Id { get; set; }
+        public long Id { get; set; }
 
         /// <summary>
         /// Gets or sets the Order Id.
         /// </summary>
-        public string? OrderId { get; set; }
+        public long OrderId { get; set; }
 
         /// <summary>
         /// Gets or sets the Sku Id.
         /// </summary>
-        public string? SkuId { get; set; }
+        public long SkuId { get; set; }
 
         /// <summary>
         /// Gets or sets the Qty.
         /// </summary>
-        public string? Qty { get; set; }
+        public int Qty { get; set; }
     }
 }
