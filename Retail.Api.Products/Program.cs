@@ -15,14 +15,17 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-var context = builder.Services.BuildServiceProvider().GetRequiredService<ApplicationDbContext>();
-context.Database.EnsureCreatedAsync();
-
 builder.Services.AddAutoMapper(typeof(Program));
 
 builder.Services.AddControllers();
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    db.Database.EnsureCreatedAsync();
+}
 
 // Configure the HTTP request pipeline.
 
