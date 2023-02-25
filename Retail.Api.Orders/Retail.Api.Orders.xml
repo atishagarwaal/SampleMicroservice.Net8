@@ -1,0 +1,144 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Retail.Api.Orders</name>
+    </assembly>
+    <members>
+        <member name="T:Retail.Api.Orders.Data.ApplicationDbContext">
+            <summary>
+            Application db context class.
+            </summary>
+        </member>
+        <member name="M:Retail.Api.Orders.Data.ApplicationDbContext.#ctor(Microsoft.EntityFrameworkCore.DbContextOptions{Retail.Api.Orders.Data.ApplicationDbContext})">
+            <summary>
+            Initializes a new instance of the <see cref="T:Retail.Api.Orders.Data.ApplicationDbContext"/> class.
+            </summary>
+            <param name="options">db context options.</param>
+        </member>
+        <member name="P:Retail.Api.Orders.Data.ApplicationDbContext.Orders">
+            <summary>
+            Gets or sets customers.
+            </summary>
+        </member>
+        <member name="T:Retail.Api.Orders.Model.OrderDto">
+            <summary>
+            Defines Order entity.
+            </summary>
+        </member>
+        <member name="P:Retail.Api.Orders.Model.OrderDto.Id">
+            <summary>
+            Gets or sets the Id.
+            </summary>
+        </member>
+        <member name="P:Retail.Api.Orders.Model.OrderDto.CustomerId">
+            <summary>
+            Gets or sets the customer Id.
+            </summary>
+        </member>
+        <member name="P:Retail.Api.Orders.Model.OrderDto.OrderDate">
+            <summary>
+            Gets or sets the order date.
+            </summary>
+        </member>
+        <member name="P:Retail.Api.Orders.Model.OrderDto.TotalAmount">
+            <summary>
+            Gets or sets the total amount.
+            </summary>
+        </member>
+        <member name="P:Retail.Api.Orders.Model.OrderDto.LineItems">
+            <summary>
+            Gets or sets the Line Items.
+            </summary>
+        </member>
+        <member name="T:Retail.Api.Orders.Model.LineItemDto">
+            <summary>
+            Defines Order item entity.
+            </summary>
+        </member>
+        <member name="P:Retail.Api.Orders.Model.LineItemDto.Id">
+            <summary>
+            Gets or sets the Id.
+            </summary>
+        </member>
+        <member name="P:Retail.Api.Orders.Model.LineItemDto.OrderId">
+            <summary>
+            Gets or sets the Order Id.
+            </summary>
+        </member>
+        <member name="P:Retail.Api.Orders.Model.LineItemDto.SkuId">
+            <summary>
+            Gets or sets the Sku Id.
+            </summary>
+        </member>
+        <member name="P:Retail.Api.Orders.Model.LineItemDto.Qty">
+            <summary>
+            Gets or sets the Qty.
+            </summary>
+        </member>
+        <member name="T:Retail.Api.Orders.Model.Order">
+            <summary>
+            Defines Order entity.
+            </summary>
+        </member>
+        <member name="P:Retail.Api.Orders.Model.Order.Id">
+            <summary>
+            Gets or sets the Id.
+            </summary>
+        </member>
+        <member name="P:Retail.Api.Orders.Model.Order.CustomerId">
+            <summary>
+            Gets or sets the customer Id.
+            </summary>
+        </member>
+        <member name="P:Retail.Api.Orders.Model.Order.OrderDate">
+            <summary>
+            Gets or sets the order date.
+            </summary>
+        </member>
+        <member name="P:Retail.Api.Orders.Model.Order.TotalAmount">
+            <summary>
+            Gets or sets the total amount.
+            </summary>
+        </member>
+        <member name="P:Retail.Api.Orders.Model.Order.LineItems">
+            <summary>
+            Gets or sets the Line Items.
+            </summary>
+        </member>
+        <member name="T:Retail.Api.Orders.Model.LineItem">
+            <summary>
+            Defines Order item entity.
+            </summary>
+        </member>
+        <member name="P:Retail.Api.Orders.Model.LineItem.Id">
+            <summary>
+            Gets or sets the Id.
+            </summary>
+        </member>
+        <member name="P:Retail.Api.Orders.Model.LineItem.OrderId">
+            <summary>
+            Gets or sets the Order Id.
+            </summary>
+        </member>
+        <member name="P:Retail.Api.Orders.Model.LineItem.SkuId">
+            <summary>
+            Gets or sets the Sku Id.
+            </summary>
+        </member>
+        <member name="P:Retail.Api.Orders.Model.LineItem.Qty">
+            <summary>
+            Gets or sets the Qty.
+            </summary>
+        </member>
+        <member name="T:Retail.Api.Products.Profiles.OrderProfile">
+            <summary>
+            Defines Order profile for AutoMapper.
+            </summary>
+        </member>
+        <member name="M:Retail.Api.Products.Profiles.OrderProfile.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Retail.Api.Products.Profiles.OrderProfile"/> class.
+            </summary>
+        </member>
+    </members>
+</doc>

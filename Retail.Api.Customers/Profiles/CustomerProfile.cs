@@ -1,9 +1,10 @@
-﻿// <copyright file="CustomerProfiles.cs" company="PlaceholderCompany">
+﻿// <copyright file="CustomerProfile.cs" company="PlaceholderCompany">
 // Copyright (c) PlaceholderCompany. All rights reserved.
 // </copyright>
 
-namespace Retail.Api.Products.Profiles
+namespace Retail.Api.Customers.Profiles
 {
+    using Retail.Api.Customers.Dto;
     using Retail.Api.Customers.Model;
 
     /// <summary>
@@ -16,7 +17,7 @@ namespace Retail.Api.Products.Profiles
         /// </summary>
         public CustomerProfile()
         {
-            CreateMap<Customer, CustomerDto>();
+            this.CreateMap<Customer, CustomerDto>();
         }
     }
 }

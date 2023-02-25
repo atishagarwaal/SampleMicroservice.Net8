@@ -1,8 +1,8 @@
-﻿// <copyright file="Customer.cs" company="PlaceholderCompany">
+﻿// <copyright file="CustomerDto.cs" company="PlaceholderCompany">
 // Copyright (c) PlaceholderCompany. All rights reserved.
 // </copyright>
 
-namespace Retail.Api.Customers.Model
+namespace Retail.Api.Customers.Dto
 {
     using System.ComponentModel.DataAnnotations;
 

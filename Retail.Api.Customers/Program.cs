@@ -4,10 +4,11 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
+#pragma warning disable SA1200 // Using directives should be placed correctly
+#pragma warning disable CA1852 // Seal internal types
+
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Internal;
 using Retail.Api.Customers.Data;
-using static System.Formats.Asn1.AsnWriter;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,6 +19,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddAutoMapper(typeof(Program));
+
 builder.Services.AddControllers();
 
 var app = builder.Build();
@@ -29,7 +31,6 @@ using (var scope = app.Services.CreateScope())
 }
 
 // Configure the HTTP request pipeline.
-
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
@@ -37,3 +38,6 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+#pragma warning restore SA1200 // Using directives should be placed correctly
+#pragma warning restore CA1852 // Seal internal types

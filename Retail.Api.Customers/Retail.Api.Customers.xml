@@ -1,0 +1,80 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Retail.Api.Customers</name>
+    </assembly>
+    <members>
+        <member name="T:Retail.Api.Customers.Data.ApplicationDbContext">
+            <summary>
+            Application db context class.
+            </summary>
+        </member>
+        <member name="M:Retail.Api.Customers.Data.ApplicationDbContext.#ctor(Microsoft.EntityFrameworkCore.DbContextOptions{Retail.Api.Customers.Data.ApplicationDbContext})">
+            <summary>
+            Initializes a new instance of the <see cref="T:Retail.Api.Customers.Data.ApplicationDbContext"/> class.
+            </summary>
+            <param name="options">db context options.</param>
+        </member>
+        <member name="P:Retail.Api.Customers.Data.ApplicationDbContext.Customers">
+            <summary>
+            Gets or sets customers.
+            </summary>
+        </member>
+        <member name="M:Retail.Api.Customers.Data.ApplicationDbContext.OnModelCreating(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <summary>
+            Overrides the OnModelCreating method to configure the database context and model.
+            </summary>
+            <param name="modelBuilder">The model builder.</param>
+        </member>
+        <member name="T:Retail.Api.Customers.Dto.CustomerDto">
+            <summary>
+            Defines Customer entity.
+            </summary>
+        </member>
+        <member name="P:Retail.Api.Customers.Dto.CustomerDto.Id">
+            <summary>
+            Gets or sets the Id.
+            </summary>
+        </member>
+        <member name="P:Retail.Api.Customers.Dto.CustomerDto.FirstName">
+            <summary>
+            Gets or sets the first name.
+            </summary>
+        </member>
+        <member name="P:Retail.Api.Customers.Dto.CustomerDto.LastName">
+            <summary>
+            Gets or sets the last name.
+            </summary>
+        </member>
+        <member name="T:Retail.Api.Customers.Model.Customer">
+            <summary>
+            Defines Customer entity.
+            </summary>
+        </member>
+        <member name="P:Retail.Api.Customers.Model.Customer.Id">
+            <summary>
+            Gets or sets the Id.
+            </summary>
+        </member>
+        <member name="P:Retail.Api.Customers.Model.Customer.FirstName">
+            <summary>
+            Gets or sets the first name.
+            </summary>
+        </member>
+        <member name="P:Retail.Api.Customers.Model.Customer.LastName">
+            <summary>
+            Gets or sets the last name.
+            </summary>
+        </member>
+        <member name="T:Retail.Api.Customers.Profiles.CustomerProfile">
+            <summary>
+            Defines Customer profile for AutoMapper.
+            </summary>
+        </member>
+        <member name="M:Retail.Api.Customers.Profiles.CustomerProfile.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Retail.Api.Customers.Profiles.CustomerProfile"/> class.
+            </summary>
+        </member>
+    </members>
+</doc>

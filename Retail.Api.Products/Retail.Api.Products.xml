@@ -1,0 +1,74 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Retail.Api.Products</name>
+    </assembly>
+    <members>
+        <member name="T:Retail.Api.Products.Data.ApplicationDbContext">
+            <summary>
+            Application db context class.
+            </summary>
+        </member>
+        <member name="M:Retail.Api.Products.Data.ApplicationDbContext.#ctor(Microsoft.EntityFrameworkCore.DbContextOptions{Retail.Api.Products.Data.ApplicationDbContext})">
+            <summary>
+            Initializes a new instance of the <see cref="T:Retail.Api.Products.Data.ApplicationDbContext"/> class.
+            </summary>
+            <param name="options">db context options.</param>
+        </member>
+        <member name="P:Retail.Api.Products.Data.ApplicationDbContext.Skus">
+            <summary>
+            Gets or sets customers.
+            </summary>
+        </member>
+        <member name="T:Retail.Api.Products.Dto.SkuDto">
+            <summary>
+            Defines Order entity.
+            </summary>
+        </member>
+        <member name="P:Retail.Api.Products.Dto.SkuDto.Id">
+            <summary>
+            Gets or sets the Id.
+            </summary>
+        </member>
+        <member name="P:Retail.Api.Products.Dto.SkuDto.Name">
+            <summary>
+            Gets or sets the name.
+            </summary>
+        </member>
+        <member name="P:Retail.Api.Products.Dto.SkuDto.UnitPrice">
+            <summary>
+            Gets or sets the total amount.
+            </summary>
+        </member>
+        <member name="T:Retail.Api.Products.Model.Sku">
+            <summary>
+            Defines Order entity.
+            </summary>
+        </member>
+        <member name="P:Retail.Api.Products.Model.Sku.Id">
+            <summary>
+            Gets or sets the Id.
+            </summary>
+        </member>
+        <member name="P:Retail.Api.Products.Model.Sku.Name">
+            <summary>
+            Gets or sets the name.
+            </summary>
+        </member>
+        <member name="P:Retail.Api.Products.Model.Sku.UnitPrice">
+            <summary>
+            Gets or sets the total amount.
+            </summary>
+        </member>
+        <member name="T:Retail.Api.Products.Profiles.ProductProfile">
+            <summary>
+            Defines Product profile for AutoMapper.
+            </summary>
+        </member>
+        <member name="M:Retail.Api.Products.Profiles.ProductProfile.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Retail.Api.Products.Profiles.ProductProfile"/> class.
+            </summary>
+        </member>
+    </members>
+</doc>

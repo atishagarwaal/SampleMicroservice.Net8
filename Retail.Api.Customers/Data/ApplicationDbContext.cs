@@ -4,12 +4,12 @@
 
 namespace Retail.Api.Customers.Data
 {
+    using System.Data;
+    using System.Xml;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Infrastructure.Internal;
     using Microsoft.Extensions.Hosting;
     using Retail.Api.Customers.Model;
-    using System.Data;
-    using System.Xml;
 
     /// <summary>
     /// Application db context class.
@@ -23,11 +23,24 @@ namespace Retail.Api.Customers.Data
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
-
         }
 
+        /// <summary>
+        /// Gets or sets customers.
+        /// </summary>
+        public DbSet<Customer>? Customers { get; set; }
+
+        /// <summary>
+        /// Overrides the OnModelCreating method to configure the database context and model.
+        /// </summary>
+        /// <param name="modelBuilder">The model builder.</param>
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            if (modelBuilder == null)
+            {
+                throw new ArgumentNullException(nameof(modelBuilder));
+            }
+
             // Initialize data
             modelBuilder.Entity<Customer>().HasData(
                 new Customer
@@ -47,13 +60,7 @@ namespace Retail.Api.Customers.Data
                     Id = 3,
                     FirstName = "Himesh",
                     LastName = "Kumar",
-                }
-            );
+                });
         }
-
-        /// <summary>
-        /// Gets or sets customers.
-        /// </summary>
-        public DbSet<Customer> Customers { get; set; }
     }
 }
