@@ -5,9 +5,7 @@
 namespace Retail.Api.Products.Data
 {
     using Microsoft.EntityFrameworkCore;
-    using Microsoft.Extensions.Hosting;
     using Retail.Api.Products.Model;
-    using System.Data;
 
     /// <summary>
     /// Application db context class.
@@ -21,11 +19,24 @@ namespace Retail.Api.Products.Data
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
-
         }
 
+        /// <summary>
+        /// Gets or sets customers.
+        /// </summary>
+        public DbSet<Sku>? Skus { get; set; }
+
+        /// <summary>
+        /// Overrides the OnModelCreating method to configure the database context and model.
+        /// </summary>
+        /// <param name="modelBuilder">The model builder.</param>
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            if (modelBuilder == null)
+            {
+                throw new ArgumentNullException(nameof(modelBuilder));
+            }
+
             // Initialize data
             modelBuilder.Entity<Sku>().HasData(
                 new Sku
@@ -45,13 +56,7 @@ namespace Retail.Api.Products.Data
                     Id = 3,
                     Name = "Sugar",
                     UnitPrice = 60,
-                }
-            );
+                });
         }
-
-        /// <summary>
-        /// Gets or sets customers.
-        /// </summary>
-        public DbSet<Sku> Skus { get; set; }
     }
 }

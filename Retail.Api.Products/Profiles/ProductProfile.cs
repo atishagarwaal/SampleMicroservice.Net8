@@ -1,4 +1,4 @@
-﻿// <copyright file="OrderProfiles.cs" company="PlaceholderCompany">
+﻿// <copyright file="ProductProfile.cs" company="PlaceholderCompany">
 // Copyright (c) PlaceholderCompany. All rights reserved.
 // </copyright>
 
@@ -6,7 +6,6 @@ namespace Retail.Api.Products.Profiles
 {
     using Retail.Api.Products.Dto;
     using Retail.Api.Products.Model;
-
 
     /// <summary>
     /// Defines Product profile for AutoMapper.
@@ -18,7 +17,7 @@ namespace Retail.Api.Products.Profiles
         /// </summary>
         public ProductProfile()
         {
-            CreateMap<Sku, SkuDto>();
+            this.CreateMap<Sku, SkuDto>();
         }
     }
 }

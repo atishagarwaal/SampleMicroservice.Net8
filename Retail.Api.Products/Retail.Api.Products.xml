@@ -20,6 +20,12 @@
             Gets or sets customers.
             </summary>
         </member>
+        <member name="M:Retail.Api.Products.Data.ApplicationDbContext.OnModelCreating(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <summary>
+            Overrides the OnModelCreating method to configure the database context and model.
+            </summary>
+            <param name="modelBuilder">The model builder.</param>
+        </member>
         <member name="T:Retail.Api.Products.Dto.SkuDto">
             <summary>
             Defines Order entity.
