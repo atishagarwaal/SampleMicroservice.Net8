@@ -1,11 +1,9 @@
-﻿// <copyright file="Customer.cs" company="PlaceholderCompany">
+﻿// <copyright file="OrderDto.cs" company="PlaceholderCompany">
 // Copyright (c) PlaceholderCompany. All rights reserved.
 // </copyright>
 
-namespace Retail.Api.Orders.Model
+namespace Retail.Api.Orders.Dto
 {
-    using System.ComponentModel.DataAnnotations;
-
     /// <summary>
     /// Defines Order entity.
     /// </summary>
@@ -34,6 +32,6 @@ namespace Retail.Api.Orders.Model
         /// <summary>
         /// Gets or sets the Line Items.
         /// </summary>
-        public IEnumerable<LineItem>? LineItems { get; set; }
+        public IEnumerable<LineItemDto>? LineItems { get; set; }
     }
 }

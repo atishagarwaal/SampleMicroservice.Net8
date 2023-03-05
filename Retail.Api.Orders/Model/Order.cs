@@ -1,4 +1,4 @@
-﻿// <copyright file="Customer.cs" company="PlaceholderCompany">
+﻿// <copyright file="Order.cs" company="PlaceholderCompany">
 // Copyright (c) PlaceholderCompany. All rights reserved.
 // </copyright>
 
@@ -37,6 +37,6 @@ namespace Retail.Api.Orders.Model
         /// <summary>
         /// Gets or sets the Line Items.
         /// </summary>
-        public ICollection<LineItem>? LineItems { get; set; }
+        public IEnumerable<LineItem>? LineItems { get; set; }
     }
 }

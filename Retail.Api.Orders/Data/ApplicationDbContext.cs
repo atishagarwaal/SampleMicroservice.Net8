@@ -5,9 +5,8 @@
 namespace Retail.Api.Orders.Data
 {
     using Microsoft.EntityFrameworkCore;
-    using Microsoft.Extensions.Hosting;
+    using Retail.Api.Orders.Dto;
     using Retail.Api.Orders.Model;
-    using System.Data;
 
     /// <summary>
     /// Application db context class.
@@ -23,8 +22,22 @@ namespace Retail.Api.Orders.Data
         {
         }
 
+        /// <summary>
+        /// Gets or sets customers.
+        /// </summary>
+        public DbSet<OrderDto>? Orders { get; set; }
+
+        /// <summary>
+        /// Overrides the OnModelCreating method to configure the database context and model.
+        /// </summary>
+        /// <param name="modelBuilder">The model builder.</param>
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            if (modelBuilder == null)
+            {
+                throw new ArgumentNullException(nameof(modelBuilder));
+            }
+
             // Initialize data
             modelBuilder.Entity<Order>().HasData(
                 new Order
@@ -47,8 +60,7 @@ namespace Retail.Api.Orders.Data
                     CustomerId = 3,
                     OrderDate = DateTime.Now,
                     TotalAmount = 140,
-                }
-            );
+                });
 
             // Initialize data
             modelBuilder.Entity<LineItem>().HasData(
@@ -58,13 +70,7 @@ namespace Retail.Api.Orders.Data
                 new LineItem { Id = 4, OrderId = 2, SkuId = 3, Qty = 1 },
                 new LineItem { Id = 5, OrderId = 3, SkuId = 1, Qty = 1 },
                 new LineItem { Id = 6, OrderId = 3, SkuId = 2, Qty = 1 },
-                new LineItem { Id = 7, OrderId = 3, SkuId = 3, Qty = 1 }
-            );
+                new LineItem { Id = 7, OrderId = 3, SkuId = 3, Qty = 1 });
         }
-
-        /// <summary>
-        /// Gets or sets customers.
-        /// </summary>
-        public DbSet<OrderDto> Orders { get; set; }
     }
 }

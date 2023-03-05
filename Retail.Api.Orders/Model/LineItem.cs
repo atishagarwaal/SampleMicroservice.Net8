@@ -1,4 +1,4 @@
-﻿// <copyright file="Customer.cs" company="PlaceholderCompany">
+﻿// <copyright file="LineItem.cs" company="PlaceholderCompany">
 // Copyright (c) PlaceholderCompany. All rights reserved.
 // </copyright>
 
@@ -23,7 +23,11 @@ namespace Retail.Api.Orders.Model
         /// </summary>
         [ForeignKey("OrderId")]
         public long OrderId { get; set; }
-        public OrderDto? Order { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Order.
+        /// </summary>
+        public Order? Order { get; set; }
 
         /// <summary>
         /// Gets or sets the Sku Id.
