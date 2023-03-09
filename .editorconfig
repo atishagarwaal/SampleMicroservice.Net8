@@ -8,3 +8,6 @@ dotnet_diagnostic.IDE0008.severity = none
 
 # CA1852: Type 'Program' can be sealed because it has no subtypes in its containing assembly and is not externally visible
 dotnet_diagnostic.CA1852.severity = none
+
+# CA1014: Mark assemblies with CLSCompliant
+dotnet_diagnostic.CA1014.severity = none

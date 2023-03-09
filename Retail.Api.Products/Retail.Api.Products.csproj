@@ -7,7 +7,7 @@
     <UserSecretsId>f4c617f1-ea33-4232-9392-46a952412495</UserSecretsId>
     <DockerDefaultTargetOS>Windows</DockerDefaultTargetOS>
     <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <CodeAnalysisTreatWarningsAsErrors>false</CodeAnalysisTreatWarningsAsErrors>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <DocumentationFile>$(OutputPath)$(AssemblyName).xml</DocumentationFile>
     <AnalysisLevel>latest-all</AnalysisLevel>
@@ -20,10 +20,6 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Compile Remove="**\Migrations\*.cs" />
-  </ItemGroup>
   
   <ItemGroup>
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.0" />

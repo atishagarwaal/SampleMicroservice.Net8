@@ -4,8 +4,6 @@
 
 namespace Retail.Api.Products.Dto
 {
-    using System.ComponentModel.DataAnnotations;
-
     /// <summary>
     /// Defines Order entity.
     /// </summary>
