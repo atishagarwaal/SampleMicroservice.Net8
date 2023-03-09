@@ -46,6 +46,18 @@
             Gets or sets the last name.
             </summary>
         </member>
+        <member name="T:Retail.Api.Customers.Migrations._001">
+            <inheritdoc />
+        </member>
+        <member name="M:Retail.Api.Customers.Migrations._001.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Retail.Api.Customers.Migrations._001.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Retail.Api.Customers.Migrations._001.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
         <member name="T:Retail.Api.Customers.Model.Customer">
             <summary>
             Defines Customer entity.
