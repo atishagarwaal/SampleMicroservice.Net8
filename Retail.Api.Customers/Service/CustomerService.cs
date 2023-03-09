@@ -6,18 +6,18 @@ namespace Retail.Api.Customers.Service
 {
     public class CustomerService : ICustomerService
     {
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly ICustomerRepository _customerRepository;
         private readonly IMapper _mapper;
 
-        public CustomerService(IUnitOfWork unitOfWork, IMapper mapper)
+        public CustomerService(ICustomerRepository customerRepository, IMapper mapper)
         {
-            _unitOfWork = unitOfWork;
+            _customerRepository = customerRepository;
             _mapper = mapper;
         }
 
         public CustomerDto GetCustomerById(int id)
         {
-           var custObj = _unitOfWork.customerRepository.GetById(id);
+           var custObj = this._customerRepository.GetById(id);
            var custDto = this._mapper.Map<CustomerDto>(custObj);
 
            return custDto;
