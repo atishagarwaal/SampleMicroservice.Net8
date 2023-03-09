@@ -25,7 +25,7 @@ namespace Retail.Api.Customers.Controllers
 
         // GET api/<CustomerController>/5
         [HttpGet("{id}")]
-        public IActionResult Get(int id)
+        public IActionResult Get(long id)
         {
             try
             {
@@ -62,7 +62,7 @@ namespace Retail.Api.Customers.Controllers
 
         // DELETE api/<CustomerController>/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public void Delete(long id)
         {
         }
     }

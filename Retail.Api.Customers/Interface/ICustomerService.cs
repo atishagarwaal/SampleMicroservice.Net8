@@ -4,6 +4,6 @@ namespace Retail.Api.Customers.Interface
 {
     public interface ICustomerService
     {
-        CustomerDto GetCustomerById(int id);
+        CustomerDto GetCustomerById(long id);
     }
 }

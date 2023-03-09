@@ -17,7 +17,7 @@ namespace Retail.Api.Customers.Interface
         /// </summary>
         /// <param name="id">Generic type parameter.</param>
         /// <returns>Returns object of type parameter T.</returns>
-        T GetById(int id);
+        T GetById(long id);
 
         /// <summary>
         /// Gets collection of object

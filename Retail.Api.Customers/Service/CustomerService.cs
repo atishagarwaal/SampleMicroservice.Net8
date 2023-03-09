@@ -15,7 +15,7 @@ namespace Retail.Api.Customers.Service
             _mapper = mapper;
         }
 
-        public CustomerDto GetCustomerById(int id)
+        public CustomerDto GetCustomerById(long id)
         {
            var custObj = this._customerRepository.GetById(id);
            var custDto = this._mapper.Map<CustomerDto>(custObj);
