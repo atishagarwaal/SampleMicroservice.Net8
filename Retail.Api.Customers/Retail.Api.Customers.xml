@@ -46,6 +46,55 @@
             Gets or sets the last name.
             </summary>
         </member>
+        <member name="T:Retail.Api.Customers.Interface.IGenericRepository`1">
+            <summary>
+            Interface definition for data access layer
+            </summary>
+            <typeparam name="T">Generic type parameter.</typeparam>
+        </member>
+        <member name="M:Retail.Api.Customers.Interface.IGenericRepository`1.GetById(System.Int32)">
+            <summary>
+            Gets object by Id
+            </summary>
+            <param name="id">Generic type parameter.</param>
+            <returns>Returns object of type parameter T.</returns>
+        </member>
+        <member name="M:Retail.Api.Customers.Interface.IGenericRepository`1.GetAll">
+            <summary>
+            Gets collection of object
+            </summary>
+            <returns>Returns collection of object of type parameter T.</returns>
+        </member>
+        <member name="M:Retail.Api.Customers.Interface.IGenericRepository`1.Find(System.Linq.Expressions.Expression{System.Func{`0,System.Boolean}})">
+            <summary>
+            Query collection of object.
+            </summary>
+            <returns>Returns collection of object of type parameter T.</returns>
+        </member>
+        <member name="M:Retail.Api.Customers.Interface.IGenericRepository`1.Add(`0)">
+            <summary>
+            Add a new object.
+            </summary>
+            <param name="entity">An object type parameter T.</param>
+        </member>
+        <member name="M:Retail.Api.Customers.Interface.IGenericRepository`1.AddRange(System.Collections.Generic.IEnumerable{`0})">
+            <summary>
+            Add a range of objects.
+            </summary>
+            <param name="entities">Collection of object of type parameter T.</param>
+        </member>
+        <member name="M:Retail.Api.Customers.Interface.IGenericRepository`1.Remove(`0)">
+            <summary>
+            Remove an object.
+            </summary>
+            <param name="entity">An object type parameter T.</param>
+        </member>
+        <member name="M:Retail.Api.Customers.Interface.IGenericRepository`1.RemoveRange(System.Collections.Generic.IEnumerable{`0})">
+            <summary>
+            Remove a range of objects.
+            </summary>
+            <param name="entities"></param>
+        </member>
         <member name="T:Retail.Api.Customers.Migrations._001">
             <inheritdoc />
         </member>

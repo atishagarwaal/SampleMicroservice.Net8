@@ -6,6 +6,9 @@
 
 using Microsoft.EntityFrameworkCore;
 using Retail.Api.Customers.Data;
+using Retail.Api.Customers.Interface;
+using Retail.Api.Customers.Repositories;
+using Retail.Api.Customers.UnitOfWork;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,6 +17,10 @@ var builder = WebApplication.CreateBuilder(args);
 // Configure database connection
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddTransient(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+builder.Services.AddTransient<ICustomerRepository, CustomerRepository>();
+builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();
 
 builder.Services.AddAutoMapper(typeof(Program));
 
