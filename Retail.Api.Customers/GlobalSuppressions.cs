@@ -1,4 +1,8 @@
-﻿//-----------------------------------------------------------------------
+﻿using System.Diagnostics.CodeAnalysis;
+
+[assembly: SuppressMessage("Design", "CA1062:Validate arguments of public methods", Justification = "<Pending>", Scope = "member", Target = "~M:Retail.Api.Customers.Migrations._001.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)")]
+[assembly: SuppressMessage("Design", "CA1062:Validate arguments of public methods", Justification = "<Pending>", Scope = "member", Target = "~M:Retail.Api.Customers.Migrations._001.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)")]
+//-----------------------------------------------------------------------
 // <copyright file="GlobalSuppressions.cs" company="PlaceholderCompany">
 // Copyright (c) PlaceholderCompany. All rights reserved.
 // </copyright>

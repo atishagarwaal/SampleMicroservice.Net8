@@ -4,9 +4,6 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-#pragma warning disable SA1200 // Using directives should be placed correctly
-#pragma warning disable CA1852 // Seal internal types
-
 using Microsoft.EntityFrameworkCore;
 using Retail.Api.Customers.Data;
 
@@ -38,6 +35,3 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
-
-#pragma warning restore SA1200 // Using directives should be placed correctly
-#pragma warning restore CA1852 // Seal internal types

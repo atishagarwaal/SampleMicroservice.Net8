@@ -365,3 +365,6 @@ FodyWeavers.xsd
 /Retail.Api.Customers/Migrations/20230309065505_Initial.cs
 /Retail.Api.Customers/Migrations/20230309065134_Initial.Designer.cs
 /Retail.Api.Customers/Migrations/20230309065134_Initial.cs
+/Retail.Api.Customers/Migrations/ApplicationDbContextModelSnapshot.cs
+/Retail.Api.Customers/Migrations/20230309070459_001.Designer.cs
+/Retail.Api.Customers/Migrations/20230309070459_001.cs
