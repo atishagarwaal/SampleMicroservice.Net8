@@ -4,9 +4,6 @@
 
 namespace Retail.Api.Orders.Dto
 {
-    using System.ComponentModel.DataAnnotations;
-    using System.ComponentModel.DataAnnotations.Schema;
-
     /// <summary>
     /// Defines Order item entity.
     /// </summary>

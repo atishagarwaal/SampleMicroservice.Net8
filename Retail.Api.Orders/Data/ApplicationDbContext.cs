@@ -5,7 +5,6 @@
 namespace Retail.Api.Orders.Data
 {
     using Microsoft.EntityFrameworkCore;
-    using Retail.Api.Orders.Dto;
     using Retail.Api.Orders.Model;
 
     /// <summary>
@@ -23,9 +22,14 @@ namespace Retail.Api.Orders.Data
         }
 
         /// <summary>
-        /// Gets or sets customers.
+        /// Gets or sets Orders.
         /// </summary>
-        public DbSet<OrderDto>? Orders { get; set; }
+        public DbSet<Order>? Orders { get; set; }
+
+        /// <summary>
+        /// Gets or sets LineItems.
+        /// </summary>
+        public DbSet<LineItem>? LineItems { get; set; }
 
         /// <summary>
         /// Overrides the OnModelCreating method to configure the database context and model.

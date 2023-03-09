@@ -17,7 +17,12 @@
         </member>
         <member name="P:Retail.Api.Orders.Data.ApplicationDbContext.Orders">
             <summary>
-            Gets or sets customers.
+            Gets or sets Orders.
+            </summary>
+        </member>
+        <member name="P:Retail.Api.Orders.Data.ApplicationDbContext.LineItems">
+            <summary>
+            Gets or sets LineItems.
             </summary>
         </member>
         <member name="M:Retail.Api.Orders.Data.ApplicationDbContext.OnModelCreating(Microsoft.EntityFrameworkCore.ModelBuilder)">
@@ -80,6 +85,18 @@
             <summary>
             Gets or sets the Line Items.
             </summary>
+        </member>
+        <member name="T:Retail.Api.Orders.Migrations._001">
+            <inheritdoc />
+        </member>
+        <member name="M:Retail.Api.Orders.Migrations._001.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Retail.Api.Orders.Migrations._001.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Retail.Api.Orders.Migrations._001.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
         </member>
         <member name="T:Retail.Api.Orders.Model.LineItem">
             <summary>
