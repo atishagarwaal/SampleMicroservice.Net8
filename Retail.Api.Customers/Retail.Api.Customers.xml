@@ -83,6 +83,28 @@
             </summary>
             <param name="modelBuilder">The model builder.</param>
         </member>
+        <member name="T:Retail.Api.Customers.Data.DapperContext">
+            <summary>
+            Dapper context class.
+            </summary>
+        </member>
+        <member name="M:Retail.Api.Customers.Data.DapperContext.#ctor(Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Retail.Api.Customers.Data.DapperContext"/> class.
+            </summary>
+            <param name="configuration">Configuration object.</param>
+        </member>
+        <member name="P:Retail.Api.Customers.Data.DapperContext.Configuration">
+            <summary>
+            Gets Configuration.
+            </summary>
+        </member>
+        <member name="M:Retail.Api.Customers.Data.DapperContext.CreateConnection">
+            <summary>
+            Sets SQL Connection.
+            </summary>
+            <returns>Returns Sql connection.</returns>
+        </member>
         <member name="T:Retail.Api.Customers.Dto.CustomerDto">
             <summary>
             Defines Customer entity.
