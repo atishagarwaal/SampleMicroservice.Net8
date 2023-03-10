@@ -1,14 +1,16 @@
-﻿namespace Retail.Api.Customers.Interface
+﻿using Retail.Api.Customers.Repositories;
+
+namespace Retail.Api.Customers.Interface
 {
     /// <summary>
     /// Interface definition for unit of work.
     /// </summary>
-    public interface IUnitOfWork
+    public interface IEntityUnitOfWork
     {
         /// <summary>
         /// Gets or sets customer repository.
         /// </summary>
-        ICustomerRepository CustomerRepository { get; }
+        ICustomerEntityRepository CustomerEntityRepository { get; }
 
         /// <summary>
         /// Method to commit changes.

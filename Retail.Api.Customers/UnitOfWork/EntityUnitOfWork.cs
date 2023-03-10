@@ -8,26 +8,34 @@ namespace Retail.Api.Customers.UnitOfWork
     /// <summary>
     /// Unit of work class.
     /// </summary>
-    public class UnitOfWork : IUnitOfWork
+    public class EntityUnitOfWork : IEntityUnitOfWork
     {
-        private readonly ApplicationDbContext _context;
-        private ICustomerRepository? _customerRepository;
+        private readonly ApplicationDbContext _entityContext;
+        private ICustomerEntityRepository? _customerEntityRepository;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="UnitOfWork"/> class.
+        /// Initializes a new instance of the <see cref="EntityUnitOfWork"/> class.
         /// </summary>
-        /// <param name="context">Db context.</param>
-        public UnitOfWork(ApplicationDbContext context)
+        /// <param name="entityContext">Entity framework Db context.</param>
+        public EntityUnitOfWork(ApplicationDbContext entityContext)
         {
-            _context = context;
+            _entityContext = entityContext;
         }
 
         /// <summary>
         /// Gets or sets customer repository.
         /// </summary>
-        public ICustomerRepository CustomerRepository
+        public ICustomerEntityRepository CustomerEntityRepository
         {
-            get { return _customerRepository = _customerRepository ?? new CustomerRepository(_context); }
+            get
+            {
+                if (_customerEntityRepository == null)
+                {
+                    _customerEntityRepository = new CustomerEntityRepository(_entityContext);
+                }
+
+                return _customerEntityRepository;
+            }
         }
 
         /// <summary>
@@ -35,7 +43,7 @@ namespace Retail.Api.Customers.UnitOfWork
         /// </summary>
         public void Commit()
         {
-            _context.SaveChanges();
+            _entityContext.SaveChanges();
         }
 
         /// <summary>
@@ -43,7 +51,7 @@ namespace Retail.Api.Customers.UnitOfWork
         /// </summary>
         public async Task CommitAsync()
         { 
-            await _context.SaveChangesAsync();
+            await _entityContext.SaveChangesAsync();
         }
 
         /// <summary>
@@ -51,7 +59,7 @@ namespace Retail.Api.Customers.UnitOfWork
         /// </summary>
         public void Rollback()
         {
-            _context.Dispose();
+            _entityContext.Dispose();
         }
 
         /// <summary>
@@ -59,7 +67,7 @@ namespace Retail.Api.Customers.UnitOfWork
         /// </summary>
         public async Task RollbackAsync()
         { 
-            await _context.DisposeAsync();
+            await _entityContext.DisposeAsync();
         }
     }
 }

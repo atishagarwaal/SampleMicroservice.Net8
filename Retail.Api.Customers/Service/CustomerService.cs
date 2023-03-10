@@ -9,7 +9,7 @@ namespace Retail.Api.Customers.Service
     /// </summary>
     public class CustomerService : ICustomerService
     {
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly IEntityUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
         /// <summary>
@@ -17,7 +17,7 @@ namespace Retail.Api.Customers.Service
         /// </summary>
         /// <param name="unitOfWork">Intance of unit of work class.</param>
         /// <param name="mapper">Intance of mapper class.</param>
-        public CustomerService(IUnitOfWork unitOfWork, IMapper mapper)
+        public CustomerService(IEntityUnitOfWork unitOfWork, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
@@ -30,7 +30,7 @@ namespace Retail.Api.Customers.Service
         /// <returns>Customer object.</returns>
         public CustomerDto GetCustomerById(long id)
         {
-           var custObj = this._unitOfWork.CustomerRepository.GetById(id);
+           var custObj = this._unitOfWork.CustomerEntityRepository.GetById(id);
            var custDto = this._mapper.Map<CustomerDto>(custObj);
 
            return custDto;

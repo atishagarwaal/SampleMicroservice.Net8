@@ -7,13 +7,13 @@ namespace Retail.Api.Customers.Repositories
     /// <summary>
     /// Customer repository class.
     /// </summary>
-    public class CustomerRepository : GenericRepository<Customer> , ICustomerRepository
+    public class CustomerEntityRepository : EntityRepository<Customer> , ICustomerEntityRepository
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="CustomerRepository"/> class.
+        /// Initializes a new instance of the <see cref="CustomerEntityRepository"/> class.
         /// </summary>
         /// <param name="context">Db context.</param>
-        public CustomerRepository(ApplicationDbContext context) : base(context)
+        public CustomerEntityRepository(ApplicationDbContext context) : base(context)
         {
         }
     }

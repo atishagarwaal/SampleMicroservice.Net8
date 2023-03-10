@@ -10,7 +10,7 @@ namespace Retail.Api.Customers.Repositories
     /// <summary>
     /// Generic repository class.
     /// </summary>
-    public class GenericRepository<T> : IGenericRepository<T> where T : class
+    public class EntityRepository<T> : IEntityRepository<T> where T : class
     {
         private readonly ApplicationDbContext _dbContext;
 
@@ -18,7 +18,7 @@ namespace Retail.Api.Customers.Repositories
         /// Initializes a new instance of the GenericRepository class.
         /// </summary>
         /// <param name="dbcontext">Db context.</param>
-        public GenericRepository(ApplicationDbContext dbcontext)
+        public EntityRepository(ApplicationDbContext dbcontext)
         {
             _dbContext = dbcontext;
         }

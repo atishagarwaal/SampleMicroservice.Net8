@@ -1,4 +1,4 @@
-﻿// <copyright file="IGenericRepository.cs" company="PlaceholderCompany">
+﻿// <copyright file="IRepository.cs" company="PlaceholderCompany">
 // Copyright (c) PlaceholderCompany. All rights reserved.
 // </copyright>
 
@@ -11,7 +11,7 @@ namespace Retail.Api.Customers.Interface
     /// Interface definition for data access layer
     /// </summary>
     /// <typeparam name="T">Generic type parameter.</typeparam>
-    public interface IGenericRepository<T> where T : class
+    public interface IEntityRepository<T> where T : class
     {
         /// <summary>
         /// Add a new object.
