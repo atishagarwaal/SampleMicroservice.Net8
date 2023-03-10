@@ -5,25 +5,38 @@ using Retail.Api.Customers.Interface;
 
 namespace Retail.Api.Customers.Controllers
 {
+    /// <summary>
+    /// Customer controller class.
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     public class CustomerController : ControllerBase
     {
         private readonly ICustomerService _customerService;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CustomerController"/> class.
+        /// </summary>
+        /// <param name="customerService">Intance of customer service class.</param>
         public CustomerController(ICustomerService customerService)
         {
             _customerService = customerService;
         }
 
-        // GET: api/<CustomerController>
+        /// <summary>
+        /// Method to return list of all customers.
+        /// </summary>
+        /// <returns>List of customers.</returns>
         [HttpGet]
         public IEnumerable<string> Get()
         {
             return new string[] { "value1", "value2" };
         }
 
-        // GET api/<CustomerController>/5
+        /// <summary>
+        /// Method to fetch customer record based on Id.
+        /// </summary>
+        /// <returns>Customer object.</returns>
         [HttpGet("{id}")]
         public IActionResult Get(long id)
         {
@@ -48,19 +61,29 @@ namespace Retail.Api.Customers.Controllers
             }
         }
 
-        // POST api/<CustomerController>
+        /// <summary>
+        /// Method to add a new customer record.
+        /// </summary>
+        /// <param name="value">Customer name.</param>
         [HttpPost]
         public void Post([FromBody] string value)
         {
         }
 
-        // PUT api/<CustomerController>/5
+        /// <summary>
+        /// Method to update a customer record.
+        /// </summary>
+        /// <param name="id">Customer Id.</param>
+        /// <param name="value">Customer name.</param>
         [HttpPut("{id}")]
         public void Put(int id, [FromBody] string value)
         {
         }
 
-        // DELETE api/<CustomerController>/5
+        /// <summary>
+        /// Method to delete a customer record.
+        /// </summary>
+        /// <param name="id">Customer Id.</param>
         [HttpDelete("{id}")]
         public void Delete(long id)
         {

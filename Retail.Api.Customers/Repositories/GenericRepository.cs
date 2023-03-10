@@ -7,10 +7,17 @@ using System.Linq.Expressions;
 
 namespace Retail.Api.Customers.Repositories
 {
+    /// <summary>
+    /// Generic repository class.
+    /// </summary>
     public class GenericRepository<T> : IGenericRepository<T> where T : class
     {
-        protected readonly ApplicationDbContext _dbContext;
+        private readonly ApplicationDbContext _dbContext;
 
+        /// <summary>
+        /// Initializes a new instance of the GenericRepository class.
+        /// </summary>
+        /// <param name="dbcontext">Db context.</param>
         public GenericRepository(ApplicationDbContext dbcontext)
         {
             _dbContext = dbcontext;
@@ -77,15 +84,15 @@ namespace Retail.Api.Customers.Repositories
         /// </summary>
         /// <param name="id">Generic type parameter.</param>
         /// <returns>Returns object of type parameter T.</returns>
-        public T GetById(long id)
-            => _dbContext.Set<T>().Find(id);
+        public T? GetById(long id)
+            => _dbContext.Set<T>().Find(id) ?? null;
 
         /// <summary>
         /// Gets object by Id
         /// </summary>
         /// <param name="id">Generic type parameter.</param>
         /// <returns>Returns object of type parameter T.</returns>
-        public async Task<T> GetByIdAsync(long id)
+        public async Task<T?> GetByIdAsync(long id)
             => await _dbContext.Set<T>().FindAsync(id);
 
         /// <summary>

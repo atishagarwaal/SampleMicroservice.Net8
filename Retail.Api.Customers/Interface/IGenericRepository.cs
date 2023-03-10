@@ -66,7 +66,14 @@ namespace Retail.Api.Customers.Interface
         /// </summary>
         /// <param name="id">Generic type parameter.</param>
         /// <returns>Returns object of type parameter T.</returns>
-        T GetById(long id);
+        T? GetById(long id);
+
+        /// <summary>
+        /// Gets object by Id
+        /// </summary>
+        /// <param name="id">Generic type parameter.</param>
+        /// <returns>Returns object of type parameter T.</returns>
+        Task<T?> GetByIdAsync(long id);
 
         /// <summary>
         /// Remove an object.
