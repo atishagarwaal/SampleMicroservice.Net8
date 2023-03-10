@@ -4,6 +4,7 @@
 
 namespace Retail.Api.Customers.Interface
 {
+    using Microsoft.EntityFrameworkCore;
     using System.Linq.Expressions;
 
     /// <summary>
@@ -13,17 +14,28 @@ namespace Retail.Api.Customers.Interface
     public interface IGenericRepository<T> where T : class
     {
         /// <summary>
-        /// Gets object by Id
+        /// Add a new object.
         /// </summary>
-        /// <param name="id">Generic type parameter.</param>
-        /// <returns>Returns object of type parameter T.</returns>
-        T GetById(long id);
+        /// <param name="entity">An object type parameter T.</param>
+        void Add(T entity);
 
         /// <summary>
-        /// Gets collection of object
+        /// Add a new object asynchronously.
         /// </summary>
-        /// <returns>Returns collection of object of type parameter T.</returns>
-        IEnumerable<T> GetAll();
+        /// <param name="entity">An object type parameter T.</param>
+        Task AddAsync(T entity);
+
+        /// <summary>
+        /// Add a range of objects.
+        /// </summary>
+        /// <param name="entities">Collection of object of type parameter T.</param>
+        void AddRange(IEnumerable<T> entities);
+
+        /// <summary>
+        /// Add a range of objects asynchronously.
+        /// </summary>
+        /// <param name="entities">Collection of object of type parameter T.</param>
+        Task AddRangeAsync(IEnumerable<T> entities);
 
         /// <summary>
         /// Query collection of object.
@@ -32,16 +44,29 @@ namespace Retail.Api.Customers.Interface
         IEnumerable<T> Find(Expression<Func<T, bool>> expression);
 
         /// <summary>
-        /// Add a new object.
+        /// Query collection of object asynchronously.
         /// </summary>
-        /// <param name="entity">An object type parameter T.</param>
-        void Add(T entity);
+        /// <returns>Returns collection of object of type parameter T.</returns>
+        Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> expression);
 
         /// <summary>
-        /// Add a range of objects.
+        /// Gets collection of object
         /// </summary>
-        /// <param name="entities">Collection of object of type parameter T.</param>
-        void AddRange(IEnumerable<T> entities);
+        /// <returns>Returns collection of object of type parameter T.</returns>
+        IEnumerable<T> GetAll();
+
+        /// <summary>
+        /// Gets collection of object asynchronously.
+        /// </summary>
+        /// <returns>Returns collection of object of type parameter T.</returns>
+        Task<IEnumerable<T>> GetAllAsync();
+
+        /// <summary>
+        /// Gets object by Id
+        /// </summary>
+        /// <param name="id">Generic type parameter.</param>
+        /// <returns>Returns object of type parameter T.</returns>
+        T GetById(long id);
 
         /// <summary>
         /// Remove an object.
@@ -54,5 +79,17 @@ namespace Retail.Api.Customers.Interface
         /// </summary>
         /// <param name="entities"></param>
         void RemoveRange(IEnumerable<T> entities);
+
+        /// <summary>
+        /// Update an object.
+        /// </summary>
+        /// <param name="entity">An object type parameter T.</param>
+        void Update(T entity);
+
+        /// <summary>
+        /// Update a range of objects.
+        /// </summary>
+        /// <param name="entities"></param>
+        void UpdateRange(IEnumerable<T> entities);
     }
 }
