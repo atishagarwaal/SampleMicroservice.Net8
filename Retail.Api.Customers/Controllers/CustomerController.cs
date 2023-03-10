@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Retail.Api.Customers.Common;
 using Retail.Api.Customers.Interface;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -42,22 +43,28 @@ namespace Retail.Api.Customers.Controllers
         {
             try
             {
+                // Validate parameters
                 if (id == 0)
                 {
-                    return StatusCode(500, "error");
+                    return BadRequest(MessageConstants.InvalidParameter);
                 }
 
+                // Call business service
                 var custObj = this._customerService.GetCustomerById(id);
 
+                // Check if object is null
                 if (custObj == null)
                 {
                    return NotFound();
                 }
 
+                // Return object
                 return Ok(custObj);
             }
-            catch {
-                return StatusCode(500, "error");
+            catch 
+            {
+                // Throw exception
+                return StatusCode(500, MessageConstants.InternalServerError);
             }
         }
 

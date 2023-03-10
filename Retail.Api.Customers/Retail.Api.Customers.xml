@@ -4,6 +4,21 @@
         <name>Retail.Api.Customers</name>
     </assembly>
     <members>
+        <member name="T:Retail.Api.Customers.Common.MessageConstants">
+            <summary>
+            Constants class.
+            </summary>
+        </member>
+        <member name="F:Retail.Api.Customers.Common.MessageConstants.InvalidParameter">
+            <summary>
+            Get or sets InvalidParameter.
+            </summary>
+        </member>
+        <member name="F:Retail.Api.Customers.Common.MessageConstants.InternalServerError">
+            <summary>
+            Get or sets InternalServerError.
+            </summary>
+        </member>
         <member name="T:Retail.Api.Customers.Controllers.CustomerController">
             <summary>
             Customer controller class.
