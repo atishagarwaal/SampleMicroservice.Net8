@@ -1,8 +1,11 @@
 ﻿namespace Retail.Api.Customers.Interface
 {
-    public interface IUnitOfWork : IDisposable
+    public interface IUnitOfWork
     {
         ICustomerRepository customerRepository { get; }
-        int Complete();
+        void Commit();
+        void Rollback();
+        Task CommitAsync();
+        Task RollbackAsync();
     }
 }

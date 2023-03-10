@@ -21,17 +21,6 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Compile Remove="UnitOfWork\**" />
-    <Content Remove="UnitOfWork\**" />
-    <EmbeddedResource Remove="UnitOfWork\**" />
-    <None Remove="UnitOfWork\**" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Remove="Interface\IUnitOfWork.cs" />
-  </ItemGroup>
   
   <ItemGroup>
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.0" />
