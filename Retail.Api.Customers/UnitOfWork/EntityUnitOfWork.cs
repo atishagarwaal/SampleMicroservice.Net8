@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 using Retail.Api.Customers.Data;
 using Retail.Api.Customers.Interface;
 using Retail.Api.Customers.Repositories;
@@ -11,6 +12,7 @@ namespace Retail.Api.Customers.UnitOfWork
     public class EntityUnitOfWork : IEntityUnitOfWork
     {
         private readonly ApplicationDbContext _entityContext;
+        private IDbContextTransaction? _entityTransaction;
         private ICustomerEntityRepository? _customerEntityRepository;
 
         /// <summary>
@@ -39,19 +41,41 @@ namespace Retail.Api.Customers.UnitOfWork
         }
 
         /// <summary>
+        /// Method to begin transaction.
+        /// </summary>
+        public void BeginTransaction()
+        {
+            _entityTransaction = _entityContext.Database.BeginTransaction();
+        }
+
+        /// <summary>
+        /// Method to begin asynchronously.
+        /// </summary>
+        public async Task BeginTransactionAsync()
+        {
+            _entityTransaction = await _entityContext.Database.BeginTransactionAsync();
+        }
+
+        /// <summary>
         /// Method to commit changes.
         /// </summary>
         public void Commit()
         {
             _entityContext.SaveChanges();
+            _entityTransaction?.Commit();
         }
 
         /// <summary>
         /// Method to commit changes asynchronously.
         /// </summary>
         public async Task CommitAsync()
-        { 
+        {
             await _entityContext.SaveChangesAsync();
+
+            if (_entityTransaction is not null)
+            {
+                await _entityTransaction.CommitAsync();
+            }
         }
 
         /// <summary>
@@ -60,6 +84,8 @@ namespace Retail.Api.Customers.UnitOfWork
         public void Rollback()
         {
             _entityContext.Dispose();
+            _entityTransaction?.Rollback();
+            _entityTransaction?.Dispose();
         }
 
         /// <summary>
@@ -68,6 +94,12 @@ namespace Retail.Api.Customers.UnitOfWork
         public async Task RollbackAsync()
         { 
             await _entityContext.DisposeAsync();
+
+            if (_entityTransaction is not null)
+            {
+                await _entityTransaction.RollbackAsync();
+                await _entityTransaction.DisposeAsync();
+            }
         }
     }
 }

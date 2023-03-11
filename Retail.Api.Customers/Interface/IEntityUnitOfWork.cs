@@ -13,6 +13,16 @@ namespace Retail.Api.Customers.Interface
         ICustomerEntityRepository CustomerEntityRepository { get; }
 
         /// <summary>
+        /// Method to begin transaction.
+        /// </summary>
+        void BeginTransaction();
+
+        /// <summary>
+        /// Method to begin transaction asynchronously.
+        /// </summary>
+        Task BeginTransactionAsync();
+
+        /// <summary>
         /// Method to commit changes.
         /// </summary>
         void Commit();
@@ -20,15 +30,15 @@ namespace Retail.Api.Customers.Interface
         /// <summary>
         /// Method to commit changes asynchronously.
         /// </summary>
-        void Rollback();
-
-        /// <summary>
-        /// Method to rollback changes.
-        /// </summary>
         Task CommitAsync();
 
         /// <summary>
-        /// Method to rollback changes asynchronously.
+        /// Method to commit changes.
+        /// </summary>
+        void Rollback();
+
+        /// <summary>
+        /// Method to commit changes asynchronously.
         /// </summary>
         Task RollbackAsync();
     }

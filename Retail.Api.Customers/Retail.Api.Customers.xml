@@ -310,24 +310,34 @@
             Gets or sets customer repository.
             </summary>
         </member>
+        <member name="M:Retail.Api.Customers.Interface.IEntityUnitOfWork.BeginTransaction">
+            <summary>
+            Method to begin transaction.
+            </summary>
+        </member>
+        <member name="M:Retail.Api.Customers.Interface.IEntityUnitOfWork.BeginTransactionAsync">
+            <summary>
+            Method to begin transaction asynchronously.
+            </summary>
+        </member>
         <member name="M:Retail.Api.Customers.Interface.IEntityUnitOfWork.Commit">
             <summary>
             Method to commit changes.
             </summary>
         </member>
-        <member name="M:Retail.Api.Customers.Interface.IEntityUnitOfWork.Rollback">
+        <member name="M:Retail.Api.Customers.Interface.IEntityUnitOfWork.CommitAsync">
             <summary>
             Method to commit changes asynchronously.
             </summary>
         </member>
-        <member name="M:Retail.Api.Customers.Interface.IEntityUnitOfWork.CommitAsync">
+        <member name="M:Retail.Api.Customers.Interface.IEntityUnitOfWork.Rollback">
             <summary>
-            Method to rollback changes.
+            Method to commit changes.
             </summary>
         </member>
         <member name="M:Retail.Api.Customers.Interface.IEntityUnitOfWork.RollbackAsync">
             <summary>
-            Method to rollback changes asynchronously.
+            Method to commit changes asynchronously.
             </summary>
         </member>
         <member name="T:Retail.Api.Customers.Migrations._001">
@@ -597,6 +607,16 @@
         <member name="P:Retail.Api.Customers.UnitOfWork.EntityUnitOfWork.CustomerEntityRepository">
             <summary>
             Gets or sets customer repository.
+            </summary>
+        </member>
+        <member name="M:Retail.Api.Customers.UnitOfWork.EntityUnitOfWork.BeginTransaction">
+            <summary>
+            Method to begin transaction.
+            </summary>
+        </member>
+        <member name="M:Retail.Api.Customers.UnitOfWork.EntityUnitOfWork.BeginTransactionAsync">
+            <summary>
+            Method to begin asynchronously.
             </summary>
         </member>
         <member name="M:Retail.Api.Customers.UnitOfWork.EntityUnitOfWork.Commit">

@@ -30,8 +30,8 @@ namespace Retail.Api.Customers.Service
         /// <returns>Customer object.</returns>
         public CustomerDto GetCustomerById(long id)
         {
-           var custObj = this._unitOfWork.CustomerEntityRepository.GetById(id);
-           var custDto = this._mapper.Map<CustomerDto>(custObj);
+           var custObj = _unitOfWork.CustomerEntityRepository.GetById(id);
+           var custDto = _mapper.Map<CustomerDto>(custObj);
 
            return custDto;
         }
