@@ -1,10 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 using Retail.Api.Customers.Data;
 using Retail.Api.Customers.Interface;
-using System.Collections.Generic;
 using System.Linq.Expressions;
-using static Dapper.SqlMapper;
 
 namespace Retail.Api.Customers.Repositories
 {

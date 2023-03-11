@@ -130,6 +130,40 @@
             Interface definition for customer repository.
             </summary>
         </member>
+        <member name="M:Retail.Api.Customers.Interface.ICustomerDapperRepository.AddAsync(Retail.Api.Customers.Model.Customer)">
+            <summary>
+            Add a new object asynchronously.
+            </summary>
+            <param name="entity">Object parameter.</param>
+            <returns>Returns an integer.</returns>
+        </member>
+        <member name="M:Retail.Api.Customers.Interface.ICustomerDapperRepository.GetAllAsync">
+            <summary>
+            Gets collection of object asynchronously.
+            </summary>
+            <returns>Returns collection of object.</returns>
+        </member>
+        <member name="M:Retail.Api.Customers.Interface.ICustomerDapperRepository.GetByIdAsync(System.Int64)">
+            <summary>
+            Get an object by Id asynchronously
+            </summary>
+            <param name="id">Primary key of the object.</param>
+            <returns>Returns an object.</returns>
+        </member>
+        <member name="M:Retail.Api.Customers.Interface.ICustomerDapperRepository.RemoveAsync(Retail.Api.Customers.Model.Customer)">
+            <summary>
+            Removes an object asynchronously.
+            </summary>
+            <param name="entity">Object parameter.</param>
+            <returns>Returns an integer.</returns>
+        </member>
+        <member name="M:Retail.Api.Customers.Interface.ICustomerDapperRepository.UpdateAsync(Retail.Api.Customers.Model.Customer)">
+            <summary>
+            Updates an object asynchronously.
+            </summary>
+            <param name="entity">Object parameter.</param>
+            <returns>Returns an integer.</returns>
+        </member>
         <member name="T:Retail.Api.Customers.Interface.ICustomerEntityRepository">
             <summary>
             Interface definition for customer repository.
@@ -420,6 +454,40 @@
             Initializes a new instance of the <see cref="T:Retail.Api.Customers.Repositories.CustomerDapperRepository"/> class.
             </summary>
             <param name="dapperContext">Db context.</param>
+        </member>
+        <member name="M:Retail.Api.Customers.Repositories.CustomerDapperRepository.AddAsync(Retail.Api.Customers.Model.Customer)">
+            <summary>
+            Add a new object asynchronously.
+            </summary>
+            <param name="entity">Object parameter.</param>
+            <returns>Returns an integer.</returns>
+        </member>
+        <member name="M:Retail.Api.Customers.Repositories.CustomerDapperRepository.GetAllAsync">
+            <summary>
+            Gets collection of object asynchronously.
+            </summary>
+            <returns>Returns collection of object.</returns>
+        </member>
+        <member name="M:Retail.Api.Customers.Repositories.CustomerDapperRepository.GetByIdAsync(System.Int64)">
+            <summary>
+            Get an object by Id asynchronously
+            </summary>
+            <param name="id">Primary key of the object.</param>
+            <returns>Returns an object.</returns>
+        </member>
+        <member name="M:Retail.Api.Customers.Repositories.CustomerDapperRepository.RemoveAsync(Retail.Api.Customers.Model.Customer)">
+            <summary>
+            Removes an object asynchronously.
+            </summary>
+            <param name="entity">Object parameter.</param>
+            <returns>Returns an integer.</returns>
+        </member>
+        <member name="M:Retail.Api.Customers.Repositories.CustomerDapperRepository.UpdateAsync(Retail.Api.Customers.Model.Customer)">
+            <summary>
+            Updates an object asynchronously.
+            </summary>
+            <param name="entity">Object parameter.</param>
+            <returns>Returns an integer.</returns>
         </member>
         <member name="T:Retail.Api.Customers.Repositories.CustomerEntityRepository">
             <summary>

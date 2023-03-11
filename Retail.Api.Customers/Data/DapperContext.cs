@@ -1,7 +1,5 @@
 ﻿using System.Data;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Data.SqlClient;
-using Microsoft.Extensions.Configuration;
 
 namespace Retail.Api.Customers.Data
 {
