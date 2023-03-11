@@ -4,6 +4,7 @@ using Retail.Api.Customers.Data;
 using Retail.Api.Customers.Interface;
 using System.Collections.Generic;
 using System.Linq.Expressions;
+using static Dapper.SqlMapper;
 
 namespace Retail.Api.Customers.Repositories
 {
@@ -27,15 +28,21 @@ namespace Retail.Api.Customers.Repositories
         /// Add a new object.
         /// </summary>
         /// <param name="entity">An object type parameter T.</param>
-        public void Add(T entity)
-            => _dbContext.Set<T>().Add(entity);
+        public T Add(T entity)
+        {
+            var entry = _dbContext.Set<T>().Add(entity);
+            return entry.Entity;
+        }
 
         /// <summary>
         /// Add a new object asynchronously.
         /// </summary>
         /// <param name="entity">An object type parameter T.</param>
-        public async Task AddAsync(T entity)
-            => await _dbContext.Set<T>().AddAsync(entity);
+        public async Task<T> AddAsync(T entity)
+        {
+            var entry = await _dbContext.Set<T>().AddAsync(entity);
+            return entry.Entity;
+        }
 
         /// <summary>
         /// Add a range of objects.
@@ -113,14 +120,17 @@ namespace Retail.Api.Customers.Repositories
         /// Update an object.
         /// </summary>
         /// <param name="entity">An object type parameter T.</param>
-        public void Update(T entity)
-           => _dbContext.Update(entity);
+        public T Update(T entity)
+        {
+            var entry = _dbContext.Update(entity);
+            return entry.Entity;
+        }
 
-        /// <summary>
-        /// Update a range of objects.
-        /// </summary>
-        /// <param name="entities"></param>
-        public void UpdateRange(IEnumerable<T> entities)
+    /// <summary>
+    /// Update a range of objects.
+    /// </summary>
+    /// <param name="entities"></param>
+    public void UpdateRange(IEnumerable<T> entities)
             => _dbContext.UpdateRange(entities);
     }
 }

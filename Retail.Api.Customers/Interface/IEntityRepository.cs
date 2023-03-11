@@ -17,13 +17,13 @@ namespace Retail.Api.Customers.Interface
         /// Add a new object.
         /// </summary>
         /// <param name="entity">An object type parameter T.</param>
-        void Add(T entity);
+        T Add(T entity);
 
         /// <summary>
         /// Add a new object asynchronously.
         /// </summary>
         /// <param name="entity">An object type parameter T.</param>
-        Task AddAsync(T entity);
+        Task<T> AddAsync(T entity);
 
         /// <summary>
         /// Add a range of objects.
@@ -91,7 +91,7 @@ namespace Retail.Api.Customers.Interface
         /// Update an object.
         /// </summary>
         /// <param name="entity">An object type parameter T.</param>
-        void Update(T entity);
+        T Update(T entity);
 
         /// <summary>
         /// Update a range of objects.
