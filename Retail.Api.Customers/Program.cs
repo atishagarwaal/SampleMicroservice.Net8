@@ -19,9 +19,14 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-builder.Services.AddTransient<ICustomerEntityRepository, CustomerEntityRepository>();
-builder.Services.AddTransient<ICustomerService, CustomerService>();
+builder.Services.AddTransient(typeof(IEntityRepository<>), typeof(EntityRepository<>));
+builder.Services.AddTransient<IDapperRepository, DapperRepository>();
 builder.Services.AddTransient<IEntityUnitOfWork, EntityUnitOfWork>();
+builder.Services.AddTransient<IDapperUnitOfWork, DapperUnitOfWork>();
+
+builder.Services.AddTransient<ICustomerEntityRepository, CustomerEntityRepository>();
+builder.Services.AddTransient<ICustomerDapperRepository, CustomerDapperRepository>();
+builder.Services.AddTransient<ICustomerService, CustomerService>();
 
 builder.Services.AddAutoMapper(typeof(Program));
 

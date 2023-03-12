@@ -6,6 +6,10 @@
 
 using Microsoft.EntityFrameworkCore;
 using Retail.Api.Orders.Data;
+using Retail.Api.Orders.Interface;
+using Retail.Api.Orders.Repositories;
+using Retail.Api.Orders.Service;
+using Retail.Api.Orders.UnitOfWork;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,6 +18,17 @@ var builder = WebApplication.CreateBuilder(args);
 // Configure database connection
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddTransient(typeof(IEntityRepository<>), typeof(EntityRepository<>));
+builder.Services.AddTransient<IDapperRepository, DapperRepository>();
+builder.Services.AddTransient<IEntityUnitOfWork, EntityUnitOfWork>();
+builder.Services.AddTransient<IDapperUnitOfWork, DapperUnitOfWork>();
+
+builder.Services.AddTransient<IOrderEntityRepository, OrderEntityRepository>();
+builder.Services.AddTransient<IOrderDapperRepository, OrderDapperRepository>();
+builder.Services.AddTransient<ILineItemEntityRepository, LineItemEntityRepository>();
+builder.Services.AddTransient<ILineItemDapperRepository, LineItemDapperRepository>();
+builder.Services.AddTransient<IOrderService, OrderService>();
 
 builder.Services.AddAutoMapper(typeof(Program));
 

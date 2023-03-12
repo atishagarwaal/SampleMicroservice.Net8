@@ -4,6 +4,63 @@
         <name>Retail.Api.Orders</name>
     </assembly>
     <members>
+        <member name="T:Retail.Api.Orders.Common.MessageConstants">
+            <summary>
+            Constants class.
+            </summary>
+        </member>
+        <member name="F:Retail.Api.Orders.Common.MessageConstants.InvalidParameter">
+            <summary>
+            Get or sets InvalidParameter.
+            </summary>
+        </member>
+        <member name="F:Retail.Api.Orders.Common.MessageConstants.InternalServerError">
+            <summary>
+            Get or sets InternalServerError.
+            </summary>
+        </member>
+        <member name="T:Retail.Api.Orders.Controllers.OrderController">
+            <summary>
+            Customer controller class.
+            </summary>
+        </member>
+        <member name="M:Retail.Api.Orders.Controllers.OrderController.#ctor(Retail.Api.Orders.Interface.IOrderService)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Retail.Api.Orders.Controllers.OrderController"/> class.
+            </summary>
+            <param name="orderService">Intance of customer service class.</param>
+        </member>
+        <member name="M:Retail.Api.Orders.Controllers.OrderController.Get">
+            <summary>
+            Method to return list of all customers.
+            </summary>
+            <returns>List of customers.</returns>
+        </member>
+        <member name="M:Retail.Api.Orders.Controllers.OrderController.Get(System.Int64)">
+            <summary>
+            Method to fetch customer record based on Id.
+            </summary>
+            <returns>Customer object.</returns>
+        </member>
+        <member name="M:Retail.Api.Orders.Controllers.OrderController.Post(Retail.Api.Orders.Dto.OrderDto)">
+            <summary>
+            Method to add a new customer record.
+            </summary>
+            <param name="value">Customer record.</param>
+        </member>
+        <member name="M:Retail.Api.Orders.Controllers.OrderController.Put(System.Int64,Retail.Api.Orders.Dto.OrderDto)">
+            <summary>
+            Method to update a customer record.
+            </summary>
+            <param name="id">Customer Id.</param>
+            <param name="value">Customer record.</param>
+        </member>
+        <member name="M:Retail.Api.Orders.Controllers.OrderController.Delete(System.Int64)">
+            <summary>
+            Method to delete a customer record.
+            </summary>
+            <param name="id">Customer Id.</param>
+        </member>
         <member name="T:Retail.Api.Orders.Data.ApplicationDbContext">
             <summary>
             Application db context class.
@@ -30,6 +87,28 @@
             Overrides the OnModelCreating method to configure the database context and model.
             </summary>
             <param name="modelBuilder">The model builder.</param>
+        </member>
+        <member name="T:Retail.Api.Orders.Data.DapperContext">
+            <summary>
+            Dapper context class.
+            </summary>
+        </member>
+        <member name="M:Retail.Api.Orders.Data.DapperContext.#ctor(Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Retail.Api.Orders.Data.DapperContext"/> class.
+            </summary>
+            <param name="configuration">Configuration object.</param>
+        </member>
+        <member name="P:Retail.Api.Orders.Data.DapperContext.Configuration">
+            <summary>
+            Gets Configuration.
+            </summary>
+        </member>
+        <member name="M:Retail.Api.Orders.Data.DapperContext.CreateConnection">
+            <summary>
+            Sets SQL Connection.
+            </summary>
+            <returns>Returns Sql connection.</returns>
         </member>
         <member name="T:Retail.Api.Orders.Dto.LineItemDto">
             <summary>
@@ -85,6 +164,358 @@
             <summary>
             Gets or sets the Line Items.
             </summary>
+        </member>
+        <member name="T:Retail.Api.Orders.Interface.IDapperRepository">
+            <summary>
+            Interface definition for data access layer
+            </summary>
+        </member>
+        <member name="M:Retail.Api.Orders.Interface.IDapperRepository.ExecuteScalarAsync(System.String)">
+            <summary> 
+            Runs raw sql query. 
+            </summary> 
+            <param name="sqlquery">Raw sql query.</param> 
+            <returns>Returns data or status.</returns> 
+        </member>
+        <member name="M:Retail.Api.Orders.Interface.IDapperRepository.ExecuteAsync(System.String,Dapper.DynamicParameters)">
+            <summary> 
+            Runs raw sql query. 
+            </summary> 
+            <param name="sqlquery">Raw sql query.</param> 
+            <param name="parameters">Sql parameters.</param> 
+            <returns>Returns data or status.</returns> 
+        </member>
+        <member name="M:Retail.Api.Orders.Interface.IDapperRepository.ExecuteScalar(System.String)">
+            <summary> 
+            Runs raw sql query. 
+            </summary> 
+            <param name="sqlquery">Raw sql query.</param> 
+            <returns>Returns data or status.</returns> 
+        </member>
+        <member name="M:Retail.Api.Orders.Interface.IDapperRepository.Execute(System.String,Dapper.DynamicParameters)">
+            <summary> 
+            Runs raw sql query. 
+            </summary> 
+            <param name="sqlquery">Raw sql query.</param> 
+            <param name="parameters">Sql parameters.</param> 
+            <returns>Returns data or status.</returns> 
+        </member>
+        <member name="M:Retail.Api.Orders.Interface.IDapperRepository.QueryMultipleAsync``1(System.String,Dapper.DynamicParameters)">
+            <summary> 
+            Runs raw query multiple. 
+            </summary> 
+            <param name="sqlquery">Raw sql query.</param> 
+            <param name="parameters">Sql parameters.</param> 
+            <returns>Returns data or status.</returns> 
+        </member>
+        <member name="M:Retail.Api.Orders.Interface.IDapperRepository.QuerySingleOrDefaultAsync``1(System.String,Dapper.DynamicParameters)">
+            <summary> 
+            Runs raw query single or default. 
+            </summary> 
+            <param name="sqlquery">Raw sql query.</param> 
+            <param name="parameters">Sql parameters.</param> 
+            <returns>Returns data or status.</returns> 
+        </member>
+        <member name="T:Retail.Api.Orders.Interface.IDapperUnitOfWork">
+            <summary>
+            Interface definition for unit of work.
+            </summary>
+        </member>
+        <member name="P:Retail.Api.Orders.Interface.IDapperUnitOfWork.OrderDapperRepository">
+            <summary>
+            Gets or sets customer repository.
+            </summary>
+        </member>
+        <member name="P:Retail.Api.Orders.Interface.IDapperUnitOfWork.LineItemDapperRepository">
+            <summary>
+            Gets or sets customer repository.
+            </summary>
+        </member>
+        <member name="M:Retail.Api.Orders.Interface.IDapperUnitOfWork.BeginTransaction">
+            <summary>
+            Method to begin transaction.
+            </summary>
+        </member>
+        <member name="M:Retail.Api.Orders.Interface.IDapperUnitOfWork.Commit">
+            <summary>
+            Method to commit changes.
+            </summary>
+        </member>
+        <member name="M:Retail.Api.Orders.Interface.IDapperUnitOfWork.Rollback">
+            <summary>
+            Method to commit changes.
+            </summary>
+        </member>
+        <member name="T:Retail.Api.Orders.Interface.IEntityRepository`1">
+            <summary>
+            Interface definition for data access layer
+            </summary>
+            <typeparam name="T">Generic type parameter.</typeparam>
+        </member>
+        <member name="M:Retail.Api.Orders.Interface.IEntityRepository`1.Add(`0)">
+            <summary>
+            Add a new object.
+            </summary>
+            <param name="entity">An object type parameter T.</param>
+        </member>
+        <member name="M:Retail.Api.Orders.Interface.IEntityRepository`1.AddAsync(`0)">
+            <summary>
+            Add a new object asynchronously.
+            </summary>
+            <param name="entity">An object type parameter T.</param>
+        </member>
+        <member name="M:Retail.Api.Orders.Interface.IEntityRepository`1.AddRange(System.Collections.Generic.IEnumerable{`0})">
+            <summary>
+            Add a range of objects.
+            </summary>
+            <param name="entities">Collection of object of type parameter T.</param>
+        </member>
+        <member name="M:Retail.Api.Orders.Interface.IEntityRepository`1.AddRangeAsync(System.Collections.Generic.IEnumerable{`0})">
+            <summary>
+            Add a range of objects asynchronously.
+            </summary>
+            <param name="entities">Collection of object of type parameter T.</param>
+        </member>
+        <member name="M:Retail.Api.Orders.Interface.IEntityRepository`1.Find(System.Linq.Expressions.Expression{System.Func{`0,System.Boolean}})">
+            <summary>
+            Query collection of object.
+            </summary>
+            <returns>Returns collection of object of type parameter T.</returns>
+        </member>
+        <member name="M:Retail.Api.Orders.Interface.IEntityRepository`1.FindAsync(System.Linq.Expressions.Expression{System.Func{`0,System.Boolean}})">
+            <summary>
+            Query collection of object asynchronously.
+            </summary>
+            <returns>Returns collection of object of type parameter T.</returns>
+        </member>
+        <member name="M:Retail.Api.Orders.Interface.IEntityRepository`1.GetAll">
+            <summary>
+            Gets collection of object
+            </summary>
+            <returns>Returns collection of object of type parameter T.</returns>
+        </member>
+        <member name="M:Retail.Api.Orders.Interface.IEntityRepository`1.GetAllAsync">
+            <summary>
+            Gets collection of object asynchronously.
+            </summary>
+            <returns>Returns collection of object of type parameter T.</returns>
+        </member>
+        <member name="M:Retail.Api.Orders.Interface.IEntityRepository`1.GetById(System.Int64)">
+            <summary>
+            Gets object by Id
+            </summary>
+            <param name="id">Generic type parameter.</param>
+            <returns>Returns object of type parameter T.</returns>
+        </member>
+        <member name="M:Retail.Api.Orders.Interface.IEntityRepository`1.GetByIdAsync(System.Int64)">
+            <summary>
+            Gets object by Id
+            </summary>
+            <param name="id">Generic type parameter.</param>
+            <returns>Returns object of type parameter T.</returns>
+        </member>
+        <member name="M:Retail.Api.Orders.Interface.IEntityRepository`1.Remove(`0)">
+            <summary>
+            Remove an object.
+            </summary>
+            <param name="entity">An object type parameter T.</param>
+        </member>
+        <member name="M:Retail.Api.Orders.Interface.IEntityRepository`1.RemoveRange(System.Collections.Generic.IEnumerable{`0})">
+            <summary>
+            Remove a range of objects.
+            </summary>
+            <param name="entities"></param>
+        </member>
+        <member name="M:Retail.Api.Orders.Interface.IEntityRepository`1.Update(`0)">
+            <summary>
+            Update an object.
+            </summary>
+            <param name="entity">An object type parameter T.</param>
+        </member>
+        <member name="M:Retail.Api.Orders.Interface.IEntityRepository`1.UpdateRange(System.Collections.Generic.IEnumerable{`0})">
+            <summary>
+            Update a range of objects.
+            </summary>
+            <param name="entities"></param>
+        </member>
+        <member name="T:Retail.Api.Orders.Interface.IEntityUnitOfWork">
+            <summary>
+            Interface definition for unit of work.
+            </summary>
+        </member>
+        <member name="P:Retail.Api.Orders.Interface.IEntityUnitOfWork.OrderEntityRepository">
+            <summary>
+            Gets or sets order repository.
+            </summary>
+        </member>
+        <member name="P:Retail.Api.Orders.Interface.IEntityUnitOfWork.LineItemEntityRepository">
+            <summary>
+            Gets or sets line item repository.
+            </summary>
+        </member>
+        <member name="M:Retail.Api.Orders.Interface.IEntityUnitOfWork.BeginTransaction">
+            <summary>
+            Method to begin transaction.
+            </summary>
+        </member>
+        <member name="M:Retail.Api.Orders.Interface.IEntityUnitOfWork.BeginTransactionAsync">
+            <summary>
+            Method to begin transaction asynchronously.
+            </summary>
+        </member>
+        <member name="M:Retail.Api.Orders.Interface.IEntityUnitOfWork.Commit">
+            <summary>
+            Method to commit changes.
+            </summary>
+        </member>
+        <member name="M:Retail.Api.Orders.Interface.IEntityUnitOfWork.CommitAsync">
+            <summary>
+            Method to commit changes asynchronously.
+            </summary>
+        </member>
+        <member name="M:Retail.Api.Orders.Interface.IEntityUnitOfWork.Rollback">
+            <summary>
+            Method to commit changes.
+            </summary>
+        </member>
+        <member name="M:Retail.Api.Orders.Interface.IEntityUnitOfWork.RollbackAsync">
+            <summary>
+            Method to commit changes asynchronously.
+            </summary>
+        </member>
+        <member name="T:Retail.Api.Orders.Interface.ILineItemDapperRepository">
+            <summary>
+            Interface definition for customer repository.
+            </summary>
+        </member>
+        <member name="M:Retail.Api.Orders.Interface.ILineItemDapperRepository.AddAsync(Retail.Api.Orders.Model.LineItem)">
+            <summary>
+            Add a new object asynchronously.
+            </summary>
+            <param name="entity">Object parameter.</param>
+            <returns>Returns an integer.</returns>
+        </member>
+        <member name="M:Retail.Api.Orders.Interface.ILineItemDapperRepository.GetAllAsync">
+            <summary>
+            Gets collection of object asynchronously.
+            </summary>
+            <returns>Returns collection of object.</returns>
+        </member>
+        <member name="M:Retail.Api.Orders.Interface.ILineItemDapperRepository.GetByIdAsync(System.Int64)">
+            <summary>
+            Get an object by Id asynchronously
+            </summary>
+            <param name="id">Primary key of the object.</param>
+            <returns>Returns an object.</returns>
+        </member>
+        <member name="M:Retail.Api.Orders.Interface.ILineItemDapperRepository.RemoveAsync(Retail.Api.Orders.Model.LineItem)">
+            <summary>
+            Removes an object asynchronously.
+            </summary>
+            <param name="entity">Object parameter.</param>
+            <returns>Returns an integer.</returns>
+        </member>
+        <member name="M:Retail.Api.Orders.Interface.ILineItemDapperRepository.UpdateAsync(Retail.Api.Orders.Model.LineItem)">
+            <summary>
+            Updates an object asynchronously.
+            </summary>
+            <param name="entity">Object parameter.</param>
+            <returns>Returns an integer.</returns>
+        </member>
+        <member name="T:Retail.Api.Orders.Interface.ILineItemEntityRepository">
+            <summary>
+            Interface definition for customer repository.
+            </summary>
+        </member>
+        <member name="T:Retail.Api.Orders.Interface.IOrderDapperRepository">
+            <summary>
+            Interface definition for customer repository.
+            </summary>
+        </member>
+        <member name="M:Retail.Api.Orders.Interface.IOrderDapperRepository.AddAsync(Retail.Api.Orders.Model.Order)">
+            <summary>
+            Add a new object asynchronously.
+            </summary>
+            <param name="entity">Object parameter.</param>
+            <returns>Returns an integer.</returns>
+        </member>
+        <member name="M:Retail.Api.Orders.Interface.IOrderDapperRepository.GetAllAsync">
+            <summary>
+            Gets collection of object asynchronously.
+            </summary>
+            <returns>Returns collection of object.</returns>
+        </member>
+        <member name="M:Retail.Api.Orders.Interface.IOrderDapperRepository.GetByIdAsync(System.Int64)">
+            <summary>
+            Get an object by Id asynchronously
+            </summary>
+            <param name="id">Primary key of the object.</param>
+            <returns>Returns an object.</returns>
+        </member>
+        <member name="M:Retail.Api.Orders.Interface.IOrderDapperRepository.RemoveAsync(Retail.Api.Orders.Model.Order)">
+            <summary>
+            Removes an object asynchronously.
+            </summary>
+            <param name="entity">Object parameter.</param>
+            <returns>Returns an integer.</returns>
+        </member>
+        <member name="M:Retail.Api.Orders.Interface.IOrderDapperRepository.UpdateAsync(Retail.Api.Orders.Model.Order)">
+            <summary>
+            Updates an object asynchronously.
+            </summary>
+            <param name="entity">Object parameter.</param>
+            <returns>Returns an integer.</returns>
+        </member>
+        <member name="T:Retail.Api.Orders.Interface.IOrderEntityRepository">
+            <summary>
+            Interface definition for customer repository.
+            </summary>
+        </member>
+        <member name="M:Retail.Api.Orders.Interface.IOrderEntityRepository.GetAllOrdersAsync">
+            <summary>
+            Gets collection of object asynchronously.
+            </summary>
+            <returns>Returns collection of object of type parameter T.</returns>
+        </member>
+        <member name="T:Retail.Api.Orders.Interface.IOrderService">
+            <summary>
+            Interface definition for orders service.
+            </summary>
+        </member>
+        <member name="M:Retail.Api.Orders.Interface.IOrderService.GetAllOrdersAsync">
+            <summary>
+            Method to fetch all orders asynchronously.
+            </summary>
+            <returns>List of orders.</returns>
+        </member>
+        <member name="M:Retail.Api.Orders.Interface.IOrderService.GetOrderByIdAsync(System.Int64)">
+            <summary>
+            Method to fetch order record based on Id asynchronously.
+            </summary>
+            <param name="id">Order Id.</param>
+            <returns>Order object.</returns>
+        </member>
+        <member name="M:Retail.Api.Orders.Interface.IOrderService.AddOrderAsync(Retail.Api.Orders.Dto.OrderDto)">
+            <summary>
+            Method to add a new order record asynchronously.
+            </summary>
+            <param name="orderDto">Order record.</param>
+            <returns>Order object.</returns>
+        </member>
+        <member name="M:Retail.Api.Orders.Interface.IOrderService.UpdateOrderAsync(System.Int64,Retail.Api.Orders.Dto.OrderDto)">
+            <summary>
+            Method to update order record asynchronously.
+            </summary>
+            <param name="id">Order Id.</param>
+            <param name="orderDto">Order record.</param>
+            <returns>Order object.</returns>
+        </member>
+        <member name="M:Retail.Api.Orders.Interface.IOrderService.DeleteOrderAsync(System.Int64)">
+            <summary>
+            Method to delete order record asynchronously.
+            </summary>
+            <param name="id">Order Id.</param>
+            <returns>Order object.</returns>
         </member>
         <member name="T:Retail.Api.Orders.Migrations._001">
             <inheritdoc />
@@ -156,6 +587,412 @@
         <member name="P:Retail.Api.Orders.Model.Order.LineItems">
             <summary>
             Gets or sets the Line Items.
+            </summary>
+        </member>
+        <member name="T:Retail.Api.Orders.Repositories.DapperRepository">
+            <summary>
+            Generic repository class.
+            </summary>
+        </member>
+        <member name="M:Retail.Api.Orders.Repositories.DapperRepository.#ctor(Retail.Api.Orders.Data.DapperContext)">
+            <summary>
+            Initializes a new instance of the GenericRepository class.
+            </summary>
+            <param name="dapperContext">Db context.</param>
+        </member>
+        <member name="M:Retail.Api.Orders.Repositories.DapperRepository.ExecuteScalarAsync(System.String)">
+            <summary> 
+            Runs raw sql query. 
+            </summary> 
+            <param name="sqlquery">Raw sql query.</param> 
+            <returns>Returns data or status.</returns> 
+        </member>
+        <member name="M:Retail.Api.Orders.Repositories.DapperRepository.ExecuteAsync(System.String,Dapper.DynamicParameters)">
+            <summary> 
+            Runs raw sql query. 
+            </summary> 
+            <param name="sqlquery">Raw sql query.</param> 
+            <param name="parameters">Sql parameters.</param> 
+            <returns>Returns data or status.</returns> 
+        </member>
+        <member name="M:Retail.Api.Orders.Repositories.DapperRepository.ExecuteScalar(System.String)">
+            <summary> 
+            Runs raw sql query. 
+            </summary> 
+            <param name="sqlquery">Raw sql query.</param> 
+            <returns>Returns data or status.</returns> 
+        </member>
+        <member name="M:Retail.Api.Orders.Repositories.DapperRepository.Execute(System.String,Dapper.DynamicParameters)">
+            <summary> 
+            Runs raw sql query. 
+            </summary> 
+            <param name="sqlquery">Raw sql query.</param> 
+            <param name="parameters">Sql parameters.</param> 
+            <returns>Returns data or status.</returns> 
+        </member>
+        <member name="M:Retail.Api.Orders.Repositories.DapperRepository.QueryMultipleAsync``1(System.String,Dapper.DynamicParameters)">
+            <summary> 
+            Runs raw query multiple. 
+            </summary> 
+            <param name="sqlquery">Raw sql query.</param> 
+            <param name="parameters">Sql parameters.</param> 
+            <returns>Returns data or status.</returns> 
+        </member>
+        <member name="M:Retail.Api.Orders.Repositories.DapperRepository.QuerySingleOrDefaultAsync``1(System.String,Dapper.DynamicParameters)">
+            <summary> 
+            Runs raw query single or default. 
+            </summary> 
+            <param name="sqlquery">Raw sql query.</param> 
+            <param name="parameters">Sql parameters.</param> 
+            <returns>Returns data or status.</returns> 
+        </member>
+        <member name="T:Retail.Api.Orders.Repositories.EntityRepository`1">
+            <summary>
+            Generic repository class.
+            </summary>
+        </member>
+        <member name="M:Retail.Api.Orders.Repositories.EntityRepository`1.#ctor(Retail.Api.Orders.Data.ApplicationDbContext)">
+            <summary>
+            Initializes a new instance of the GenericRepository class.
+            </summary>
+            <param name="dbcontext">Db context.</param>
+        </member>
+        <member name="M:Retail.Api.Orders.Repositories.EntityRepository`1.Add(`0)">
+            <summary>
+            Add a new object.
+            </summary>
+            <param name="entity">An object type parameter T.</param>
+        </member>
+        <member name="M:Retail.Api.Orders.Repositories.EntityRepository`1.AddAsync(`0)">
+            <summary>
+            Add a new object asynchronously.
+            </summary>
+            <param name="entity">An object type parameter T.</param>
+        </member>
+        <member name="M:Retail.Api.Orders.Repositories.EntityRepository`1.AddRange(System.Collections.Generic.IEnumerable{`0})">
+            <summary>
+            Add a range of objects.
+            </summary>
+            <param name="entities">Collection of object of type parameter T.</param>
+        </member>
+        <member name="M:Retail.Api.Orders.Repositories.EntityRepository`1.AddRangeAsync(System.Collections.Generic.IEnumerable{`0})">
+            <summary>
+            Add a range of objects asynchronously.
+            </summary>
+            <param name="entities">Collection of object of type parameter T.</param>
+        </member>
+        <member name="M:Retail.Api.Orders.Repositories.EntityRepository`1.Find(System.Linq.Expressions.Expression{System.Func{`0,System.Boolean}})">
+            <summary>
+            Query collection of object.
+            </summary>
+            <returns>Returns collection of object of type parameter T.</returns>
+        </member>
+        <member name="M:Retail.Api.Orders.Repositories.EntityRepository`1.FindAsync(System.Linq.Expressions.Expression{System.Func{`0,System.Boolean}})">
+            <summary>
+            Query collection of object asynchronously.
+            </summary>
+            <returns>Returns collection of object of type parameter T.</returns>
+        </member>
+        <member name="M:Retail.Api.Orders.Repositories.EntityRepository`1.GetAll">
+            <summary>
+            Gets collection of object
+            </summary>
+            <returns>Returns collection of object of type parameter T.</returns>
+        </member>
+        <member name="M:Retail.Api.Orders.Repositories.EntityRepository`1.GetAllAsync">
+            <summary>
+            Gets collection of object
+            </summary>
+            <returns>Returns collection of object of type parameter T.</returns>
+        </member>
+        <member name="M:Retail.Api.Orders.Repositories.EntityRepository`1.GetById(System.Int64)">
+            <summary>
+            Gets object by Id
+            </summary>
+            <param name="id">Generic type parameter.</param>
+            <returns>Returns object of type parameter T.</returns>
+        </member>
+        <member name="M:Retail.Api.Orders.Repositories.EntityRepository`1.GetByIdAsync(System.Int64)">
+            <summary>
+            Gets object by Id
+            </summary>
+            <param name="id">Generic type parameter.</param>
+            <returns>Returns object of type parameter T.</returns>
+        </member>
+        <member name="M:Retail.Api.Orders.Repositories.EntityRepository`1.Remove(`0)">
+            <summary>
+            Remove an object.
+            </summary>
+            <param name="entity">An object type parameter T.</param>
+        </member>
+        <member name="M:Retail.Api.Orders.Repositories.EntityRepository`1.RemoveRange(System.Collections.Generic.IEnumerable{`0})">
+            <summary>
+            Remove a range of objects.
+            </summary>
+            <param name="entities"></param>
+        </member>
+        <member name="M:Retail.Api.Orders.Repositories.EntityRepository`1.Update(`0)">
+            <summary>
+            Update an object.
+            </summary>
+            <param name="entity">An object type parameter T.</param>
+        </member>
+        <member name="M:Retail.Api.Orders.Repositories.EntityRepository`1.UpdateRange(System.Collections.Generic.IEnumerable{`0})">
+            <summary>
+            Update a range of objects.
+            </summary>
+            <param name="entities"></param>
+        </member>
+        <member name="T:Retail.Api.Orders.Repositories.LineItemDapperRepository">
+            <summary>
+            Customer repository class.
+            </summary>
+        </member>
+        <member name="M:Retail.Api.Orders.Repositories.LineItemDapperRepository.#ctor(Retail.Api.Orders.Data.DapperContext)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Retail.Api.Orders.Repositories.LineItemDapperRepository"/> class.
+            </summary>
+            <param name="dapperContext">Db context.</param>
+        </member>
+        <member name="M:Retail.Api.Orders.Repositories.LineItemDapperRepository.AddAsync(Retail.Api.Orders.Model.LineItem)">
+            <summary>
+            Add a new object asynchronously.
+            </summary>
+            <param name="entity">Object parameter.</param>
+            <returns>Returns an integer.</returns>
+        </member>
+        <member name="M:Retail.Api.Orders.Repositories.LineItemDapperRepository.GetAllAsync">
+            <summary>
+            Gets collection of object asynchronously.
+            </summary>
+            <returns>Returns collection of object.</returns>
+        </member>
+        <member name="M:Retail.Api.Orders.Repositories.LineItemDapperRepository.GetByIdAsync(System.Int64)">
+            <summary>
+            Get an object by Id asynchronously
+            </summary>
+            <param name="id">Primary key of the object.</param>
+            <returns>Returns an object.</returns>
+        </member>
+        <member name="M:Retail.Api.Orders.Repositories.LineItemDapperRepository.RemoveAsync(Retail.Api.Orders.Model.LineItem)">
+            <summary>
+            Removes an object asynchronously.
+            </summary>
+            <param name="entity">Object parameter.</param>
+            <returns>Returns an integer.</returns>
+        </member>
+        <member name="M:Retail.Api.Orders.Repositories.LineItemDapperRepository.UpdateAsync(Retail.Api.Orders.Model.LineItem)">
+            <summary>
+            Updates an object asynchronously.
+            </summary>
+            <param name="entity">Object parameter.</param>
+            <returns>Returns an integer.</returns>
+        </member>
+        <member name="T:Retail.Api.Orders.Repositories.LineItemEntityRepository">
+            <summary>
+            Customer repository class.
+            </summary>
+        </member>
+        <member name="M:Retail.Api.Orders.Repositories.LineItemEntityRepository.#ctor(Retail.Api.Orders.Data.ApplicationDbContext)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Retail.Api.Orders.Repositories.LineItemEntityRepository"/> class.
+            </summary>
+            <param name="context">Db context.</param>
+        </member>
+        <member name="T:Retail.Api.Orders.Repositories.OrderDapperRepository">
+            <summary>
+            Customer repository class.
+            </summary>
+        </member>
+        <member name="M:Retail.Api.Orders.Repositories.OrderDapperRepository.#ctor(Retail.Api.Orders.Data.DapperContext)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Retail.Api.Orders.Repositories.OrderDapperRepository"/> class.
+            </summary>
+            <param name="dapperContext">Db context.</param>
+        </member>
+        <member name="M:Retail.Api.Orders.Repositories.OrderDapperRepository.AddAsync(Retail.Api.Orders.Model.Order)">
+            <summary>
+            Add a new object asynchronously.
+            </summary>
+            <param name="entity">Object parameter.</param>
+            <returns>Returns an integer.</returns>
+        </member>
+        <member name="M:Retail.Api.Orders.Repositories.OrderDapperRepository.GetAllAsync">
+            <summary>
+            Gets collection of object asynchronously.
+            </summary>
+            <returns>Returns collection of object.</returns>
+        </member>
+        <member name="M:Retail.Api.Orders.Repositories.OrderDapperRepository.GetByIdAsync(System.Int64)">
+            <summary>
+            Get an object by Id asynchronously
+            </summary>
+            <param name="id">Primary key of the object.</param>
+            <returns>Returns an object.</returns>
+        </member>
+        <member name="M:Retail.Api.Orders.Repositories.OrderDapperRepository.RemoveAsync(Retail.Api.Orders.Model.Order)">
+            <summary>
+            Removes an object asynchronously.
+            </summary>
+            <param name="entity">Object parameter.</param>
+            <returns>Returns an integer.</returns>
+        </member>
+        <member name="M:Retail.Api.Orders.Repositories.OrderDapperRepository.UpdateAsync(Retail.Api.Orders.Model.Order)">
+            <summary>
+            Updates an object asynchronously.
+            </summary>
+            <param name="entity">Object parameter.</param>
+            <returns>Returns an integer.</returns>
+        </member>
+        <member name="T:Retail.Api.Orders.Repositories.OrderEntityRepository">
+            <summary>
+            Customer repository class.
+            </summary>
+        </member>
+        <member name="M:Retail.Api.Orders.Repositories.OrderEntityRepository.#ctor(Retail.Api.Orders.Data.ApplicationDbContext)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Retail.Api.Orders.Repositories.OrderEntityRepository"/> class.
+            </summary>
+            <param name="context">Db context.</param>
+        </member>
+        <member name="M:Retail.Api.Orders.Repositories.OrderEntityRepository.GetAllOrdersAsync">
+            <summary>
+            Gets collection of object asynchronously.
+            </summary>
+            <returns>Returns collection of object of type parameter T.</returns>
+        </member>
+        <member name="T:Retail.Api.Orders.Service.OrderService">
+            <summary>
+            Order service class.
+            </summary>
+        </member>
+        <member name="M:Retail.Api.Orders.Service.OrderService.#ctor(Retail.Api.Orders.Interface.IEntityUnitOfWork,AutoMapper.IMapper)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Retail.Api.Orders.Service.OrderService"/> class.
+            </summary>
+            <param name="unitOfWork">Intance of unit of work class.</param>
+            <param name="mapper">Intance of mapper class.</param>
+        </member>
+        <member name="M:Retail.Api.Orders.Service.OrderService.GetAllOrdersAsync">
+            <summary>
+            Method to fetch all orders asynchronously.
+            </summary>
+            <returns>List of orders.</returns>
+        </member>
+        <member name="M:Retail.Api.Orders.Service.OrderService.GetOrderByIdAsync(System.Int64)">
+            <summary>
+            Method to fetch order record based on Id asynchronously.
+            </summary>
+            <param name="id">Order Id.</param>
+            <returns>Order object.</returns>
+        </member>
+        <member name="M:Retail.Api.Orders.Service.OrderService.AddOrderAsync(Retail.Api.Orders.Dto.OrderDto)">
+            <summary>
+            Method to add a new order record asynchronously.
+            </summary>
+            <param name="orderDto">Order record.</param>
+            <returns>Order object.</returns>
+        </member>
+        <member name="M:Retail.Api.Orders.Service.OrderService.UpdateOrderAsync(System.Int64,Retail.Api.Orders.Dto.OrderDto)">
+            <summary>
+            Method to update order record asynchronously.
+            </summary>
+            <param name="id">Order Id.</param>
+            <param name="orderDto">Order record.</param>
+            <returns>Order object.</returns>
+        </member>
+        <member name="M:Retail.Api.Orders.Service.OrderService.DeleteOrderAsync(System.Int64)">
+            <summary>
+            Method to delete order record asynchronously.
+            </summary>
+            <param name="id">Order Id.</param>
+            <returns>Order object.</returns>
+        </member>
+        <member name="T:Retail.Api.Orders.UnitOfWork.DapperUnitOfWork">
+            <summary>
+            Unit of work class.
+            </summary>
+        </member>
+        <member name="M:Retail.Api.Orders.UnitOfWork.DapperUnitOfWork.#ctor(Retail.Api.Orders.Data.DapperContext)">
+            <summary>
+            Initializes a new instance of the <see cref="N:Retail.Api.Orders.UnitOfWork"/> class.
+            </summary>
+            <param name="dapperContext">Dapper Db context.</param>
+        </member>
+        <member name="P:Retail.Api.Orders.UnitOfWork.DapperUnitOfWork.OrderDapperRepository">
+            <summary>
+            Gets or sets customer repository.
+            </summary>
+        </member>
+        <member name="P:Retail.Api.Orders.UnitOfWork.DapperUnitOfWork.LineItemDapperRepository">
+            <summary>
+            Gets or sets customer repository.
+            </summary>
+        </member>
+        <member name="M:Retail.Api.Orders.UnitOfWork.DapperUnitOfWork.BeginTransaction">
+            <summary>
+            Method to begin transaction.
+            </summary>
+        </member>
+        <member name="M:Retail.Api.Orders.UnitOfWork.DapperUnitOfWork.Commit">
+            <summary>
+            Method to commit changes.
+            </summary>
+        </member>
+        <member name="M:Retail.Api.Orders.UnitOfWork.DapperUnitOfWork.Rollback">
+            <summary>
+            Method to rollback changes.
+            </summary>
+        </member>
+        <member name="T:Retail.Api.Orders.UnitOfWork.EntityUnitOfWork">
+            <summary>
+            Unit of work class.
+            </summary>
+        </member>
+        <member name="M:Retail.Api.Orders.UnitOfWork.EntityUnitOfWork.#ctor(Retail.Api.Orders.Data.ApplicationDbContext)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Retail.Api.Orders.UnitOfWork.EntityUnitOfWork"/> class.
+            </summary>
+            <param name="entityContext">Entity framework Db context.</param>
+        </member>
+        <member name="P:Retail.Api.Orders.UnitOfWork.EntityUnitOfWork.OrderEntityRepository">
+            <summary>
+            Gets or sets customer repository.
+            </summary>
+        </member>
+        <member name="P:Retail.Api.Orders.UnitOfWork.EntityUnitOfWork.LineItemEntityRepository">
+            <summary>
+            Gets or sets customer repository.
+            </summary>
+        </member>
+        <member name="M:Retail.Api.Orders.UnitOfWork.EntityUnitOfWork.BeginTransaction">
+            <summary>
+            Method to begin transaction.
+            </summary>
+        </member>
+        <member name="M:Retail.Api.Orders.UnitOfWork.EntityUnitOfWork.BeginTransactionAsync">
+            <summary>
+            Method to begin asynchronously.
+            </summary>
+        </member>
+        <member name="M:Retail.Api.Orders.UnitOfWork.EntityUnitOfWork.Commit">
+            <summary>
+            Method to commit changes.
+            </summary>
+        </member>
+        <member name="M:Retail.Api.Orders.UnitOfWork.EntityUnitOfWork.CommitAsync">
+            <summary>
+            Method to commit changes asynchronously.
+            </summary>
+        </member>
+        <member name="M:Retail.Api.Orders.UnitOfWork.EntityUnitOfWork.Rollback">
+            <summary>
+            Method to rollback changes.
+            </summary>
+        </member>
+        <member name="M:Retail.Api.Orders.UnitOfWork.EntityUnitOfWork.RollbackAsync">
+            <summary>
+            Method to rollback changes asynchronously.
             </summary>
         </member>
         <member name="T:Retail.Api.Products.Profiles.OrderProfile">
