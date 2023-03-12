@@ -83,23 +83,23 @@ namespace Retail.Api.Customers.UnitOfWork
         /// </summary>
         public void Rollback()
         {
-            _entityContext.Dispose();
             _entityTransaction?.Rollback();
             _entityTransaction?.Dispose();
+            _entityContext.Dispose();
         }
 
         /// <summary>
         /// Method to rollback changes asynchronously.
         /// </summary>
         public async Task RollbackAsync()
-        { 
-            await _entityContext.DisposeAsync();
-
+        {
             if (_entityTransaction is not null)
             {
                 await _entityTransaction.RollbackAsync();
                 await _entityTransaction.DisposeAsync();
             }
+
+            await _entityContext.DisposeAsync();
         }
     }
 }

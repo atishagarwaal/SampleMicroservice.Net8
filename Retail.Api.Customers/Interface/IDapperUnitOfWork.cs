@@ -11,5 +11,20 @@ namespace Retail.Api.Customers.Interface
         /// Gets or sets customer repository.
         /// </summary>
         ICustomerDapperRepository CustomerDapperRepository { get; }
+
+        /// <summary>
+        /// Method to begin transaction.
+        /// </summary>
+        void BeginTransaction();
+
+        /// <summary>
+        /// Method to commit changes.
+        /// </summary>
+        void Commit();
+
+        /// <summary>
+        /// Method to commit changes.
+        /// </summary>
+        void Rollback();
     }
 }

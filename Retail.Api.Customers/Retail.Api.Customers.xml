@@ -270,6 +270,21 @@
             Gets or sets customer repository.
             </summary>
         </member>
+        <member name="M:Retail.Api.Customers.Interface.IDapperUnitOfWork.BeginTransaction">
+            <summary>
+            Method to begin transaction.
+            </summary>
+        </member>
+        <member name="M:Retail.Api.Customers.Interface.IDapperUnitOfWork.Commit">
+            <summary>
+            Method to commit changes.
+            </summary>
+        </member>
+        <member name="M:Retail.Api.Customers.Interface.IDapperUnitOfWork.Rollback">
+            <summary>
+            Method to commit changes.
+            </summary>
+        </member>
         <member name="T:Retail.Api.Customers.Interface.IEntityRepository`1">
             <summary>
             Interface definition for data access layer
@@ -715,6 +730,21 @@
         <member name="P:Retail.Api.Customers.UnitOfWork.DapperUnitOfWork.CustomerDapperRepository">
             <summary>
             Gets or sets customer repository.
+            </summary>
+        </member>
+        <member name="M:Retail.Api.Customers.UnitOfWork.DapperUnitOfWork.BeginTransaction">
+            <summary>
+            Method to begin transaction.
+            </summary>
+        </member>
+        <member name="M:Retail.Api.Customers.UnitOfWork.DapperUnitOfWork.Commit">
+            <summary>
+            Method to commit changes.
+            </summary>
+        </member>
+        <member name="M:Retail.Api.Customers.UnitOfWork.DapperUnitOfWork.Rollback">
+            <summary>
+            Method to rollback changes.
             </summary>
         </member>
         <member name="T:Retail.Api.Customers.UnitOfWork.EntityUnitOfWork">
