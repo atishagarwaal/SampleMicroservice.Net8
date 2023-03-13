@@ -1,6 +1,8 @@
-﻿using Retail.Api.Customers.Repositories;
+﻿using Retail.Api.Customers.Interface;
+using Retail.Api.Customers.Repositories;
+using System.Data;
 
-namespace Retail.Api.Customers.Interface
+namespace Retail.Api.Customers.DefaultInterface
 {
     /// <summary>
     /// Interface definition for unit of work.
@@ -11,6 +13,11 @@ namespace Retail.Api.Customers.Interface
         /// Gets or sets customer repository.
         /// </summary>
         ICustomerDapperRepository CustomerDapperRepository { get; }
+
+        /// <summary>
+        /// Gets or sets connection.
+        /// </summary>
+        IDbConnection Connection { get; }
 
         /// <summary>
         /// Method to begin transaction.

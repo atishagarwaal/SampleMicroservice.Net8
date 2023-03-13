@@ -1,4 +1,5 @@
 ﻿using Retail.Api.Customers.Data;
+using Retail.Api.Customers.DefaultRepositories;
 using Retail.Api.Customers.Interface;
 using Retail.Api.Customers.Model;
 

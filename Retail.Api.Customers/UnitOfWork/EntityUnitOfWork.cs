@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using Retail.Api.Customers.Data;
+using Retail.Api.Customers.DefaultInterface;
 using Retail.Api.Customers.Interface;
 using Retail.Api.Customers.Repositories;
 

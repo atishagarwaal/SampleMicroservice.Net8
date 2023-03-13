@@ -12,7 +12,7 @@ namespace Retail.Api.Customers.Interface
         /// </summary>
         /// <param name="entity">Object parameter.</param>
         /// <returns>Returns an integer.</returns>
-        Task<int> AddAsync(Customer entity);
+        Task<Customer> AddAsync(Customer entity);
 
         /// <summary>
         /// Gets collection of object asynchronously.

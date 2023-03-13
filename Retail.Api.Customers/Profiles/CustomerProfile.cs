@@ -17,7 +17,7 @@ namespace Retail.Api.Customers.Profiles
         /// </summary>
         public CustomerProfile()
         {
-            this.CreateMap<Customer, CustomerDto>();
+            this.CreateMap<Customer, CustomerDto>().ReverseMap();
         }
     }
 }

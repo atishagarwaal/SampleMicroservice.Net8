@@ -6,6 +6,8 @@
 
 using Microsoft.EntityFrameworkCore;
 using Retail.Api.Customers.Data;
+using Retail.Api.Customers.DefaultInterface;
+using Retail.Api.Customers.DefaultRepositories;
 using Retail.Api.Customers.Interface;
 using Retail.Api.Customers.Repositories;
 using Retail.Api.Customers.Service;
@@ -19,18 +21,24 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+builder.Services.AddTransient<DapperContext>();
 builder.Services.AddTransient(typeof(IEntityRepository<>), typeof(EntityRepository<>));
-builder.Services.AddTransient<IDapperRepository, DapperRepository>();
-builder.Services.AddTransient<IEntityUnitOfWork, EntityUnitOfWork>();
-builder.Services.AddTransient<IDapperUnitOfWork, DapperUnitOfWork>();
+builder.Services.AddTransient(typeof(IDapperRepository), typeof(DapperRepository));
+builder.Services.AddTransient(typeof(IEntityUnitOfWork), typeof(EntityUnitOfWork));
+builder.Services.AddTransient(typeof(IDapperUnitOfWork), typeof(DapperUnitOfWork));
 
-builder.Services.AddTransient<ICustomerEntityRepository, CustomerEntityRepository>();
-builder.Services.AddTransient<ICustomerDapperRepository, CustomerDapperRepository>();
-builder.Services.AddTransient<ICustomerService, CustomerService>();
+builder.Services.AddTransient(typeof(ICustomerEntityRepository), typeof(CustomerEntityRepository));
+builder.Services.AddTransient(typeof(ICustomerDapperRepository), typeof(CustomerDapperRepository));
+builder.Services.AddTransient(typeof(ICustomerService), typeof(CustomerService));
 
 builder.Services.AddAutoMapper(typeof(Program));
 
 builder.Services.AddControllers();
+
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "Customer", Version= "v1" });
+});
 
 var app = builder.Build();
 
@@ -38,6 +46,15 @@ using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
     db.Database.EnsureCreatedAsync();
+}
+
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
+    });
 }
 
 // Configure the HTTP request pipeline.

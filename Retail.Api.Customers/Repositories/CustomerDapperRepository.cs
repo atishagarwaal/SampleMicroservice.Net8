@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using Retail.Api.Customers.Data;
+using Retail.Api.Customers.DefaultRepositories;
 using Retail.Api.Customers.Interface;
 using Retail.Api.Customers.Model;
 
@@ -26,14 +27,17 @@ namespace Retail.Api.Customers.Repositories
         /// </summary>
         /// <param name="entity">Object parameter.</param>
         /// <returns>Returns an integer.</returns>
-        public async Task<int> AddAsync(Customer entity)
+        public async Task<Customer> AddAsync(Customer entity)
         {
             var sql = "INSERT INTO [dbo].[Customers] ([FirstName], [LastName]) VALUES (@FirstName, @LastName)";
             using (var connection = _dapperContext.CreateConnection())
             {
                 connection.Open();
                 var result = await connection.ExecuteAsync(sql, entity);
-                return result;
+
+                sql = "SELECT [Id], [FirstName], [LastName] FROM [dbo].[Customers] WHERE [FirstName] = @FirstName and [LastName]  = @LastName Order By Id desc";
+                var obj = await connection.QuerySingleOrDefaultAsync<Customer>(sql, new { FirstName = entity?.FirstName, LastName = entity?.LastName });
+                return obj;
             }
         }
 

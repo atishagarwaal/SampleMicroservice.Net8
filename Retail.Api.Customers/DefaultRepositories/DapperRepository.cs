@@ -1,9 +1,9 @@
 ﻿
 using Retail.Api.Customers.Data;
-using Retail.Api.Customers.Interface;
 using Dapper;
+using Retail.Api.Customers.DefaultInterface;
 
-namespace Retail.Api.Customers.Repositories
+namespace Retail.Api.Customers.DefaultRepositories
 {
     /// <summary>
     /// Generic repository class.
@@ -40,10 +40,10 @@ namespace Retail.Api.Customers.Repositories
         /// <param name="sqlquery">Raw sql query.</param> 
         /// <param name="parameters">Sql parameters.</param> 
         /// <returns>Returns data or status.</returns> 
-        public async Task<int> ExecuteAsync(string sqlquery, DynamicParameters? parameters = null) 
-        { 
-            using (var connection = _dapperContext.CreateConnection()) 
-            { 
+        public async Task<int> ExecuteAsync(string sqlquery, DynamicParameters? parameters = null)
+        {
+            using (var connection = _dapperContext.CreateConnection())
+            {
                 int result;
 
                 if (parameters == null)
@@ -55,8 +55,8 @@ namespace Retail.Api.Customers.Repositories
                     result = await connection.ExecuteAsync(sqlquery, parameters);
                 }
 
-                return result; 
-            } 
+                return result;
+            }
         }
 
         /// <summary> 
@@ -64,11 +64,11 @@ namespace Retail.Api.Customers.Repositories
         /// </summary> 
         /// <param name="sqlquery">Raw sql query.</param> 
         /// <returns>Returns data or status.</returns> 
-        public dynamic ExecuteScalar(string sqlquery) 
-        { 
-            using (var connection = _dapperContext.CreateConnection()) 
-            { 
-                var result = connection.ExecuteScalar<dynamic>(sqlquery); return result; 
+        public dynamic ExecuteScalar(string sqlquery)
+        {
+            using (var connection = _dapperContext.CreateConnection())
+            {
+                var result = connection.ExecuteScalar<dynamic>(sqlquery); return result;
             }
         }
 
@@ -78,22 +78,22 @@ namespace Retail.Api.Customers.Repositories
         /// <param name="sqlquery">Raw sql query.</param> 
         /// <param name="parameters">Sql parameters.</param> 
         /// <returns>Returns data or status.</returns> 
-        public int Execute(string sqlquery, DynamicParameters? parameters = null) 
-        { 
-            using (var connection = _dapperContext.CreateConnection()) 
-            { 
+        public int Execute(string sqlquery, DynamicParameters? parameters = null)
+        {
+            using (var connection = _dapperContext.CreateConnection())
+            {
                 int result;
 
-                if (parameters == null) 
-                { 
-                    result = connection.Execute(sqlquery); 
-                } 
-                else 
-                { 
-                    result = connection.Execute(sqlquery, parameters); 
+                if (parameters == null)
+                {
+                    result = connection.Execute(sqlquery);
+                }
+                else
+                {
+                    result = connection.Execute(sqlquery, parameters);
                 }
 
-                return result; 
+                return result;
             }
         }
 
@@ -103,24 +103,24 @@ namespace Retail.Api.Customers.Repositories
         /// <param name="sqlquery">Raw sql query.</param> 
         /// <param name="parameters">Sql parameters.</param> 
         /// <returns>Returns data or status.</returns> 
-        public async Task<IEnumerable<T>> QueryMultipleAsync<T>(string sqlquery, DynamicParameters? parameters = null) 
-        { 
-            using (var connection = _dapperContext.CreateConnection()) 
-            { 
+        public async Task<IEnumerable<T>> QueryMultipleAsync<T>(string sqlquery, DynamicParameters? parameters = null)
+        {
+            using (var connection = _dapperContext.CreateConnection())
+            {
                 IEnumerable<T> result;
 
-                if (parameters == null) 
-                { 
-                    var query = await connection.QueryMultipleAsync(sqlquery); 
+                if (parameters == null)
+                {
+                    var query = await connection.QueryMultipleAsync(sqlquery);
                     result = await query.ReadAsync<T>();
-                } 
-                else 
-                { 
-                    var query = await connection.QueryMultipleAsync(sqlquery, parameters); 
+                }
+                else
+                {
+                    var query = await connection.QueryMultipleAsync(sqlquery, parameters);
                     result = await query.ReadAsync<T>();
                 }
 
-                return result; 
+                return result;
             }
         }
 
@@ -130,23 +130,23 @@ namespace Retail.Api.Customers.Repositories
         /// <param name="sqlquery">Raw sql query.</param> 
         /// <param name="parameters">Sql parameters.</param> 
         /// <returns>Returns data or status.</returns> 
-        public async Task<T> QuerySingleOrDefaultAsync<T>(string sqlquery, DynamicParameters? parameters = null) 
-        { 
-            using (var connection = _dapperContext.CreateConnection()) 
-            { 
+        public async Task<T> QuerySingleOrDefaultAsync<T>(string sqlquery, DynamicParameters? parameters = null)
+        {
+            using (var connection = _dapperContext.CreateConnection())
+            {
                 dynamic? result;
 
-                if (parameters == null) 
-                { 
+                if (parameters == null)
+                {
                     result = await connection.QuerySingleOrDefaultAsync<T>(sqlquery);
-                } 
-                else 
-                { 
+                }
+                else
+                {
                     result = await connection.QuerySingleOrDefaultAsync<T>(sqlquery, parameters);
                 }
 
                 return Task.FromResult<T>(result);
-            } 
+            }
         }
     }
 }

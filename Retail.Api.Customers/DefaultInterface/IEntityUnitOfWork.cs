@@ -1,6 +1,7 @@
-﻿using Retail.Api.Customers.Repositories;
+﻿using Retail.Api.Customers.Interface;
+using Retail.Api.Customers.Repositories;
 
-namespace Retail.Api.Customers.Interface
+namespace Retail.Api.Customers.DefaultInterface
 {
     /// <summary>
     /// Interface definition for unit of work.

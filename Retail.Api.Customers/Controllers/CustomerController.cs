@@ -47,7 +47,7 @@ namespace Retail.Api.Customers.Controllers
                 // Return list
                 return Ok(list);
             }
-            catch
+            catch(Exception ex)
             {
                 // Throw exception
                 return StatusCode(500, MessageConstants.InternalServerError);
@@ -81,7 +81,7 @@ namespace Retail.Api.Customers.Controllers
                 // Return object
                 return Ok(custObj);
             }
-            catch 
+            catch (Exception ex)
             {
                 // Throw exception
                 return StatusCode(500, MessageConstants.InternalServerError);
@@ -115,7 +115,7 @@ namespace Retail.Api.Customers.Controllers
                 // Return list
                 return Ok(result);
             }
-            catch
+            catch (Exception ex)
             {
                 // Throw exception
                 return StatusCode(500, MessageConstants.InternalServerError);
@@ -150,7 +150,7 @@ namespace Retail.Api.Customers.Controllers
                 // Return list
                 return Ok(result);
             }
-            catch
+            catch (Exception ex)
             {
                 // Throw exception
                 return StatusCode(500, MessageConstants.InternalServerError);
@@ -178,7 +178,7 @@ namespace Retail.Api.Customers.Controllers
                 // Return list
                 return Ok(result);
             }
-            catch
+            catch (Exception ex)
             {
                 // Throw exception
                 return StatusCode(500, MessageConstants.InternalServerError);

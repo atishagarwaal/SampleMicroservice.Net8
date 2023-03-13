@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using Microsoft.EntityFrameworkCore.Storage;
 using Retail.Api.Customers.Data;
+using Retail.Api.Customers.DefaultInterface;
 using Retail.Api.Customers.Interface;
 using Retail.Api.Customers.Model;
 using Retail.Api.Customers.Repositories;
@@ -25,7 +26,6 @@ namespace Retail.Api.Customers.UnitOfWork
         public DapperUnitOfWork(DapperContext dapperContext)
         {
             _dapperContext = dapperContext;
-            _connection = _connection ?? _dapperContext.CreateConnection();
         }
 
         /// <summary>
@@ -41,6 +41,22 @@ namespace Retail.Api.Customers.UnitOfWork
                 }
 
                 return _customerDapperRepository;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets connection.
+        /// </summary>
+        public IDbConnection Connection
+        {
+            get
+            {
+                if (_connection == null)
+                {
+                    _connection = _dapperContext.CreateConnection();
+                }
+
+                return _connection;
             }
         }
 
