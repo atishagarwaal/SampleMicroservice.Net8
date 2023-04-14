@@ -171,7 +171,46 @@ namespace Retail.Api.Orders.Repositories
         /// <returns>Returns object.</returns>
         public async Task<OrderDto?> GetOrderByIdAsync(long id)
         {
-            throw new NotImplementedException();
+            var final = new OrderDto();
+
+            // Create query
+            var sql = @"SELECT 
+	                        ORD.[Id] AS OrderId, 
+	                        [CustomerId] AS CustomerId,
+	                        [OrderDate] AS OrderDate, 
+	                        [TotalAmount] AS TotalAmount,
+	                        LIN.Id AS LineId,
+	                        LIN.SkuId,
+	                        LIN.Qty
+                        FROM [dbo].[Orders] ORD
+                        JOIN [dbo].[LineItems] LIN ON ORD.Id = LIN.OrderId
+                        WHERE OrderId = @OrderId
+                        ORDER BY ORD.[Id], LIN.Id";
+
+            // Execute query
+            using (var connection = _dapperContext.CreateConnection())
+            {
+                // Get all records
+                var items = await connection.QueryAsync(sql, new { OrderId = id });
+
+                // Initialize orderDto object
+                final = new OrderDto
+                {
+                    Id = items.FirstOrDefault().OrderId,
+                    CustomerId = items.FirstOrDefault().CustomerId,
+                    OrderDate = items.FirstOrDefault().OrderDate,
+                    TotalAmount = items.FirstOrDefault().TotalAmount,
+                    LineItems = items.Select(i => new LineItemDto
+                    {
+                        Id = i.LineId,
+                        OrderId = i.OrderId,
+                        Qty = i.Qty,
+                        SkuId = i.SkuId,
+                    }).ToList(),
+                };
+
+                return final;
+            }
         }
     }
 }
