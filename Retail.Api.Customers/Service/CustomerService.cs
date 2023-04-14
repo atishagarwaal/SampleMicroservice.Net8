@@ -11,8 +11,7 @@ namespace Retail.Api.Customers.Service
     /// </summary>
     public class CustomerService : ICustomerService
     {
-        private readonly IUnitOfWork _entityUnitOfWork;
-        private readonly IUnitOfWork _dapperUnitOfWork;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
         /// <summary>
@@ -23,8 +22,8 @@ namespace Retail.Api.Customers.Service
         /// <param name="mapper">Intance of mapper class.</param>
         public CustomerService(IUnitOfWork entityUnitOfWork, IUnitOfWork dapperUnitOfWork, IMapper mapper)
         {
-            _entityUnitOfWork = entityUnitOfWork;
-            _dapperUnitOfWork = dapperUnitOfWork;
+            ////_unitOfWork = entityUnitOfWork;
+            _unitOfWork = dapperUnitOfWork;
             _mapper = mapper;
         }
 
@@ -37,7 +36,7 @@ namespace Retail.Api.Customers.Service
             var returnList = new List<CustomerDto>();
 
             // Get all customers
-            var list = await _dapperUnitOfWork.CustomerRepository.GetAllAsync();
+            var list = await _unitOfWork.CustomerRepository.GetAllAsync();
 
             // Transform data
             foreach(var item in list)
@@ -57,7 +56,7 @@ namespace Retail.Api.Customers.Service
         public async Task<CustomerDto> GetCustomerByIdAsync(long id)
         {
             // Find record
-            var record = await _dapperUnitOfWork.CustomerRepository.GetByIdAsync(id);
+            var record = await _unitOfWork.CustomerRepository.GetByIdAsync(id);
 
             // Transform data
             var custDto = _mapper.Map<CustomerDto>(record);
@@ -76,9 +75,9 @@ namespace Retail.Api.Customers.Service
             var custObj = _mapper.Map<Customer>(custDto);
 
             // Add customer
-            _dapperUnitOfWork.BeginTransaction();
-            var result = await _dapperUnitOfWork.CustomerRepository.AddAsync(custObj);
-            _dapperUnitOfWork.Commit();
+            _unitOfWork.BeginTransaction();
+            var result = await _unitOfWork.CustomerRepository.AddAsync(custObj);
+            _unitOfWork.Commit();
 
             // Transform data
             custDto = _mapper.Map<CustomerDto>(result);
@@ -96,16 +95,16 @@ namespace Retail.Api.Customers.Service
         public async Task<CustomerDto> UpdateCustomerAsync(long id, CustomerDto custDto)
         {
             // Find record
-            var record = await _dapperUnitOfWork.CustomerRepository.GetByIdAsync(id);
+            var record = await _unitOfWork.CustomerRepository.GetByIdAsync(id);
 
             record = _mapper.Map<Customer>(custDto);
 
             // Update record
-            _dapperUnitOfWork.BeginTransaction();
-            var result = _dapperUnitOfWork.CustomerRepository.Update(record);
-            _dapperUnitOfWork.Commit();
+            _unitOfWork.BeginTransaction();
+            var result = _unitOfWork.CustomerRepository.Update(record);
+            _unitOfWork.Commit();
 
-            record = await _dapperUnitOfWork.CustomerRepository.GetByIdAsync(id);
+            record = await _unitOfWork.CustomerRepository.GetByIdAsync(id);
 
             // Transform data
             custDto = _mapper.Map<CustomerDto>(record);
@@ -121,14 +120,14 @@ namespace Retail.Api.Customers.Service
         public async Task<bool> DeleteCustomerAsync(long id)
         {
             // Find record
-            var record = await _dapperUnitOfWork.CustomerRepository.GetByIdAsync(id);
+            var record = await _unitOfWork.CustomerRepository.GetByIdAsync(id);
 
             if (record != null)
             {
                 // Delete record
-                _dapperUnitOfWork.BeginTransaction();
-                _dapperUnitOfWork.CustomerRepository.Remove(record);
-                _dapperUnitOfWork.Commit();
+                _unitOfWork.BeginTransaction();
+                _unitOfWork.CustomerRepository.Remove(record);
+                _unitOfWork.Commit();
 
                 return true;
             }
