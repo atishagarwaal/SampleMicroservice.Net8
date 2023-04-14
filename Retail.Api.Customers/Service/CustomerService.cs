@@ -103,11 +103,13 @@ namespace Retail.Api.Customers.Service
 
             // Update record
             _dapperUnitOfWork.BeginTransaction();
-            var result = _entityUnitOfWork.CustomerEntityRepository.Update(record);
+            var result = await _dapperUnitOfWork.CustomerDapperRepository.UpdateAsync(record);
             _dapperUnitOfWork.Commit();
 
+            record = await _dapperUnitOfWork.CustomerDapperRepository.GetByIdAsync(id);
+
             // Transform data
-            custDto = _mapper.Map<CustomerDto>(result);
+            custDto = _mapper.Map<CustomerDto>(record);
 
             return custDto;
         }
