@@ -92,14 +92,11 @@ namespace Retail.Api.Customers.Service
         /// <returns>Customer object.</returns>
         public async Task<CustomerDto> UpdateCustomerAsync(long id, CustomerDto custDto)
         {
-            // Find record
-            var record = await _unitOfWork.CustomerRepository.GetByIdAsync(id);
-
-            record = _mapper.Map<Customer>(custDto);
+            var record = _mapper.Map<Customer>(custDto);
 
             // Update record
             _unitOfWork.BeginTransaction();
-            var result = _unitOfWork.CustomerRepository.Update(record);
+            _unitOfWork.CustomerRepository.Update(record);
             _unitOfWork.Commit();
 
             record = await _unitOfWork.CustomerRepository.GetByIdAsync(id);

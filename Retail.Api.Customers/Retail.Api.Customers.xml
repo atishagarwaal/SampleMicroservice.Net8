@@ -274,60 +274,17 @@
             </summary>
             <param name="dbcontext">Db context.</param>
         </member>
-        <member name="M:Retail.Api.Customers.DefaultRepositories.EntityRepository`1.Add(`0)">
-            <summary>
-            Add a new object.
-            </summary>
-            <param name="entity">An object type parameter T.</param>
-        </member>
         <member name="M:Retail.Api.Customers.DefaultRepositories.EntityRepository`1.AddAsync(`0)">
             <summary>
             Add a new object asynchronously.
             </summary>
             <param name="entity">An object type parameter T.</param>
         </member>
-        <member name="M:Retail.Api.Customers.DefaultRepositories.EntityRepository`1.AddRange(System.Collections.Generic.IEnumerable{`0})">
-            <summary>
-            Add a range of objects.
-            </summary>
-            <param name="entities">Collection of object of type parameter T.</param>
-        </member>
-        <member name="M:Retail.Api.Customers.DefaultRepositories.EntityRepository`1.AddRangeAsync(System.Collections.Generic.IEnumerable{`0})">
-            <summary>
-            Add a range of objects asynchronously.
-            </summary>
-            <param name="entities">Collection of object of type parameter T.</param>
-        </member>
-        <member name="M:Retail.Api.Customers.DefaultRepositories.EntityRepository`1.Find(System.Linq.Expressions.Expression{System.Func{`0,System.Boolean}})">
-            <summary>
-            Query collection of object.
-            </summary>
-            <returns>Returns collection of object of type parameter T.</returns>
-        </member>
-        <member name="M:Retail.Api.Customers.DefaultRepositories.EntityRepository`1.FindAsync(System.Linq.Expressions.Expression{System.Func{`0,System.Boolean}})">
-            <summary>
-            Query collection of object asynchronously.
-            </summary>
-            <returns>Returns collection of object of type parameter T.</returns>
-        </member>
-        <member name="M:Retail.Api.Customers.DefaultRepositories.EntityRepository`1.GetAll">
-            <summary>
-            Gets collection of object
-            </summary>
-            <returns>Returns collection of object of type parameter T.</returns>
-        </member>
         <member name="M:Retail.Api.Customers.DefaultRepositories.EntityRepository`1.GetAllAsync">
             <summary>
             Gets collection of object
             </summary>
             <returns>Returns collection of object of type parameter T.</returns>
-        </member>
-        <member name="M:Retail.Api.Customers.DefaultRepositories.EntityRepository`1.GetById(System.Int64)">
-            <summary>
-            Gets object by Id
-            </summary>
-            <param name="id">Generic type parameter.</param>
-            <returns>Returns object of type parameter T.</returns>
         </member>
         <member name="M:Retail.Api.Customers.DefaultRepositories.EntityRepository`1.GetByIdAsync(System.Int64)">
             <summary>
@@ -342,23 +299,11 @@
             </summary>
             <param name="entity">An object type parameter T.</param>
         </member>
-        <member name="M:Retail.Api.Customers.DefaultRepositories.EntityRepository`1.RemoveRange(System.Collections.Generic.IEnumerable{`0})">
-            <summary>
-            Remove a range of objects.
-            </summary>
-            <param name="entities"></param>
-        </member>
         <member name="M:Retail.Api.Customers.DefaultRepositories.EntityRepository`1.Update(`0)">
             <summary>
             Update an object.
             </summary>
             <param name="entity">An object type parameter T.</param>
-        </member>
-        <member name="M:Retail.Api.Customers.DefaultRepositories.EntityRepository`1.UpdateRange(System.Collections.Generic.IEnumerable{`0})">
-            <summary>
-            Update a range of objects.
-            </summary>
-            <param name="entities"></param>
         </member>
         <member name="T:Retail.Api.Customers.Dto.CustomerDto">
             <summary>
