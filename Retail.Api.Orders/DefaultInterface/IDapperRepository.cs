@@ -2,7 +2,7 @@
 // Copyright (c) PlaceholderCompany. All rights reserved.
 // </copyright>
 
-namespace Retail.Api.Orders.Interface
+namespace Retail.Api.Orders.DefaultInterface
 {
     using Dapper;
 
@@ -10,7 +10,7 @@ namespace Retail.Api.Orders.Interface
     /// Interface definition for data access layer
     /// </summary>
     public interface IDapperRepository
-    { 
+    {
         /// <summary> 
         /// Runs raw sql query. 
         /// </summary> 

@@ -46,7 +46,7 @@ namespace Retail.Api.Orders.Controllers
                 // Return list
                 return Ok(list);
             }
-            catch
+            catch (Exception ex)
             {
                 // Throw exception
                 return StatusCode(500, MessageConstants.InternalServerError);
@@ -69,18 +69,18 @@ namespace Retail.Api.Orders.Controllers
                 }
 
                 // Call business service
-                var custObj = await _orderService.GetOrderByIdAsync(id);
+                var orderObj = await _orderService.GetOrderByIdAsync(id);
 
                 // Check if object is null
-                if (custObj == null)
+                if (orderObj == null)
                 {
                    return NotFound();
                 }
 
                 // Return object
-                return Ok(custObj);
+                return Ok(orderObj);
             }
-            catch 
+            catch (Exception ex)
             {
                 // Throw exception
                 return StatusCode(500, MessageConstants.InternalServerError);
@@ -114,7 +114,7 @@ namespace Retail.Api.Orders.Controllers
                 // Return list
                 return Ok(result);
             }
-            catch
+            catch (Exception ex)
             {
                 // Throw exception
                 return StatusCode(500, MessageConstants.InternalServerError);
@@ -149,7 +149,7 @@ namespace Retail.Api.Orders.Controllers
                 // Return list
                 return Ok(result);
             }
-            catch
+            catch (Exception ex)
             {
                 // Throw exception
                 return StatusCode(500, MessageConstants.InternalServerError);
@@ -177,7 +177,7 @@ namespace Retail.Api.Orders.Controllers
                 // Return list
                 return Ok(result);
             }
-            catch
+            catch (Exception ex)
             {
                 // Throw exception
                 return StatusCode(500, MessageConstants.InternalServerError);

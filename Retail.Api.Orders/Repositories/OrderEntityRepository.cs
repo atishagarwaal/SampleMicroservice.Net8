@@ -1,5 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Retail.Api.Orders.Data;
+using Retail.Api.Orders.DefaultRepositories;
 using Retail.Api.Orders.Interface;
 using Retail.Api.Orders.Model;
 using System.Collections.Immutable;
@@ -39,7 +41,7 @@ namespace Retail.Api.Orders.Repositories
                                         .Where(i => i.OrderId == o.Id)
                                         .Select(i => new LineItem
                                         {
-                                            Id= i.OrderId,
+                                            Id= i.Id,
                                             OrderId = i.OrderId,
                                             SkuId = i.SkuId,
                                             Qty = i.Qty,
@@ -49,5 +51,35 @@ namespace Retail.Api.Orders.Repositories
 
             return list;
         }
+
+        /// <summary>
+        /// Gets object by Id asynchronously.
+        /// </summary>
+        /// <param name="id">Id of object.</param>
+        /// <returns>Returns object.</returns>
+        public async Task<Order?> GetOrderByIdAsync(long id)
+        {
+            var obj = await (from o in _context.Orders
+                              where o.Id == id
+                              select new Order
+                              {
+                                  Id = o.Id,
+                                  CustomerId = o.CustomerId,
+                                  OrderDate = o.OrderDate,
+                                  TotalAmount = o.TotalAmount,
+                                  LineItems = _context.LineItems != null ? _context.LineItems
+                                               .Where(i => i.OrderId == o.Id)
+                                               .Select(i => new LineItem
+                                               {
+                                                   Id = i.Id,
+                                                   OrderId = i.OrderId,
+                                                   SkuId = i.SkuId,
+                                                   Qty = i.Qty,
+                                               })
+                                               .ToList() : null,
+                              }).FirstOrDefaultAsync();
+            return obj;
+        }
     }
 }
+

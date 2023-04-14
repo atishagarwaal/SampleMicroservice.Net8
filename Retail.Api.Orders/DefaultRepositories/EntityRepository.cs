@@ -1,9 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Retail.Api.Orders.Data;
-using Retail.Api.Orders.Interface;
+using Retail.Api.Orders.DefaultInterface;
 using System.Linq.Expressions;
 
-namespace Retail.Api.Orders.Repositories
+namespace Retail.Api.Orders.DefaultRepositories
 {
     /// <summary>
     /// Generic repository class.
@@ -46,7 +46,7 @@ namespace Retail.Api.Orders.Repositories
         /// </summary>
         /// <param name="entities">Collection of object of type parameter T.</param>
         public void AddRange(IEnumerable<T> entities)
-            =>  _dbContext.Set<T>().AddRange(entities);
+            => _dbContext.Set<T>().AddRange(entities);
 
         /// <summary>
         /// Add a range of objects asynchronously.
@@ -123,11 +123,11 @@ namespace Retail.Api.Orders.Repositories
             return entry.Entity;
         }
 
-    /// <summary>
-    /// Update a range of objects.
-    /// </summary>
-    /// <param name="entities"></param>
-    public void UpdateRange(IEnumerable<T> entities)
-            => _dbContext.UpdateRange(entities);
+        /// <summary>
+        /// Update a range of objects.
+        /// </summary>
+        /// <param name="entities"></param>
+        public void UpdateRange(IEnumerable<T> entities)
+                => _dbContext.UpdateRange(entities);
     }
 }

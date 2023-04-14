@@ -1,6 +1,8 @@
-﻿using Retail.Api.Orders.Repositories;
+﻿using Retail.Api.Orders.Interface;
+using Retail.Api.Orders.Repositories;
+using System.Data;
 
-namespace Retail.Api.Orders.Interface
+namespace Retail.Api.Orders.DefaultInterface
 {
     /// <summary>
     /// Interface definition for unit of work.
@@ -16,6 +18,12 @@ namespace Retail.Api.Orders.Interface
         /// Gets or sets customer repository.
         /// </summary>
         ILineItemDapperRepository LineItemDapperRepository { get; }
+
+
+        /// <summary>
+        /// Gets or sets connection.
+        /// </summary>
+        IDbConnection Connection { get; }
 
         /// <summary>
         /// Method to begin transaction.

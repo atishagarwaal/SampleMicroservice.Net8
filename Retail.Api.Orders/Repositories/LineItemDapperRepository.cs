@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using Retail.Api.Orders.Data;
+using Retail.Api.Orders.DefaultRepositories;
 using Retail.Api.Orders.Interface;
 using Retail.Api.Orders.Model;
 

@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Retail.Api.Orders.DefaultInterface;
 using Retail.Api.Orders.Dto;
 using Retail.Api.Orders.Interface;
 using Retail.Api.Orders.Model;
@@ -10,17 +11,20 @@ namespace Retail.Api.Orders.Service
     /// </summary>
     public class OrderService : IOrderService
     {
-        private readonly IEntityUnitOfWork _unitOfWork;
+        private readonly IEntityUnitOfWork _entityUnitOfWork;
+        private readonly IDapperUnitOfWork _dapperUnitOfWork;
         private readonly IMapper _mapper;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="OrderService"/> class.
         /// </summary>
-        /// <param name="unitOfWork">Intance of unit of work class.</param>
+        /// <param name="entityUnitOfWork">Intance of unit of work class.</param>
+        /// <param name="dapperUnitOfWork">Intance of unit of work class.</param>
         /// <param name="mapper">Intance of mapper class.</param>
-        public OrderService(IEntityUnitOfWork unitOfWork, IMapper mapper)
+        public OrderService(IEntityUnitOfWork entityUnitOfWork, IDapperUnitOfWork dapperUnitOfWork, IMapper mapper)
         {
-            _unitOfWork = unitOfWork;
+            _entityUnitOfWork = entityUnitOfWork;
+            _dapperUnitOfWork = dapperUnitOfWork;
             _mapper = mapper;
         }
 
@@ -33,7 +37,7 @@ namespace Retail.Api.Orders.Service
             var returnList = new List<OrderDto>();
 
             // Get all orders
-            var list = await _unitOfWork.OrderEntityRepository.GetAllOrdersAsync();
+            var list = await _entityUnitOfWork.OrderEntityRepository.GetAllOrdersAsync();
 
             // Transform data
             foreach(var item in list)
@@ -53,7 +57,7 @@ namespace Retail.Api.Orders.Service
         public async Task<OrderDto> GetOrderByIdAsync(long id)
         {
             // Find record
-            var record = await _unitOfWork.OrderEntityRepository.GetByIdAsync(id);
+            var record = await _entityUnitOfWork.OrderEntityRepository.GetOrderByIdAsync(id);
 
             // Transform data
             var orderDto = _mapper.Map<OrderDto>(record);
@@ -72,9 +76,9 @@ namespace Retail.Api.Orders.Service
             var orderObj = _mapper.Map<Order>(orderDto);
 
             // Add order
-            await _unitOfWork.BeginTransactionAsync();
-            var result = await _unitOfWork.OrderEntityRepository.AddAsync(orderObj);
-            await _unitOfWork.CommitAsync();
+            await _entityUnitOfWork.BeginTransactionAsync();
+            var result = await _entityUnitOfWork.OrderEntityRepository.AddAsync(orderObj);
+            await _entityUnitOfWork.CommitAsync();
 
             // Transform data
             orderDto = _mapper.Map<OrderDto>(result);
@@ -92,14 +96,14 @@ namespace Retail.Api.Orders.Service
         public async Task<OrderDto> UpdateOrderAsync(long id, OrderDto orderDto)
         {
             // Find record
-            var record = await _unitOfWork.OrderEntityRepository.GetByIdAsync(id);
+            var record = await _entityUnitOfWork.OrderEntityRepository.GetByIdAsync(id);
 
             record = _mapper.Map<Order>(orderDto);
 
             // Update record
-            await _unitOfWork.BeginTransactionAsync();
-            var result = _unitOfWork.OrderEntityRepository.Update(record);
-            await _unitOfWork.CommitAsync();
+            await _entityUnitOfWork.BeginTransactionAsync();
+            var result = _entityUnitOfWork.OrderEntityRepository.Update(record);
+            await _entityUnitOfWork.CommitAsync();
 
             // Transform data
             orderDto = _mapper.Map<OrderDto>(result);
@@ -115,14 +119,14 @@ namespace Retail.Api.Orders.Service
         public async Task<bool> DeleteOrderAsync(long id)
         {
             // Find record
-            var record = await _unitOfWork.OrderEntityRepository.GetByIdAsync(id);
+            var record = await _entityUnitOfWork.OrderEntityRepository.GetByIdAsync(id);
 
             if (record != null)
             {
                 // Delete record
-                await _unitOfWork.BeginTransactionAsync();
-                _unitOfWork.OrderEntityRepository.Remove(record);
-                await _unitOfWork.CommitAsync();
+                await _entityUnitOfWork.BeginTransactionAsync();
+                _entityUnitOfWork.OrderEntityRepository.Remove(record);
+                await _entityUnitOfWork.CommitAsync();
 
                 return true;
             }

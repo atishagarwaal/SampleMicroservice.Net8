@@ -2,7 +2,7 @@
 // Copyright (c) PlaceholderCompany. All rights reserved.
 // </copyright>
 
-namespace Retail.Api.Orders.Interface
+namespace Retail.Api.Orders.DefaultInterface
 {
     using Microsoft.EntityFrameworkCore;
     using System.Linq.Expressions;
