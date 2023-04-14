@@ -23,8 +23,8 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 builder.Services.AddTransient<DapperContext>();
 builder.Services.AddTransient(typeof(IRepository<>), typeof(EntityRepository<>));
-builder.Services.AddTransient(typeof(IUnitOfWork), typeof(EntityUnitOfWork));
-////builder.Services.AddTransient(typeof(IUnitOfWork), typeof(DapperUnitOfWork));
+////builder.Services.AddTransient(typeof(IUnitOfWork), typeof(EntityUnitOfWork));
+builder.Services.AddTransient(typeof(IUnitOfWork), typeof(DapperUnitOfWork));
 builder.Services.AddTransient(typeof(IOrderService), typeof(OrderService));
 
 builder.Services.AddAutoMapper(typeof(Program));

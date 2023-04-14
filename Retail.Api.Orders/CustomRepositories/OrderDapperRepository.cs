@@ -3,8 +3,8 @@ using Retail.Api.Orders.DefaultInterface;
 using Retail.Api.Orders.Data;
 using Retail.Api.Orders.Model;
 using Retail.Api.Orders.CustomInterface;
-using Microsoft.EntityFrameworkCore;
 using Retail.Api.Orders.Dto;
+using System.Data;
 
 namespace Retail.Api.Orders.Repositories
 {
@@ -114,7 +114,54 @@ namespace Retail.Api.Orders.Repositories
         /// <returns>Returns collection of object of type parameter T.</returns>
         public async Task<IEnumerable<OrderDto>> GetAllOrdersAsync()
         {
-            throw new NotImplementedException();
+            var final = new List<OrderDto>();
+
+            // Create query
+            var sql = @"SELECT 
+	                        ORD.[Id] AS OrderId, 
+	                        [CustomerId] AS CustomerId,
+	                        [OrderDate] AS OrderDate, 
+	                        [TotalAmount] AS TotalAmount,
+	                        LIN.Id AS LineId,
+	                        LIN.SkuId,
+	                        LIN.Qty
+                        FROM [dbo].[Orders] ORD
+                        JOIN [dbo].[LineItems] LIN ON ORD.Id = LIN.OrderId
+                        ORDER BY ORD.[Id], LIN.Id";
+
+            // Execute query
+            using (var connection = _dapperContext.CreateConnection())
+            {
+                // Get all records
+                var orders = await connection.QueryAsync(sql);
+
+                // Group by order Id
+                var groups = orders
+                        .GroupBy(o => o.OrderId);
+
+                // Iterate each order
+                foreach (var group in groups)
+                {
+
+                    // Initialize orderDto object
+                    final.Add(new OrderDto
+                    {
+                        Id = group.Key,
+                        CustomerId = group.FirstOrDefault().CustomerId,
+                        OrderDate = group.FirstOrDefault().OrderDate,
+                        TotalAmount = group.FirstOrDefault().TotalAmount,
+                        LineItems = orders.Where(i => i.OrderId == group.Key).Select(i => new LineItemDto
+                        {
+                            Id = i.LineId,
+                            OrderId = i.OrderId,
+                            Qty = i.Qty,
+                            SkuId = i.SkuId,
+                        }).ToList(),
+                    });
+                }
+
+                return final;
+            }
         }
 
         /// <summary>
