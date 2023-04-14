@@ -59,8 +59,10 @@ namespace Retail.Api.Customers.DefaultRepositories
         /// Update an object.
         /// </summary>
         /// <param name="entity">An object type parameter T.</param>
-        public void Update(T entity)
-            => _dbContext.Update(entity);
-        
+        public T Update(T entity)
+        {
+            var entry = _dbContext.Update(entity);
+            return entry.Entity;
+        }
     }
 }

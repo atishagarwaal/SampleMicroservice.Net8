@@ -42,6 +42,6 @@ namespace Retail.Api.Customers.DefaultInterface
         /// Update an object.
         /// </summary>
         /// <param name="entity">An object type parameter T.</param>
-        void Update(T entity);
+        T Update(T entity);
     }
 }

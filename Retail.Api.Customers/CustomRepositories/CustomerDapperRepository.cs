@@ -93,7 +93,7 @@ namespace Retail.Api.Customers.Repositories
         /// </summary>
         /// <param name="entity">Object parameter.</param>
         /// <returns>Returns an integer.</returns>
-        public void Update(Customer entity)
+        public Customer Update(Customer entity)
         {
             var sql = "UPDATE [dbo].[Customers] SET [FirstName] = @FirstName, [LastName] = @LastName  WHERE Id = @Id";
             using (var connection = _dapperContext.CreateConnection())
@@ -103,7 +103,7 @@ namespace Retail.Api.Customers.Repositories
 
                 sql = "SELECT [Id], [FirstName], [LastName] FROM [dbo].[Customers] WHERE Id = @Id";
                 var record = connection.QuerySingleOrDefault<Customer>(sql, new { Id = entity?.Id });
-                ////return record;
+                return record;
             }
         }
     }
