@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using Retail.Api.Customers.Data;
+using Retail.Api.Customers.DefaultInterface;
 using Retail.Api.Customers.DefaultRepositories;
 using Retail.Api.Customers.Interface;
 using Retail.Api.Customers.Model;
@@ -9,7 +10,7 @@ namespace Retail.Api.Customers.Repositories
     /// <summary>
     /// Customer repository class.
     /// </summary>
-    public class CustomerDapperRepository : DapperRepository, ICustomerDapperRepository
+    public class CustomerDapperRepository : IRepository<Customer>
     {
         private readonly DapperContext _dapperContext;
 
@@ -17,7 +18,7 @@ namespace Retail.Api.Customers.Repositories
         /// Initializes a new instance of the <see cref="CustomerDapperRepository"/> class.
         /// </summary>
         /// <param name="dapperContext">Db context.</param>
-        public CustomerDapperRepository(DapperContext dapperContext) : base(dapperContext)
+        public CustomerDapperRepository(DapperContext dapperContext)
         {
             _dapperContext = dapperContext;
         }
@@ -61,7 +62,7 @@ namespace Retail.Api.Customers.Repositories
         /// </summary>
         /// <param name="id">Primary key of the object.</param>
         /// <returns>Returns an object.</returns>
-        public async Task<Customer> GetByIdAsync(long id)
+        public async Task<Customer?> GetByIdAsync(long id)
         {
             var sql = "SELECT [Id], [FirstName], [LastName] FROM [dbo].[Customers] WHERE Id = @Id";
             using (var connection = _dapperContext.CreateConnection())
@@ -77,14 +78,13 @@ namespace Retail.Api.Customers.Repositories
         /// </summary>
         /// <param name="entity">Object parameter.</param>
         /// <returns>Returns an integer.</returns>
-        public async Task<int> RemoveAsync(Customer entity)
+        public void Remove(Customer entity)
         {
             var sql = "DELETE FROM [dbo].[Customers] WHERE Id = @Id";
             using (var connection = _dapperContext.CreateConnection())
             {
                 connection.Open();
-                var result = await connection.ExecuteAsync(sql, new { entity?.Id });
-                return result;
+                var result = connection.Execute(sql, new { entity?.Id });
             }
         }
 
@@ -93,14 +93,17 @@ namespace Retail.Api.Customers.Repositories
         /// </summary>
         /// <param name="entity">Object parameter.</param>
         /// <returns>Returns an integer.</returns>
-        public async Task<int> UpdateAsync(Customer entity)
+        public Customer Update(Customer entity)
         {
             var sql = "UPDATE [dbo].[Customers] SET [FirstName] = @FirstName, [LastName] = @LastName  WHERE Id = @Id";
             using (var connection = _dapperContext.CreateConnection())
             {
                 connection.Open();
-                var result = await connection.ExecuteAsync(sql, entity);
-                return result;
+                var result = connection.Execute(sql, entity);
+
+                sql = "SELECT [Id], [FirstName], [LastName] FROM [dbo].[Customers] WHERE Id = @Id";
+                var record = connection.QuerySingleOrDefault<Customer>(sql, new { Id = entity?.Id });
+                return record;
             }
         }
     }

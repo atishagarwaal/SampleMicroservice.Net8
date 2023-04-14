@@ -22,13 +22,9 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddTransient<DapperContext>();
-builder.Services.AddTransient(typeof(IEntityRepository<>), typeof(EntityRepository<>));
-builder.Services.AddTransient(typeof(IDapperRepository), typeof(DapperRepository));
-builder.Services.AddTransient(typeof(IEntityUnitOfWork), typeof(EntityUnitOfWork));
-builder.Services.AddTransient(typeof(IDapperUnitOfWork), typeof(DapperUnitOfWork));
-
-builder.Services.AddTransient(typeof(ICustomerEntityRepository), typeof(CustomerEntityRepository));
-builder.Services.AddTransient(typeof(ICustomerDapperRepository), typeof(CustomerDapperRepository));
+builder.Services.AddTransient(typeof(IRepository<>), typeof(EntityRepository<>));
+builder.Services.AddTransient(typeof(IUnitOfWork), typeof(EntityUnitOfWork));
+builder.Services.AddTransient(typeof(IUnitOfWork), typeof(DapperUnitOfWork));
 builder.Services.AddTransient(typeof(ICustomerService), typeof(CustomerService));
 
 builder.Services.AddAutoMapper(typeof(Program));

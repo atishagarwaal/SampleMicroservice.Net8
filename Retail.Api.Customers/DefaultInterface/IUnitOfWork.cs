@@ -1,17 +1,19 @@
 ﻿using Retail.Api.Customers.Interface;
+using Retail.Api.Customers.Model;
 using Retail.Api.Customers.Repositories;
+using System.Data;
 
 namespace Retail.Api.Customers.DefaultInterface
 {
     /// <summary>
     /// Interface definition for unit of work.
     /// </summary>
-    public interface IEntityUnitOfWork
+    public interface IUnitOfWork
     {
         /// <summary>
         /// Gets or sets customer repository.
         /// </summary>
-        ICustomerEntityRepository CustomerEntityRepository { get; }
+        IRepository<Customer> CustomerRepository { get; }
 
         /// <summary>
         /// Method to begin transaction.
@@ -19,28 +21,13 @@ namespace Retail.Api.Customers.DefaultInterface
         void BeginTransaction();
 
         /// <summary>
-        /// Method to begin transaction asynchronously.
-        /// </summary>
-        Task BeginTransactionAsync();
-
-        /// <summary>
         /// Method to commit changes.
         /// </summary>
         void Commit();
 
         /// <summary>
-        /// Method to commit changes asynchronously.
-        /// </summary>
-        Task CommitAsync();
-
-        /// <summary>
         /// Method to commit changes.
         /// </summary>
         void Rollback();
-
-        /// <summary>
-        /// Method to commit changes asynchronously.
-        /// </summary>
-        Task RollbackAsync();
     }
 }

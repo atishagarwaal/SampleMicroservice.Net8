@@ -8,7 +8,7 @@ namespace Retail.Api.Customers.DefaultRepositories
     /// <summary>
     /// Generic repository class.
     /// </summary>
-    public class EntityRepository<T> : IEntityRepository<T> where T : class
+    public class EntityRepository<T> : IRepository<T> where T : class
     {
         private readonly ApplicationDbContext _dbContext;
 

@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore.Storage;
 using Retail.Api.Customers.Data;
 using Retail.Api.Customers.DefaultInterface;
 using Retail.Api.Customers.Interface;
+using Retail.Api.Customers.Model;
 using Retail.Api.Customers.Repositories;
 
 namespace Retail.Api.Customers.UnitOfWork
@@ -10,11 +11,11 @@ namespace Retail.Api.Customers.UnitOfWork
     /// <summary>
     /// Unit of work class.
     /// </summary>
-    public class EntityUnitOfWork : IEntityUnitOfWork
+    public class EntityUnitOfWork : IUnitOfWork
     {
         private readonly ApplicationDbContext _entityContext;
         private IDbContextTransaction? _entityTransaction;
-        private ICustomerEntityRepository? _customerEntityRepository;
+        private IRepository<Customer>? _customerRepository;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="EntityUnitOfWork"/> class.
@@ -28,16 +29,16 @@ namespace Retail.Api.Customers.UnitOfWork
         /// <summary>
         /// Gets or sets customer repository.
         /// </summary>
-        public ICustomerEntityRepository CustomerEntityRepository
+        public IRepository<Customer> CustomerRepository
         {
             get
             {
-                if (_customerEntityRepository == null)
+                if (_customerRepository == null)
                 {
-                    _customerEntityRepository = new CustomerEntityRepository(_entityContext);
+                    _customerRepository = new CustomerEntityRepository(_entityContext);
                 }
 
-                return _customerEntityRepository;
+                return _customerRepository;
             }
         }
 
@@ -50,33 +51,12 @@ namespace Retail.Api.Customers.UnitOfWork
         }
 
         /// <summary>
-        /// Method to begin asynchronously.
-        /// </summary>
-        public async Task BeginTransactionAsync()
-        {
-            _entityTransaction = await _entityContext.Database.BeginTransactionAsync();
-        }
-
-        /// <summary>
         /// Method to commit changes.
         /// </summary>
         public void Commit()
         {
             _entityContext.SaveChanges();
             _entityTransaction?.Commit();
-        }
-
-        /// <summary>
-        /// Method to commit changes asynchronously.
-        /// </summary>
-        public async Task CommitAsync()
-        {
-            await _entityContext.SaveChangesAsync();
-
-            if (_entityTransaction is not null)
-            {
-                await _entityTransaction.CommitAsync();
-            }
         }
 
         /// <summary>
@@ -87,20 +67,6 @@ namespace Retail.Api.Customers.UnitOfWork
             _entityTransaction?.Rollback();
             _entityTransaction?.Dispose();
             _entityContext.Dispose();
-        }
-
-        /// <summary>
-        /// Method to rollback changes asynchronously.
-        /// </summary>
-        public async Task RollbackAsync()
-        {
-            if (_entityTransaction is not null)
-            {
-                await _entityTransaction.RollbackAsync();
-                await _entityTransaction.DisposeAsync();
-            }
-
-            await _entityContext.DisposeAsync();
         }
     }
 }

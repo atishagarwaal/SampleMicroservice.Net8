@@ -56,11 +56,19 @@ namespace Retail.Api.Orders.Service
         /// <returns>Order object.</returns>
         public async Task<OrderDto> GetOrderByIdAsync(long id)
         {
+            ////// Find record
+            ////var record = await _entityUnitOfWork.OrderEntityRepository.GetOrderByIdAsync(id);
+
+            ////// Transform data
+            ////var orderDto = _mapper.Map<OrderDto>(record);
+
+            ////return orderDto;
+
             // Find record
-            var record = await _entityUnitOfWork.OrderEntityRepository.GetOrderByIdAsync(id);
+            var order = await _dapperUnitOfWork.OrderDapperRepository.GetByIdAsync(id);
 
             // Transform data
-            var orderDto = _mapper.Map<OrderDto>(record);
+            var orderDto = _mapper.Map<OrderDto>(order);
 
             return orderDto;
         }

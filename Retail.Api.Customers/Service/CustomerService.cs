@@ -11,8 +11,8 @@ namespace Retail.Api.Customers.Service
     /// </summary>
     public class CustomerService : ICustomerService
     {
-        private readonly IEntityUnitOfWork _entityUnitOfWork;
-        private readonly IDapperUnitOfWork _dapperUnitOfWork;
+        private readonly IUnitOfWork _entityUnitOfWork;
+        private readonly IUnitOfWork _dapperUnitOfWork;
         private readonly IMapper _mapper;
 
         /// <summary>
@@ -21,7 +21,7 @@ namespace Retail.Api.Customers.Service
         /// <param name="entityUnitOfWork">Intance of unit of work class.</param>
         /// <param name="dapperUnitOfWork">Intance of unit of work class.</param>
         /// <param name="mapper">Intance of mapper class.</param>
-        public CustomerService(IEntityUnitOfWork entityUnitOfWork, IDapperUnitOfWork dapperUnitOfWork, IMapper mapper)
+        public CustomerService(IUnitOfWork entityUnitOfWork, IUnitOfWork dapperUnitOfWork, IMapper mapper)
         {
             _entityUnitOfWork = entityUnitOfWork;
             _dapperUnitOfWork = dapperUnitOfWork;
@@ -37,7 +37,7 @@ namespace Retail.Api.Customers.Service
             var returnList = new List<CustomerDto>();
 
             // Get all customers
-            var list = await _dapperUnitOfWork.CustomerDapperRepository.GetAllAsync();
+            var list = await _dapperUnitOfWork.CustomerRepository.GetAllAsync();
 
             // Transform data
             foreach(var item in list)
@@ -57,7 +57,7 @@ namespace Retail.Api.Customers.Service
         public async Task<CustomerDto> GetCustomerByIdAsync(long id)
         {
             // Find record
-            var record = await _dapperUnitOfWork.CustomerDapperRepository.GetByIdAsync(id);
+            var record = await _dapperUnitOfWork.CustomerRepository.GetByIdAsync(id);
 
             // Transform data
             var custDto = _mapper.Map<CustomerDto>(record);
@@ -76,9 +76,8 @@ namespace Retail.Api.Customers.Service
             var custObj = _mapper.Map<Customer>(custDto);
 
             // Add customer
-            _dapperUnitOfWork.Connection.Open();
             _dapperUnitOfWork.BeginTransaction();
-            var result = await _dapperUnitOfWork.CustomerDapperRepository.AddAsync(custObj);
+            var result = await _dapperUnitOfWork.CustomerRepository.AddAsync(custObj);
             _dapperUnitOfWork.Commit();
 
             // Transform data
@@ -97,16 +96,16 @@ namespace Retail.Api.Customers.Service
         public async Task<CustomerDto> UpdateCustomerAsync(long id, CustomerDto custDto)
         {
             // Find record
-            var record = await _dapperUnitOfWork.CustomerDapperRepository.GetByIdAsync(id);
+            var record = await _dapperUnitOfWork.CustomerRepository.GetByIdAsync(id);
 
             record = _mapper.Map<Customer>(custDto);
 
             // Update record
             _dapperUnitOfWork.BeginTransaction();
-            var result = await _dapperUnitOfWork.CustomerDapperRepository.UpdateAsync(record);
+            var result = _dapperUnitOfWork.CustomerRepository.Update(record);
             _dapperUnitOfWork.Commit();
 
-            record = await _dapperUnitOfWork.CustomerDapperRepository.GetByIdAsync(id);
+            record = await _dapperUnitOfWork.CustomerRepository.GetByIdAsync(id);
 
             // Transform data
             custDto = _mapper.Map<CustomerDto>(record);
@@ -122,13 +121,13 @@ namespace Retail.Api.Customers.Service
         public async Task<bool> DeleteCustomerAsync(long id)
         {
             // Find record
-            var record = await _dapperUnitOfWork.CustomerDapperRepository.GetByIdAsync(id);
+            var record = await _dapperUnitOfWork.CustomerRepository.GetByIdAsync(id);
 
             if (record != null)
             {
                 // Delete record
                 _dapperUnitOfWork.BeginTransaction();
-                await _dapperUnitOfWork.CustomerDapperRepository.RemoveAsync(record);
+                _dapperUnitOfWork.CustomerRepository.Remove(record);
                 _dapperUnitOfWork.Commit();
 
                 return true;
