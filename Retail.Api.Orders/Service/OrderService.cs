@@ -95,18 +95,37 @@ namespace Retail.Api.Orders.Service
         /// <returns>Order object.</returns>
         public async Task<OrderDto> UpdateOrderAsync(long id, OrderDto orderDto)
         {
-            // Find record
-            var record = await _entityUnitOfWork.OrderEntityRepository.GetByIdAsync(id);
+            // Get order values
+            var order = _mapper.Map<Order>(orderDto);
 
-            record = _mapper.Map<Order>(orderDto);
-
-            // Update record
+            // Update order in database
             await _entityUnitOfWork.BeginTransactionAsync();
-            var result = _entityUnitOfWork.OrderEntityRepository.Update(record);
+            _entityUnitOfWork.OrderEntityRepository.Update(order);
+
+            var lineitems = orderDto.LineItems;
+
+            if (lineitems != null)
+            {
+                foreach (var lineitem in lineitems)
+                {
+                    if (lineitem != null)
+                    {
+                        // Get lineitem values
+                        var lineRecord = _mapper.Map<LineItem>(lineitem);
+
+                        // Update line item in database
+                        _entityUnitOfWork.LineItemEntityRepository.Update(lineRecord);
+                    }
+                }
+            }
+
             await _entityUnitOfWork.CommitAsync();
 
+            // Find record
+            var record = await _entityUnitOfWork.OrderEntityRepository.GetOrderByIdAsync(id);
+
             // Transform data
-            orderDto = _mapper.Map<OrderDto>(result);
+            orderDto = _mapper.Map<OrderDto>(record);
 
             return orderDto;
         }

@@ -32,6 +32,6 @@ namespace Retail.Api.Orders.Dto
         /// <summary>
         /// Gets or sets the Line Items.
         /// </summary>
-        public IEnumerable<LineItemDto>? LineItems { get; set; }
+        public List<LineItemDto>? LineItems { get; set; }
     }
 }

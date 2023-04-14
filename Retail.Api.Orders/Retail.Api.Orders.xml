@@ -750,11 +750,6 @@
             Gets or sets the total amount.
             </summary>
         </member>
-        <member name="P:Retail.Api.Orders.Model.Order.LineItems">
-            <summary>
-            Gets or sets the Line Items.
-            </summary>
-        </member>
         <member name="T:Retail.Api.Orders.Repositories.LineItemDapperRepository">
             <summary>
             Customer repository class.

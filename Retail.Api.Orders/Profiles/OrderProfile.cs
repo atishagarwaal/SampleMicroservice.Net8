@@ -17,8 +17,8 @@ namespace Retail.Api.Products.Profiles
         /// </summary>
         public OrderProfile()
         {
-            this.CreateMap<Order, OrderDto>();
-            this.CreateMap<LineItem, LineItemDto>();
+            this.CreateMap<Order, OrderDto>().ReverseMap(); ;
+            this.CreateMap<LineItem, LineItemDto>().ReverseMap(); ;
         }
     }
 }

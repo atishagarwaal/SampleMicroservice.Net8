@@ -33,10 +33,5 @@ namespace Retail.Api.Orders.Model
         /// Gets or sets the total amount.
         /// </summary>
         public double TotalAmount { get; set; }
-
-        /// <summary>
-        /// Gets or sets the Line Items.
-        /// </summary>
-        public IEnumerable<LineItem>? LineItems { get; set; }
     }
 }
