@@ -1,14 +1,13 @@
 ﻿using Retail.Api.Orders.DefaultInterface;
 using Retail.Api.Orders.Dto;
 using Retail.Api.Orders.Model;
-using System.Linq.Expressions;
 
-namespace Retail.Api.Orders.Interface
+namespace Retail.Api.Orders.CustomInterface
 {
     /// <summary>
-    /// Interface definition for customer repository.
+    /// Interface definition for orders repository.
     /// </summary>
-    public interface IOrderEntityRepository : IEntityRepository<Order>
+    public interface IOrderRepository : IRepository<Order>
     {
         /// <summary>
         /// Gets collection of object asynchronously.

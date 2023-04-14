@@ -11,20 +11,17 @@ namespace Retail.Api.Orders.Service
     /// </summary>
     public class OrderService : IOrderService
     {
-        private readonly IEntityUnitOfWork _entityUnitOfWork;
-        private readonly IDapperUnitOfWork _dapperUnitOfWork;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="OrderService"/> class.
         /// </summary>
-        /// <param name="entityUnitOfWork">Intance of unit of work class.</param>
-        /// <param name="dapperUnitOfWork">Intance of unit of work class.</param>
+        /// <param name="unitOfWork">Intance of unit of work class.</param>
         /// <param name="mapper">Intance of mapper class.</param>
-        public OrderService(IEntityUnitOfWork entityUnitOfWork, IDapperUnitOfWork dapperUnitOfWork, IMapper mapper)
+        public OrderService(IUnitOfWork unitOfWork, IMapper mapper)
         {
-            _entityUnitOfWork = entityUnitOfWork;
-            _dapperUnitOfWork = dapperUnitOfWork;
+            _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
 
@@ -37,7 +34,7 @@ namespace Retail.Api.Orders.Service
             var returnList = new List<OrderDto>();
 
             // Get all orders
-            var list = await _entityUnitOfWork.OrderEntityRepository.GetAllOrdersAsync();
+            var list = await _unitOfWork.OrderRepository.GetAllOrdersAsync();
 
             // Transform data
             foreach(var item in list)
@@ -65,7 +62,7 @@ namespace Retail.Api.Orders.Service
             ////return orderDto;
 
             // Find record
-            var order = await _dapperUnitOfWork.OrderDapperRepository.GetByIdAsync(id);
+            var order = await _unitOfWork.OrderRepository.GetOrderByIdAsync(id);
 
             // Transform data
             var orderDto = _mapper.Map<OrderDto>(order);
@@ -80,16 +77,42 @@ namespace Retail.Api.Orders.Service
         /// <returns>Order object.</returns>
         public async Task<OrderDto> AddOrderAsync(OrderDto orderDto)
         {
-            // Transform data
-            var orderObj = _mapper.Map<Order>(orderDto);
+            // Get order values
+            var order = _mapper.Map<Order>(orderDto);
 
-            // Add order
-            await _entityUnitOfWork.BeginTransactionAsync();
-            var result = await _entityUnitOfWork.OrderEntityRepository.AddAsync(orderObj);
-            await _entityUnitOfWork.CommitAsync();
+            // Update order in database
+            _unitOfWork.BeginTransaction();
+            var orderRecord = await _unitOfWork.OrderRepository.AddAsync(order);
+            _unitOfWork.Commit();
+
+            _unitOfWork.BeginTransaction();
+            var lineitems = orderDto?.LineItems;
+
+            if (lineitems != null)
+            {
+                foreach (var lineitem in lineitems)
+                {
+                    if (lineitem != null)
+                    {
+                        // Get lineitem values
+                        var lineRecord = _mapper.Map<LineItem>(lineitem);
+
+                        // Add order Id
+                        lineRecord.OrderId = orderRecord.Id;
+
+                        // Update line item in database
+                        await _unitOfWork.LineItemRepository.AddAsync(lineRecord);
+                    }
+                }
+            }
+
+            _unitOfWork.Commit();
+
+            // Find record
+            var record = await _unitOfWork.OrderRepository.GetOrderByIdAsync(orderRecord.Id);
 
             // Transform data
-            orderDto = _mapper.Map<OrderDto>(result);
+            orderDto = _mapper.Map<OrderDto>(record);
 
             return orderDto;
 
@@ -107,10 +130,10 @@ namespace Retail.Api.Orders.Service
             var order = _mapper.Map<Order>(orderDto);
 
             // Update order in database
-            await _entityUnitOfWork.BeginTransactionAsync();
-            _entityUnitOfWork.OrderEntityRepository.Update(order);
+            _unitOfWork.BeginTransaction();
+            _unitOfWork.OrderRepository.Update(order);
 
-            var lineitems = orderDto.LineItems;
+            var lineitems = orderDto?.LineItems;
 
             if (lineitems != null)
             {
@@ -122,15 +145,15 @@ namespace Retail.Api.Orders.Service
                         var lineRecord = _mapper.Map<LineItem>(lineitem);
 
                         // Update line item in database
-                        _entityUnitOfWork.LineItemEntityRepository.Update(lineRecord);
+                        _unitOfWork.LineItemRepository.Update(lineRecord);
                     }
                 }
             }
 
-            await _entityUnitOfWork.CommitAsync();
+            _unitOfWork.Commit();
 
             // Find record
-            var record = await _entityUnitOfWork.OrderEntityRepository.GetOrderByIdAsync(id);
+            var record = await _unitOfWork.OrderRepository.GetOrderByIdAsync(id);
 
             // Transform data
             orderDto = _mapper.Map<OrderDto>(record);
@@ -146,14 +169,14 @@ namespace Retail.Api.Orders.Service
         public async Task<bool> DeleteOrderAsync(long id)
         {
             // Find record
-            var record = await _entityUnitOfWork.OrderEntityRepository.GetByIdAsync(id);
+            var record = await _unitOfWork.OrderRepository.GetByIdAsync(id);
 
             if (record != null)
             {
                 // Delete record
-                await _entityUnitOfWork.BeginTransactionAsync();
-                _entityUnitOfWork.OrderEntityRepository.Remove(record);
-                await _entityUnitOfWork.CommitAsync();
+                _unitOfWork.BeginTransaction();
+                _unitOfWork.OrderRepository.Remove(record);
+                _unitOfWork.Commit();
 
                 return true;
             }

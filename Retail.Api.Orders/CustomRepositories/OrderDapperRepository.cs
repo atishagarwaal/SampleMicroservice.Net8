@@ -1,15 +1,17 @@
 ﻿using Dapper;
+using Retail.Api.Orders.DefaultInterface;
 using Retail.Api.Orders.Data;
-using Retail.Api.Orders.DefaultRepositories;
-using Retail.Api.Orders.Interface;
 using Retail.Api.Orders.Model;
+using Retail.Api.Orders.CustomInterface;
+using Microsoft.EntityFrameworkCore;
+using Retail.Api.Orders.Dto;
 
 namespace Retail.Api.Orders.Repositories
 {
     /// <summary>
     /// Customer repository class.
     /// </summary>
-    public class OrderDapperRepository : DapperRepository, IOrderDapperRepository
+    public class OrderDapperRepository : IOrderRepository
     {
         private readonly DapperContext _dapperContext;
 
@@ -17,7 +19,7 @@ namespace Retail.Api.Orders.Repositories
         /// Initializes a new instance of the <see cref="OrderDapperRepository"/> class.
         /// </summary>
         /// <param name="dapperContext">Db context.</param>
-        public OrderDapperRepository(DapperContext dapperContext) : base(dapperContext)
+        public OrderDapperRepository(DapperContext dapperContext)
         {
             _dapperContext = dapperContext;
         }
@@ -27,14 +29,17 @@ namespace Retail.Api.Orders.Repositories
         /// </summary>
         /// <param name="entity">Object parameter.</param>
         /// <returns>Returns an integer.</returns>
-        public async Task<int> AddAsync(Order entity)
+        public async Task<Order> AddAsync(Order entity)
         {
             var sql = "INSERT INTO [dbo].[Orders] ([CustomerId],[OrderDate],[TotalAmount]) VALUES (@CustomerId, @OrderDate,@TotalAmount)";
             using (var connection = _dapperContext.CreateConnection())
             {
                 connection.Open();
                 var result = await connection.ExecuteAsync(sql, entity);
-                return result;
+
+                sql = "SELECT [Id], [CustomerId], [OrderDate], [TotalAmount] FROM [dbo].[Orders] WHERE [CustomerId] = @CustomerId and [OrderDate] = @OrderDate and [TotalAmount] = @TotalAmount Order By Id desc";
+                var obj = await connection.QuerySingleOrDefaultAsync<Order>(sql, new { CustomerId = entity?.CustomerId, OrderDate = entity?.OrderDate, TotalAmount = entity?.TotalAmount });
+                return obj;
             }
         }
 
@@ -74,14 +79,13 @@ namespace Retail.Api.Orders.Repositories
         /// </summary>
         /// <param name="entity">Object parameter.</param>
         /// <returns>Returns an integer.</returns>
-        public async Task<int> RemoveAsync(Order entity)
+        public void Remove(Order entity)
         {
             var sql = "DELETE FROM [dbo].[Orders] WHERE Id = @Id";
             using (var connection = _dapperContext.CreateConnection())
             {
                 connection.Open();
-                var result = await connection.ExecuteAsync(sql, new { entity?.Id });
-                return result;
+                var result = connection.Execute(sql, new { entity?.Id });
             }
         }
 
@@ -90,15 +94,37 @@ namespace Retail.Api.Orders.Repositories
         /// </summary>
         /// <param name="entity">Object parameter.</param>
         /// <returns>Returns an integer.</returns>
-        public async Task<int> UpdateAsync(Order entity)
+        public Order Update(Order entity)
         {
             var sql = "UPDATE [dbo].[Orders] SET [CustomerId] = @CustomerId, [OrderDate] = @OrderDate, [TotalAmount] = @TotalAmount  WHERE Id = @Id";
             using (var connection = _dapperContext.CreateConnection())
             {
                 connection.Open();
-                var result = await connection.ExecuteAsync(sql, entity);
-                return result;
+                var result = connection.Execute(sql, entity);
+
+                sql = "SELECT [Id], [CustomerId], [OrderDate], [TotalAmount] FROM [dbo].[Orders] WHERE Id = @Id";
+                var record = connection.QuerySingleOrDefault<Order>(sql, new { Id = entity?.Id });
+                return record;
             }
+        }
+
+        /// <summary>
+        /// Gets collection of object asynchronously.
+        /// </summary>
+        /// <returns>Returns collection of object of type parameter T.</returns>
+        public async Task<IEnumerable<OrderDto>> GetAllOrdersAsync()
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Gets object by Id asynchronously.
+        /// </summary>
+        /// <param name="id">Id of object.</param>
+        /// <returns>Returns object.</returns>
+        public async Task<OrderDto?> GetOrderByIdAsync(long id)
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -1,8 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
+using Retail.Api.Orders.CustomInterface;
 using Retail.Api.Orders.Data;
 using Retail.Api.Orders.DefaultInterface;
-using Retail.Api.Orders.Interface;
+using Retail.Api.Orders.Model;
 using Retail.Api.Orders.Repositories;
 
 namespace Retail.Api.Orders.UnitOfWork
@@ -10,12 +11,12 @@ namespace Retail.Api.Orders.UnitOfWork
     /// <summary>
     /// Unit of work class.
     /// </summary>
-    public class EntityUnitOfWork : IEntityUnitOfWork
+    public class EntityUnitOfWork : IUnitOfWork
     {
         private readonly ApplicationDbContext _entityContext;
         private IDbContextTransaction? _entityTransaction;
-        private IOrderEntityRepository? _orderEntityRepository;
-        private ILineItemEntityRepository? _lineItemEntityRepository;
+        private IOrderRepository? _orderRepository;
+        private IRepository<LineItem>? _lineItemRepository;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="EntityUnitOfWork"/> class.
@@ -29,32 +30,32 @@ namespace Retail.Api.Orders.UnitOfWork
         /// <summary>
         /// Gets or sets customer repository.
         /// </summary>
-        public IOrderEntityRepository OrderEntityRepository
+        public IOrderRepository OrderRepository
         {
             get
             {
-                if (_orderEntityRepository == null)
+                if (_orderRepository == null)
                 {
-                    _orderEntityRepository = new OrderEntityRepository(_entityContext);
+                    _orderRepository = new OrderEntityRepository(_entityContext);
                 }
 
-                return _orderEntityRepository;
+                return _orderRepository;
             }
         }
 
         /// <summary>
         /// Gets or sets customer repository.
         /// </summary>
-        public ILineItemEntityRepository LineItemEntityRepository
+        public IRepository<LineItem> LineItemRepository
         {
             get
             {
-                if (_lineItemEntityRepository == null)
+                if (_lineItemRepository == null)
                 {
-                    _lineItemEntityRepository = new LineItemEntityRepository(_entityContext);
+                    _lineItemRepository = new LineItemEntityRepository(_entityContext);
                 }
 
-                return _lineItemEntityRepository;
+                return _lineItemRepository;
             }
         }
 
@@ -67,33 +68,12 @@ namespace Retail.Api.Orders.UnitOfWork
         }
 
         /// <summary>
-        /// Method to begin asynchronously.
-        /// </summary>
-        public async Task BeginTransactionAsync()
-        {
-            _entityTransaction = await _entityContext.Database.BeginTransactionAsync();
-        }
-
-        /// <summary>
         /// Method to commit changes.
         /// </summary>
         public void Commit()
         {
             _entityContext.SaveChanges();
             _entityTransaction?.Commit();
-        }
-
-        /// <summary>
-        /// Method to commit changes asynchronously.
-        /// </summary>
-        public async Task CommitAsync()
-        {
-            await _entityContext.SaveChangesAsync();
-
-            if (_entityTransaction is not null)
-            {
-                await _entityTransaction.CommitAsync();
-            }
         }
 
         /// <summary>
@@ -104,20 +84,6 @@ namespace Retail.Api.Orders.UnitOfWork
             _entityTransaction?.Rollback();
             _entityTransaction?.Dispose();
             _entityContext.Dispose();
-        }
-
-        /// <summary>
-        /// Method to rollback changes asynchronously.
-        /// </summary>
-        public async Task RollbackAsync()
-        {
-            if (_entityTransaction is not null)
-            {
-                await _entityTransaction.RollbackAsync();
-                await _entityTransaction.DisposeAsync();
-            }
-
-            await _entityContext.DisposeAsync();
         }
     }
 }

@@ -8,7 +8,7 @@ namespace Retail.Api.Orders.Repositories
     /// <summary>
     /// Customer repository class.
     /// </summary>
-    public class LineItemEntityRepository : EntityRepository<LineItem> , ILineItemEntityRepository
+    public class LineItemEntityRepository : EntityRepository<LineItem>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="LineItemEntityRepository"/> class.

@@ -1,8 +1,8 @@
 ﻿using Dapper;
 using Microsoft.EntityFrameworkCore.Storage;
+using Retail.Api.Orders.CustomInterface;
 using Retail.Api.Orders.Data;
 using Retail.Api.Orders.DefaultInterface;
-using Retail.Api.Orders.Interface;
 using Retail.Api.Orders.Model;
 using Retail.Api.Orders.Repositories;
 using System.Data;
@@ -12,13 +12,13 @@ namespace Retail.Api.Orders.UnitOfWork
     /// <summary>
     /// Unit of work class.
     /// </summary>
-    public class DapperUnitOfWork : IDapperUnitOfWork
+    public class DapperUnitOfWork : IUnitOfWork
     {
         private readonly DapperContext _dapperContext;
         private IDbConnection? _connection;
         private IDbTransaction? _transaction;
-        private IOrderDapperRepository? _orderDapperRepository;
-        private ILineItemDapperRepository? _lineItemDapperRepository;
+        private IOrderRepository? _orderRepository;
+        private IRepository<LineItem>? _lineItemRepository;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UnitOfWork"/> class.
@@ -30,41 +30,9 @@ namespace Retail.Api.Orders.UnitOfWork
         }
 
         /// <summary>
-        /// Gets or sets customer repository.
-        /// </summary>
-        public IOrderDapperRepository OrderDapperRepository
-        {
-            get
-            {
-                if (_orderDapperRepository == null)
-                {
-                    _orderDapperRepository = new OrderDapperRepository(_dapperContext);
-                }
-
-                return _orderDapperRepository;
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets customer repository.
-        /// </summary>
-        public ILineItemDapperRepository LineItemDapperRepository
-        {
-            get
-            {
-                if (_lineItemDapperRepository == null)
-                {
-                    _lineItemDapperRepository = new LineItemDapperRepository(_dapperContext);
-                }
-
-                return _lineItemDapperRepository;
-            }
-        }
-
-        /// <summary>
         /// Gets or sets connection.
         /// </summary>
-        public IDbConnection Connection
+        private IDbConnection Connection
         {
             get
             {
@@ -74,6 +42,38 @@ namespace Retail.Api.Orders.UnitOfWork
                 }
 
                 return _connection;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets customer repository.
+        /// </summary>
+        public IOrderRepository OrderRepository
+        {
+            get
+            {
+                if (_orderRepository == null)
+                {
+                    _orderRepository = new OrderDapperRepository(_dapperContext);
+                }
+
+                return _orderRepository;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets customer repository.
+        /// </summary>
+        public IRepository<LineItem> LineItemRepository
+        {
+            get
+            {
+                if (_lineItemRepository == null)
+                {
+                    _lineItemRepository = new LineItemDapperRepository(_dapperContext);
+                }
+
+                return _lineItemRepository;
             }
         }
 

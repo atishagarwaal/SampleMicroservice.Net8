@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Retail.Api.Orders.CustomInterface;
 using Retail.Api.Orders.Data;
 using Retail.Api.Orders.DefaultRepositories;
 using Retail.Api.Orders.Dto;
@@ -12,7 +13,7 @@ namespace Retail.Api.Orders.Repositories
     /// <summary>
     /// Customer repository class.
     /// </summary>
-    public class OrderEntityRepository : EntityRepository<Order> , IOrderEntityRepository
+    public class OrderEntityRepository : EntityRepository<Order>, IOrderRepository
     {
         private readonly ApplicationDbContext _context;
 

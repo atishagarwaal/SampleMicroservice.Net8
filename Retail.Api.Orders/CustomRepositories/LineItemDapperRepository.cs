@@ -1,7 +1,6 @@
 ﻿using Dapper;
 using Retail.Api.Orders.Data;
-using Retail.Api.Orders.DefaultRepositories;
-using Retail.Api.Orders.Interface;
+using Retail.Api.Orders.DefaultInterface;
 using Retail.Api.Orders.Model;
 
 namespace Retail.Api.Orders.Repositories
@@ -9,7 +8,7 @@ namespace Retail.Api.Orders.Repositories
     /// <summary>
     /// Customer repository class.
     /// </summary>
-    public class LineItemDapperRepository : DapperRepository, ILineItemDapperRepository
+    public class LineItemDapperRepository : IRepository<LineItem>
     {
         private readonly DapperContext _dapperContext;
 
@@ -17,7 +16,7 @@ namespace Retail.Api.Orders.Repositories
         /// Initializes a new instance of the <see cref="LineItemDapperRepository"/> class.
         /// </summary>
         /// <param name="dapperContext">Db context.</param>
-        public LineItemDapperRepository(DapperContext dapperContext) : base(dapperContext)
+        public LineItemDapperRepository(DapperContext dapperContext)
         {
             _dapperContext = dapperContext;
         }
@@ -27,14 +26,17 @@ namespace Retail.Api.Orders.Repositories
         /// </summary>
         /// <param name="entity">Object parameter.</param>
         /// <returns>Returns an integer.</returns>
-        public async Task<int> AddAsync(LineItem entity)
+        public async Task<LineItem> AddAsync(LineItem entity)
         {
             var sql = "INSERT INTO [dbo].[LineItems] ([OrderId],[SkuId],[Qty]) VALUES (@OrderId, @SkuId,@Qty)";
             using (var connection = _dapperContext.CreateConnection())
             {
                 connection.Open();
                 var result = await connection.ExecuteAsync(sql, entity);
-                return result;
+
+                sql = "SELECT [Id],[OrderId],[SkuId],[Qty] FROM [dbo].[LineItems] WHERE [OrderId] = @OrderId and [SkuId] = @SkuId and [Qty] = @Qty Order By Id desc";
+                var obj = await connection.QuerySingleOrDefaultAsync<LineItem>(sql, new { OrderId = entity?.OrderId, SkuId = entity?.SkuId, Qty = entity?.Qty });
+                return obj;
             }
         }
 
@@ -58,7 +60,7 @@ namespace Retail.Api.Orders.Repositories
         /// </summary>
         /// <param name="id">Primary key of the object.</param>
         /// <returns>Returns an object.</returns>
-        public async Task<LineItem> GetByIdAsync(long id)
+        public async Task<LineItem?> GetByIdAsync(long id)
         {
             var sql = "SELECT [Id],[OrderId],[SkuId],[Qty] FROM [dbo].[LineItems] WHERE Id = @Id";
             using (var connection = _dapperContext.CreateConnection())
@@ -74,14 +76,13 @@ namespace Retail.Api.Orders.Repositories
         /// </summary>
         /// <param name="entity">Object parameter.</param>
         /// <returns>Returns an integer.</returns>
-        public async Task<int> RemoveAsync(LineItem entity)
+        public void Remove(LineItem entity)
         {
             var sql = "DELETE FROM [dbo].[LineItems] WHERE Id = @Id";
             using (var connection = _dapperContext.CreateConnection())
             {
                 connection.Open();
-                var result = await connection.ExecuteAsync(sql, new { entity?.Id });
-                return result;
+                var result = connection.Execute(sql, new { entity?.Id });
             }
         }
 
@@ -90,14 +91,17 @@ namespace Retail.Api.Orders.Repositories
         /// </summary>
         /// <param name="entity">Object parameter.</param>
         /// <returns>Returns an integer.</returns>
-        public async Task<int> UpdateAsync(LineItem entity)
+        public LineItem Update(LineItem entity)
         {
             var sql = "UPDATE [dbo].[LineItems] SET [OrderId] = @OrderId, [SkuId] = @SkuId, [Qty] = @Qty  WHERE Id = @Id";
             using (var connection = _dapperContext.CreateConnection())
             {
                 connection.Open();
-                var result = await connection.ExecuteAsync(sql, entity);
-                return result;
+                var result = connection.ExecuteAsync(sql, entity);
+
+                sql = "SELECT [Id],[OrderId],[SkuId],[Qty] FROM [dbo].[LineItems] WHERE Id = @Id";
+                var record = connection.QuerySingleOrDefault<LineItem>(sql, new { Id = entity?.Id });
+                return record;
             }
         }
     }
