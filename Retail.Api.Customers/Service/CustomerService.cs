@@ -17,13 +17,11 @@ namespace Retail.Api.Customers.Service
         /// <summary>
         /// Initializes a new instance of the <see cref="CustomerService"/> class.
         /// </summary>
-        /// <param name="entityUnitOfWork">Intance of unit of work class.</param>
-        /// <param name="dapperUnitOfWork">Intance of unit of work class.</param>
+        /// <param name="unitOfWork">Intance of unit of work class.</param>
         /// <param name="mapper">Intance of mapper class.</param>
-        public CustomerService(IUnitOfWork entityUnitOfWork, IUnitOfWork dapperUnitOfWork, IMapper mapper)
+        public CustomerService(IUnitOfWork unitOfWork, IMapper mapper)
         {
-            ////_unitOfWork = entityUnitOfWork;
-            _unitOfWork = dapperUnitOfWork;
+            _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
 

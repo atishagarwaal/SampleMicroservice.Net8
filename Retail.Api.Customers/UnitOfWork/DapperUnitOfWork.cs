@@ -27,10 +27,21 @@ namespace Retail.Api.Customers.UnitOfWork
         public DapperUnitOfWork(DapperContext dapperContext)
         {
             _dapperContext = dapperContext;
+        }
 
-            if (_connection == null)
+        /// <summary>
+        /// Gets or sets connection.
+        /// </summary>
+        private IDbConnection Connection
+        {
+            get
             {
-                _connection = _dapperContext.CreateConnection();
+                if (_connection == null)
+                {
+                    _connection = _dapperContext.CreateConnection();
+                }
+
+                return _connection;
             }
         }
 

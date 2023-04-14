@@ -427,12 +427,11 @@
             Customer service class.
             </summary>
         </member>
-        <member name="M:Retail.Api.Customers.Service.CustomerService.#ctor(Retail.Api.Customers.DefaultInterface.IUnitOfWork,Retail.Api.Customers.DefaultInterface.IUnitOfWork,AutoMapper.IMapper)">
+        <member name="M:Retail.Api.Customers.Service.CustomerService.#ctor(Retail.Api.Customers.DefaultInterface.IUnitOfWork,AutoMapper.IMapper)">
             <summary>
             Initializes a new instance of the <see cref="T:Retail.Api.Customers.Service.CustomerService"/> class.
             </summary>
-            <param name="entityUnitOfWork">Intance of unit of work class.</param>
-            <param name="dapperUnitOfWork">Intance of unit of work class.</param>
+            <param name="unitOfWork">Intance of unit of work class.</param>
             <param name="mapper">Intance of mapper class.</param>
         </member>
         <member name="M:Retail.Api.Customers.Service.CustomerService.GetAllCustomersAsync">
@@ -480,6 +479,11 @@
             Initializes a new instance of the <see cref="N:Retail.Api.Customers.UnitOfWork"/> class.
             </summary>
             <param name="dapperContext">Dapper Db context.</param>
+        </member>
+        <member name="P:Retail.Api.Customers.UnitOfWork.DapperUnitOfWork.Connection">
+            <summary>
+            Gets or sets connection.
+            </summary>
         </member>
         <member name="P:Retail.Api.Customers.UnitOfWork.DapperUnitOfWork.CustomerRepository">
             <summary>
