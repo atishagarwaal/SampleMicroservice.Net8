@@ -172,7 +172,7 @@ namespace Retail.Api.Orders.Controllers
                 }
 
                 // Call business service
-                var result = await _orderService.DeleteOrderAsync(id);
+                var result = await _orderService.RemoveOrderAsync(id);
 
                 // Return list
                 return Ok(result);

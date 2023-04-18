@@ -41,6 +41,6 @@ namespace Retail.Api.Orders.Interface
         /// </summary>
         /// <param name="id">Order Id.</param>
         /// <returns>Order object.</returns>
-        Task<bool> DeleteOrderAsync(long id);
+        Task<bool> RemoveOrderAsync(long id);
     }
 }

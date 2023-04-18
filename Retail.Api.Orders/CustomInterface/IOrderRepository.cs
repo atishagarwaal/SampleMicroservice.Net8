@@ -9,6 +9,28 @@ namespace Retail.Api.Orders.CustomInterface
     /// </summary>
     public interface IOrderRepository : IRepository<Order>
     {
+        /////// <summary>
+        /////// Add object asynchronously.
+        /////// </summary>
+        /////// <param name="entity">Order object.</param>
+        /////// <returns>Returns object of type parameter T.</returns>
+        ////Task<OrderDto> AddOrderAsync(OrderDto entity);
+
+        /////// <summary>
+        /////// Update object asynchronously.
+        /////// </summary>
+        /////// <param name="id">Id of object.</param>
+        /////// <param name="entity">Order object.</param>
+        /////// <returns>Returns object of type parameter T.</returns>
+        ////Task<OrderDto> UpdateOrderAsync(long id, OrderDto entity);
+
+        /////// <summary>
+        /////// Update object asynchronously.
+        /////// </summary>
+        /////// <param name="id">Id of object.</param>
+        /////// <returns>Returns object of type parameter T.</returns>
+        ////Task RemoveOrderAsync(long id);
+
         /// <summary>
         /// Gets collection of object asynchronously.
         /// </summary>

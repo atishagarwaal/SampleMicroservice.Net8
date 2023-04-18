@@ -2,6 +2,7 @@
 using Retail.Api.Orders.Data;
 using Retail.Api.Orders.DefaultInterface;
 using Retail.Api.Orders.Model;
+using System.Data;
 
 namespace Retail.Api.Orders.Repositories
 {
@@ -34,8 +35,26 @@ namespace Retail.Api.Orders.Repositories
                 connection.Open();
                 var result = await connection.ExecuteAsync(sql, entity);
 
-                sql = "SELECT [Id],[OrderId],[SkuId],[Qty] FROM [dbo].[LineItems] WHERE [OrderId] = @OrderId and [SkuId] = @SkuId and [Qty] = @Qty Order By Id desc";
-                var obj = await connection.QuerySingleOrDefaultAsync<LineItem>(sql, new { OrderId = entity?.OrderId, SkuId = entity?.SkuId, Qty = entity?.Qty });
+                sql = @"SELECT 
+                          Top 1 [Id], 
+                          [OrderId], 
+                          [SkuId], 
+                          [Qty] 
+                        FROM 
+                          [dbo].[LineItems] 
+                        WHERE 
+                          [OrderId] = @OrderId 
+                          and [SkuId] = @SkuId 
+                          and [Qty] = @Qty 
+                        Order By 
+                          Id desc";
+
+                var parameters = new DynamicParameters();
+                parameters.Add("OrderId", entity?.OrderId, DbType.Int64);
+                parameters.Add("SkuId", entity?.SkuId, DbType.Int64);
+                parameters.Add("Qty", entity?.Qty, DbType.Int32);
+
+                var obj = await connection.QuerySingleOrDefaultAsync<LineItem>(sql, parameters);
                 return obj;
             }
         }
@@ -97,7 +116,7 @@ namespace Retail.Api.Orders.Repositories
             using (var connection = _dapperContext.CreateConnection())
             {
                 connection.Open();
-                var result = connection.ExecuteAsync(sql, entity);
+                var result = connection.Execute(sql, entity);
 
                 sql = "SELECT [Id],[OrderId],[SkuId],[Qty] FROM [dbo].[LineItems] WHERE Id = @Id";
                 var record = connection.QuerySingleOrDefault<LineItem>(sql, new { Id = entity?.Id });

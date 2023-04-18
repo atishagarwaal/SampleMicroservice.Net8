@@ -5,6 +5,7 @@ using Retail.Api.Orders.Model;
 using Retail.Api.Orders.CustomInterface;
 using Retail.Api.Orders.Dto;
 using System.Data;
+using static Dapper.SqlMapper;
 
 namespace Retail.Api.Orders.Repositories
 {
@@ -37,8 +38,28 @@ namespace Retail.Api.Orders.Repositories
                 connection.Open();
                 var result = await connection.ExecuteAsync(sql, entity);
 
-                sql = "SELECT [Id], [CustomerId], [OrderDate], [TotalAmount] FROM [dbo].[Orders] WHERE [CustomerId] = @CustomerId and [OrderDate] = @OrderDate and [TotalAmount] = @TotalAmount Order By Id desc";
-                var obj = await connection.QuerySingleOrDefaultAsync<Order>(sql, new { CustomerId = entity?.CustomerId, OrderDate = entity?.OrderDate, TotalAmount = entity?.TotalAmount });
+                sql = @"SELECT TOP 1
+                          [Id], 
+                          [CustomerId], 
+                          [OrderDate], 
+                          [TotalAmount] 
+                        FROM 
+                          [dbo].[Orders] 
+                        WHERE 
+                          [CustomerId] = @CustomerId 
+                          and year([OrderDate]) = year(@OrderDate) 
+                          and month([OrderDate]) = month(@OrderDate) 
+                          and day([OrderDate]) = day(@OrderDate) 
+                          and [TotalAmount] = @TotalAmount
+                        Order By 
+                            Id desc";
+
+                var parameters = new DynamicParameters();
+                parameters.Add("CustomerId", entity?.CustomerId, DbType.Int64);
+                parameters.Add("OrderDate", entity?.OrderDate, DbType.DateTime2);
+                parameters.Add("TotalAmount", entity?.TotalAmount, DbType.Double);
+
+                var obj = await connection.QuerySingleOrDefaultAsync<Order>(sql, parameters);
                 return obj;
             }
         }
@@ -63,7 +84,7 @@ namespace Retail.Api.Orders.Repositories
         /// </summary>
         /// <param name="id">Primary key of the object.</param>
         /// <returns>Returns an object.</returns>
-        public async Task<Order> GetByIdAsync(long id)
+        public async Task<Order?> GetByIdAsync(long id)
         {
             var sql = "SELECT [Id], [CustomerId], [OrderDate], [TotalAmount] FROM [dbo].[Orders] WHERE Id = @Id";
             using (var connection = _dapperContext.CreateConnection())
@@ -193,21 +214,24 @@ namespace Retail.Api.Orders.Repositories
                 // Get all records
                 var items = await connection.QueryAsync(sql, new { OrderId = id });
 
-                // Initialize orderDto object
-                final = new OrderDto
+                if (items.Count() > 0)
                 {
-                    Id = items.FirstOrDefault().OrderId,
-                    CustomerId = items.FirstOrDefault().CustomerId,
-                    OrderDate = items.FirstOrDefault().OrderDate,
-                    TotalAmount = items.FirstOrDefault().TotalAmount,
-                    LineItems = items.Select(i => new LineItemDto
+                    // Initialize orderDto object
+                    final = new OrderDto
                     {
-                        Id = i.LineId,
-                        OrderId = i.OrderId,
-                        Qty = i.Qty,
-                        SkuId = i.SkuId,
-                    }).ToList(),
-                };
+                        Id = items.FirstOrDefault().OrderId,
+                        CustomerId = items.FirstOrDefault().CustomerId,
+                        OrderDate = items.FirstOrDefault().OrderDate,
+                        TotalAmount = items.FirstOrDefault().TotalAmount,
+                        LineItems = items.Select(i => new LineItemDto
+                        {
+                            Id = i.LineId,
+                            OrderId = i.OrderId,
+                            Qty = i.Qty,
+                            SkuId = i.SkuId,
+                        }).ToList(),
+                    };
+                }
 
                 return final;
             }

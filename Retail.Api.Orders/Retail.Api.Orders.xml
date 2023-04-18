@@ -112,7 +112,7 @@
             <param name="orderDto">Order record.</param>
             <returns>Order object.</returns>
         </member>
-        <member name="M:Retail.Api.Orders.Interface.IOrderService.DeleteOrderAsync(System.Int64)">
+        <member name="M:Retail.Api.Orders.Interface.IOrderService.RemoveOrderAsync(System.Int64)">
             <summary>
             Method to delete order record asynchronously.
             </summary>
@@ -577,7 +577,7 @@
             <param name="orderDto">Order record.</param>
             <returns>Order object.</returns>
         </member>
-        <member name="M:Retail.Api.Orders.Service.OrderService.DeleteOrderAsync(System.Int64)">
+        <member name="M:Retail.Api.Orders.Service.OrderService.RemoveOrderAsync(System.Int64)">
             <summary>
             Method to delete order record asynchronously.
             </summary>

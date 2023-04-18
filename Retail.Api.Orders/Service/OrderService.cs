@@ -53,14 +53,6 @@ namespace Retail.Api.Orders.Service
         /// <returns>Order object.</returns>
         public async Task<OrderDto> GetOrderByIdAsync(long id)
         {
-            ////// Find record
-            ////var record = await _entityUnitOfWork.OrderEntityRepository.GetOrderByIdAsync(id);
-
-            ////// Transform data
-            ////var orderDto = _mapper.Map<OrderDto>(record);
-
-            ////return orderDto;
-
             // Find record
             var order = await _unitOfWork.OrderRepository.GetOrderByIdAsync(id);
 
@@ -115,7 +107,6 @@ namespace Retail.Api.Orders.Service
             orderDto = _mapper.Map<OrderDto>(record);
 
             return orderDto;
-
         }
 
         /// <summary>
@@ -166,22 +157,43 @@ namespace Retail.Api.Orders.Service
         /// </summary>
         /// <param name="id">Order Id.</param>
         /// <returns>Order object.</returns>
-        public async Task<bool> DeleteOrderAsync(long id)
+        public async Task<bool> RemoveOrderAsync(long id)
         {
             // Find record
-            var record = await _unitOfWork.OrderRepository.GetByIdAsync(id);
+            var orderDto = await _unitOfWork.OrderRepository.GetOrderByIdAsync(id);
 
-            if (record != null)
+            if (orderDto?.Id == 0)
             {
-                // Delete record
-                _unitOfWork.BeginTransaction();
-                _unitOfWork.OrderRepository.Remove(record);
-                _unitOfWork.Commit();
-
                 return true;
             }
 
-            return false;
+            // Get order values
+            var order = _mapper.Map<Order>(orderDto);
+
+            // Update order in database
+            _unitOfWork.BeginTransaction();
+            _unitOfWork.OrderRepository.Remove(order);
+
+            var lineitems = orderDto?.LineItems;
+
+            if (lineitems != null)
+            {
+                foreach (var lineitem in lineitems)
+                {
+                    if (lineitem != null)
+                    {
+                        // Get lineitem values
+                        var lineRecord = _mapper.Map<LineItem>(lineitem);
+
+                        // Update line item in database
+                        _unitOfWork.LineItemRepository.Remove(lineRecord);
+                    }
+                }
+            }
+
+            _unitOfWork.Commit();
+
+            return true;
         }
     }
 }
