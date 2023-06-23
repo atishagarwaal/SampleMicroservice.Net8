@@ -22,7 +22,7 @@ namespace Retail.Api.Products.Data
         }
 
         /// <summary>
-        /// Gets or sets customers.
+        /// Gets or sets products.
         /// </summary>
         public DbSet<Sku>? Skus { get; set; }
 

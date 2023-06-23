@@ -17,7 +17,7 @@ namespace Retail.Api.Products.Profiles
         /// </summary>
         public ProductProfile()
         {
-            this.CreateMap<Sku, SkuDto>();
+            this.CreateMap<Sku, SkuDto>().ReverseMap();
         }
     }
 }
