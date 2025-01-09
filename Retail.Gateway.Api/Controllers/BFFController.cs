@@ -2,6 +2,7 @@
 using Newtonsoft.Json.Linq;
 using Retail.BFFWeb.Api.Common;
 using Retail.BFFWeb.Api.Interface;
+using System.Xml;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -15,14 +16,20 @@ namespace Retail.BFFWeb.Api.Controller
     public class BFFController : ControllerBase
     {
         private readonly ICustomerProvider _customerProvider;
+        private readonly IOrderProvider _orderProvider;
+        private readonly IProductProvider _productProvider;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ProductController"/> class.
+        /// Initializes a new instance of the <see cref="BFFController"/> class.
         /// </summary>
-        /// <param name="productService">Intance of product service class.</param>
-        public BFFController(ICustomerProvider customerProvider)
+        /// <param name="customerProvider">Instance of customer service class.</param>
+        /// <param name="orderProvider">Instance of order service class.</param>
+        /// <param name="productProvider">Instance of product service class.</param>
+        public BFFController(ICustomerProvider customerProvider, IOrderProvider orderProvider, IProductProvider productProvider)
         {
             _customerProvider = customerProvider;
+            _orderProvider = orderProvider;
+            _productProvider = productProvider;
         }
 
         /// <summary>
@@ -35,16 +42,27 @@ namespace Retail.BFFWeb.Api.Controller
             try
             {
                 // Call customer API
-                var list = await _customerProvider.GetAllCustomersAsync();
+                var customers = await _customerProvider.GetAllCustomersAsync();
 
-                // Check if list is null
-                if (list == null)
+                // Call orders API
+                var orders = await _orderProvider.GetAllOrdersAsync();
+
+                // Call products API
+                var products = await _productProvider.GetAllProductsAsync();
+
+                // Aggregrate data
+                var aggregatedData = from o in orders
+                                     from c in customers.Where(c => c.Id == o.CustomerId).DefaultIfEmpty()
+                                     select new
                 {
-                    return NotFound();
-                }
+                    CustomerId = c.Id,
+                    CustomerName = string.Concat(c.FirstName, " ", c.LastName),
+                    OrderId = o.Id,
+                    OrderDate = o.OrderDate,
+                };
 
                 // Return list
-                return Ok(list);
+                return Ok(aggregatedData);
             }
             catch(Exception ex)
             {

@@ -12,8 +12,13 @@ namespace Retail.BFFWeb.Api.Provider
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly CustomerServiceConfig _serviceConfig;
 
-        public CustomerProvider(IHttpClientFactory httpClientFactory, IOptions<CustomerServiceConfig> serviceConfig) 
+        public CustomerProvider(IHttpClientFactory httpClientFactory, IOptions<CustomerServiceConfig> serviceConfig)
         {
+            if (serviceConfig == null)
+            {
+                throw new ArgumentNullException(nameof(serviceConfig));
+            }
+
             _httpClientFactory = httpClientFactory;
             _serviceConfig = serviceConfig.Value;
         }

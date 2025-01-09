@@ -18,6 +18,11 @@ namespace Retail.BFFWeb.Api.Interface
 
         public ProductProvider(IHttpClientFactory httpClientFactory, IOptions<ProductServiceConfig> serviceConfig)
         {
+            if (serviceConfig == null)
+            {
+                throw new ArgumentNullException(nameof(serviceConfig));
+            }
+
             _httpClientFactory = httpClientFactory;
             _serviceConfig = serviceConfig.Value;
         }

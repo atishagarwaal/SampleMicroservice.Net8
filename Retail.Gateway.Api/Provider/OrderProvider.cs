@@ -17,6 +17,11 @@ namespace Retail.BFFWeb.Api.Interface
 
         public OrderProvider(IHttpClientFactory httpClientFactory, IOptions<OrderServiceConfig> serviceConfig)
         {
+            if (serviceConfig == null)
+            {
+                throw new ArgumentNullException(nameof(serviceConfig));
+            }
+
             _httpClientFactory = httpClientFactory;
             _serviceConfig = serviceConfig.Value;
         }
