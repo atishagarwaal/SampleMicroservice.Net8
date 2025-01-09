@@ -1,5 +1,7 @@
+using Retail.BFFWeb.Api.Configurations;
 using Retail.BFFWeb.Api.Interface;
 using Retail.BFFWeb.Api.Provider;
+using System.Runtime;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,6 +11,10 @@ builder.Services.AddHttpClient();
 builder.Services.AddSingleton(typeof(ICustomerProvider), typeof(CustomerProvider));
 builder.Services.AddSingleton(typeof(IOrderProvider), typeof(OrderProvider));
 builder.Services.AddSingleton(typeof(IProductProvider), typeof(ProductProvider));
+
+builder.Services.Configure<CustomerServiceConfig>(builder.Configuration.GetSection("CustomerServiceConfig"));
+builder.Services.Configure<OrderServiceConfig>(builder.Configuration.GetSection("OrderServiceConfig"));
+builder.Services.Configure<ProductServiceConfig>(builder.Configuration.GetSection("ProductServiceConfig"));
 
 builder.Services.AddControllers();
 
