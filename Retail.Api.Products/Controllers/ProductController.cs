@@ -12,8 +12,9 @@ namespace Retail.Api.Products.Common
     /// <summary>
     /// Product controller class.
     /// </summary>
-    [Route("api/[controller]")]
     [ApiController]
+    [Route("api/v{version:apiVersion}/[controller]")]
+    [ApiVersion("1.0")]
     public class ProductController : ControllerBase
     {
         private readonly IProductService _productService;

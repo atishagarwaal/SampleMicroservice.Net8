@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Mvc;
 using Retail.BFFWeb.Api.Configurations;
 using Retail.BFFWeb.Api.Interface;
 using Retail.BFFWeb.Api.Provider;
@@ -18,9 +19,17 @@ builder.Services.Configure<ProductServiceConfig>(builder.Configuration.GetSectio
 
 builder.Services.AddControllers();
 
+// Add API versioning
+builder.Services.AddApiVersioning(options =>
+{
+    options.AssumeDefaultVersionWhenUnspecified = true;
+    options.DefaultApiVersion = new ApiVersion(1, 0);
+    options.ReportApiVersions = true;
+});
+
 builder.Services.AddSwaggerGen(c =>
 {
-    c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "Product", Version = "v1" });
+    c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "Aggregated Data", Version = "v1" });
 });
 
 var app = builder.Build();

@@ -11,8 +11,9 @@ namespace Retail.BFFWeb.Api.Controller
     /// <summary>
     /// BFF controller class.
     /// </summary>
-    [Route("api/[controller]")]
     [ApiController]
+    [Route("api/v{version:apiVersion}/[controller]")]
+    [ApiVersion("1.0")]
     public class BFFController : ControllerBase
     {
         private readonly ICustomerProvider _customerProvider;
@@ -33,9 +34,9 @@ namespace Retail.BFFWeb.Api.Controller
         }
 
         /// <summary>
-        /// Method to return list of all products.
+        /// Method to return list of all order details.
         /// </summary>
-        /// <returns>List of products.</returns>
+        /// <returns>List of order details.</returns>
         [HttpGet]
         public async Task<IActionResult> GetAllOrdersDetails()
         {

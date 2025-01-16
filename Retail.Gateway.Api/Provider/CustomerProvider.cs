@@ -31,15 +31,18 @@ namespace Retail.BFFWeb.Api.Provider
         {
             using var client = _httpClientFactory.CreateClient();
 
-            var serviceTask = client.GetStringAsync(_serviceConfig.BaseUrl + _serviceConfig.Endpoints.GetAllCustomersV1);
-            await serviceTask;
-
-            // Parse JSON responses
-            var serviceData = JsonSerializer.Deserialize<IEnumerable<CustomerDto>>(serviceTask.Result);
-
-            return serviceData;
+            var url = string.Concat(_serviceConfig.BaseUrl, _serviceConfig.Endpoints.GetAllCustomersV1);
+            var response = await client.GetAsync(url);
+            if (response.IsSuccessStatusCode)
+            {
+                var data = await response.Content.ReadFromJsonAsync<IEnumerable<CustomerDto>>();
+                return data ?? Enumerable.Empty<CustomerDto>();
+            }
+            else
+            {
+                return Enumerable.Empty<CustomerDto>();
+            }
         }
-
 
         /// <summary>
         /// Method to fetch customer record based on Id.

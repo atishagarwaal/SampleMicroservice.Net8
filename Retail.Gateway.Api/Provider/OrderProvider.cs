@@ -34,13 +34,16 @@ namespace Retail.BFFWeb.Api.Interface
         {
             using var client = _httpClientFactory.CreateClient();
 
-            var serviceTask = client.GetStringAsync(_serviceConfig.BaseUrl + _serviceConfig.Endpoints.GetAllOrdersV1);
-            await serviceTask;
-
-            // Parse JSON responses
-            var serviceData = JsonSerializer.Deserialize<IEnumerable<OrderDto>>(serviceTask.Result);
-
-            return serviceData;
+            var response = await client.GetAsync(_serviceConfig.BaseUrl + _serviceConfig.Endpoints.GetAllOrdersV1);
+            if (response.IsSuccessStatusCode)
+            {
+                var data = await response.Content.ReadFromJsonAsync<IEnumerable<OrderDto>>();
+                return data ?? Enumerable.Empty<OrderDto>();
+            }
+            else
+            {
+                return Enumerable.Empty<OrderDto>();
+            }
         }
 
         /// <summary>

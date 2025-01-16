@@ -10,8 +10,9 @@ namespace Retail.Api.Orders.Controllers
     /// <summary>
     /// Customer controller class.
     /// </summary>
-    [Route("api/[controller]")]
     [ApiController]
+    [Route("api/v{version:apiVersion}/[controller]")]
+    [ApiVersion("1.0")]
     public class OrderController : ControllerBase
     {
         private readonly IOrderService _orderService;

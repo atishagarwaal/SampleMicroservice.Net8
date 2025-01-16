@@ -11,8 +11,10 @@ namespace Retail.Api.Customers.Controllers
     /// <summary>
     /// Customer controller class.
     /// </summary>
-    [Route("api/[controller]")]
+    [ApiVersion("1.0")]
     [ApiController]
+    [Route("api/v{version:apiVersion}/[controller]")]
+
     public class CustomerController : ControllerBase
     {
         private readonly ICustomerService _customerService;

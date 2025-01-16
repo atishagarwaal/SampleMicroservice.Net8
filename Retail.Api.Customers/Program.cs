@@ -4,7 +4,9 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Retail.Api.Customers.Data;
 using Retail.Api.Customers.DefaultInterface;
 using Retail.Api.Customers.DefaultRepositories;
@@ -25,11 +27,19 @@ builder.Services.AddTransient<DapperContext>();
 
 // Configure services
 builder.Services.AddTransient(typeof(IRepository<>), typeof(EntityRepository<>));
-////builder.Services.AddTransient(typeof(IUnitOfWork), typeof(EntityUnitOfWork));
-builder.Services.AddTransient(typeof(IUnitOfWork), typeof(DapperUnitOfWork));
+builder.Services.AddTransient(typeof(IUnitOfWork), typeof(EntityUnitOfWork));
+///builder.Services.AddTransient(typeof(IUnitOfWork), typeof(DapperUnitOfWork));
 builder.Services.AddTransient(typeof(ICustomerService), typeof(CustomerService));
 
 builder.Services.AddAutoMapper(typeof(Program));
+
+// Add API versioning
+builder.Services.AddApiVersioning(options =>
+{
+    options.AssumeDefaultVersionWhenUnspecified = true;
+    options.DefaultApiVersion = new ApiVersion(1, 0);
+    options.ReportApiVersions = true;
+});
 
 builder.Services.AddControllers();
 

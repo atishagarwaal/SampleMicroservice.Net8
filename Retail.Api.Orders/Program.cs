@@ -4,6 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Retail.Api.Orders.Data;
 using Retail.Api.Orders.DefaultInterface;
@@ -30,6 +31,14 @@ builder.Services.AddTransient(typeof(IOrderService), typeof(OrderService));
 builder.Services.AddAutoMapper(typeof(Program));
 
 builder.Services.AddControllers();
+
+// Add API versioning
+builder.Services.AddApiVersioning(options =>
+{
+    options.AssumeDefaultVersionWhenUnspecified = true;
+    options.DefaultApiVersion = new ApiVersion(1, 0);
+    options.ReportApiVersions = true;
+});
 
 builder.Services.AddSwaggerGen(c =>
 {
