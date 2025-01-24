@@ -1,0 +1,34 @@
+{
+  "RabbitMQ": {
+    "HostName": "127.0.0.1",
+    "Port": 5672,
+    "Username": "guest",
+    "Password": "guest",
+    "Exchanges": [
+      {
+        "Name": "DemoExchange",
+        "Type": "topic",
+        "Durable": true,
+        "AutoDelete": false,
+        "Internal": false,
+        "Arguments": []
+      }
+    ],
+    "Queues": [
+      {
+        "Name": "OrderQueue",
+        "Durable": true,
+        "AutoDelete": false,
+        "Arguments": []
+      }
+    ],
+    "Bindings": [
+      {
+        "QueueName": "OrderQueue",
+        "ExchangeName": "DemoExchange",
+        "RoutingKey": "OrderCreated",
+        "Arguments": []
+      }
+    ]
+  }
+}

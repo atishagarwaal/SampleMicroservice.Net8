@@ -14,7 +14,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.editorconfig = .editorconfig
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Retail.BFFWeb.Api", "Retail.Gateway.Api\Retail.BFFWeb.Api.csproj", "{56E6F1D5-5D1E-4723-B92E-AB3411B74E53}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Retail.BFFWeb.Api", "Retail.Gateway.Api\Retail.BFFWeb.Api.csproj", "{56E6F1D5-5D1E-4723-B92E-AB3411B74E53}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Database", "Database", "{4DE56F9D-DC83-4004-8542-DAAD86D25BA7}"
 	ProjectSection(SolutionItems) = preProject
@@ -22,6 +22,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Database", "Database", "{4D
 		Database\Order_16_Jan_2025.bak = Database\Order_16_Jan_2025.bak
 		Database\Product_16_Jan_2025.bak = Database\Product_16_Jan_2025.bak
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TopologyManager", "MessagingTopologyProvisioner\TopologyManager.csproj", "{6A428DBC-47A5-4277-8F22-2E065594DF3A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,6 +47,10 @@ Global
 		{56E6F1D5-5D1E-4723-B92E-AB3411B74E53}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{56E6F1D5-5D1E-4723-B92E-AB3411B74E53}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{56E6F1D5-5D1E-4723-B92E-AB3411B74E53}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6A428DBC-47A5-4277-8F22-2E065594DF3A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6A428DBC-47A5-4277-8F22-2E065594DF3A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6A428DBC-47A5-4277-8F22-2E065594DF3A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6A428DBC-47A5-4277-8F22-2E065594DF3A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
