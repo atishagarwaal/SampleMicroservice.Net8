@@ -32,7 +32,7 @@ namespace TopologyManager.Service
             using (var connection = await factory.CreateConnectionAsync())
             using (var channel = await connection.CreateChannelAsync())
             {
-                // Create exchanges
+                // Create exchanges idempotently
                 foreach (var exchange in _config.Exchanges)
                 {
                     await channel.ExchangeDeclareAsync(
@@ -42,10 +42,10 @@ namespace TopologyManager.Service
                         exchange.AutoDelete,
                         exchange.Arguments);
 
-                    Console.WriteLine($"Exchange created: {exchange.Name}");
+                    Console.WriteLine($"Exchange created or already exists: {exchange.Name}");
                 }
 
-                // Create queues
+                // Create queues idempotently
                 foreach (var queue in _config.Queues)
                 {
                     await channel.QueueDeclareAsync(
@@ -55,7 +55,7 @@ namespace TopologyManager.Service
                         queue.AutoDelete,
                         queue.Arguments);
 
-                    Console.WriteLine($"Queue created: {queue.Name}");
+                    Console.WriteLine($"Queue created or already exists: {queue.Name}");
                 }
 
                 // Bind queues to exchanges
