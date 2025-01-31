@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TopologyManager.Configuration;
 
-namespace TopologyManager.Configuration
+namespace CommonLibrary.Configuration
 {
-    public class RabbitMQConfig
+    public class TopologyConfiguration
     {
         public string HostName { get; set; }
         public int Port { get; set; }
@@ -14,6 +15,5 @@ namespace TopologyManager.Configuration
         public string Password { get; set; }
         public List<ExchangeConfig> Exchanges { get; set; }
         public List<QueueConfig> Queues { get; set; }
-        public List<BindingConfig> Bindings { get; set; }
     }
 }

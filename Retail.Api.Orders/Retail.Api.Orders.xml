@@ -24,7 +24,7 @@
             Customer controller class.
             </summary>
         </member>
-        <member name="M:Retail.Api.Orders.Controllers.OrderController.#ctor(Retail.Api.Orders.Interface.IOrderService)">
+        <member name="M:Retail.Api.Orders.Controllers.OrderController.#ctor(Retail.Api.Orders.Interface.IOrderService,MessagingLibrary.Service.MessagePublisher)">
             <summary>
             Initializes a new instance of the <see cref="T:Retail.Api.Orders.Controllers.OrderController"/> class.
             </summary>

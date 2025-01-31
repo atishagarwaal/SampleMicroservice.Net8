@@ -1,8 +1,8 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using TopologyManager.Configuration;
-using TopologyManager.Service;
+using CommonLibrary.Configuration;
+using MessagingInfrastructure.Service;
 
 public class Program
 {
@@ -15,14 +15,14 @@ public class Program
             })
             .ConfigureServices((context, services) =>
             {
-                var rabbitMQConfig = context.Configuration.GetSection("RabbitMQ");
-                services.Configure<RabbitMQConfig>(rabbitMQConfig);
-                services.AddSingleton<RabbitMQService>();
+                var topologyConfig = context.Configuration.GetSection("TopologyConfiguration");
+                services.Configure<TopologyConfiguration>(topologyConfig);
+                services.AddSingleton<TopologyInitializer>();
             })
             .Build();
 
         // Setup RabbitMQ infrastructure
-        var rabbitMQService = host.Services.GetRequiredService<RabbitMQService>();
+        var rabbitMQService = host.Services.GetRequiredService<TopologyInitializer>();
         await rabbitMQService.SetupInfrastructure();
     }
 }

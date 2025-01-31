@@ -1,7 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using MessagingLibrary.Interface;
+using MessagingLibrary.Service;
+using Microsoft.AspNetCore.Mvc;
 using Retail.Api.Orders.Common;
 using Retail.Api.Orders.Dto;
 using Retail.Api.Orders.Interface;
+using Retail.Api.Orders.MessageContract;
+using Retail.Api.Orders.Model;
+using System.Runtime.InteropServices;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -15,15 +20,17 @@ namespace Retail.Api.Orders.Controllers
     [ApiVersion("1.0")]
     public class OrderController : ControllerBase
     {
+        private readonly MessagePublisher _messagePublisher;
         private readonly IOrderService _orderService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="OrderController"/> class.
         /// </summary>
         /// <param name="orderService">Intance of customer service class.</param>
-        public OrderController(IOrderService orderService)
+        public OrderController(IOrderService orderService, MessagePublisher messagePublisher)
         {
             _orderService = orderService;
+            _messagePublisher = messagePublisher;
         }
 
         /// <summary>
@@ -111,6 +118,19 @@ namespace Retail.Api.Orders.Controllers
                 {
                     return StatusCode(500, MessageConstants.InternalServerError);
                 }
+
+                var newOrder = new OrderCreatedEvent
+                {
+                    ServiceName = "OrderService",
+                    CustomerId = result.CustomerId,
+                    Id = result.Id,
+                    LineItems = (IList<object>)result.LineItems,
+                    OrderDate = DateTime.Now,
+                    TotalAmount = result.TotalAmount,
+                };
+
+                // Publish order creation event
+                await _messagePublisher.PublishAsync<OrderCreatedEvent>(newOrder, "OrderCreated").ConfigureAwait(false);
 
                 // Return list
                 return Ok(result);

@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using TopologyManager.Arguments;
+using CommonLibrary.Arguments;
 
-namespace TopologyManager.Configuration
+namespace CommonLibrary.Configuration
 {
     public class QueueConfig
     {
@@ -16,5 +16,6 @@ namespace TopologyManager.Configuration
         public bool Durable { get; set; }
         public bool AutoDelete { get; set; }
         public IDictionary<string, object> Arguments { get; set; } = new QueueArguments();
+        public List<BindingConfig> Bindings { get; set; }
     }
 }

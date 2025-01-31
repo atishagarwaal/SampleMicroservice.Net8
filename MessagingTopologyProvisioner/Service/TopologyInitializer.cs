@@ -5,15 +5,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using TopologyManager.Configuration;
+using CommonLibrary.Configuration;
 
-namespace TopologyManager.Service
+namespace MessagingInfrastructure.Service
 {
-    public class RabbitMQService
+    public class TopologyInitializer
     {
-        private readonly RabbitMQConfig _config;
+        private readonly TopologyConfiguration _config;
 
-        public RabbitMQService(IOptions<RabbitMQConfig> options)
+        public TopologyInitializer(IOptions<TopologyConfiguration> options)
         {
             this._config = options.Value;
         }
@@ -56,18 +56,18 @@ namespace TopologyManager.Service
                         queue.Arguments);
 
                     Console.WriteLine($"Queue created or already exists: {queue.Name}");
-                }
 
-                // Bind queues to exchanges
-                foreach (var binding in _config.Bindings)
-                {
-                    await channel.QueueBindAsync(
-                        binding.QueueName,
-                        binding.ExchangeName,
-                        binding.RoutingKey,
-                        binding.Arguments);
+                    // Bind queues to exchanges
+                    foreach (var binding in queue.Bindings)
+                    {
+                        await channel.QueueBindAsync(
+                            queue.Name,
+                            binding.ExchangeName,
+                            binding.RoutingKey,
+                            binding.Arguments);
 
-                    Console.WriteLine($"Binding created: {binding.QueueName} -> {binding.ExchangeName} ({binding.RoutingKey})");
+                        Console.WriteLine($"Binding created: {queue.Name} -> {binding.ExchangeName} ({binding.RoutingKey})");
+                    }
                 }
             }
         }
