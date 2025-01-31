@@ -16,6 +16,11 @@ namespace Retail.Api.Orders.MessageContract
         public long CustomerId { get; set; }
 
         /// <summary>
+        /// Gets or sets the order Id.
+        /// </summary>
+        public DateTime OrderId { get; set; }
+
+        /// <summary>
         /// Gets or sets the order date.
         /// </summary>
         public DateTime OrderDate { get; set; }

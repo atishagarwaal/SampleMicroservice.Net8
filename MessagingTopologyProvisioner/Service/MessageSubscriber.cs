@@ -38,23 +38,25 @@ namespace MessagingLibrary.Service
         public async Task SubscribeAsync<T>(Func<T, Task> handler)
         {
             var routes = _configuration.GetSection("RabbitMqMessagingConfiguration:SubscriptionRoutes")
-                                   .Get<List<SubscriptionRoutes>>();
+                                   .Get<Dictionary<string, SubscriptionRoutes>>();
 
-            foreach (var route in routes)
+            if (!routes.TryGetValue(nameof(T), out var route))
             {
-                await _channel.QueueDeclareAsync(route.QueueName, true, false, false, null);
-                await _channel.QueueBindAsync(route.QueueName, route.Exchange, route.RoutingKey);
-
-                var consumer = new AsyncEventingBasicConsumer(_channel);
-                consumer.ReceivedAsync += async (model, ea) =>
-                {
-                    var body = ea.Body.ToArray();
-                    var message = JsonSerializer.Deserialize<T>(Encoding.UTF8.GetString(body));
-                    await handler(message);
-                };
-
-                await _channel.BasicConsumeAsync(route.QueueName, true, consumer);
+                throw new Exception($"No route configured for event type: {nameof(T)}");
             }
+
+            await _channel.QueueDeclareAsync(route.QueueName, true, false, false, null);
+            await _channel.QueueBindAsync(route.QueueName, route.Exchange, route.RoutingKey);
+
+            var consumer = new AsyncEventingBasicConsumer(_channel);
+            consumer.ReceivedAsync += async (model, ea) =>
+            {
+                var body = ea.Body.ToArray();
+                var message = JsonSerializer.Deserialize<T>(Encoding.UTF8.GetString(body));
+                await handler(message);
+            };
+
+            await _channel.BasicConsumeAsync(route.QueueName, true, consumer);
         }
     }
 }

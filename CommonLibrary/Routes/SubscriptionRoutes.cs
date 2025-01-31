@@ -11,6 +11,5 @@ namespace CommonLibrary.Routes
         public string QueueName { get; set; }
         public string Exchange { get; set; }
         public string RoutingKey { get; set; }
-        public string ContractType { get; set; }
     }
 }

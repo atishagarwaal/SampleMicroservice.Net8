@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using MessagingLibrary.Interface;
+using MessagingLibrary.Service;
+using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
 using Retail.Api.Customers.Common;
 using Retail.Api.Customers.Dto;
@@ -17,15 +19,17 @@ namespace Retail.Api.Customers.Controllers
 
     public class CustomerController : ControllerBase
     {
+        private readonly MessageSubscriber _messageSubscriber;
         private readonly ICustomerService _customerService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CustomerController"/> class.
         /// </summary>
         /// <param name="customerService">Intance of customer service class.</param>
-        public CustomerController(ICustomerService customerService)
+        public CustomerController(ICustomerService customerService, MessageSubscriber messageSubscriber)
         {
             _customerService = customerService;
+            _messageSubscriber = messageSubscriber;
         }
 
         /// <summary>

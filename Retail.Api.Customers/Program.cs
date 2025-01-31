@@ -4,16 +4,22 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
+using CommonLibrary.Handlers;
+using MessagingLibrary.Interface;
+using MessagingLibrary.Service;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Retail.Api.Customers.CustomInterface;
 using Retail.Api.Customers.Data;
 using Retail.Api.Customers.DefaultInterface;
 using Retail.Api.Customers.DefaultRepositories;
+using Retail.Api.Customers.Handlers;
 using Retail.Api.Customers.Interface;
 using Retail.Api.Customers.Repositories;
 using Retail.Api.Customers.Service;
 using Retail.Api.Customers.UnitOfWork;
+using Retail.Api.Orders.MessageContract;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,6 +36,12 @@ builder.Services.AddTransient(typeof(IRepository<>), typeof(EntityRepository<>))
 builder.Services.AddTransient(typeof(IUnitOfWork), typeof(EntityUnitOfWork));
 ///builder.Services.AddTransient(typeof(IUnitOfWork), typeof(DapperUnitOfWork));
 builder.Services.AddTransient(typeof(ICustomerService), typeof(CustomerService));
+
+builder.Services.AddSingleton<IMessagePublisher, MessagePublisher>();
+builder.Services.AddSingleton<IMessageSubscriber, MessageSubscriber>();
+
+builder.Services.AddSingleton<IEventHandler<OrderCreatedEvent>, OrderCreatedEventHandler>();
+builder.Services.AddSingleton<IServiceInitializer, ServiceInitializer>();
 
 builder.Services.AddAutoMapper(typeof(Program));
 
@@ -49,6 +61,10 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 var app = builder.Build();
+
+var serviceInitializer = app.Services.GetRequiredService<ServiceInitializer>();
+await serviceInitializer.Initialize();
+
 
 using (var scope = app.Services.CreateScope())
 {

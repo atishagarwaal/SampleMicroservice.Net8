@@ -45,7 +45,7 @@ namespace MessagingLibrary.Service
             }
 
             var messageBody = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(message));
-            await _channel.ExchangeDeclareAsync(route.Exchange, ExchangeType.Direct, true);
+            await _channel.ExchangeDeclareAsync(route.Exchange, ExchangeType.Topic, true);
             await _channel.BasicPublishAsync(route.Exchange, route.RoutingKey, messageBody);
         }
     }

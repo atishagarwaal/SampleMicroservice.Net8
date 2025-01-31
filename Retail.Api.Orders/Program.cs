@@ -4,6 +4,8 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
+using MessagingLibrary.Interface;
+using MessagingLibrary.Service;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Retail.Api.Orders.Data;
@@ -27,6 +29,9 @@ builder.Services.AddTransient(typeof(IRepository<>), typeof(EntityRepository<>))
 builder.Services.AddTransient(typeof(IUnitOfWork), typeof(EntityUnitOfWork));
 ////builder.Services.AddTransient(typeof(IUnitOfWork), typeof(DapperUnitOfWork));
 builder.Services.AddTransient(typeof(IOrderService), typeof(OrderService));
+
+builder.Services.AddSingleton<IMessagePublisher, MessagePublisher>();
+builder.Services.AddSingleton<IMessageSubscriber, MessageSubscriber>();
 
 builder.Services.AddAutoMapper(typeof(Program));
 
