@@ -19,14 +19,14 @@ namespace Retail.Api.Customers.Controllers
 
     public class CustomerController : ControllerBase
     {
-        private readonly MessageSubscriber _messageSubscriber;
+        private readonly IMessageSubscriber _messageSubscriber;
         private readonly ICustomerService _customerService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CustomerController"/> class.
         /// </summary>
         /// <param name="customerService">Intance of customer service class.</param>
-        public CustomerController(ICustomerService customerService, MessageSubscriber messageSubscriber)
+        public CustomerController(ICustomerService customerService, IMessageSubscriber messageSubscriber)
         {
             _customerService = customerService;
             _messageSubscriber = messageSubscriber;

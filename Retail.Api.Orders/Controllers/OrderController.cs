@@ -20,17 +20,15 @@ namespace Retail.Api.Orders.Controllers
     [ApiVersion("1.0")]
     public class OrderController : ControllerBase
     {
-        private readonly MessagePublisher _messagePublisher;
         private readonly IOrderService _orderService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="OrderController"/> class.
         /// </summary>
         /// <param name="orderService">Intance of customer service class.</param>
-        public OrderController(IOrderService orderService, MessagePublisher messagePublisher)
+        public OrderController(IOrderService orderService)
         {
             _orderService = orderService;
-            _messagePublisher = messagePublisher;
         }
 
         /// <summary>
@@ -118,19 +116,6 @@ namespace Retail.Api.Orders.Controllers
                 {
                     return StatusCode(500, MessageConstants.InternalServerError);
                 }
-
-                var newOrder = new OrderCreatedEvent
-                {
-                    ServiceName = "OrderService",
-                    CustomerId = result.CustomerId,
-                    Id = result.Id,
-                    LineItems = (IList<object>)result.LineItems,
-                    OrderDate = DateTime.Now,
-                    TotalAmount = result.TotalAmount,
-                };
-
-                // Publish order creation event
-                await _messagePublisher.PublishAsync<OrderCreatedEvent>(newOrder, "OrderCreated").ConfigureAwait(false);
 
                 // Return list
                 return Ok(result);

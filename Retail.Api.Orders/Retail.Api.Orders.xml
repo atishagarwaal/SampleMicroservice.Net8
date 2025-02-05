@@ -24,7 +24,7 @@
             Customer controller class.
             </summary>
         </member>
-        <member name="M:Retail.Api.Orders.Controllers.OrderController.#ctor(Retail.Api.Orders.Interface.IOrderService,MessagingLibrary.Service.MessagePublisher)">
+        <member name="M:Retail.Api.Orders.Controllers.OrderController.#ctor(Retail.Api.Orders.Interface.IOrderService)">
             <summary>
             Initializes a new instance of the <see cref="T:Retail.Api.Orders.Controllers.OrderController"/> class.
             </summary>
@@ -470,6 +470,31 @@
             Gets or sets the Line Items.
             </summary>
         </member>
+        <member name="P:Retail.Api.Orders.MessageContract.OrderCreatedEvent.Id">
+            <summary>
+            Gets or sets the Id.
+            </summary>
+        </member>
+        <member name="P:Retail.Api.Orders.MessageContract.OrderCreatedEvent.CustomerId">
+            <summary>
+            Gets or sets the customer Id.
+            </summary>
+        </member>
+        <member name="P:Retail.Api.Orders.MessageContract.OrderCreatedEvent.OrderDate">
+            <summary>
+            Gets or sets the order date.
+            </summary>
+        </member>
+        <member name="P:Retail.Api.Orders.MessageContract.OrderCreatedEvent.TotalAmount">
+            <summary>
+            Gets or sets the total amount.
+            </summary>
+        </member>
+        <member name="P:Retail.Api.Orders.MessageContract.OrderCreatedEvent.LineItems">
+            <summary>
+            Gets or sets the Line Items.
+            </summary>
+        </member>
         <member name="T:Retail.Api.Orders.Migrations._001">
             <inheritdoc />
         </member>
@@ -542,7 +567,7 @@
             Order service class.
             </summary>
         </member>
-        <member name="M:Retail.Api.Orders.Service.OrderService.#ctor(Retail.Api.Orders.DefaultInterface.IUnitOfWork,AutoMapper.IMapper)">
+        <member name="M:Retail.Api.Orders.Service.OrderService.#ctor(Retail.Api.Orders.DefaultInterface.IUnitOfWork,AutoMapper.IMapper,MessagingLibrary.Interface.IMessagePublisher)">
             <summary>
             Initializes a new instance of the <see cref="T:Retail.Api.Orders.Service.OrderService"/> class.
             </summary>

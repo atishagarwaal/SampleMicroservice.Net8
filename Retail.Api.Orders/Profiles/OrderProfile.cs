@@ -5,6 +5,7 @@
 namespace Retail.Api.Products.Profiles
 {
     using Retail.Api.Orders.Dto;
+    using Retail.Api.Orders.MessageContract;
     using Retail.Api.Orders.Model;
 
     /// <summary>
@@ -18,7 +19,8 @@ namespace Retail.Api.Products.Profiles
         public OrderProfile()
         {
             this.CreateMap<Order, OrderDto>().ReverseMap(); ;
-            this.CreateMap<LineItem, LineItemDto>().ReverseMap(); ;
+            this.CreateMap<LineItem, LineItemDto>().ReverseMap();
+            this.CreateMap<OrderCreatedEvent, OrderDto>().ReverseMap();
         }
     }
 }

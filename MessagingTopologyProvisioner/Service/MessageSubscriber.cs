@@ -37,12 +37,21 @@ namespace MessagingLibrary.Service
 
         public async Task SubscribeAsync<T>(Func<T, Task> handler)
         {
-            var routes = _configuration.GetSection("RabbitMqMessagingConfiguration:SubscriptionRoutes")
+            var routes = _configuration.GetSection("MessagingConfiguration:SubscriptionRoutes")
                                    .Get<Dictionary<string, SubscriptionRoutes>>();
 
-            if (!routes.TryGetValue(nameof(T), out var route))
+            if (routes == null || routes.Count == 0)
             {
-                throw new Exception($"No route configured for event type: {nameof(T)}");
+                throw new Exception("No subscription routes found in configuration.");
+            }
+
+            // Extract event name by removing "Handler" at the end
+            string eventName = handler.Target.ToString().Substring(handler.Target.ToString().LastIndexOf('.') + 1)
+                                           .Replace("Handler", "");
+
+            if (!routes.TryGetValue(eventName, out var route))
+            {
+                throw new Exception($"No route configured for event type: {eventName}");
             }
 
             await _channel.QueueDeclareAsync(route.QueueName, true, false, false, null);

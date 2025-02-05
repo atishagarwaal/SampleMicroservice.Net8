@@ -44,8 +44,8 @@ namespace MessagingInfrastructure.Service
             services.AddSingleton<TopologyInitializer>();
 
             // Register Publisher & Subscriber
-            services.AddSingleton<IMessagePublisher, MessagePublisher>();
-            services.AddSingleton<IMessageSubscriber, MessageSubscriber>();
+            services.AddTransient(typeof(IMessagePublisher), typeof(MessagePublisher));
+            services.AddTransient(typeof(IMessageSubscriber), typeof(MessageSubscriber));
 
             return services;
         }

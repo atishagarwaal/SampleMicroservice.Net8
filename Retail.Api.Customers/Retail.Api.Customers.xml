@@ -24,7 +24,7 @@
             Customer controller class.
             </summary>
         </member>
-        <member name="M:Retail.Api.Customers.Controllers.CustomerController.#ctor(Retail.Api.Customers.Interface.ICustomerService,MessagingLibrary.Service.MessageSubscriber)">
+        <member name="M:Retail.Api.Customers.Controllers.CustomerController.#ctor(Retail.Api.Customers.Interface.ICustomerService,MessagingLibrary.Interface.IMessageSubscriber)">
             <summary>
             Initializes a new instance of the <see cref="T:Retail.Api.Customers.Controllers.CustomerController"/> class.
             </summary>

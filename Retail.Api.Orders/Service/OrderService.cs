@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
+using MessagingLibrary.Interface;
 using Retail.Api.Orders.DefaultInterface;
 using Retail.Api.Orders.Dto;
 using Retail.Api.Orders.Interface;
+using Retail.Api.Orders.MessageContract;
 using Retail.Api.Orders.Model;
 
 namespace Retail.Api.Orders.Service
@@ -11,6 +13,7 @@ namespace Retail.Api.Orders.Service
     /// </summary>
     public class OrderService : IOrderService
     {
+        private readonly IMessagePublisher _messagePublisher;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
@@ -19,10 +22,11 @@ namespace Retail.Api.Orders.Service
         /// </summary>
         /// <param name="unitOfWork">Intance of unit of work class.</param>
         /// <param name="mapper">Intance of mapper class.</param>
-        public OrderService(IUnitOfWork unitOfWork, IMapper mapper)
+        public OrderService(IUnitOfWork unitOfWork, IMapper mapper, IMessagePublisher messagePublisher)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _messagePublisher = messagePublisher;
         }
 
         /// <summary>
@@ -105,6 +109,12 @@ namespace Retail.Api.Orders.Service
 
             // Transform data
             orderDto = _mapper.Map<OrderDto>(record);
+
+            var newOrderMessage = new OrderCreatedEvent();
+            newOrderMessage = _mapper.Map<OrderCreatedEvent>(orderDto);
+
+            // Publish order creation event
+            await _messagePublisher.PublishAsync<OrderCreatedEvent>(newOrderMessage, "OrderCreated").ConfigureAwait(false);
 
             return orderDto;
         }
