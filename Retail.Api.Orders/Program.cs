@@ -1,9 +1,10 @@
-//-----------------------------------------------------------------------
+﻿//-----------------------------------------------------------------------
 // <copyright file="Program.cs" company="PlaceholderCompany">
 // Copyright (c) PlaceholderCompany. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 
+using MessagingInfrastructure.Service;
 using MessagingLibrary.Interface;
 using MessagingLibrary.Service;
 using Microsoft.AspNetCore.Mvc;
@@ -30,8 +31,8 @@ builder.Services.AddTransient(typeof(IUnitOfWork), typeof(EntityUnitOfWork));
 ////builder.Services.AddTransient(typeof(IUnitOfWork), typeof(DapperUnitOfWork));
 builder.Services.AddTransient(typeof(IOrderService), typeof(OrderService));
 
-builder.Services.AddSingleton<IMessagePublisher, MessagePublisher>();
-builder.Services.AddSingleton<IMessageSubscriber, MessageSubscriber>();
+// Add RabbitMQ from the common project
+builder.Services.AddRabbitMQServices(builder.Configuration);
 
 builder.Services.AddAutoMapper(typeof(Program));
 

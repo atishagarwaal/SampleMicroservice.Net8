@@ -5,6 +5,7 @@
 //-----------------------------------------------------------------------
 
 using CommonLibrary.Handlers;
+using MessagingInfrastructure.Service;
 using MessagingLibrary.Interface;
 using MessagingLibrary.Service;
 using Microsoft.AspNetCore.Mvc;
@@ -37,8 +38,8 @@ builder.Services.AddTransient(typeof(IUnitOfWork), typeof(EntityUnitOfWork));
 ///builder.Services.AddTransient(typeof(IUnitOfWork), typeof(DapperUnitOfWork));
 builder.Services.AddTransient(typeof(ICustomerService), typeof(CustomerService));
 
-builder.Services.AddSingleton<IMessagePublisher, MessagePublisher>();
-builder.Services.AddSingleton<IMessageSubscriber, MessageSubscriber>();
+// Add RabbitMQ from the common project
+builder.Services.AddRabbitMQServices(builder.Configuration);
 
 builder.Services.AddSingleton<IEventHandler<OrderCreatedEvent>, OrderCreatedEventHandler>();
 builder.Services.AddSingleton<IServiceInitializer, ServiceInitializer>();
@@ -62,7 +63,7 @@ builder.Services.AddSwaggerGen(c =>
 
 var app = builder.Build();
 
-var serviceInitializer = app.Services.GetRequiredService<ServiceInitializer>();
+var serviceInitializer = app.Services.GetRequiredService<IServiceInitializer>();
 await serviceInitializer.Initialize();
 
 

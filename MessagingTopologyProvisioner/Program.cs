@@ -3,6 +3,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using CommonLibrary.Configuration;
 using MessagingInfrastructure.Service;
+using Microsoft.Extensions.Options;
+using RabbitMQ.Client;
+using MessagingLibrary.Interface;
+using MessagingLibrary.Service;
 
 public class Program
 {
@@ -15,14 +19,13 @@ public class Program
             })
             .ConfigureServices((context, services) =>
             {
-                var topologyConfig = context.Configuration.GetSection("TopologyConfiguration");
-                services.Configure<TopologyConfiguration>(topologyConfig);
-                services.AddSingleton<TopologyInitializer>();
+                // Register RabbitMQ services
+                services.AddRabbitMQServices(context.Configuration);
             })
             .Build();
 
         // Setup RabbitMQ infrastructure
-        var rabbitMQService = host.Services.GetRequiredService<TopologyInitializer>();
-        await rabbitMQService.SetupInfrastructure();
+        var topologyInitializer = host.Services.GetRequiredService<TopologyInitializer>();
+        await topologyInitializer.SetupInfrastructure();
     }
 }

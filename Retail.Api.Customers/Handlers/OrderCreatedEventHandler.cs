@@ -6,11 +6,8 @@ namespace Retail.Api.Customers.Handlers
 {
     public class OrderCreatedEventHandler : IEventHandler<OrderCreatedEvent>
     {
-        private readonly ICustomerService _customerService;
-
-        public OrderCreatedEventHandler(ICustomerService customerService)
+        public OrderCreatedEventHandler()
         {
-            _customerService = customerService;
         }
 
         public async Task HandleAsync(OrderCreatedEvent orderCreatedEvent)

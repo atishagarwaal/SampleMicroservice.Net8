@@ -12,25 +12,18 @@ namespace MessagingInfrastructure.Service
     public class TopologyInitializer
     {
         private readonly TopologyConfiguration _config;
+        private readonly IConnection _connection;
 
-        public TopologyInitializer(IOptions<TopologyConfiguration> options)
+        public TopologyInitializer(IOptions<TopologyConfiguration> options, IConnection connection)
         {
-            this._config = options.Value;
+            _config = options.Value;
+            _connection = connection;
         }
 
         public async Task SetupInfrastructure()
         {
-            var factory = new ConnectionFactory
-            {
-                HostName = _config.HostName,
-                Port = _config.Port,
-                UserName = _config.Username,
-                Password = _config.Password
-            };
-
             // Establish a connection
-            using (var connection = await factory.CreateConnectionAsync())
-            using (var channel = await connection.CreateChannelAsync())
+            using (var channel = await _connection.CreateChannelAsync())
             {
                 // Create exchanges idempotently
                 foreach (var exchange in _config.Exchanges)

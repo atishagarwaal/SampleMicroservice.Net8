@@ -4,6 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
+using MessagingInfrastructure.Service;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Retail.Api.Products.Data;
@@ -29,6 +30,9 @@ builder.Services.AddTransient(typeof(IRepository<>), typeof(EntityRepository<>))
 builder.Services.AddTransient(typeof(IUnitOfWork), typeof(EntityUnitOfWork));
 ////builder.Services.AddTransient(typeof(IUnitOfWork), typeof(DapperUnitOfWork));
 builder.Services.AddTransient(typeof(IProductService), typeof(ProductService));
+
+// Add RabbitMQ from the common project
+builder.Services.AddRabbitMQServices(builder.Configuration);
 
 builder.Services.AddAutoMapper(typeof(Program));
 
