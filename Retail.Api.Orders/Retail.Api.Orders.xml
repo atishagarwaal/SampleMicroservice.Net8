@@ -164,17 +164,6 @@
             <param name="entity">Object parameter.</param>
             <returns>Returns an integer.</returns>
         </member>
-        <member name="T:Retail.Api.Orders.Repositories.LineItemEntityRepository">
-            <summary>
-            Customer repository class.
-            </summary>
-        </member>
-        <member name="M:Retail.Api.Orders.Repositories.LineItemEntityRepository.#ctor(Retail.Api.Orders.Data.ApplicationDbContext)">
-            <summary>
-            Initializes a new instance of the <see cref="T:Retail.Api.Orders.Repositories.LineItemEntityRepository"/> class.
-            </summary>
-            <param name="context">Db context.</param>
-        </member>
         <member name="T:Retail.Api.Orders.Repositories.OrderDapperRepository">
             <summary>
             Customer repository class.
@@ -227,30 +216,6 @@
             <returns>Returns collection of object of type parameter T.</returns>
         </member>
         <member name="M:Retail.Api.Orders.Repositories.OrderDapperRepository.GetOrderByIdAsync(System.Int64)">
-            <summary>
-            Gets object by Id asynchronously.
-            </summary>
-            <param name="id">Id of object.</param>
-            <returns>Returns object.</returns>
-        </member>
-        <member name="T:Retail.Api.Orders.Repositories.OrderEntityRepository">
-            <summary>
-            Customer repository class.
-            </summary>
-        </member>
-        <member name="M:Retail.Api.Orders.Repositories.OrderEntityRepository.#ctor(Retail.Api.Orders.Data.ApplicationDbContext)">
-            <summary>
-            Initializes a new instance of the <see cref="T:Retail.Api.Orders.Repositories.OrderEntityRepository"/> class.
-            </summary>
-            <param name="context">Db context.</param>
-        </member>
-        <member name="M:Retail.Api.Orders.Repositories.OrderEntityRepository.GetAllOrdersAsync">
-            <summary>
-            Gets collection of object asynchronously.
-            </summary>
-            <returns>Returns collection of object of type parameter T.</returns>
-        </member>
-        <member name="M:Retail.Api.Orders.Repositories.OrderEntityRepository.GetOrderByIdAsync(System.Int64)">
             <summary>
             Gets object by Id asynchronously.
             </summary>
@@ -372,48 +337,6 @@
             <summary>
             Method to commit changes.
             </summary>
-        </member>
-        <member name="T:Retail.Api.Orders.DefaultRepositories.EntityRepository`1">
-            <summary>
-            Generic repository class.
-            </summary>
-        </member>
-        <member name="M:Retail.Api.Orders.DefaultRepositories.EntityRepository`1.#ctor(Retail.Api.Orders.Data.ApplicationDbContext)">
-            <summary>
-            Initializes a new instance of the GenericRepository class.
-            </summary>
-            <param name="dbcontext">Db context.</param>
-        </member>
-        <member name="M:Retail.Api.Orders.DefaultRepositories.EntityRepository`1.AddAsync(`0)">
-            <summary>
-            Add a new object asynchronously.
-            </summary>
-            <param name="entity">An object type parameter T.</param>
-        </member>
-        <member name="M:Retail.Api.Orders.DefaultRepositories.EntityRepository`1.GetAllAsync">
-            <summary>
-            Gets collection of object
-            </summary>
-            <returns>Returns collection of object of type parameter T.</returns>
-        </member>
-        <member name="M:Retail.Api.Orders.DefaultRepositories.EntityRepository`1.GetByIdAsync(System.Int64)">
-            <summary>
-            Gets object by Id
-            </summary>
-            <param name="id">Generic type parameter.</param>
-            <returns>Returns object of type parameter T.</returns>
-        </member>
-        <member name="M:Retail.Api.Orders.DefaultRepositories.EntityRepository`1.Remove(`0)">
-            <summary>
-            Remove an object.
-            </summary>
-            <param name="entity">An object type parameter T.</param>
-        </member>
-        <member name="M:Retail.Api.Orders.DefaultRepositories.EntityRepository`1.Update(`0)">
-            <summary>
-            Update an object.
-            </summary>
-            <param name="entity">An object type parameter T.</param>
         </member>
         <member name="T:Retail.Api.Orders.Dto.LineItemDto">
             <summary>
@@ -646,42 +569,6 @@
             </summary>
         </member>
         <member name="M:Retail.Api.Orders.UnitOfWork.DapperUnitOfWork.Rollback">
-            <summary>
-            Method to rollback changes.
-            </summary>
-        </member>
-        <member name="T:Retail.Api.Orders.UnitOfWork.EntityUnitOfWork">
-            <summary>
-            Unit of work class.
-            </summary>
-        </member>
-        <member name="M:Retail.Api.Orders.UnitOfWork.EntityUnitOfWork.#ctor(Retail.Api.Orders.Data.ApplicationDbContext)">
-            <summary>
-            Initializes a new instance of the <see cref="T:Retail.Api.Orders.UnitOfWork.EntityUnitOfWork"/> class.
-            </summary>
-            <param name="entityContext">Entity framework Db context.</param>
-        </member>
-        <member name="P:Retail.Api.Orders.UnitOfWork.EntityUnitOfWork.OrderRepository">
-            <summary>
-            Gets or sets customer repository.
-            </summary>
-        </member>
-        <member name="P:Retail.Api.Orders.UnitOfWork.EntityUnitOfWork.LineItemRepository">
-            <summary>
-            Gets or sets customer repository.
-            </summary>
-        </member>
-        <member name="M:Retail.Api.Orders.UnitOfWork.EntityUnitOfWork.BeginTransaction">
-            <summary>
-            Method to begin transaction.
-            </summary>
-        </member>
-        <member name="M:Retail.Api.Orders.UnitOfWork.EntityUnitOfWork.Commit">
-            <summary>
-            Method to commit changes.
-            </summary>
-        </member>
-        <member name="M:Retail.Api.Orders.UnitOfWork.EntityUnitOfWork.Rollback">
             <summary>
             Method to rollback changes.
             </summary>

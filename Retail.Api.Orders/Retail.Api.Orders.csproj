@@ -45,6 +45,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="DefaultRepositories\" />
     <Folder Include="Migrations\" />
   </ItemGroup>
 

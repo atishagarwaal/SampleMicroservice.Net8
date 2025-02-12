@@ -101,57 +101,23 @@
             <param name="id">Customer Id.</param>
             <returns>Customer object.</returns>
         </member>
-        <member name="T:Retail.Api.Customers.Repositories.CustomerDapperRepository">
-            <summary>
-            Customer repository class.
-            </summary>
-        </member>
-        <member name="M:Retail.Api.Customers.Repositories.CustomerDapperRepository.#ctor(Retail.Api.Customers.Data.DapperContext)">
-            <summary>
-            Initializes a new instance of the <see cref="T:Retail.Api.Customers.Repositories.CustomerDapperRepository"/> class.
-            </summary>
-            <param name="dapperContext">Db context.</param>
-        </member>
-        <member name="M:Retail.Api.Customers.Repositories.CustomerDapperRepository.AddAsync(Retail.Api.Customers.Model.Customer)">
-            <summary>
-            Add a new object asynchronously.
-            </summary>
-            <param name="entity">Object parameter.</param>
-            <returns>Returns an integer.</returns>
-        </member>
-        <member name="M:Retail.Api.Customers.Repositories.CustomerDapperRepository.GetAllAsync">
-            <summary>
-            Gets collection of object asynchronously.
-            </summary>
-            <returns>Returns collection of object.</returns>
-        </member>
-        <member name="M:Retail.Api.Customers.Repositories.CustomerDapperRepository.GetByIdAsync(System.Int64)">
-            <summary>
-            Get an object by Id asynchronously
-            </summary>
-            <param name="id">Primary key of the object.</param>
-            <returns>Returns an object.</returns>
-        </member>
-        <member name="M:Retail.Api.Customers.Repositories.CustomerDapperRepository.Remove(Retail.Api.Customers.Model.Customer)">
-            <summary>
-            Removes an object asynchronously.
-            </summary>
-            <param name="entity">Object parameter.</param>
-            <returns>Returns an integer.</returns>
-        </member>
-        <member name="M:Retail.Api.Customers.Repositories.CustomerDapperRepository.Update(Retail.Api.Customers.Model.Customer)">
-            <summary>
-            Updates an object asynchronously.
-            </summary>
-            <param name="entity">Object parameter.</param>
-            <returns>Returns an integer.</returns>
-        </member>
         <member name="T:Retail.Api.Customers.Repositories.CustomerEntityRepository">
             <summary>
             Customer repository class.
             </summary>
         </member>
         <member name="M:Retail.Api.Customers.Repositories.CustomerEntityRepository.#ctor(Retail.Api.Customers.Data.ApplicationDbContext)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Retail.Api.Customers.Repositories.CustomerEntityRepository"/> class.
+            </summary>
+            <param name="context">Db context.</param>
+        </member>
+        <member name="T:Retail.Api.Customers.Repositories.CustomerNotificationRepository">
+            <summary>
+            Customer repository class.
+            </summary>
+        </member>
+        <member name="M:Retail.Api.Customers.Repositories.CustomerNotificationRepository.#ctor(Retail.Api.Customers.Data.ApplicationDbContext)">
             <summary>
             Initializes a new instance of the <see cref="T:Retail.Api.Customers.Repositories.CustomerEntityRepository"/> class.
             </summary>
@@ -173,33 +139,16 @@
             Gets or sets customers.
             </summary>
         </member>
+        <member name="P:Retail.Api.Customers.Data.ApplicationDbContext.customerNotifications">
+            <summary>
+            Gets or sets customer notifications.
+            </summary>
+        </member>
         <member name="M:Retail.Api.Customers.Data.ApplicationDbContext.OnModelCreating(Microsoft.EntityFrameworkCore.ModelBuilder)">
             <summary>
             Overrides the OnModelCreating method to configure the database context and model.
             </summary>
             <param name="modelBuilder">The model builder.</param>
-        </member>
-        <member name="T:Retail.Api.Customers.Data.DapperContext">
-            <summary>
-            Dapper context class.
-            </summary>
-        </member>
-        <member name="M:Retail.Api.Customers.Data.DapperContext.#ctor(Microsoft.Extensions.Configuration.IConfiguration)">
-            <summary>
-            Initializes a new instance of the <see cref="T:Retail.Api.Customers.Data.DapperContext"/> class.
-            </summary>
-            <param name="configuration">Configuration object.</param>
-        </member>
-        <member name="P:Retail.Api.Customers.Data.DapperContext.Configuration">
-            <summary>
-            Gets Configuration.
-            </summary>
-        </member>
-        <member name="M:Retail.Api.Customers.Data.DapperContext.CreateConnection">
-            <summary>
-            Sets SQL Connection.
-            </summary>
-            <returns>Returns Sql connection.</returns>
         </member>
         <member name="T:Retail.Api.Customers.DefaultInterface.IRepository`1">
             <summary>
@@ -325,17 +274,30 @@
             Gets or sets the last name.
             </summary>
         </member>
-        <member name="T:Retail.Api.Customers.Migrations._001">
-            <inheritdoc />
+        <member name="P:Retail.Api.Customers.Model.CustomerNotificationDto.NotificationId">
+            <summary>
+            Gets or sets the Id.
+            </summary>
         </member>
-        <member name="M:Retail.Api.Customers.Migrations._001.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
-            <inheritdoc />
+        <member name="P:Retail.Api.Customers.Model.CustomerNotificationDto.CustomerId">
+            <summary>
+            Gets or sets the Id.
+            </summary>
         </member>
-        <member name="M:Retail.Api.Customers.Migrations._001.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
-            <inheritdoc />
+        <member name="P:Retail.Api.Customers.Model.CustomerNotificationDto.OrderId">
+            <summary>
+            Gets or sets the Id.
+            </summary>
         </member>
-        <member name="M:Retail.Api.Customers.Migrations._001.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
-            <inheritdoc />
+        <member name="P:Retail.Api.Customers.Model.CustomerNotificationDto.OrderDate">
+            <summary>
+            Gets or sets the order date.
+            </summary>
+        </member>
+        <member name="P:Retail.Api.Customers.Model.CustomerNotificationDto.Message">
+            <summary>
+            Gets or sets the message.
+            </summary>
         </member>
         <member name="T:Retail.Api.Customers.Model.Customer">
             <summary>
@@ -355,6 +317,65 @@
         <member name="P:Retail.Api.Customers.Model.Customer.LastName">
             <summary>
             Gets or sets the last name.
+            </summary>
+        </member>
+        <member name="P:Retail.Api.Customers.Model.CustomerNotification.NotificationId">
+            <summary>
+            Gets or sets the Id.
+            </summary>
+        </member>
+        <member name="P:Retail.Api.Customers.Model.CustomerNotification.CustomerId">
+            <summary>
+            Gets or sets the Id.
+            </summary>
+        </member>
+        <member name="P:Retail.Api.Customers.Model.CustomerNotification.OrderId">
+            <summary>
+            Gets or sets the Id.
+            </summary>
+        </member>
+        <member name="P:Retail.Api.Customers.Model.CustomerNotification.OrderDate">
+            <summary>
+            Gets or sets the order date.
+            </summary>
+        </member>
+        <member name="P:Retail.Api.Customers.Model.CustomerNotification.Message">
+            <summary>
+            Gets or sets the message.
+            </summary>
+        </member>
+        <member name="T:Retail.Api.Customers.Migrations._001">
+            <inheritdoc />
+        </member>
+        <member name="M:Retail.Api.Customers.Migrations._001.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Retail.Api.Customers.Migrations._001.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Retail.Api.Customers.Migrations._001.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:Retail.Api.Customers.Migrations._002">
+            <inheritdoc />
+        </member>
+        <member name="M:Retail.Api.Customers.Migrations._002.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Retail.Api.Customers.Migrations._002.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Retail.Api.Customers.Migrations._002.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:Retail.Api.Customers.Profiles.CustomerNotificationProfile">
+            <summary>
+            Defines Customer profile for AutoMapper.
+            </summary>
+        </member>
+        <member name="M:Retail.Api.Customers.Profiles.CustomerNotificationProfile.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Retail.Api.Customers.Profiles.CustomerNotificationProfile"/> class.
             </summary>
         </member>
         <member name="T:Retail.Api.Customers.Profiles.CustomerProfile">
@@ -413,42 +434,6 @@
             </summary>
             <param name="id">Customer Id.</param>
             <returns>Customer object.</returns>
-        </member>
-        <member name="T:Retail.Api.Customers.UnitOfWork.DapperUnitOfWork">
-            <summary>
-            Unit of work class.
-            </summary>
-        </member>
-        <member name="M:Retail.Api.Customers.UnitOfWork.DapperUnitOfWork.#ctor(Retail.Api.Customers.Data.DapperContext)">
-            <summary>
-            Initializes a new instance of the <see cref="N:Retail.Api.Customers.UnitOfWork"/> class.
-            </summary>
-            <param name="dapperContext">Dapper Db context.</param>
-        </member>
-        <member name="P:Retail.Api.Customers.UnitOfWork.DapperUnitOfWork.Connection">
-            <summary>
-            Gets or sets connection.
-            </summary>
-        </member>
-        <member name="P:Retail.Api.Customers.UnitOfWork.DapperUnitOfWork.CustomerRepository">
-            <summary>
-            Gets or sets customer repository.
-            </summary>
-        </member>
-        <member name="M:Retail.Api.Customers.UnitOfWork.DapperUnitOfWork.BeginTransaction">
-            <summary>
-            Method to begin transaction.
-            </summary>
-        </member>
-        <member name="M:Retail.Api.Customers.UnitOfWork.DapperUnitOfWork.Commit">
-            <summary>
-            Method to commit changes.
-            </summary>
-        </member>
-        <member name="M:Retail.Api.Customers.UnitOfWork.DapperUnitOfWork.Rollback">
-            <summary>
-            Method to rollback changes.
-            </summary>
         </member>
         <member name="T:Retail.Api.Customers.UnitOfWork.EntityUnitOfWork">
             <summary>

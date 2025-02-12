@@ -31,6 +31,11 @@ namespace Retail.Api.Customers.Data
         public DbSet<Customer>? Customers { get; set; }
 
         /// <summary>
+        /// Gets or sets customer notifications.
+        /// </summary>
+        public DbSet<CustomerNotificationDto>? customerNotifications  { get; set; }
+
+        /// <summary>
         /// Overrides the OnModelCreating method to configure the database context and model.
         /// </summary>
         /// <param name="modelBuilder">The model builder.</param>

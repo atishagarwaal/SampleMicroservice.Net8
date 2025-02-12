@@ -121,51 +121,6 @@
             <param name="id">Product Id.</param>
             <returns>Product object.</returns>
         </member>
-        <member name="T:Retail.Api.Products.Repositories.ProductDapperRepository">
-            <summary>
-            Product repository class.
-            </summary>
-        </member>
-        <member name="M:Retail.Api.Products.Repositories.ProductDapperRepository.#ctor(Retail.Api.Products.Data.DapperContext)">
-            <summary>
-            Initializes a new instance of the <see cref="T:Retail.Api.Products.Repositories.ProductDapperRepository"/> class.
-            </summary>
-            <param name="dapperContext">Db context.</param>
-        </member>
-        <member name="M:Retail.Api.Products.Repositories.ProductDapperRepository.AddAsync(Retail.Api.Products.Model.Sku)">
-            <summary>
-            Add a new object asynchronously.
-            </summary>
-            <param name="entity">Object parameter.</param>
-            <returns>Returns an integer.</returns>
-        </member>
-        <member name="M:Retail.Api.Products.Repositories.ProductDapperRepository.GetAllAsync">
-            <summary>
-            Gets collection of object asynchronously.
-            </summary>
-            <returns>Returns collection of object.</returns>
-        </member>
-        <member name="M:Retail.Api.Products.Repositories.ProductDapperRepository.GetByIdAsync(System.Int64)">
-            <summary>
-            Get an object by Id asynchronously
-            </summary>
-            <param name="id">Primary key of the object.</param>
-            <returns>Returns an object.</returns>
-        </member>
-        <member name="M:Retail.Api.Products.Repositories.ProductDapperRepository.Remove(Retail.Api.Products.Model.Sku)">
-            <summary>
-            Removes an object asynchronously.
-            </summary>
-            <param name="entity">Object parameter.</param>
-            <returns>Returns an integer.</returns>
-        </member>
-        <member name="M:Retail.Api.Products.Repositories.ProductDapperRepository.Update(Retail.Api.Products.Model.Sku)">
-            <summary>
-            Updates an object asynchronously.
-            </summary>
-            <param name="entity">Object parameter.</param>
-            <returns>Returns an integer.</returns>
-        </member>
         <member name="T:Retail.Api.Products.Repositories.ProductEntityRepository">
             <summary>
             Product repository class.
@@ -198,28 +153,6 @@
             Overrides the OnModelCreating method to configure the database context and model.
             </summary>
             <param name="modelBuilder">The model builder.</param>
-        </member>
-        <member name="T:Retail.Api.Products.Data.DapperContext">
-            <summary>
-            Dapper context class.
-            </summary>
-        </member>
-        <member name="M:Retail.Api.Products.Data.DapperContext.#ctor(Microsoft.Extensions.Configuration.IConfiguration)">
-            <summary>
-            Initializes a new instance of the <see cref="T:Retail.Api.Products.Data.DapperContext"/> class.
-            </summary>
-            <param name="configuration">Configuration object.</param>
-        </member>
-        <member name="P:Retail.Api.Products.Data.DapperContext.Configuration">
-            <summary>
-            Gets Configuration.
-            </summary>
-        </member>
-        <member name="M:Retail.Api.Products.Data.DapperContext.CreateConnection">
-            <summary>
-            Sets SQL Connection.
-            </summary>
-            <returns>Returns Sql connection.</returns>
         </member>
         <member name="T:Retail.Api.Products.DefaultInterface.IRepository`1">
             <summary>
@@ -413,42 +346,6 @@
             </summary>
             <param name="id">Product Id.</param>
             <returns>Product object.</returns>
-        </member>
-        <member name="T:Retail.Api.Products.UnitOfWork.DapperUnitOfWork">
-            <summary>
-            Unit of work class.
-            </summary>
-        </member>
-        <member name="M:Retail.Api.Products.UnitOfWork.DapperUnitOfWork.#ctor(Retail.Api.Products.Data.DapperContext)">
-            <summary>
-            Initializes a new instance of the <see cref="N:Retail.Api.Products.UnitOfWork"/> class.
-            </summary>
-            <param name="dapperContext">Dapper Db context.</param>
-        </member>
-        <member name="P:Retail.Api.Products.UnitOfWork.DapperUnitOfWork.Connection">
-            <summary>
-            Gets or sets connection.
-            </summary>
-        </member>
-        <member name="P:Retail.Api.Products.UnitOfWork.DapperUnitOfWork.ProductRepository">
-            <summary>
-            Gets or sets product repository.
-            </summary>
-        </member>
-        <member name="M:Retail.Api.Products.UnitOfWork.DapperUnitOfWork.BeginTransaction">
-            <summary>
-            Method to begin transaction.
-            </summary>
-        </member>
-        <member name="M:Retail.Api.Products.UnitOfWork.DapperUnitOfWork.Commit">
-            <summary>
-            Method to commit changes.
-            </summary>
-        </member>
-        <member name="M:Retail.Api.Products.UnitOfWork.DapperUnitOfWork.Rollback">
-            <summary>
-            Method to rollback changes.
-            </summary>
         </member>
         <member name="T:Retail.Api.Products.UnitOfWork.EntityUnitOfWork">
             <summary>

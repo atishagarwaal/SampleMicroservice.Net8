@@ -23,12 +23,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-builder.Services.AddTransient<DapperContext>();
-
 // Configure services
 builder.Services.AddTransient(typeof(IRepository<>), typeof(EntityRepository<>));
 builder.Services.AddTransient(typeof(IUnitOfWork), typeof(EntityUnitOfWork));
-////builder.Services.AddTransient(typeof(IUnitOfWork), typeof(DapperUnitOfWork));
 builder.Services.AddTransient(typeof(IProductService), typeof(ProductService));
 
 // Add RabbitMQ from the common project

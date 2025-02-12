@@ -11,7 +11,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Retail.Api.Orders.Data;
 using Retail.Api.Orders.DefaultInterface;
-using Retail.Api.Orders.DefaultRepositories;
 using Retail.Api.Orders.Interface;
 using Retail.Api.Orders.Repositories;
 using Retail.Api.Orders.Service;
@@ -26,9 +25,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddTransient<DapperContext>();
-builder.Services.AddTransient(typeof(IRepository<>), typeof(EntityRepository<>));
-builder.Services.AddTransient(typeof(IUnitOfWork), typeof(EntityUnitOfWork));
-////builder.Services.AddTransient(typeof(IUnitOfWork), typeof(DapperUnitOfWork));
+builder.Services.AddTransient(typeof(IUnitOfWork), typeof(DapperUnitOfWork));
 builder.Services.AddTransient(typeof(IOrderService), typeof(OrderService));
 
 // Add RabbitMQ from the common project
