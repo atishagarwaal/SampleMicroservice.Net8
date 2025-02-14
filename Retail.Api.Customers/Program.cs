@@ -11,15 +11,12 @@ using MessagingLibrary.Service;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Retail.Api.Customers.CustomInterface;
-using Retail.Api.Customers.Data;
-using Retail.Api.Customers.DefaultInterface;
-using Retail.Api.Customers.DefaultRepositories;
-using Retail.Api.Customers.Handlers;
-using Retail.Api.Customers.Interface;
-using Retail.Api.Customers.Repositories;
-using Retail.Api.Customers.Service;
-using Retail.Api.Customers.UnitOfWork;
+using Retail.Api.Customers.src.CleanArchitecture.Application.EventHandlers;
+using Retail.Api.Customers.src.CleanArchitecture.Application.Interfaces;
+using Retail.Api.Customers.src.CleanArchitecture.Application.Service;
+using Retail.Api.Customers.src.CleanArchitecture.Infrastructure.Data;
+using Retail.Api.Customers.src.CleanArchitecture.Infrastructure.Repositories;
+using Retail.Api.Customers.src.CleanArchitecture.Infrastructure.UnitOfWork;
 using Retail.Api.Orders.MessageContract;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -31,9 +28,9 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Configure services
-builder.Services.AddTransient(typeof(IRepository<>), typeof(EntityRepository<>));
-builder.Services.AddTransient(typeof(IUnitOfWork), typeof(EntityUnitOfWork));
-builder.Services.AddTransient(typeof(ICustomerService), typeof(CustomerService));
+builder.Services.AddScoped(typeof(IRepository<>), typeof(EntityRepository<>));
+builder.Services.AddScoped(typeof(IUnitOfWork), typeof(EntityUnitOfWork));
+builder.Services.AddScoped(typeof(ICustomerService), typeof(CustomerService));
 
 // Add RabbitMQ from the common project
 builder.Services.AddRabbitMQServices(builder.Configuration);

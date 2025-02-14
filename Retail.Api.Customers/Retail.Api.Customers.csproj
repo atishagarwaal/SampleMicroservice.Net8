@@ -45,12 +45,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Migrations\" />
+    <ProjectReference Include="..\CommonLibrary\CommonLibrary.csproj" />
+    <ProjectReference Include="..\MessagingTopologyProvisioner\MessagingInfrastructure.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\CommonLibrary\CommonLibrary.csproj" />
-    <ProjectReference Include="..\MessagingTopologyProvisioner\MessagingInfrastructure.csproj" />
+    <Folder Include="tests\" />
   </ItemGroup>
 
 </Project>
