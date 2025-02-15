@@ -530,5 +530,17 @@
         <member name="M:Retail.Api.Orders.Migrations._001.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
             <inheritdoc />
         </member>
+        <member name="T:Retail.Api.Orders.Migrations.Orders">
+            <inheritdoc />
+        </member>
+        <member name="M:Retail.Api.Orders.Migrations.Orders.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Retail.Api.Orders.Migrations.Orders.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Retail.Api.Orders.Migrations.Orders.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
     </members>
 </doc>
