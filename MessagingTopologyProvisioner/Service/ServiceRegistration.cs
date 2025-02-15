@@ -29,7 +29,10 @@ namespace MessagingInfrastructure.Service
                     HostName = config.HostName,
                     Port = config.Port,
                     UserName = config.Username,
-                    Password = config.Password
+                    Password = config.Password,
+                    RequestedHeartbeat = TimeSpan.FromSeconds(30),
+                    AutomaticRecoveryEnabled = true,
+                    NetworkRecoveryInterval = TimeSpan.FromSeconds(10)
                 };
             });
 

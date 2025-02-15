@@ -9,12 +9,11 @@ using MessagingLibrary.Interface;
 using MessagingLibrary.Service;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Retail.Api.Orders.Data;
-using Retail.Api.Orders.DefaultInterface;
-using Retail.Api.Orders.Interface;
-using Retail.Api.Orders.Repositories;
-using Retail.Api.Orders.Service;
-using Retail.Api.Orders.UnitOfWork;
+using Retail.Api.Orders.src.CleanArchitecture.Application.Interfaces;
+using Retail.Api.Orders.src.CleanArchitecture.Application.Service;
+using Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Data;
+using Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Interfaces;
+using Retail.Api.Orders.src.CleanArchitecture.Infrastructure.UnitOfWork;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,8 +23,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-builder.Services.AddTransient<DapperContext>();
-builder.Services.AddTransient(typeof(IUnitOfWork), typeof(DapperUnitOfWork));
+builder.Services.AddTransient(typeof(IUnitOfWork), typeof(EntityUnitOfWork));
 builder.Services.AddTransient(typeof(IOrderService), typeof(OrderService));
 
 // Add RabbitMQ from the common project

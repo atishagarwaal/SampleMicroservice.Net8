@@ -146,68 +146,6 @@
             <param name="id">Customer Id.</param>
             <returns>Customer object.</returns>
         </member>
-        <member name="T:Retail.Api.Customers.src.CleanArchitecture.Application.Interfaces.IRepository`1">
-            <summary>
-            Interface definition for data access layer
-            </summary>
-            <typeparam name="T">Generic type parameter.</typeparam>
-        </member>
-        <member name="M:Retail.Api.Customers.src.CleanArchitecture.Application.Interfaces.IRepository`1.AddAsync(`0)">
-            <summary>
-            Add a new object asynchronously.
-            </summary>
-            <param name="entity">An object type parameter T.</param>
-        </member>
-        <member name="M:Retail.Api.Customers.src.CleanArchitecture.Application.Interfaces.IRepository`1.GetAllAsync">
-            <summary>
-            Gets collection of object asynchronously.
-            </summary>
-            <returns>Returns collection of object of type parameter T.</returns>
-        </member>
-        <member name="M:Retail.Api.Customers.src.CleanArchitecture.Application.Interfaces.IRepository`1.GetByIdAsync(System.Int64)">
-            <summary>
-            Gets object by Id
-            </summary>
-            <param name="id">Generic type parameter.</param>
-            <returns>Returns object of type parameter T.</returns>
-        </member>
-        <member name="M:Retail.Api.Customers.src.CleanArchitecture.Application.Interfaces.IRepository`1.Remove(`0)">
-            <summary>
-            Remove an object.
-            </summary>
-            <param name="entity">An object type parameter T.</param>
-        </member>
-        <member name="M:Retail.Api.Customers.src.CleanArchitecture.Application.Interfaces.IRepository`1.Update(`0)">
-            <summary>
-            Update an object.
-            </summary>
-            <param name="entity">An object type parameter T.</param>
-        </member>
-        <member name="T:Retail.Api.Customers.src.CleanArchitecture.Application.Interfaces.IUnitOfWork">
-            <summary>
-            Interface definition for unit of work.
-            </summary>
-        </member>
-        <member name="P:Retail.Api.Customers.src.CleanArchitecture.Application.Interfaces.IUnitOfWork.CustomerRepository">
-            <summary>
-            Gets or sets customer repository.
-            </summary>
-        </member>
-        <member name="M:Retail.Api.Customers.src.CleanArchitecture.Application.Interfaces.IUnitOfWork.BeginTransaction">
-            <summary>
-            Method to begin transaction.
-            </summary>
-        </member>
-        <member name="M:Retail.Api.Customers.src.CleanArchitecture.Application.Interfaces.IUnitOfWork.Commit">
-            <summary>
-            Method to commit changes.
-            </summary>
-        </member>
-        <member name="M:Retail.Api.Customers.src.CleanArchitecture.Application.Interfaces.IUnitOfWork.Rollback">
-            <summary>
-            Method to commit changes.
-            </summary>
-        </member>
         <member name="T:Retail.Api.Customers.src.CleanArchitecture.Application.Mappings.CustomerNotificationProfile">
             <summary>
             Defines Customer profile for AutoMapper.
@@ -233,7 +171,7 @@
             Customer service class.
             </summary>
         </member>
-        <member name="M:Retail.Api.Customers.src.CleanArchitecture.Application.Service.CustomerService.#ctor(Retail.Api.Customers.src.CleanArchitecture.Application.Interfaces.IUnitOfWork,AutoMapper.IMapper)">
+        <member name="M:Retail.Api.Customers.src.CleanArchitecture.Application.Service.CustomerService.#ctor(Retail.Api.Customers.src.CleanArchitecture.Infrastructure.Interfaces.IUnitOfWork,AutoMapper.IMapper)">
             <summary>
             Initializes a new instance of the <see cref="T:Retail.Api.Customers.src.CleanArchitecture.Application.Service.CustomerService"/> class.
             </summary>
@@ -346,6 +284,68 @@
             Overrides the OnModelCreating method to configure the database context and model.
             </summary>
             <param name="modelBuilder">The model builder.</param>
+        </member>
+        <member name="T:Retail.Api.Customers.src.CleanArchitecture.Infrastructure.Interfaces.IRepository`1">
+            <summary>
+            Interface definition for data access layer
+            </summary>
+            <typeparam name="T">Generic type parameter.</typeparam>
+        </member>
+        <member name="M:Retail.Api.Customers.src.CleanArchitecture.Infrastructure.Interfaces.IRepository`1.AddAsync(`0)">
+            <summary>
+            Add a new object asynchronously.
+            </summary>
+            <param name="entity">An object type parameter T.</param>
+        </member>
+        <member name="M:Retail.Api.Customers.src.CleanArchitecture.Infrastructure.Interfaces.IRepository`1.GetAllAsync">
+            <summary>
+            Gets collection of object asynchronously.
+            </summary>
+            <returns>Returns collection of object of type parameter T.</returns>
+        </member>
+        <member name="M:Retail.Api.Customers.src.CleanArchitecture.Infrastructure.Interfaces.IRepository`1.GetByIdAsync(System.Int64)">
+            <summary>
+            Gets object by Id
+            </summary>
+            <param name="id">Generic type parameter.</param>
+            <returns>Returns object of type parameter T.</returns>
+        </member>
+        <member name="M:Retail.Api.Customers.src.CleanArchitecture.Infrastructure.Interfaces.IRepository`1.Remove(`0)">
+            <summary>
+            Remove an object.
+            </summary>
+            <param name="entity">An object type parameter T.</param>
+        </member>
+        <member name="M:Retail.Api.Customers.src.CleanArchitecture.Infrastructure.Interfaces.IRepository`1.Update(`0)">
+            <summary>
+            Update an object.
+            </summary>
+            <param name="entity">An object type parameter T.</param>
+        </member>
+        <member name="T:Retail.Api.Customers.src.CleanArchitecture.Infrastructure.Interfaces.IUnitOfWork">
+            <summary>
+            Interface definition for unit of work.
+            </summary>
+        </member>
+        <member name="P:Retail.Api.Customers.src.CleanArchitecture.Infrastructure.Interfaces.IUnitOfWork.CustomerRepository">
+            <summary>
+            Gets or sets customer repository.
+            </summary>
+        </member>
+        <member name="M:Retail.Api.Customers.src.CleanArchitecture.Infrastructure.Interfaces.IUnitOfWork.BeginTransaction">
+            <summary>
+            Method to begin transaction.
+            </summary>
+        </member>
+        <member name="M:Retail.Api.Customers.src.CleanArchitecture.Infrastructure.Interfaces.IUnitOfWork.Commit">
+            <summary>
+            Method to commit changes.
+            </summary>
+        </member>
+        <member name="M:Retail.Api.Customers.src.CleanArchitecture.Infrastructure.Interfaces.IUnitOfWork.Rollback">
+            <summary>
+            Method to commit changes.
+            </summary>
         </member>
         <member name="T:Retail.Api.Customers.src.CleanArchitecture.Infrastructure.Repositories.CustomerNotificationRepository">
             <summary>

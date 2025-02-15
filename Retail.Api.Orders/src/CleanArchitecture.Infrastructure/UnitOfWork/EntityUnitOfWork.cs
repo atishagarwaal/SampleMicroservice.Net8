@@ -1,20 +1,21 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
-using Retail.Api.Customers.src.CleanArchitecture.Domain.Entities;
-using Retail.Api.Customers.src.CleanArchitecture.Infrastructure.Data;
-using Retail.Api.Customers.src.CleanArchitecture.Infrastructure.Interfaces;
-using Retail.Api.Customers.src.CleanArchitecture.Infrastructure.Repositories;
+using Retail.Api.Orders.src.CleanArchitecture.Domain.Model;
+using Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Data;
+using Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Interfaces;
+using Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Repositories;
 
-namespace Retail.Api.Customers.src.CleanArchitecture.Infrastructure.UnitOfWork
+namespace Retail.Api.Orders.src.CleanArchitecture.Infrastructure.UnitOfWork
 {
     /// <summary>
     /// Unit of work class.
     /// </summary>
-    internal class EntityUnitOfWork : IUnitOfWork
+    public class EntityUnitOfWork : IUnitOfWork
     {
         private readonly ApplicationDbContext _entityContext;
         private IDbContextTransaction? _entityTransaction;
-        private IRepository<Customer>? _customerRepository;
+        private IOrderRepository? _orderRepository;
+        private IRepository<LineItem>? _lineItemRepository;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="EntityUnitOfWork"/> class.
@@ -28,16 +29,32 @@ namespace Retail.Api.Customers.src.CleanArchitecture.Infrastructure.UnitOfWork
         /// <summary>
         /// Gets or sets customer repository.
         /// </summary>
-        public IRepository<Customer> CustomerRepository
+        public IOrderRepository OrderRepository
         {
             get
             {
-                if (_customerRepository == null)
+                if (_orderRepository == null)
                 {
-                    _customerRepository = new CustomerRepository(_entityContext);
+                    _orderRepository = new OrderEntityRepository(_entityContext);
                 }
 
-                return _customerRepository;
+                return _orderRepository;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets customer repository.
+        /// </summary>
+        public IRepository<LineItem> LineItemRepository
+        {
+            get
+            {
+                if (_lineItemRepository == null)
+                {
+                    _lineItemRepository = new LineItemEntityRepository(_entityContext);
+                }
+
+                return _lineItemRepository;
             }
         }
 

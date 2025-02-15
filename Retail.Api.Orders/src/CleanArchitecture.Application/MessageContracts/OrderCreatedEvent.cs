@@ -1,19 +1,20 @@
 ﻿using CommonLibrary;
 using CommonLibrary.MessageContract;
+using Retail.Api.Orders.src.CleanArchitecture.Application.Dto;
 
-namespace Retail.Api.Orders.MessageContract
+namespace Retail.Api.Orders.src.CleanArchitecture.Application.MessageContracts
 {
     public class OrderCreatedEvent : EventBase
     {
         /// <summary>
+        /// Gets or sets the Id.
+        /// </summary>
+        public long Id { get; set; }
+
+        /// <summary>
         /// Gets or sets the customer Id.
         /// </summary>
         public long CustomerId { get; set; }
-
-        /// <summary>
-        /// Gets or sets the order Id.
-        /// </summary>
-        public long OrderId { get; set; }
 
         /// <summary>
         /// Gets or sets the order date.
@@ -28,6 +29,6 @@ namespace Retail.Api.Orders.MessageContract
         /// <summary>
         /// Gets or sets the Line Items.
         /// </summary>
-        public IList<object>? LineItems { get; set; }
+        public List<LineItemDto>? LineItems { get; set; }
     }
 }

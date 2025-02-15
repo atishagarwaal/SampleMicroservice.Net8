@@ -21,6 +21,13 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="DefaultRepositories\**" />
+    <Content Remove="DefaultRepositories\**" />
+    <EmbeddedResource Remove="DefaultRepositories\**" />
+    <None Remove="DefaultRepositories\**" />
+  </ItemGroup>
   
   <ItemGroup>
     <PackageReference Include="Asp.Versioning.Mvc.ApiExplorer" Version="8.1.0" />
@@ -45,8 +52,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="DefaultRepositories\" />
-    <Folder Include="Migrations\" />
+    <Folder Include="tests\" />
+    <Folder Include="src\CleanArchitecture.Infrastructure\Migrations\" />
   </ItemGroup>
 
   <ItemGroup>

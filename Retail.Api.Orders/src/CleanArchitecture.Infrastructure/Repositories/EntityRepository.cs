@@ -1,15 +1,13 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
-using Retail.Api.Customers.src.CleanArchitecture.Infrastructure.Data;
-using Retail.Api.Customers.src.CleanArchitecture.Infrastructure.Interfaces;
-using System.Linq.Expressions;
-
-namespace Retail.Api.Customers.src.CleanArchitecture.Infrastructure.Repositories
+﻿namespace Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Repositories
 {
+    using Microsoft.EntityFrameworkCore;
+    using Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Data;
+    using Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Interfaces;
+
     /// <summary>
     /// Generic repository class.
     /// </summary>
-    internal class EntityRepository<T> : IRepository<T> where T : class
+    public class EntityRepository<T> : IRepository<T> where T : class
     {
         private readonly ApplicationDbContext _dbContext;
 

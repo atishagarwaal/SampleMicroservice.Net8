@@ -15,6 +15,7 @@ using Retail.Api.Customers.src.CleanArchitecture.Application.EventHandlers;
 using Retail.Api.Customers.src.CleanArchitecture.Application.Interfaces;
 using Retail.Api.Customers.src.CleanArchitecture.Application.Service;
 using Retail.Api.Customers.src.CleanArchitecture.Infrastructure.Data;
+using Retail.Api.Customers.src.CleanArchitecture.Infrastructure.Interfaces;
 using Retail.Api.Customers.src.CleanArchitecture.Infrastructure.Repositories;
 using Retail.Api.Customers.src.CleanArchitecture.Infrastructure.UnitOfWork;
 using Retail.Api.Orders.MessageContract;
