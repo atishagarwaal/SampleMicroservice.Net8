@@ -4,40 +4,16 @@
         <name>Retail.Customers</name>
     </assembly>
     <members>
-        <member name="T:Retail.Api.Customers.Migrations._001">
+        <member name="T:Retail.Customers.Migrations.Initial">
             <inheritdoc />
         </member>
-        <member name="M:Retail.Api.Customers.Migrations._001.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+        <member name="M:Retail.Customers.Migrations.Initial.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
             <inheritdoc />
         </member>
-        <member name="M:Retail.Api.Customers.Migrations._001.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+        <member name="M:Retail.Customers.Migrations.Initial.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
             <inheritdoc />
         </member>
-        <member name="M:Retail.Api.Customers.Migrations._001.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="T:Retail.Api.Customers.Migrations._002">
-            <inheritdoc />
-        </member>
-        <member name="M:Retail.Api.Customers.Migrations._002.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="M:Retail.Api.Customers.Migrations._002.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="M:Retail.Api.Customers.Migrations._002.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="T:Retail.Api.Customers.Migrations.notification">
-            <inheritdoc />
-        </member>
-        <member name="M:Retail.Api.Customers.Migrations.notification.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="M:Retail.Api.Customers.Migrations.notification.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="M:Retail.Api.Customers.Migrations.notification.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+        <member name="M:Retail.Customers.Migrations.Initial.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
             <inheritdoc />
         </member>
         <member name="T:Retail.Api.Customers.src.CleanArchitecture.API.Controllers.CustomerController">
@@ -275,7 +251,7 @@
             Gets or sets customers.
             </summary>
         </member>
-        <member name="P:Retail.Api.Customers.src.CleanArchitecture.Infrastructure.Data.ApplicationDbContext.customerNotifications">
+        <member name="P:Retail.Api.Customers.src.CleanArchitecture.Infrastructure.Data.ApplicationDbContext.Notifications">
             <summary>
             Gets or sets customer notifications.
             </summary>

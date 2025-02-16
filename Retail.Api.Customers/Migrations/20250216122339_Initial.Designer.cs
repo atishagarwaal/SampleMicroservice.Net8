@@ -7,14 +7,13 @@ using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Retail.Api.Customers.src.CleanArchitecture.Infrastructure.Data;
 
-
 #nullable disable
 
-namespace Retail.Api.Customers.Migrations
+namespace Retail.Customers.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250206104432_002")]
-    partial class _002
+    [Migration("20250216122339_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -26,7 +25,7 @@ namespace Retail.Api.Customers.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("Retail.Api.Customers.Model.Customer", b =>
+            modelBuilder.Entity("Retail.Api.Customers.src.CleanArchitecture.Domain.Entities.Customer", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -69,7 +68,7 @@ namespace Retail.Api.Customers.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Retail.Api.Customers.Model.CustomerNotification", b =>
+            modelBuilder.Entity("Retail.Api.Customers.src.CleanArchitecture.Domain.Entities.Notification", b =>
                 {
                     b.Property<long>("NotificationId")
                         .ValueGeneratedOnAdd()
@@ -92,7 +91,7 @@ namespace Retail.Api.Customers.Migrations
 
                     b.HasKey("NotificationId");
 
-                    b.ToTable("customerNotifications");
+                    b.ToTable("Notifications");
                 });
 #pragma warning restore 612, 618
         }

@@ -3,7 +3,6 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Retail.Api.Customers.src.CleanArchitecture.Infrastructure.Data;
 
@@ -12,11 +11,9 @@ using Retail.Api.Customers.src.CleanArchitecture.Infrastructure.Data;
 namespace Retail.Api.Customers.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250216103353_notification")]
-    partial class notification
+    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
     {
-        /// <inheritdoc />
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -91,7 +88,7 @@ namespace Retail.Api.Customers.Migrations
 
                     b.HasKey("NotificationId");
 
-                    b.ToTable("customerNotifications");
+                    b.ToTable("Notifications");
                 });
 #pragma warning restore 612, 618
         }
