@@ -14,6 +14,11 @@ namespace Retail.Api.Customers.src.CleanArchitecture.Infrastructure.Interfaces
         IRepository<Customer> CustomerRepository { get; }
 
         /// <summary>
+        /// Gets or sets notification repository.
+        /// </summary>
+        IRepository<Notification> NotificationRepository { get; }
+
+        /// <summary>
         /// Method to begin transaction.
         /// </summary>
         void BeginTransaction();

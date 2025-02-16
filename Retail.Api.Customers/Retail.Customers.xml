@@ -28,6 +28,18 @@
         <member name="M:Retail.Api.Customers.Migrations._002.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
             <inheritdoc />
         </member>
+        <member name="T:Retail.Api.Customers.Migrations.notification">
+            <inheritdoc />
+        </member>
+        <member name="M:Retail.Api.Customers.Migrations.notification.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Retail.Api.Customers.Migrations.notification.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Retail.Api.Customers.Migrations.notification.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
         <member name="T:Retail.Api.Customers.src.CleanArchitecture.API.Controllers.CustomerController">
             <summary>
             Customer controller class.
@@ -105,31 +117,6 @@
             Gets or sets the last name.
             </summary>
         </member>
-        <member name="P:Retail.Api.Customers.src.CleanArchitecture.Application.Dto.CustomerNotificationDto.NotificationId">
-            <summary>
-            Gets or sets the Id.
-            </summary>
-        </member>
-        <member name="P:Retail.Api.Customers.src.CleanArchitecture.Application.Dto.CustomerNotificationDto.CustomerId">
-            <summary>
-            Gets or sets the Id.
-            </summary>
-        </member>
-        <member name="P:Retail.Api.Customers.src.CleanArchitecture.Application.Dto.CustomerNotificationDto.OrderId">
-            <summary>
-            Gets or sets the Id.
-            </summary>
-        </member>
-        <member name="P:Retail.Api.Customers.src.CleanArchitecture.Application.Dto.CustomerNotificationDto.OrderDate">
-            <summary>
-            Gets or sets the order date.
-            </summary>
-        </member>
-        <member name="P:Retail.Api.Customers.src.CleanArchitecture.Application.Dto.CustomerNotificationDto.Message">
-            <summary>
-            Gets or sets the message.
-            </summary>
-        </member>
         <member name="T:Retail.Api.Customers.src.CleanArchitecture.Application.Interfaces.ICustomerService">
             <summary>
             Interface definition for customer service.
@@ -169,16 +156,6 @@
             </summary>
             <param name="id">Customer Id.</param>
             <returns>Customer object.</returns>
-        </member>
-        <member name="T:Retail.Api.Customers.src.CleanArchitecture.Application.Mappings.CustomerNotificationProfile">
-            <summary>
-            Defines Customer profile for AutoMapper.
-            </summary>
-        </member>
-        <member name="M:Retail.Api.Customers.src.CleanArchitecture.Application.Mappings.CustomerNotificationProfile.#ctor">
-            <summary>
-            Initializes a new instance of the <see cref="T:Retail.Api.Customers.src.CleanArchitecture.Application.Mappings.CustomerNotificationProfile"/> class.
-            </summary>
         </member>
         <member name="T:Retail.Api.Customers.src.CleanArchitecture.Application.Mappings.CustomerProfile">
             <summary>
@@ -257,27 +234,27 @@
             Gets or sets the last name.
             </summary>
         </member>
-        <member name="P:Retail.Api.Customers.src.CleanArchitecture.Domain.Entities.CustomerNotification.NotificationId">
+        <member name="P:Retail.Api.Customers.src.CleanArchitecture.Domain.Entities.Notification.NotificationId">
             <summary>
             Gets or sets the Id.
             </summary>
         </member>
-        <member name="P:Retail.Api.Customers.src.CleanArchitecture.Domain.Entities.CustomerNotification.CustomerId">
+        <member name="P:Retail.Api.Customers.src.CleanArchitecture.Domain.Entities.Notification.CustomerId">
             <summary>
             Gets or sets the Id.
             </summary>
         </member>
-        <member name="P:Retail.Api.Customers.src.CleanArchitecture.Domain.Entities.CustomerNotification.OrderId">
+        <member name="P:Retail.Api.Customers.src.CleanArchitecture.Domain.Entities.Notification.OrderId">
             <summary>
             Gets or sets the Id.
             </summary>
         </member>
-        <member name="P:Retail.Api.Customers.src.CleanArchitecture.Domain.Entities.CustomerNotification.OrderDate">
+        <member name="P:Retail.Api.Customers.src.CleanArchitecture.Domain.Entities.Notification.OrderDate">
             <summary>
             Gets or sets the order date.
             </summary>
         </member>
-        <member name="P:Retail.Api.Customers.src.CleanArchitecture.Domain.Entities.CustomerNotification.Message">
+        <member name="P:Retail.Api.Customers.src.CleanArchitecture.Domain.Entities.Notification.Message">
             <summary>
             Gets or sets the message.
             </summary>
@@ -356,6 +333,11 @@
             Gets or sets customer repository.
             </summary>
         </member>
+        <member name="P:Retail.Api.Customers.src.CleanArchitecture.Infrastructure.Interfaces.IUnitOfWork.NotificationRepository">
+            <summary>
+            Gets or sets notification repository.
+            </summary>
+        </member>
         <member name="M:Retail.Api.Customers.src.CleanArchitecture.Infrastructure.Interfaces.IUnitOfWork.BeginTransaction">
             <summary>
             Method to begin transaction.
@@ -370,17 +352,6 @@
             <summary>
             Method to commit changes.
             </summary>
-        </member>
-        <member name="T:Retail.Api.Customers.src.CleanArchitecture.Infrastructure.Repositories.CustomerNotificationRepository">
-            <summary>
-            Customer repository class.
-            </summary>
-        </member>
-        <member name="M:Retail.Api.Customers.src.CleanArchitecture.Infrastructure.Repositories.CustomerNotificationRepository.#ctor(Retail.Api.Customers.src.CleanArchitecture.Infrastructure.Data.ApplicationDbContext)">
-            <summary>
-            Initializes a new instance of the <see cref="T:Retail.Api.Customers.src.CleanArchitecture.Infrastructure.Repositories.CustomerRepository"/> class.
-            </summary>
-            <param name="context">Db context.</param>
         </member>
         <member name="T:Retail.Api.Customers.src.CleanArchitecture.Infrastructure.Repositories.CustomerRepository">
             <summary>
@@ -435,6 +406,17 @@
             </summary>
             <param name="entity">An object type parameter T.</param>
         </member>
+        <member name="T:Retail.Api.Customers.src.CleanArchitecture.Infrastructure.Repositories.NotificationRepository">
+            <summary>
+            Notification repository class.
+            </summary>
+        </member>
+        <member name="M:Retail.Api.Customers.src.CleanArchitecture.Infrastructure.Repositories.NotificationRepository.#ctor(Retail.Api.Customers.src.CleanArchitecture.Infrastructure.Data.ApplicationDbContext)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Retail.Api.Customers.src.CleanArchitecture.Infrastructure.Repositories.NotificationRepository"/> class.
+            </summary>
+            <param name="context">Db context.</param>
+        </member>
         <member name="T:Retail.Api.Customers.src.CleanArchitecture.Infrastructure.UnitOfWork.EntityUnitOfWork">
             <summary>
             Unit of work class.
@@ -449,6 +431,11 @@
         <member name="P:Retail.Api.Customers.src.CleanArchitecture.Infrastructure.UnitOfWork.EntityUnitOfWork.CustomerRepository">
             <summary>
             Gets or sets customer repository.
+            </summary>
+        </member>
+        <member name="P:Retail.Api.Customers.src.CleanArchitecture.Infrastructure.UnitOfWork.EntityUnitOfWork.NotificationRepository">
+            <summary>
+            Gets or sets notification repository.
             </summary>
         </member>
         <member name="M:Retail.Api.Customers.src.CleanArchitecture.Infrastructure.UnitOfWork.EntityUnitOfWork.BeginTransaction">

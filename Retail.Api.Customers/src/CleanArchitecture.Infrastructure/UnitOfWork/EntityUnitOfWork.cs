@@ -15,6 +15,7 @@ namespace Retail.Api.Customers.src.CleanArchitecture.Infrastructure.UnitOfWork
         private readonly ApplicationDbContext _entityContext;
         private IDbContextTransaction? _entityTransaction;
         private IRepository<Customer>? _customerRepository;
+        private IRepository<Notification>? _notificationRepository;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="EntityUnitOfWork"/> class.
@@ -38,6 +39,22 @@ namespace Retail.Api.Customers.src.CleanArchitecture.Infrastructure.UnitOfWork
                 }
 
                 return _customerRepository;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets notification repository.
+        /// </summary>
+        public IRepository<Notification> NotificationRepository
+        {
+            get
+            {
+                if (_notificationRepository == null)
+                {
+                    _notificationRepository = new NotificationRepository(_entityContext);
+                }
+
+                return _notificationRepository;
             }
         }
 

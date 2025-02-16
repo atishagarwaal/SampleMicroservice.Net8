@@ -2,7 +2,7 @@
 {
     using System.ComponentModel.DataAnnotations;
 
-    public class CustomerNotification
+    public class Notification
     {
         /// <summary>
         /// Gets or sets the Id.

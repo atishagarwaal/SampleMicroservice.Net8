@@ -4,15 +4,15 @@ using Retail.Api.Customers.src.CleanArchitecture.Infrastructure.Data;
 namespace Retail.Api.Customers.src.CleanArchitecture.Infrastructure.Repositories
 {
     /// <summary>
-    /// Customer repository class.
+    /// Notification repository class.
     /// </summary>
-    internal class CustomerNotificationRepository : EntityRepository<Customer>
+    internal class NotificationRepository : EntityRepository<Notification>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="CustomerRepository"/> class.
+        /// Initializes a new instance of the <see cref="NotificationRepository"/> class.
         /// </summary>
         /// <param name="context">Db context.</param>
-        public CustomerNotificationRepository(ApplicationDbContext context) : base(context)
+        public NotificationRepository(ApplicationDbContext context) : base(context)
         {
         }
     }

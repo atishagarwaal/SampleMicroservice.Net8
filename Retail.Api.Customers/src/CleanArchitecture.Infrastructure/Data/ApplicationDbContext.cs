@@ -34,7 +34,7 @@ namespace Retail.Api.Customers.src.CleanArchitecture.Infrastructure.Data
         /// <summary>
         /// Gets or sets customer notifications.
         /// </summary>
-        public DbSet<CustomerNotificationDto>? customerNotifications { get; set; }
+        public DbSet<Notification>? customerNotifications { get; set; }
 
         /// <summary>
         /// Overrides the OnModelCreating method to configure the database context and model.

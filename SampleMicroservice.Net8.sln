@@ -22,9 +22,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Retail.BFF.Api", "Retail.Ga
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Database", "Database", "{4DE56F9D-DC83-4004-8542-DAAD86D25BA7}"
 	ProjectSection(SolutionItems) = preProject
-		Database\Customer_16_Jan_2025.bak = Database\Customer_16_Jan_2025.bak
-		Database\Order_16_Jan_2025.bak = Database\Order_16_Jan_2025.bak
-		Database\Product_16_Jan_2025.bak = Database\Product_16_Jan_2025.bak
+		Database\Customer.bak = Database\Customer.bak
+		Database\Order.bak = Database\Order.bak
+		Database\Product..bak = Database\Product..bak
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MessagingInfrastructure", "MessagingTopologyProvisioner\MessagingInfrastructure.csproj", "{6A428DBC-47A5-4277-8F22-2E065594DF3A}"
