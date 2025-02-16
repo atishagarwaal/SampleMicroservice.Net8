@@ -1,0 +1,470 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Retail.Customers</name>
+    </assembly>
+    <members>
+        <member name="T:Retail.Api.Customers.Migrations._001">
+            <inheritdoc />
+        </member>
+        <member name="M:Retail.Api.Customers.Migrations._001.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Retail.Api.Customers.Migrations._001.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Retail.Api.Customers.Migrations._001.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:Retail.Api.Customers.Migrations._002">
+            <inheritdoc />
+        </member>
+        <member name="M:Retail.Api.Customers.Migrations._002.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Retail.Api.Customers.Migrations._002.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Retail.Api.Customers.Migrations._002.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:Retail.Api.Customers.src.CleanArchitecture.API.Controllers.CustomerController">
+            <summary>
+            Customer controller class.
+            </summary>
+        </member>
+        <member name="M:Retail.Api.Customers.src.CleanArchitecture.API.Controllers.CustomerController.#ctor(Retail.Api.Customers.src.CleanArchitecture.Application.Interfaces.ICustomerService,MessagingLibrary.Interface.IMessageSubscriber)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Retail.Api.Customers.src.CleanArchitecture.API.Controllers.CustomerController"/> class.
+            </summary>
+            <param name="customerService">Intance of customer service class.</param>
+        </member>
+        <member name="M:Retail.Api.Customers.src.CleanArchitecture.API.Controllers.CustomerController.Get">
+            <summary>
+            Method to return list of all customers.
+            </summary>
+            <returns>List of customers.</returns>
+        </member>
+        <member name="M:Retail.Api.Customers.src.CleanArchitecture.API.Controllers.CustomerController.Get(System.Int64)">
+            <summary>
+            Method to fetch customer record based on Id.
+            </summary>
+            <returns>Customer object.</returns>
+        </member>
+        <member name="M:Retail.Api.Customers.src.CleanArchitecture.API.Controllers.CustomerController.Post(Retail.Api.Customers.src.CleanArchitecture.Application.Dto.CustomerDto)">
+            <summary>
+            Method to add a new customer record.
+            </summary>
+            <param name="value">Customer record.</param>
+        </member>
+        <member name="M:Retail.Api.Customers.src.CleanArchitecture.API.Controllers.CustomerController.Put(System.Int64,Retail.Api.Customers.src.CleanArchitecture.Application.Dto.CustomerDto)">
+            <summary>
+            Method to update a customer record.
+            </summary>
+            <param name="id">Customer Id.</param>
+            <param name="value">Customer record.</param>
+        </member>
+        <member name="M:Retail.Api.Customers.src.CleanArchitecture.API.Controllers.CustomerController.Delete(System.Int64)">
+            <summary>
+            Method to delete a customer record.
+            </summary>
+            <param name="id">Customer Id.</param>
+        </member>
+        <member name="T:Retail.Api.Customers.src.CleanArchitecture.Application.Constants.MessageConstants">
+            <summary>
+            Constants class.
+            </summary>
+        </member>
+        <member name="F:Retail.Api.Customers.src.CleanArchitecture.Application.Constants.MessageConstants.InvalidParameter">
+            <summary>
+            Get or sets InvalidParameter.
+            </summary>
+        </member>
+        <member name="F:Retail.Api.Customers.src.CleanArchitecture.Application.Constants.MessageConstants.InternalServerError">
+            <summary>
+            Get or sets InternalServerError.
+            </summary>
+        </member>
+        <member name="T:Retail.Api.Customers.src.CleanArchitecture.Application.Dto.CustomerDto">
+            <summary>
+            Defines Customer entity.
+            </summary>
+        </member>
+        <member name="P:Retail.Api.Customers.src.CleanArchitecture.Application.Dto.CustomerDto.Id">
+            <summary>
+            Gets or sets the Id.
+            </summary>
+        </member>
+        <member name="P:Retail.Api.Customers.src.CleanArchitecture.Application.Dto.CustomerDto.FirstName">
+            <summary>
+            Gets or sets the first name.
+            </summary>
+        </member>
+        <member name="P:Retail.Api.Customers.src.CleanArchitecture.Application.Dto.CustomerDto.LastName">
+            <summary>
+            Gets or sets the last name.
+            </summary>
+        </member>
+        <member name="P:Retail.Api.Customers.src.CleanArchitecture.Application.Dto.CustomerNotificationDto.NotificationId">
+            <summary>
+            Gets or sets the Id.
+            </summary>
+        </member>
+        <member name="P:Retail.Api.Customers.src.CleanArchitecture.Application.Dto.CustomerNotificationDto.CustomerId">
+            <summary>
+            Gets or sets the Id.
+            </summary>
+        </member>
+        <member name="P:Retail.Api.Customers.src.CleanArchitecture.Application.Dto.CustomerNotificationDto.OrderId">
+            <summary>
+            Gets or sets the Id.
+            </summary>
+        </member>
+        <member name="P:Retail.Api.Customers.src.CleanArchitecture.Application.Dto.CustomerNotificationDto.OrderDate">
+            <summary>
+            Gets or sets the order date.
+            </summary>
+        </member>
+        <member name="P:Retail.Api.Customers.src.CleanArchitecture.Application.Dto.CustomerNotificationDto.Message">
+            <summary>
+            Gets or sets the message.
+            </summary>
+        </member>
+        <member name="T:Retail.Api.Customers.src.CleanArchitecture.Application.Interfaces.ICustomerService">
+            <summary>
+            Interface definition for customer service.
+            </summary>
+        </member>
+        <member name="M:Retail.Api.Customers.src.CleanArchitecture.Application.Interfaces.ICustomerService.GetAllCustomersAsync">
+            <summary>
+            Method to fetch all customers asynchronously.
+            </summary>
+            <returns>List of customers.</returns>
+        </member>
+        <member name="M:Retail.Api.Customers.src.CleanArchitecture.Application.Interfaces.ICustomerService.GetCustomerByIdAsync(System.Int64)">
+            <summary>
+            Method to fetch customer record based on Id asynchronously.
+            </summary>
+            <param name="id">Customer Id.</param>
+            <returns>Customer object.</returns>
+        </member>
+        <member name="M:Retail.Api.Customers.src.CleanArchitecture.Application.Interfaces.ICustomerService.AddCustomerAsync(Retail.Api.Customers.src.CleanArchitecture.Application.Dto.CustomerDto)">
+            <summary>
+            Method to add a new customer record asynchronously.
+            </summary>
+            <param name="custDto">Customer record.</param>
+            <returns>Customer object.</returns>
+        </member>
+        <member name="M:Retail.Api.Customers.src.CleanArchitecture.Application.Interfaces.ICustomerService.UpdateCustomerAsync(System.Int64,Retail.Api.Customers.src.CleanArchitecture.Application.Dto.CustomerDto)">
+            <summary>
+            Method to update customer record asynchronously.
+            </summary>
+            <param name="id">Customer Id.</param>
+            <param name="custDto">Customer record.</param>
+            <returns>Customer object.</returns>
+        </member>
+        <member name="M:Retail.Api.Customers.src.CleanArchitecture.Application.Interfaces.ICustomerService.DeleteCustomerAsync(System.Int64)">
+            <summary>
+            Method to delete customer record asynchronously.
+            </summary>
+            <param name="id">Customer Id.</param>
+            <returns>Customer object.</returns>
+        </member>
+        <member name="T:Retail.Api.Customers.src.CleanArchitecture.Application.Mappings.CustomerNotificationProfile">
+            <summary>
+            Defines Customer profile for AutoMapper.
+            </summary>
+        </member>
+        <member name="M:Retail.Api.Customers.src.CleanArchitecture.Application.Mappings.CustomerNotificationProfile.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Retail.Api.Customers.src.CleanArchitecture.Application.Mappings.CustomerNotificationProfile"/> class.
+            </summary>
+        </member>
+        <member name="T:Retail.Api.Customers.src.CleanArchitecture.Application.Mappings.CustomerProfile">
+            <summary>
+            Defines Customer profile for AutoMapper.
+            </summary>
+        </member>
+        <member name="M:Retail.Api.Customers.src.CleanArchitecture.Application.Mappings.CustomerProfile.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Retail.Api.Customers.src.CleanArchitecture.Application.Mappings.CustomerProfile"/> class.
+            </summary>
+        </member>
+        <member name="T:Retail.Api.Customers.src.CleanArchitecture.Application.Service.CustomerService">
+            <summary>
+            Customer service class.
+            </summary>
+        </member>
+        <member name="M:Retail.Api.Customers.src.CleanArchitecture.Application.Service.CustomerService.#ctor(Retail.Api.Customers.src.CleanArchitecture.Infrastructure.Interfaces.IUnitOfWork,AutoMapper.IMapper)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Retail.Api.Customers.src.CleanArchitecture.Application.Service.CustomerService"/> class.
+            </summary>
+            <param name="unitOfWork">Intance of unit of work class.</param>
+            <param name="mapper">Intance of mapper class.</param>
+        </member>
+        <member name="M:Retail.Api.Customers.src.CleanArchitecture.Application.Service.CustomerService.GetAllCustomersAsync">
+            <summary>
+            Method to fetch all customers asynchronously.
+            </summary>
+            <returns>List of customers.</returns>
+        </member>
+        <member name="M:Retail.Api.Customers.src.CleanArchitecture.Application.Service.CustomerService.GetCustomerByIdAsync(System.Int64)">
+            <summary>
+            Method to fetch customer record based on Id asynchronously.
+            </summary>
+            <param name="id">Customer Id.</param>
+            <returns>Customer object.</returns>
+        </member>
+        <member name="M:Retail.Api.Customers.src.CleanArchitecture.Application.Service.CustomerService.AddCustomerAsync(Retail.Api.Customers.src.CleanArchitecture.Application.Dto.CustomerDto)">
+            <summary>
+            Method to add a new customer record asynchronously.
+            </summary>
+            <param name="custDto">Customer record.</param>
+            <returns>Customer object.</returns>
+        </member>
+        <member name="M:Retail.Api.Customers.src.CleanArchitecture.Application.Service.CustomerService.UpdateCustomerAsync(System.Int64,Retail.Api.Customers.src.CleanArchitecture.Application.Dto.CustomerDto)">
+            <summary>
+            Method to update customer record asynchronously.
+            </summary>
+            <param name="id">Customer Id.</param>
+            <param name="custDto">Customer record.</param>
+            <returns>Customer object.</returns>
+        </member>
+        <member name="M:Retail.Api.Customers.src.CleanArchitecture.Application.Service.CustomerService.DeleteCustomerAsync(System.Int64)">
+            <summary>
+            Method to delete customer record asynchronously.
+            </summary>
+            <param name="id">Customer Id.</param>
+            <returns>Customer object.</returns>
+        </member>
+        <member name="T:Retail.Api.Customers.src.CleanArchitecture.Domain.Entities.Customer">
+            <summary>
+            Defines Customer entity.
+            </summary>
+        </member>
+        <member name="P:Retail.Api.Customers.src.CleanArchitecture.Domain.Entities.Customer.Id">
+            <summary>
+            Gets or sets the Id.
+            </summary>
+        </member>
+        <member name="P:Retail.Api.Customers.src.CleanArchitecture.Domain.Entities.Customer.FirstName">
+            <summary>
+            Gets or sets the first name.
+            </summary>
+        </member>
+        <member name="P:Retail.Api.Customers.src.CleanArchitecture.Domain.Entities.Customer.LastName">
+            <summary>
+            Gets or sets the last name.
+            </summary>
+        </member>
+        <member name="P:Retail.Api.Customers.src.CleanArchitecture.Domain.Entities.CustomerNotification.NotificationId">
+            <summary>
+            Gets or sets the Id.
+            </summary>
+        </member>
+        <member name="P:Retail.Api.Customers.src.CleanArchitecture.Domain.Entities.CustomerNotification.CustomerId">
+            <summary>
+            Gets or sets the Id.
+            </summary>
+        </member>
+        <member name="P:Retail.Api.Customers.src.CleanArchitecture.Domain.Entities.CustomerNotification.OrderId">
+            <summary>
+            Gets or sets the Id.
+            </summary>
+        </member>
+        <member name="P:Retail.Api.Customers.src.CleanArchitecture.Domain.Entities.CustomerNotification.OrderDate">
+            <summary>
+            Gets or sets the order date.
+            </summary>
+        </member>
+        <member name="P:Retail.Api.Customers.src.CleanArchitecture.Domain.Entities.CustomerNotification.Message">
+            <summary>
+            Gets or sets the message.
+            </summary>
+        </member>
+        <member name="T:Retail.Api.Customers.src.CleanArchitecture.Infrastructure.Data.ApplicationDbContext">
+            <summary>
+            Application db context class.
+            </summary>
+        </member>
+        <member name="M:Retail.Api.Customers.src.CleanArchitecture.Infrastructure.Data.ApplicationDbContext.#ctor(Microsoft.EntityFrameworkCore.DbContextOptions{Retail.Api.Customers.src.CleanArchitecture.Infrastructure.Data.ApplicationDbContext})">
+            <summary>
+            Initializes a new instance of the <see cref="T:Retail.Api.Customers.src.CleanArchitecture.Infrastructure.Data.ApplicationDbContext"/> class.
+            </summary>
+            <param name="options">db context options.</param>
+        </member>
+        <member name="P:Retail.Api.Customers.src.CleanArchitecture.Infrastructure.Data.ApplicationDbContext.Customers">
+            <summary>
+            Gets or sets customers.
+            </summary>
+        </member>
+        <member name="P:Retail.Api.Customers.src.CleanArchitecture.Infrastructure.Data.ApplicationDbContext.customerNotifications">
+            <summary>
+            Gets or sets customer notifications.
+            </summary>
+        </member>
+        <member name="M:Retail.Api.Customers.src.CleanArchitecture.Infrastructure.Data.ApplicationDbContext.OnModelCreating(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <summary>
+            Overrides the OnModelCreating method to configure the database context and model.
+            </summary>
+            <param name="modelBuilder">The model builder.</param>
+        </member>
+        <member name="T:Retail.Api.Customers.src.CleanArchitecture.Infrastructure.Interfaces.IRepository`1">
+            <summary>
+            Interface definition for data access layer
+            </summary>
+            <typeparam name="T">Generic type parameter.</typeparam>
+        </member>
+        <member name="M:Retail.Api.Customers.src.CleanArchitecture.Infrastructure.Interfaces.IRepository`1.AddAsync(`0)">
+            <summary>
+            Add a new object asynchronously.
+            </summary>
+            <param name="entity">An object type parameter T.</param>
+        </member>
+        <member name="M:Retail.Api.Customers.src.CleanArchitecture.Infrastructure.Interfaces.IRepository`1.GetAllAsync">
+            <summary>
+            Gets collection of object asynchronously.
+            </summary>
+            <returns>Returns collection of object of type parameter T.</returns>
+        </member>
+        <member name="M:Retail.Api.Customers.src.CleanArchitecture.Infrastructure.Interfaces.IRepository`1.GetByIdAsync(System.Int64)">
+            <summary>
+            Gets object by Id
+            </summary>
+            <param name="id">Generic type parameter.</param>
+            <returns>Returns object of type parameter T.</returns>
+        </member>
+        <member name="M:Retail.Api.Customers.src.CleanArchitecture.Infrastructure.Interfaces.IRepository`1.Remove(`0)">
+            <summary>
+            Remove an object.
+            </summary>
+            <param name="entity">An object type parameter T.</param>
+        </member>
+        <member name="M:Retail.Api.Customers.src.CleanArchitecture.Infrastructure.Interfaces.IRepository`1.Update(`0)">
+            <summary>
+            Update an object.
+            </summary>
+            <param name="entity">An object type parameter T.</param>
+        </member>
+        <member name="T:Retail.Api.Customers.src.CleanArchitecture.Infrastructure.Interfaces.IUnitOfWork">
+            <summary>
+            Interface definition for unit of work.
+            </summary>
+        </member>
+        <member name="P:Retail.Api.Customers.src.CleanArchitecture.Infrastructure.Interfaces.IUnitOfWork.CustomerRepository">
+            <summary>
+            Gets or sets customer repository.
+            </summary>
+        </member>
+        <member name="M:Retail.Api.Customers.src.CleanArchitecture.Infrastructure.Interfaces.IUnitOfWork.BeginTransaction">
+            <summary>
+            Method to begin transaction.
+            </summary>
+        </member>
+        <member name="M:Retail.Api.Customers.src.CleanArchitecture.Infrastructure.Interfaces.IUnitOfWork.Commit">
+            <summary>
+            Method to commit changes.
+            </summary>
+        </member>
+        <member name="M:Retail.Api.Customers.src.CleanArchitecture.Infrastructure.Interfaces.IUnitOfWork.Rollback">
+            <summary>
+            Method to commit changes.
+            </summary>
+        </member>
+        <member name="T:Retail.Api.Customers.src.CleanArchitecture.Infrastructure.Repositories.CustomerNotificationRepository">
+            <summary>
+            Customer repository class.
+            </summary>
+        </member>
+        <member name="M:Retail.Api.Customers.src.CleanArchitecture.Infrastructure.Repositories.CustomerNotificationRepository.#ctor(Retail.Api.Customers.src.CleanArchitecture.Infrastructure.Data.ApplicationDbContext)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Retail.Api.Customers.src.CleanArchitecture.Infrastructure.Repositories.CustomerRepository"/> class.
+            </summary>
+            <param name="context">Db context.</param>
+        </member>
+        <member name="T:Retail.Api.Customers.src.CleanArchitecture.Infrastructure.Repositories.CustomerRepository">
+            <summary>
+            Customer repository class.
+            </summary>
+        </member>
+        <member name="M:Retail.Api.Customers.src.CleanArchitecture.Infrastructure.Repositories.CustomerRepository.#ctor(Retail.Api.Customers.src.CleanArchitecture.Infrastructure.Data.ApplicationDbContext)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Retail.Api.Customers.src.CleanArchitecture.Infrastructure.Repositories.CustomerRepository"/> class.
+            </summary>
+            <param name="context">Db context.</param>
+        </member>
+        <member name="T:Retail.Api.Customers.src.CleanArchitecture.Infrastructure.Repositories.EntityRepository`1">
+            <summary>
+            Generic repository class.
+            </summary>
+        </member>
+        <member name="M:Retail.Api.Customers.src.CleanArchitecture.Infrastructure.Repositories.EntityRepository`1.#ctor(Retail.Api.Customers.src.CleanArchitecture.Infrastructure.Data.ApplicationDbContext)">
+            <summary>
+            Initializes a new instance of the GenericRepository class.
+            </summary>
+            <param name="dbcontext">Db context.</param>
+        </member>
+        <member name="M:Retail.Api.Customers.src.CleanArchitecture.Infrastructure.Repositories.EntityRepository`1.AddAsync(`0)">
+            <summary>
+            Add a new object asynchronously.
+            </summary>
+            <param name="entity">An object type parameter T.</param>
+        </member>
+        <member name="M:Retail.Api.Customers.src.CleanArchitecture.Infrastructure.Repositories.EntityRepository`1.GetAllAsync">
+            <summary>
+            Gets collection of object
+            </summary>
+            <returns>Returns collection of object of type parameter T.</returns>
+        </member>
+        <member name="M:Retail.Api.Customers.src.CleanArchitecture.Infrastructure.Repositories.EntityRepository`1.GetByIdAsync(System.Int64)">
+            <summary>
+            Gets object by Id
+            </summary>
+            <param name="id">Generic type parameter.</param>
+            <returns>Returns object of type parameter T.</returns>
+        </member>
+        <member name="M:Retail.Api.Customers.src.CleanArchitecture.Infrastructure.Repositories.EntityRepository`1.Remove(`0)">
+            <summary>
+            Remove an object.
+            </summary>
+            <param name="entity">An object type parameter T.</param>
+        </member>
+        <member name="M:Retail.Api.Customers.src.CleanArchitecture.Infrastructure.Repositories.EntityRepository`1.Update(`0)">
+            <summary>
+            Update an object.
+            </summary>
+            <param name="entity">An object type parameter T.</param>
+        </member>
+        <member name="T:Retail.Api.Customers.src.CleanArchitecture.Infrastructure.UnitOfWork.EntityUnitOfWork">
+            <summary>
+            Unit of work class.
+            </summary>
+        </member>
+        <member name="M:Retail.Api.Customers.src.CleanArchitecture.Infrastructure.UnitOfWork.EntityUnitOfWork.#ctor(Retail.Api.Customers.src.CleanArchitecture.Infrastructure.Data.ApplicationDbContext)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Retail.Api.Customers.src.CleanArchitecture.Infrastructure.UnitOfWork.EntityUnitOfWork"/> class.
+            </summary>
+            <param name="entityContext">Entity framework Db context.</param>
+        </member>
+        <member name="P:Retail.Api.Customers.src.CleanArchitecture.Infrastructure.UnitOfWork.EntityUnitOfWork.CustomerRepository">
+            <summary>
+            Gets or sets customer repository.
+            </summary>
+        </member>
+        <member name="M:Retail.Api.Customers.src.CleanArchitecture.Infrastructure.UnitOfWork.EntityUnitOfWork.BeginTransaction">
+            <summary>
+            Method to begin transaction.
+            </summary>
+        </member>
+        <member name="M:Retail.Api.Customers.src.CleanArchitecture.Infrastructure.UnitOfWork.EntityUnitOfWork.Commit">
+            <summary>
+            Method to commit changes.
+            </summary>
+        </member>
+        <member name="M:Retail.Api.Customers.src.CleanArchitecture.Infrastructure.UnitOfWork.EntityUnitOfWork.Rollback">
+            <summary>
+            Method to rollback changes.
+            </summary>
+        </member>
+    </members>
+</doc>
