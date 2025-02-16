@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Retail.Api.Orders.src.CleanArchitecture.Domain.Model;
+using Retail.Api.Orders.src.CleanArchitecture.Domain.Entities;
 using Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Data;
 using Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Interfaces;
 

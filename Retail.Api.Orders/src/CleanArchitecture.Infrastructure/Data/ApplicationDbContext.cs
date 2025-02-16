@@ -5,7 +5,7 @@
 namespace Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Data
 {
     using Microsoft.EntityFrameworkCore;
-    using Retail.Api.Orders.src.CleanArchitecture.Domain.Model;
+    using Retail.Api.Orders.src.CleanArchitecture.Domain.Entities;
 
     /// <summary>
     /// Application db context class.

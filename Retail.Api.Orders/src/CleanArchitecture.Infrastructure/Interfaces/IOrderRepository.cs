@@ -1,5 +1,5 @@
 ﻿using Retail.Api.Orders.src.CleanArchitecture.Application.Dto;
-using Retail.Api.Orders.src.CleanArchitecture.Domain.Model;
+using Retail.Api.Orders.src.CleanArchitecture.Domain.Entities;
 
 namespace Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Interfaces
 {

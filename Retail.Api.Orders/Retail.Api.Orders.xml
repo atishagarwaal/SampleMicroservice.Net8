@@ -238,57 +238,57 @@
             <param name="id">Order Id.</param>
             <returns>Order object.</returns>
         </member>
-        <member name="T:Retail.Api.Orders.src.CleanArchitecture.Domain.Model.LineItem">
+        <member name="T:Retail.Api.Orders.src.CleanArchitecture.Domain.Entities.LineItem">
             <summary>
             Defines Order item entity.
             </summary>
         </member>
-        <member name="P:Retail.Api.Orders.src.CleanArchitecture.Domain.Model.LineItem.Id">
+        <member name="P:Retail.Api.Orders.src.CleanArchitecture.Domain.Entities.LineItem.Id">
             <summary>
             Gets or sets the Id.
             </summary>
         </member>
-        <member name="P:Retail.Api.Orders.src.CleanArchitecture.Domain.Model.LineItem.OrderId">
+        <member name="P:Retail.Api.Orders.src.CleanArchitecture.Domain.Entities.LineItem.OrderId">
             <summary>
             Gets or sets the Order Id.
             </summary>
         </member>
-        <member name="P:Retail.Api.Orders.src.CleanArchitecture.Domain.Model.LineItem.Order">
+        <member name="P:Retail.Api.Orders.src.CleanArchitecture.Domain.Entities.LineItem.Order">
             <summary>
             Gets or sets the Order.
             </summary>
         </member>
-        <member name="P:Retail.Api.Orders.src.CleanArchitecture.Domain.Model.LineItem.SkuId">
+        <member name="P:Retail.Api.Orders.src.CleanArchitecture.Domain.Entities.LineItem.SkuId">
             <summary>
             Gets or sets the Sku Id.
             </summary>
         </member>
-        <member name="P:Retail.Api.Orders.src.CleanArchitecture.Domain.Model.LineItem.Qty">
+        <member name="P:Retail.Api.Orders.src.CleanArchitecture.Domain.Entities.LineItem.Qty">
             <summary>
             Gets or sets the Qty.
             </summary>
         </member>
-        <member name="T:Retail.Api.Orders.src.CleanArchitecture.Domain.Model.Order">
+        <member name="T:Retail.Api.Orders.src.CleanArchitecture.Domain.Entities.Order">
             <summary>
             Defines Order entity.
             </summary>
         </member>
-        <member name="P:Retail.Api.Orders.src.CleanArchitecture.Domain.Model.Order.Id">
+        <member name="P:Retail.Api.Orders.src.CleanArchitecture.Domain.Entities.Order.Id">
             <summary>
             Gets or sets the Id.
             </summary>
         </member>
-        <member name="P:Retail.Api.Orders.src.CleanArchitecture.Domain.Model.Order.CustomerId">
+        <member name="P:Retail.Api.Orders.src.CleanArchitecture.Domain.Entities.Order.CustomerId">
             <summary>
             Gets or sets the customer Id.
             </summary>
         </member>
-        <member name="P:Retail.Api.Orders.src.CleanArchitecture.Domain.Model.Order.OrderDate">
+        <member name="P:Retail.Api.Orders.src.CleanArchitecture.Domain.Entities.Order.OrderDate">
             <summary>
             Gets or sets the order date.
             </summary>
         </member>
-        <member name="P:Retail.Api.Orders.src.CleanArchitecture.Domain.Model.Order.TotalAmount">
+        <member name="P:Retail.Api.Orders.src.CleanArchitecture.Domain.Entities.Order.TotalAmount">
             <summary>
             Gets or sets the total amount.
             </summary>

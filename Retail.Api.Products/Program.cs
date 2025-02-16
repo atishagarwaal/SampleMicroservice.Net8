@@ -7,13 +7,12 @@
 using MessagingInfrastructure.Service;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Retail.Api.Products.Data;
-using Retail.Api.Products.DefaultInterface;
-using Retail.Api.Products.DefaultRepositories;
-using Retail.Api.Products.Interface;
-using Retail.Api.Products.Repositories;
-using Retail.Api.Products.Service;
-using Retail.Api.Products.UnitOfWork;
+using Retail.Api.Products.src.CleanArchitecture.Application.Interfaces;
+using Retail.Api.Products.src.CleanArchitecture.Application.Service;
+using Retail.Api.Products.src.CleanArchitecture.Infrastructure.Data;
+using Retail.Api.Products.src.CleanArchitecture.Infrastructure.Interfaces;
+using Retail.Api.Products.src.CleanArchitecture.Infrastructure.Repositories;
+using Retail.Api.Products.src.CleanArchitecture.Infrastructure.UnitOfWork;
 
 var builder = WebApplication.CreateBuilder(args);
 

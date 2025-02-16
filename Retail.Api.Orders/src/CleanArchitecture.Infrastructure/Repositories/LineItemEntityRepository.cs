@@ -1,4 +1,4 @@
-﻿using Retail.Api.Orders.src.CleanArchitecture.Domain.Model;
+﻿using Retail.Api.Orders.src.CleanArchitecture.Domain.Entities;
 using Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Data;
 
 namespace Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Repositories

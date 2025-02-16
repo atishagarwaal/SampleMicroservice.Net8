@@ -7,7 +7,7 @@ namespace Retail.Api.Orders.src.CleanArchitecture.Application.Mappings
     using Retail.Api.Orders.MessageContract;
     using Retail.Api.Orders.src.CleanArchitecture.Application.Dto;
     using Retail.Api.Orders.src.CleanArchitecture.Application.MessageContracts;
-    using Retail.Api.Orders.src.CleanArchitecture.Domain.Model;
+    using Retail.Api.Orders.src.CleanArchitecture.Domain.Entities;
     using OrderCreatedEvent = MessageContracts.OrderCreatedEvent;
 
     /// <summary>

@@ -5,7 +5,7 @@
     using Retail.Api.Orders.MessageContract;
     using Retail.Api.Orders.src.CleanArchitecture.Application.Dto;
     using Retail.Api.Orders.src.CleanArchitecture.Application.Interfaces;
-    using Retail.Api.Orders.src.CleanArchitecture.Domain.Model;
+    using Retail.Api.Orders.src.CleanArchitecture.Domain.Entities;
     using Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Interfaces;
     using static NuGet.Packaging.PackagingConstants;
 

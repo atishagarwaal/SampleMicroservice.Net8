@@ -1,7 +1,7 @@
-﻿using Retail.Api.Orders.src.CleanArchitecture.Domain.Entities;
+﻿using Retail.Api.Products.src.CleanArchitecture.Domain.Entities;
 using System.Data;
 
-namespace Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Interfaces
+namespace Retail.Api.Products.src.CleanArchitecture.Infrastructure.Interfaces
 {
     /// <summary>
     /// Interface definition for unit of work.
@@ -9,14 +9,9 @@ namespace Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Interfaces
     public interface IUnitOfWork
     {
         /// <summary>
-        /// Gets or sets customer repository.
+        /// Gets or sets product repository.
         /// </summary>
-        IOrderRepository OrderRepository { get; }
-
-        /// <summary>
-        /// Gets or sets customer repository.
-        /// </summary>
-        IRepository<LineItem> LineItemRepository { get; }
+        IRepository<Sku> ProductRepository { get; }
 
         /// <summary>
         /// Method to begin transaction.
