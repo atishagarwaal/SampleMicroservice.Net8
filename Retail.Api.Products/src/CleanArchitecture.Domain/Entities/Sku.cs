@@ -30,5 +30,11 @@ namespace Retail.Api.Products.src.CleanArchitecture.Domain.Entities
         /// </summary>
         [Required]
         public double UnitPrice { get; set; }
+
+        /// <summary>
+        /// Gets or sets the inventory.
+        /// </summary>
+        [Required]
+        public int Inventory { get; set; }
     }
 }

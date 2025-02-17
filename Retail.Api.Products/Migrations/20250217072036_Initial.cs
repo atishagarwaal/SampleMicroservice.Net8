@@ -4,10 +4,10 @@
 
 #pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
 
-namespace Retail.Api.Products.Migrations
+namespace Retail.Products.Migrations
 {
     /// <inheritdoc />
-    public partial class _001 : Migration
+    public partial class Initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -19,7 +19,8 @@ namespace Retail.Api.Products.Migrations
                     Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    UnitPrice = table.Column<double>(type: "float", nullable: false)
+                    UnitPrice = table.Column<double>(type: "float", nullable: false),
+                    Inventory = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -28,12 +29,12 @@ namespace Retail.Api.Products.Migrations
 
             migrationBuilder.InsertData(
                 table: "Skus",
-                columns: new[] { "Id", "Name", "UnitPrice" },
+                columns: new[] { "Id", "Inventory", "Name", "UnitPrice" },
                 values: new object[,]
                 {
-                    { 1L, "Rice", 50.0 },
-                    { 2L, "Salt", 30.0 },
-                    { 3L, "Sugar", 60.0 }
+                    { 1L, 5000, "Rice", 50.0 },
+                    { 2L, 5000, "Salt", 30.0 },
+                    { 3L, 5000, "Sugar", 60.0 }
                 });
         }
 

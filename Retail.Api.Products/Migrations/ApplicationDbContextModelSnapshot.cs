@@ -2,20 +2,17 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Retail.Api.Products.src.CleanArchitecture.Infrastructure.Data;
 
 #nullable disable
 
-namespace Retail.Api.Products.Migrations
+namespace Retail.Products.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230309080007_001")]
-    partial class _001
+    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
     {
-        /// <inheritdoc />
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -24,13 +21,16 @@ namespace Retail.Api.Products.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("Retail.Api.Products.Model.Sku", b =>
+            modelBuilder.Entity("Retail.Api.Products.src.CleanArchitecture.Domain.Entities.Sku", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<int>("Inventory")
+                        .HasColumnType("int");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -48,18 +48,21 @@ namespace Retail.Api.Products.Migrations
                         new
                         {
                             Id = 1L,
+                            Inventory = 5000,
                             Name = "Rice",
                             UnitPrice = 50.0
                         },
                         new
                         {
                             Id = 2L,
+                            Inventory = 5000,
                             Name = "Salt",
                             UnitPrice = 30.0
                         },
                         new
                         {
                             Id = 3L,
+                            Inventory = 5000,
                             Name = "Sugar",
                             UnitPrice = 60.0
                         });

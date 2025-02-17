@@ -4,6 +4,18 @@
         <name>Retail.Products</name>
     </assembly>
     <members>
+        <member name="T:Retail.Products.Migrations.Initial">
+            <inheritdoc />
+        </member>
+        <member name="M:Retail.Products.Migrations.Initial.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Retail.Products.Migrations.Initial.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Retail.Products.Migrations.Initial.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
         <member name="T:Retail.Api.Products.src.CleanArchitecture.API.Controllers.ProductController">
             <summary>
             Product controller class.
@@ -198,6 +210,11 @@
             Gets or sets the total amount.
             </summary>
         </member>
+        <member name="P:Retail.Api.Products.src.CleanArchitecture.Domain.Entities.Sku.Inventory">
+            <summary>
+            Gets or sets the inventory.
+            </summary>
+        </member>
         <member name="T:Retail.Api.Products.src.CleanArchitecture.Infrastructure.Data.ApplicationDbContext">
             <summary>
             Application db context class.
@@ -365,18 +382,6 @@
             <summary>
             Method to rollback changes.
             </summary>
-        </member>
-        <member name="T:Retail.Api.Products.Migrations._001">
-            <inheritdoc />
-        </member>
-        <member name="M:Retail.Api.Products.Migrations._001.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="M:Retail.Api.Products.Migrations._001.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="M:Retail.Api.Products.Migrations._001.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
-            <inheritdoc />
         </member>
     </members>
 </doc>

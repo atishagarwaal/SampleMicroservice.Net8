@@ -44,18 +44,21 @@ namespace Retail.Api.Products.src.CleanArchitecture.Infrastructure.Data
                     Id = 1,
                     Name = "Rice",
                     UnitPrice = 50,
+                    Inventory = 5000,
                 },
                 new Sku
                 {
                     Id = 2,
                     Name = "Salt",
                     UnitPrice = 30,
+                    Inventory = 5000,
                 },
                 new Sku
                 {
                     Id = 3,
                     Name = "Sugar",
                     UnitPrice = 60,
+                    Inventory = 5000,
                 });
         }
     }
