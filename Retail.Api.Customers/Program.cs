@@ -18,7 +18,7 @@ using Retail.Api.Customers.src.CleanArchitecture.Infrastructure.Data;
 using Retail.Api.Customers.src.CleanArchitecture.Infrastructure.Interfaces;
 using Retail.Api.Customers.src.CleanArchitecture.Infrastructure.Repositories;
 using Retail.Api.Customers.src.CleanArchitecture.Infrastructure.UnitOfWork;
-using Retail.Api.Orders.MessageContract;
+using CommonLibrary.MessageContract;
 
 var builder = WebApplication.CreateBuilder(args);
 

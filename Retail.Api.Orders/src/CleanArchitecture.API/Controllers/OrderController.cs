@@ -1,7 +1,6 @@
 ﻿using MessagingLibrary.Interface;
 using MessagingLibrary.Service;
 using Microsoft.AspNetCore.Mvc;
-using Retail.Api.Orders.MessageContract;
 using Retail.Api.Orders.src.CleanArchitecture.Application.Constants;
 using Retail.Api.Orders.src.CleanArchitecture.Application.Dto;
 using Retail.Api.Orders.src.CleanArchitecture.Application.Interfaces;

@@ -1,8 +1,8 @@
 ﻿namespace Retail.Api.Orders.src.CleanArchitecture.Application.Service
 {
     using AutoMapper;
+    using CommonLibrary.MessageContract;
     using MessagingLibrary.Interface;
-    using Retail.Api.Orders.MessageContract;
     using Retail.Api.Orders.src.CleanArchitecture.Application.Dto;
     using Retail.Api.Orders.src.CleanArchitecture.Application.Interfaces;
     using Retail.Api.Orders.src.CleanArchitecture.Domain.Entities;

@@ -1,7 +1,7 @@
 ﻿using CommonLibrary.Handlers;
 using CommonLibrary.MessageContract;
 
-namespace Retail.Api.Customers.src.CleanArchitecture.Application.EventHandlers
+namespace Retail.Api.Products.src.CleanArchitecture.Application.EventHandlers
 {
     public class OrderCreatedEventHandler : IEventHandler<OrderCreatedEvent>
     {
@@ -11,7 +11,7 @@ namespace Retail.Api.Customers.src.CleanArchitecture.Application.EventHandlers
 
         public async Task HandleAsync(OrderCreatedEvent orderCreatedEvent)
         {
-            Console.WriteLine($"Order {orderCreatedEvent.OrderId} received in Customer service. Notifying customer...");
+            Console.WriteLine($"Order {orderCreatedEvent.OrderId} received in Customer service. Checking Inventory.");
             await Task.CompletedTask;
         }
     }

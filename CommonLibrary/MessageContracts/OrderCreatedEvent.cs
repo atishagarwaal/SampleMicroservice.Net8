@@ -1,7 +1,7 @@
 ﻿using CommonLibrary;
 using CommonLibrary.MessageContract;
 
-namespace Retail.Api.Orders.MessageContract
+namespace CommonLibrary.MessageContract
 {
     public class OrderCreatedEvent : EventBase
     {

@@ -50,7 +50,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="src\CleanArchitecture.Infrastructure\Migrations\" />
     <Folder Include="tests\" />
   </ItemGroup>
 

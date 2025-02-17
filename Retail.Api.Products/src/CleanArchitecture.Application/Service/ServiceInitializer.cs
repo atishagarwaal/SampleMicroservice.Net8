@@ -1,7 +1,7 @@
 ﻿using CommonLibrary.Handlers;
+using CommonLibrary.MessageContract;
 using MessagingLibrary.Interface;
 using Retail.Api.Customers.src.CleanArchitecture.Application.Interfaces;
-using CommonLibrary.MessageContract;
 
 namespace Retail.Api.Customers.src.CleanArchitecture.Application.Service
 {

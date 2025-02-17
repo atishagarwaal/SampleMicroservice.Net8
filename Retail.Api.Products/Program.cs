@@ -4,9 +4,14 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
+using CommonLibrary.Handlers;
+using CommonLibrary.MessageContract;
 using MessagingInfrastructure.Service;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Retail.Api.Customers.src.CleanArchitecture.Application.Interfaces;
+using Retail.Api.Customers.src.CleanArchitecture.Application.Service;
+using Retail.Api.Products.src.CleanArchitecture.Application.EventHandlers;
 using Retail.Api.Products.src.CleanArchitecture.Application.Interfaces;
 using Retail.Api.Products.src.CleanArchitecture.Application.Service;
 using Retail.Api.Products.src.CleanArchitecture.Infrastructure.Data;
@@ -30,6 +35,9 @@ builder.Services.AddTransient(typeof(IProductService), typeof(ProductService));
 // Add RabbitMQ from the common project
 builder.Services.AddRabbitMQServices(builder.Configuration);
 
+builder.Services.AddSingleton<IEventHandler<OrderCreatedEvent>, OrderCreatedEventHandler>();
+builder.Services.AddSingleton<IServiceInitializer, ServiceInitializer>();
+
 builder.Services.AddAutoMapper(typeof(Program));
 
 builder.Services.AddControllers();
@@ -48,6 +56,9 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 var app = builder.Build();
+
+var serviceInitializer = app.Services.GetRequiredService<IServiceInitializer>();
+await serviceInitializer.Initialize();
 
 using (var scope = app.Services.CreateScope())
 {
