@@ -1,8 +1,11 @@
 ﻿using AutoMapper;
+using CommonLibrary.MessageContract;
+using MessagingLibrary.Interface;
 using Retail.Api.Products.src.CleanArchitecture.Application.Dto;
 using Retail.Api.Products.src.CleanArchitecture.Application.Interfaces;
 using Retail.Api.Products.src.CleanArchitecture.Domain.Entities;
 using Retail.Api.Products.src.CleanArchitecture.Infrastructure.Interfaces;
+using Retail.Api.Products.src.CleanArchitecture.Infrastructure.UnitOfWork;
 
 namespace Retail.Api.Products.src.CleanArchitecture.Application.Service
 {
@@ -11,6 +14,8 @@ namespace Retail.Api.Products.src.CleanArchitecture.Application.Service
     /// </summary>
     public class ProductService : IProductService
     {
+        private readonly IServiceScopeFactory _serviceScopeFactory;
+        private readonly IMessagePublisher _messagePublisher;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
@@ -19,10 +24,12 @@ namespace Retail.Api.Products.src.CleanArchitecture.Application.Service
         /// </summary>
         /// <param name="unitOfWork">Intance of unit of work class.</param>
         /// <param name="mapper">Intance of mapper class.</param>
-        public ProductService(IUnitOfWork unitOfWork, IMapper mapper)
+        public ProductService(IUnitOfWork unitOfWork, IMapper mapper, IMessagePublisher messagePublisher, IServiceScopeFactory serviceScopeFactory)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _messagePublisher = messagePublisher;
+            _serviceScopeFactory = serviceScopeFactory;
         }
 
         /// <summary>
@@ -34,7 +41,7 @@ namespace Retail.Api.Products.src.CleanArchitecture.Application.Service
             var returnList = new List<SkuDto>();
 
             // Get all customers
-            var list = await _unitOfWork.ProductRepository.GetAllAsync();
+            var list = await _unitOfWork.Skus.GetAllAsync();
 
             // Transform data
             foreach (var item in list)
@@ -54,7 +61,7 @@ namespace Retail.Api.Products.src.CleanArchitecture.Application.Service
         public async Task<SkuDto> GetProductByIdAsync(long id)
         {
             // Find record
-            var record = await _unitOfWork.ProductRepository.GetByIdAsync(id);
+            var record = await _unitOfWork.Skus.GetByIdAsync(id);
 
             // Transform data
             var custDto = _mapper.Map<SkuDto>(record);
@@ -73,9 +80,9 @@ namespace Retail.Api.Products.src.CleanArchitecture.Application.Service
             var custObj = _mapper.Map<Sku>(custDto);
 
             // Add customer
-            _unitOfWork.BeginTransaction();
-            var result = await _unitOfWork.ProductRepository.AddAsync(custObj);
-            _unitOfWork.Commit();
+            await _unitOfWork.BeginTransactionAsync();
+            var result = await _unitOfWork.Skus.AddAsync(custObj);
+            await _unitOfWork.BeginTransactionAsync();
 
             // Transform data
             custDto = _mapper.Map<SkuDto>(result);
@@ -95,11 +102,11 @@ namespace Retail.Api.Products.src.CleanArchitecture.Application.Service
             var record = _mapper.Map<Sku>(custDto);
 
             // Update record
-            _unitOfWork.BeginTransaction();
-            _unitOfWork.ProductRepository.Update(record);
-            _unitOfWork.Commit();
+            await _unitOfWork.BeginTransactionAsync();
+            _unitOfWork.Skus.Update(record);
+            await _unitOfWork.BeginTransactionAsync();
 
-            record = await _unitOfWork.ProductRepository.GetByIdAsync(id);
+            record = await _unitOfWork.Skus.GetByIdAsync(id);
 
             // Transform data
             custDto = _mapper.Map<SkuDto>(record);
@@ -115,19 +122,60 @@ namespace Retail.Api.Products.src.CleanArchitecture.Application.Service
         public async Task<bool> DeleteProductAsync(long id)
         {
             // Find record
-            var record = await _unitOfWork.ProductRepository.GetByIdAsync(id);
+            var record = await _unitOfWork.Skus.GetByIdAsync(id);
 
             if (record != null)
             {
                 // Delete record
-                _unitOfWork.BeginTransaction();
-                _unitOfWork.ProductRepository.Remove(record);
-                _unitOfWork.Commit();
+                await _unitOfWork.BeginTransactionAsync();
+                _unitOfWork.Skus.Remove(record);
+                await _unitOfWork.BeginTransactionAsync();
 
                 return true;
             }
 
             return false;
+        }
+
+        public async Task HandleOrderCreatedEvent(OrderCreatedEvent orderCreatedEvent)
+        {
+            try
+            {
+                using (var scope = _serviceScopeFactory.CreateScope())
+                {
+                    var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
+
+
+                    var skuIds = orderCreatedEvent.LineItems.Select(i => i.SkuId).ToList();
+
+                    // Fetch all product SKUs at once to avoid multiple DB calls
+                    var skuList = await unitOfWork.Skus.GetAllSkuByIdsAsync(skuIds);
+
+                    if (skuList.Any(i => i.Inventory == 0 || i.Inventory - orderCreatedEvent.LineItems.FirstOrDefault(j => j.SkuId == i.Id)?.Qty < 0))
+                    {
+                        throw new Exception("Inventory is not sufficient");
+                    }
+
+                    foreach (var sku in skuList)
+                    {
+                        sku.Inventory = (int)(sku.Inventory - orderCreatedEvent.LineItems.FirstOrDefault(j => j.SkuId == sku.Id)?.Qty);
+                        unitOfWork.Skus.Update(sku);
+                    }
+
+                    var newOrderMessage = new OrderInventoryEvent
+                    {
+                        CustomerId = orderCreatedEvent.CustomerId,
+                        OrderDate = orderCreatedEvent.OrderDate,
+                        OrderId = orderCreatedEvent.OrderId,
+                        TotalAmount = orderCreatedEvent.TotalAmount,
+                    };
+
+                    await _messagePublisher.PublishAsync<OrderInventoryEvent>(newOrderMessage, "OrderInventory").ConfigureAwait(false);
+                }
+            }
+            catch (Exception ex) 
+            { 
+            }
         }
     }
 }

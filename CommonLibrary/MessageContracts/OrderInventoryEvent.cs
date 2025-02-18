@@ -1,10 +1,9 @@
 ﻿using CommonLibrary;
-using CommonLibrary.Handlers.Dto;
 using CommonLibrary.MessageContract;
 
 namespace CommonLibrary.MessageContract
 {
-    public class OrderCreatedEvent : EventBase
+    public class OrderInventoryEvent : EventBase
     {
         /// <summary>
         /// Gets or sets the customer Id.
@@ -25,10 +24,5 @@ namespace CommonLibrary.MessageContract
         /// Gets or sets the total amount.
         /// </summary>
         public double TotalAmount { get; set; }
-
-        /// <summary>
-        /// Gets or sets the Line Items.
-        /// </summary>
-        public IEnumerable<LineItemDto> LineItems { get; set; }
     }
 }

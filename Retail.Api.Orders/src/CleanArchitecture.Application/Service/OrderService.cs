@@ -75,29 +75,6 @@
             var orderRecord = await _unitOfWork.OrderRepository.AddAsync(order);
             _unitOfWork.Commit();
 
-            _unitOfWork.BeginTransaction();
-            var lineitems = orderDto?.LineItems;
-
-            if (lineitems != null)
-            {
-                foreach (var lineitem in lineitems)
-                {
-                    if (lineitem != null)
-                    {
-                        // Get lineitem values
-                        var lineRecord = _mapper.Map<LineItem>(lineitem);
-
-                        // Add order Id
-                        lineRecord.OrderId = orderRecord.Id;
-
-                        // Update line item in database
-                        await _unitOfWork.LineItemRepository.AddAsync(lineRecord);
-                    }
-                }
-            }
-
-            _unitOfWork.Commit();
-
             // Find record
             var record = await _unitOfWork.OrderRepository.GetOrderByIdAsync(orderRecord.Id);
 
@@ -110,6 +87,13 @@
                 OrderDate = record.OrderDate,
                 TotalAmount = record.TotalAmount,
                 OrderId = record.Id,
+                LineItems = record.LineItems.AsEnumerable().Select(item => new CommonLibrary.Handlers.Dto.LineItemDto()
+                {
+                    Id = item.Id,
+                    OrderId = record.Id,
+                    SkuId = item.SkuId,
+                    Qty = item.Qty,
+                }),
             };
 
             // Publish order creation event

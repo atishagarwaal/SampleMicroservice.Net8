@@ -9,14 +9,14 @@ namespace Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Interfaces
     public interface IUnitOfWork
     {
         /// <summary>
-        /// Gets or sets customer repository.
+        /// Gets or sets order repository.
         /// </summary>
         IOrderRepository OrderRepository { get; }
 
         /// <summary>
-        /// Gets or sets customer repository.
+        /// Gets or sets line item repository.
         /// </summary>
-        IRepository<LineItem> LineItemRepository { get; }
+        ILineItemRepository LineItemRepository { get; }
 
         /// <summary>
         /// Method to begin transaction.

@@ -25,18 +25,18 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Configure database connection
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-   options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+   options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")), ServiceLifetime.Scoped);
 
 // Configure services
-builder.Services.AddTransient(typeof(IRepository<>), typeof(EntityRepository<>));
-builder.Services.AddTransient(typeof(IUnitOfWork), typeof(EntityUnitOfWork));
-builder.Services.AddTransient(typeof(IProductService), typeof(ProductService));
+builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+builder.Services.AddScoped(typeof(IUnitOfWork), typeof(UnitOfWork));
+builder.Services.AddScoped(typeof(IProductService), typeof(ProductService));
 
 // Add RabbitMQ from the common project
 builder.Services.AddRabbitMQServices(builder.Configuration);
 
-builder.Services.AddSingleton<IEventHandler<OrderCreatedEvent>, OrderCreatedEventHandler>();
-builder.Services.AddSingleton<IServiceInitializer, ServiceInitializer>();
+builder.Services.AddScoped<IEventHandler<OrderCreatedEvent>, OrderCreatedEventHandler>();
+builder.Services.AddScoped<IServiceInitializer, ServiceInitializer>();
 
 builder.Services.AddAutoMapper(typeof(Program));
 
@@ -57,13 +57,13 @@ builder.Services.AddSwaggerGen(c =>
 
 var app = builder.Build();
 
-var serviceInitializer = app.Services.GetRequiredService<IServiceInitializer>();
-await serviceInitializer.Initialize();
-
 using (var scope = app.Services.CreateScope())
 {
+    var serviceInitializer = scope.ServiceProvider.GetRequiredService<IServiceInitializer>();
+    await serviceInitializer.Initialize();
+
     var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-    db.Database.EnsureCreatedAsync();
+    await db.Database.EnsureCreatedAsync();
 }
 
 if (app.Environment.IsDevelopment())

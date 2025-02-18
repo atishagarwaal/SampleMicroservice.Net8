@@ -63,7 +63,8 @@ namespace Retail.Api.Customers.src.CleanArchitecture.Infrastructure.UnitOfWork
         /// </summary>
         public void BeginTransaction()
         {
-            _entityTransaction = _entityContext.Database.BeginTransaction();
+            using var transaction = _entityContext.Database.BeginTransactionAsync();
+
         }
 
         /// <summary>
@@ -82,7 +83,6 @@ namespace Retail.Api.Customers.src.CleanArchitecture.Infrastructure.UnitOfWork
         {
             _entityTransaction?.Rollback();
             _entityTransaction?.Dispose();
-            _entityContext.Dispose();
         }
     }
 }

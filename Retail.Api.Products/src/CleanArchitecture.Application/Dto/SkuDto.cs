@@ -23,5 +23,10 @@ namespace Retail.Api.Products.src.CleanArchitecture.Application.Dto
         /// Gets or sets the total amount.
         /// </summary>
         public double UnitPrice { get; set; }
+
+        /// <summary>
+        /// Gets or sets the inventory quantity.
+        /// </summary>
+        public int Inventory { get; set; }
     }
 }

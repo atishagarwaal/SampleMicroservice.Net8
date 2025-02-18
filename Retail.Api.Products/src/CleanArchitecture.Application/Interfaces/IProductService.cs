@@ -1,4 +1,5 @@
-﻿using Retail.Api.Products.src.CleanArchitecture.Application.Dto;
+﻿using CommonLibrary.MessageContract;
+using Retail.Api.Products.src.CleanArchitecture.Application.Dto;
 
 namespace Retail.Api.Products.src.CleanArchitecture.Application.Interfaces
 {
@@ -41,5 +42,7 @@ namespace Retail.Api.Products.src.CleanArchitecture.Application.Interfaces
         /// <param name="id">Product Id.</param>
         /// <returns>Product object.</returns>
         Task<bool> DeleteProductAsync(long id);
+
+        Task HandleOrderCreatedEvent(OrderCreatedEvent orderCreatedEvent);
     }
 }

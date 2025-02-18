@@ -320,6 +320,18 @@
             </summary>
             <param name="modelBuilder">The model builder.</param>
         </member>
+        <member name="T:Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Interfaces.ILineItemRepository">
+            <summary>
+            Interface definition for orders repository.
+            </summary>
+        </member>
+        <member name="M:Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Interfaces.ILineItemRepository.GetOrderItemsAsync(System.Int64)">
+            <summary>
+            Gets collection of order items asynchronously.
+            </summary>
+            <param name="orderId">Id of object.</param>
+            <returns>Returns collection of order items.</returns>
+        </member>
         <member name="T:Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Interfaces.IOrderRepository">
             <summary>
             Interface definition for orders repository.
@@ -382,12 +394,12 @@
         </member>
         <member name="P:Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Interfaces.IUnitOfWork.OrderRepository">
             <summary>
-            Gets or sets customer repository.
+            Gets or sets order repository.
             </summary>
         </member>
         <member name="P:Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Interfaces.IUnitOfWork.LineItemRepository">
             <summary>
-            Gets or sets customer repository.
+            Gets or sets line item repository.
             </summary>
         </member>
         <member name="M:Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Interfaces.IUnitOfWork.BeginTransaction">
@@ -457,6 +469,13 @@
             Initializes a new instance of the <see cref="T:Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Repositories.LineItemEntityRepository"/> class.
             </summary>
             <param name="context">Db context.</param>
+        </member>
+        <member name="M:Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Repositories.LineItemEntityRepository.GetOrderItemsAsync(System.Int64)">
+            <summary>
+            Gets collection of order items asynchronously.
+            </summary>
+            <param name="orderId">Id of object.</param>
+            <returns>Returns collection of order items.</returns>
         </member>
         <member name="T:Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Repositories.OrderEntityRepository">
             <summary>

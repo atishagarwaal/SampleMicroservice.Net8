@@ -13,6 +13,7 @@ using Retail.Api.Orders.src.CleanArchitecture.Application.Interfaces;
 using Retail.Api.Orders.src.CleanArchitecture.Application.Service;
 using Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Data;
 using Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Interfaces;
+using Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Repositories;
 using Retail.Api.Orders.src.CleanArchitecture.Infrastructure.UnitOfWork;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -23,8 +24,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-builder.Services.AddTransient(typeof(IUnitOfWork), typeof(EntityUnitOfWork));
-builder.Services.AddTransient(typeof(IOrderService), typeof(OrderService));
+builder.Services.AddScoped(typeof(IRepository<>), typeof(EntityRepository<>));
+builder.Services.AddScoped(typeof(IUnitOfWork), typeof(EntityUnitOfWork));
+builder.Services.AddScoped(typeof(IOrderService), typeof(OrderService));
 
 // Add RabbitMQ from the common project
 builder.Services.AddRabbitMQServices(builder.Configuration);

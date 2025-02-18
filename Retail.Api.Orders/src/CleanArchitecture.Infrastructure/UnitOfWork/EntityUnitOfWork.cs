@@ -15,7 +15,7 @@ namespace Retail.Api.Orders.src.CleanArchitecture.Infrastructure.UnitOfWork
         private readonly ApplicationDbContext _entityContext;
         private IDbContextTransaction? _entityTransaction;
         private IOrderRepository? _orderRepository;
-        private IRepository<LineItem>? _lineItemRepository;
+        private ILineItemRepository? _lineItemRepository;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="EntityUnitOfWork"/> class.
@@ -45,7 +45,7 @@ namespace Retail.Api.Orders.src.CleanArchitecture.Infrastructure.UnitOfWork
         /// <summary>
         /// Gets or sets customer repository.
         /// </summary>
-        public IRepository<LineItem> LineItemRepository
+        public ILineItemRepository LineItemRepository
         {
             get
             {
@@ -63,7 +63,7 @@ namespace Retail.Api.Orders.src.CleanArchitecture.Infrastructure.UnitOfWork
         /// </summary>
         public void BeginTransaction()
         {
-            _entityTransaction = _entityContext.Database.BeginTransaction();
+            using var transaction = _entityContext.Database.BeginTransactionAsync();
         }
 
         /// <summary>
@@ -82,7 +82,6 @@ namespace Retail.Api.Orders.src.CleanArchitecture.Infrastructure.UnitOfWork
         {
             _entityTransaction?.Rollback();
             _entityTransaction?.Dispose();
-            _entityContext.Dispose();
         }
     }
 }

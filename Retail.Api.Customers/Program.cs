@@ -36,8 +36,8 @@ builder.Services.AddScoped(typeof(ICustomerService), typeof(CustomerService));
 // Add RabbitMQ from the common project
 builder.Services.AddRabbitMQServices(builder.Configuration);
 
-builder.Services.AddSingleton<IEventHandler<OrderCreatedEvent>, OrderCreatedEventHandler>();
-builder.Services.AddSingleton<IServiceInitializer, ServiceInitializer>();
+builder.Services.AddScoped<IEventHandler<OrderCreatedEvent>, OrderCreatedEventHandler>();
+builder.Services.AddScoped<IServiceInitializer, ServiceInitializer>();
 
 builder.Services.AddAutoMapper(typeof(Program));
 
@@ -58,14 +58,13 @@ builder.Services.AddSwaggerGen(c =>
 
 var app = builder.Build();
 
-var serviceInitializer = app.Services.GetRequiredService<IServiceInitializer>();
-await serviceInitializer.Initialize();
-
-
 using (var scope = app.Services.CreateScope())
 {
+    var serviceInitializer = scope.ServiceProvider.GetRequiredService<IServiceInitializer>();
+    await serviceInitializer.Initialize();
+
     var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-    db.Database.EnsureCreatedAsync();
+    await db.Database.EnsureCreatedAsync();
 }
 
 if (app.Environment.IsDevelopment())
