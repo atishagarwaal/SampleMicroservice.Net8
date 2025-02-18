@@ -149,7 +149,7 @@ namespace Retail.Api.Products.src.CleanArchitecture.Application.Service
                     var skuIds = orderCreatedEvent.LineItems.Select(i => i.SkuId).ToList();
 
                     // Fetch all product SKUs at once to avoid multiple DB calls
-                    var skuList = await unitOfWork.Skus.GetAllSkuByIdsAsync(skuIds);
+                    var skuList = await unitOfWork.Skus.ExecuteQueryAsync(i => skuIds.Contains(i.Id));
 
                     if (skuList.Any(i => i.Inventory == 0 || i.Inventory - orderCreatedEvent.LineItems.FirstOrDefault(j => j.SkuId == i.Id)?.Qty < 0))
                     {

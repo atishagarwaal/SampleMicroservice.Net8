@@ -6,6 +6,7 @@ namespace Retail.Api.Products.src.CleanArchitecture.Infrastructure.Interfaces
 {
     using Microsoft.EntityFrameworkCore;
     using System.Linq.Expressions;
+    using static Dapper.SqlMapper;
 
     /// <summary>
     /// Interface definition for data access layer
@@ -43,5 +44,7 @@ namespace Retail.Api.Products.src.CleanArchitecture.Infrastructure.Interfaces
         /// </summary>
         /// <param name="entity">An object type parameter T.</param>
         T Update(T entity);
+
+        Task<IEnumerable<T>> ExecuteQueryAsync(Expression<Func<T, bool>> predicate);
     }
 }

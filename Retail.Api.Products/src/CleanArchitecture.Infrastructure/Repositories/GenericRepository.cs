@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Retail.Api.Products.src.CleanArchitecture.Infrastructure.Data;
 using Retail.Api.Products.src.CleanArchitecture.Infrastructure.Interfaces;
+using System.Linq.Expressions;
 using static Dapper.SqlMapper;
 
 namespace Retail.Api.Products.src.CleanArchitecture.Infrastructure.Repositories
@@ -64,6 +65,11 @@ namespace Retail.Api.Products.src.CleanArchitecture.Infrastructure.Repositories
             var entry = _dbSet.Attach(entity);
             _context.Entry(entity).State = EntityState.Modified;
             return entry.Entity;
+        }
+
+        public async Task<IEnumerable<T>> ExecuteQueryAsync(Expression<Func<T, bool>> predicate)
+        {
+            return await _dbSet.Where(predicate).ToListAsync();
         }
     }
 }
