@@ -1,4 +1,6 @@
 ﻿using Retail.Api.Customers.src.CleanArchitecture.Domain.Entities;
+using Retail.Api.Customers.src.CleanArchitecture.Infrastructure.Repositories;
+using Retail.Customers.src.CleanArchitecture.Infrastructure.Interfaces;
 using System.Data;
 
 namespace Retail.Api.Customers.src.CleanArchitecture.Infrastructure.Interfaces
@@ -11,26 +13,16 @@ namespace Retail.Api.Customers.src.CleanArchitecture.Infrastructure.Interfaces
         /// <summary>
         /// Gets or sets customer repository.
         /// </summary>
-        IRepository<Customer> CustomerRepository { get; }
+        ICustomerRepository Customers { get; }
 
         /// <summary>
         /// Gets or sets notification repository.
         /// </summary>
-        IRepository<Notification> NotificationRepository { get; }
+        INotificationRepository Notifications { get; }
 
-        /// <summary>
-        /// Method to begin transaction.
-        /// </summary>
-        void BeginTransaction();
-
-        /// <summary>
-        /// Method to commit changes.
-        /// </summary>
-        void Commit();
-
-        /// <summary>
-        /// Method to commit changes.
-        /// </summary>
-        void Rollback();
+        Task<int> CompleteAsync();
+        Task BeginTransactionAsync();
+        Task CommitTransactionAsync();
+        Task RollbackTransactionAsync();
     }
 }

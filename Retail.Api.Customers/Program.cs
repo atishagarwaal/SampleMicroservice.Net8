@@ -29,8 +29,8 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Configure services
-builder.Services.AddScoped(typeof(IRepository<>), typeof(EntityRepository<>));
-builder.Services.AddScoped(typeof(IUnitOfWork), typeof(EntityUnitOfWork));
+builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+builder.Services.AddScoped(typeof(IUnitOfWork), typeof(UnitOfWork));
 builder.Services.AddScoped(typeof(ICustomerService), typeof(CustomerService));
 
 // Add RabbitMQ from the common project

@@ -34,7 +34,7 @@ namespace Retail.Api.Customers.src.CleanArchitecture.Application.Service
             var returnList = new List<CustomerDto>();
 
             // Get all customers
-            var list = await _unitOfWork.CustomerRepository.GetAllAsync();
+            var list = await _unitOfWork.Customers.GetAllAsync();
 
             // Transform data
             foreach (var item in list)
@@ -54,7 +54,7 @@ namespace Retail.Api.Customers.src.CleanArchitecture.Application.Service
         public async Task<CustomerDto> GetCustomerByIdAsync(long id)
         {
             // Find record
-            var record = await _unitOfWork.CustomerRepository.GetByIdAsync(id);
+            var record = await _unitOfWork.Customers.GetByIdAsync(id);
 
             // Transform data
             var custDto = _mapper.Map<CustomerDto>(record);
@@ -73,9 +73,10 @@ namespace Retail.Api.Customers.src.CleanArchitecture.Application.Service
             var custObj = _mapper.Map<Customer>(custDto);
 
             // Add customer
-            _unitOfWork.BeginTransaction();
-            var result = await _unitOfWork.CustomerRepository.AddAsync(custObj);
-            _unitOfWork.Commit();
+            await _unitOfWork.BeginTransactionAsync();
+            var result = await _unitOfWork.Customers.AddAsync(custObj);
+            await _unitOfWork.CompleteAsync();
+            await _unitOfWork.CommitTransactionAsync();
 
             // Transform data
             custDto = _mapper.Map<CustomerDto>(result);
@@ -95,11 +96,12 @@ namespace Retail.Api.Customers.src.CleanArchitecture.Application.Service
             var record = _mapper.Map<Customer>(custDto);
 
             // Update record
-            _unitOfWork.BeginTransaction();
-            _unitOfWork.CustomerRepository.Update(record);
-            _unitOfWork.Commit();
+            await _unitOfWork.BeginTransactionAsync();
+            _unitOfWork.Customers.Update(record);
+            await _unitOfWork.CompleteAsync();
+            await _unitOfWork.CommitTransactionAsync();
 
-            record = await _unitOfWork.CustomerRepository.GetByIdAsync(id);
+            record = await _unitOfWork.Customers.GetByIdAsync(id);
 
             // Transform data
             custDto = _mapper.Map<CustomerDto>(record);
@@ -115,14 +117,15 @@ namespace Retail.Api.Customers.src.CleanArchitecture.Application.Service
         public async Task<bool> DeleteCustomerAsync(long id)
         {
             // Find record
-            var record = await _unitOfWork.CustomerRepository.GetByIdAsync(id);
+            var record = await _unitOfWork.Customers.GetByIdAsync(id);
 
             if (record != null)
             {
                 // Delete record
-                _unitOfWork.BeginTransaction();
-                _unitOfWork.CustomerRepository.Remove(record);
-                _unitOfWork.Commit();
+                await _unitOfWork.BeginTransactionAsync();
+                _unitOfWork.Customers.Remove(record);
+                await _unitOfWork.CompleteAsync();
+                await _unitOfWork.CommitTransactionAsync();
 
                 return true;
             }
