@@ -39,7 +39,7 @@
             var orders = new List<OrderDto>();
 
             // Get all orders
-            var list = await _unitOfWork.Orders.GetAllOrdersAsync();
+            var list = await _unitOfWork.Orders.GetAllAsync();
 
             return _mapper.Map<IEnumerable<OrderDto>>(list);
         }
@@ -52,7 +52,7 @@
         public async Task<OrderDto> GetOrderByIdAsync(long id)
         {
             // Find record
-            var order = await _unitOfWork.Orders.GetOrderByIdAsync(id);
+            var order = await _unitOfWork.Orders.GetByIdAsync(id);
 
             // Transform data
             var orderDto = _mapper.Map<OrderDto>(order);
@@ -77,7 +77,7 @@
             await _unitOfWork.CommitTransactionAsync();
 
             // Find record
-            var record = await _unitOfWork.Orders.GetOrderByIdAsync(orderRecord.Id);
+            var record = await _unitOfWork.Orders.GetByIdAsync(orderRecord.Id);
 
             // Transform data
             orderDto = _mapper.Map<OrderDto>(record);
@@ -138,7 +138,7 @@
             await _unitOfWork.CommitTransactionAsync();
 
             // Find record
-            var record = await _unitOfWork.Orders.GetOrderByIdAsync(id);
+            var record = await _unitOfWork.Orders.GetByIdAsync(id);
 
             // Transform data
             orderDto = _mapper.Map<OrderDto>(record);
@@ -154,7 +154,7 @@
         public async Task<bool> RemoveOrderAsync(long id)
         {
             // Find record
-            var order = await _unitOfWork.Orders.GetOrderByIdAsync(id);
+            var order = await _unitOfWork.Orders.GetByIdAsync(id);
 
             if (order?.Id == 0)
             {

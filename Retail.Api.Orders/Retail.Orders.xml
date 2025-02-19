@@ -362,30 +362,10 @@
             Interface definition for orders repository.
             </summary>
         </member>
-        <member name="M:Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Interfaces.ILineItemRepository.GetOrderItemsAsync(System.Int64)">
-            <summary>
-            Gets collection of order items asynchronously.
-            </summary>
-            <param name="orderId">Id of object.</param>
-            <returns>Returns collection of order items.</returns>
-        </member>
         <member name="T:Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Interfaces.IOrderRepository">
             <summary>
             Interface definition for orders repository.
             </summary>
-        </member>
-        <member name="M:Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Interfaces.IOrderRepository.GetAllOrdersAsync">
-            <summary>
-            Gets collection of object asynchronously.
-            </summary>
-            <returns>Returns collection of object of type parameter T.</returns>
-        </member>
-        <member name="M:Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Interfaces.IOrderRepository.GetOrderByIdAsync(System.Int64)">
-            <summary>
-            Gets object by Id asynchronously.
-            </summary>
-            <param name="id">Id of object.</param>
-            <returns>Returns object.</returns>
         </member>
         <member name="T:Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Interfaces.IUnitOfWork">
             <summary>
@@ -455,13 +435,6 @@
             </summary>
             <param name="context">Db context.</param>
         </member>
-        <member name="M:Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Repositories.LineItemRepository.GetOrderItemsAsync(System.Int64)">
-            <summary>
-            Gets collection of order items asynchronously.
-            </summary>
-            <param name="orderId">Id of object.</param>
-            <returns>Returns collection of order items.</returns>
-        </member>
         <member name="T:Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Repositories.OrderRepository">
             <summary>
             Customer repository class.
@@ -472,19 +445,6 @@
             Initializes a new instance of the <see cref="T:Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Repositories.OrderRepository"/> class.
             </summary>
             <param name="context">Db context.</param>
-        </member>
-        <member name="M:Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Repositories.OrderRepository.GetAllOrdersAsync">
-            <summary>
-            Gets collection of object asynchronously.
-            </summary>
-            <returns>Returns collection of object of type parameter T.</returns>
-        </member>
-        <member name="M:Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Repositories.OrderRepository.GetOrderByIdAsync(System.Int64)">
-            <summary>
-            Gets object by Id asynchronously.
-            </summary>
-            <param name="id">Id of object.</param>
-            <returns>Returns object.</returns>
         </member>
         <member name="T:Retail.Api.Orders.src.CleanArchitecture.Infrastructure.UnitOfWork.UnitOfWork">
             <summary>

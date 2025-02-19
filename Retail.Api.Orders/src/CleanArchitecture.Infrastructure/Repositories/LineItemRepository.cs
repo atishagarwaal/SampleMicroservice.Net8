@@ -20,19 +20,5 @@ namespace Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Repositories
         {
             _context = context;
         }
-
-        /// <summary>
-        /// Gets collection of order items asynchronously.
-        /// </summary>
-        /// <param name="orderId">Id of object.</param>
-        /// <returns>Returns collection of order items.</returns>
-        public async Task<IEnumerable<LineItem>> GetOrderItemsAsync(long orderId)
-        {
-            var list = await _context.LineItems
-            .Where(i => i.OrderId == orderId)
-            .ToListAsync();
-
-            return list;
-        }
     }
 }
