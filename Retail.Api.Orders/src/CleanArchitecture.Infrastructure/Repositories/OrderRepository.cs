@@ -8,15 +8,15 @@ namespace Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Repositories
     /// <summary>
     /// Customer repository class.
     /// </summary>
-    public class OrderEntityRepository : EntityRepository<Order>, IOrderRepository
+    public class OrderRepository : GenericRepository<Order>, IOrderRepository
     {
         private readonly ApplicationDbContext _context;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="OrderEntityRepository"/> class.
+        /// Initializes a new instance of the <see cref="OrderRepository"/> class.
         /// </summary>
         /// <param name="context">Db context.</param>
-        public OrderEntityRepository(ApplicationDbContext context) : base(context)
+        public OrderRepository(ApplicationDbContext context) : base(context)
         {
             _context = context;
         }

@@ -39,9 +39,9 @@
             var orders = new List<OrderDto>();
 
             // Get all orders
-            var list = await _unitOfWork.OrderRepository.GetAllOrdersAsync();
+            var list = await _unitOfWork.Orders.GetAllOrdersAsync();
 
-            return _mapper.Map<IEnumerable<OrderDto>>(orders);
+            return _mapper.Map<IEnumerable<OrderDto>>(list);
         }
 
         /// <summary>
@@ -52,7 +52,7 @@
         public async Task<OrderDto> GetOrderByIdAsync(long id)
         {
             // Find record
-            var order = await _unitOfWork.OrderRepository.GetOrderByIdAsync(id);
+            var order = await _unitOfWork.Orders.GetOrderByIdAsync(id);
 
             // Transform data
             var orderDto = _mapper.Map<OrderDto>(order);
@@ -71,12 +71,13 @@
             var order = _mapper.Map<Order>(orderDto);
 
             // Update order in database
-            _unitOfWork.BeginTransaction();
-            var orderRecord = await _unitOfWork.OrderRepository.AddAsync(order);
-            _unitOfWork.Commit();
+            await _unitOfWork.BeginTransactionAsync();
+            var orderRecord = await _unitOfWork.Orders.AddAsync(order);
+            await _unitOfWork.CompleteAsync();
+            await _unitOfWork.CommitTransactionAsync();
 
             // Find record
-            var record = await _unitOfWork.OrderRepository.GetOrderByIdAsync(orderRecord.Id);
+            var record = await _unitOfWork.Orders.GetOrderByIdAsync(orderRecord.Id);
 
             // Transform data
             orderDto = _mapper.Map<OrderDto>(record);
@@ -114,8 +115,8 @@
             var order = _mapper.Map<Order>(orderDto);
 
             // Update order in database
-            _unitOfWork.BeginTransaction();
-            _unitOfWork.OrderRepository.Update(order);
+            await _unitOfWork.BeginTransactionAsync();
+            _unitOfWork.Orders.Update(order);
 
             var lineitems = orderDto?.LineItems;
 
@@ -129,15 +130,15 @@
                         var lineRecord = _mapper.Map<LineItem>(lineitem);
 
                         // Update line item in database
-                        _unitOfWork.LineItemRepository.Update(lineRecord);
+                        _unitOfWork.LineItems.Update(lineRecord);
                     }
                 }
             }
 
-            _unitOfWork.Commit();
+            await _unitOfWork.CommitTransactionAsync();
 
             // Find record
-            var record = await _unitOfWork.OrderRepository.GetOrderByIdAsync(id);
+            var record = await _unitOfWork.Orders.GetOrderByIdAsync(id);
 
             // Transform data
             orderDto = _mapper.Map<OrderDto>(record);
@@ -153,7 +154,7 @@
         public async Task<bool> RemoveOrderAsync(long id)
         {
             // Find record
-            var order = await _unitOfWork.OrderRepository.GetOrderByIdAsync(id);
+            var order = await _unitOfWork.Orders.GetOrderByIdAsync(id);
 
             if (order?.Id == 0)
             {
@@ -161,8 +162,8 @@
             }
 
             // Update order in database
-            _unitOfWork.BeginTransaction();
-            _unitOfWork.OrderRepository.Remove(order);
+            await _unitOfWork.BeginTransactionAsync();
+            _unitOfWork.Orders.Remove(order);
 
             var lineitems = order?.LineItems;
 
@@ -176,12 +177,12 @@
                         var lineRecord = _mapper.Map<LineItem>(lineitem);
 
                         // Update line item in database
-                        _unitOfWork.LineItemRepository.Remove(lineRecord);
+                        _unitOfWork.LineItems.Remove(lineRecord);
                     }
                 }
             }
 
-            _unitOfWork.Commit();
+            await _unitOfWork.CommitTransactionAsync();
 
             return true;
         }

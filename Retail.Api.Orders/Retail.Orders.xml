@@ -320,6 +320,43 @@
             </summary>
             <param name="modelBuilder">The model builder.</param>
         </member>
+        <member name="T:Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Interfaces.IGenericRepository`1">
+            <summary>
+            Interface definition for data access layer
+            </summary>
+            <typeparam name="T">Generic type parameter.</typeparam>
+        </member>
+        <member name="M:Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Interfaces.IGenericRepository`1.AddAsync(`0)">
+            <summary>
+            Add a new object asynchronously.
+            </summary>
+            <param name="entity">An object type parameter T.</param>
+        </member>
+        <member name="M:Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Interfaces.IGenericRepository`1.GetAllAsync">
+            <summary>
+            Gets collection of object asynchronously.
+            </summary>
+            <returns>Returns collection of object of type parameter T.</returns>
+        </member>
+        <member name="M:Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Interfaces.IGenericRepository`1.GetByIdAsync(System.Int64)">
+            <summary>
+            Gets object by Id
+            </summary>
+            <param name="id">Generic type parameter.</param>
+            <returns>Returns object of type parameter T.</returns>
+        </member>
+        <member name="M:Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Interfaces.IGenericRepository`1.Remove(`0)">
+            <summary>
+            Remove an object.
+            </summary>
+            <param name="entity">An object type parameter T.</param>
+        </member>
+        <member name="M:Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Interfaces.IGenericRepository`1.Update(`0)">
+            <summary>
+            Update an object.
+            </summary>
+            <param name="entity">An object type parameter T.</param>
+        </member>
         <member name="T:Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Interfaces.ILineItemRepository">
             <summary>
             Interface definition for orders repository.
@@ -350,189 +387,127 @@
             <param name="id">Id of object.</param>
             <returns>Returns object.</returns>
         </member>
-        <member name="T:Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Interfaces.IRepository`1">
-            <summary>
-            Interface definition for data access layer
-            </summary>
-            <typeparam name="T">Generic type parameter.</typeparam>
-        </member>
-        <member name="M:Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Interfaces.IRepository`1.AddAsync(`0)">
-            <summary>
-            Add a new object asynchronously.
-            </summary>
-            <param name="entity">An object type parameter T.</param>
-        </member>
-        <member name="M:Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Interfaces.IRepository`1.GetAllAsync">
-            <summary>
-            Gets collection of object asynchronously.
-            </summary>
-            <returns>Returns collection of object of type parameter T.</returns>
-        </member>
-        <member name="M:Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Interfaces.IRepository`1.GetByIdAsync(System.Int64)">
-            <summary>
-            Gets object by Id
-            </summary>
-            <param name="id">Generic type parameter.</param>
-            <returns>Returns object of type parameter T.</returns>
-        </member>
-        <member name="M:Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Interfaces.IRepository`1.Remove(`0)">
-            <summary>
-            Remove an object.
-            </summary>
-            <param name="entity">An object type parameter T.</param>
-        </member>
-        <member name="M:Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Interfaces.IRepository`1.Update(`0)">
-            <summary>
-            Update an object.
-            </summary>
-            <param name="entity">An object type parameter T.</param>
-        </member>
         <member name="T:Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Interfaces.IUnitOfWork">
             <summary>
             Interface definition for unit of work.
             </summary>
         </member>
-        <member name="P:Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Interfaces.IUnitOfWork.OrderRepository">
+        <member name="P:Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Interfaces.IUnitOfWork.Orders">
             <summary>
             Gets or sets order repository.
             </summary>
         </member>
-        <member name="P:Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Interfaces.IUnitOfWork.LineItemRepository">
+        <member name="P:Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Interfaces.IUnitOfWork.LineItems">
             <summary>
             Gets or sets line item repository.
             </summary>
         </member>
-        <member name="M:Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Interfaces.IUnitOfWork.BeginTransaction">
-            <summary>
-            Method to begin transaction.
-            </summary>
-        </member>
-        <member name="M:Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Interfaces.IUnitOfWork.Commit">
-            <summary>
-            Method to commit changes.
-            </summary>
-        </member>
-        <member name="M:Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Interfaces.IUnitOfWork.Rollback">
-            <summary>
-            Method to commit changes.
-            </summary>
-        </member>
-        <member name="T:Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Repositories.EntityRepository`1">
+        <member name="T:Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Repositories.GenericRepository`1">
             <summary>
             Generic repository class.
             </summary>
         </member>
-        <member name="M:Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Repositories.EntityRepository`1.#ctor(Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Data.ApplicationDbContext)">
+        <member name="M:Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Repositories.GenericRepository`1.#ctor(Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Data.ApplicationDbContext)">
             <summary>
             Initializes a new instance of the GenericRepository class.
             </summary>
             <param name="dbcontext">Db context.</param>
         </member>
-        <member name="M:Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Repositories.EntityRepository`1.AddAsync(`0)">
+        <member name="M:Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Repositories.GenericRepository`1.AddAsync(`0)">
             <summary>
             Add a new object asynchronously.
             </summary>
             <param name="entity">An object type parameter T.</param>
         </member>
-        <member name="M:Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Repositories.EntityRepository`1.GetAllAsync">
+        <member name="M:Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Repositories.GenericRepository`1.GetAllAsync">
             <summary>
             Gets collection of object
             </summary>
             <returns>Returns collection of object of type parameter T.</returns>
         </member>
-        <member name="M:Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Repositories.EntityRepository`1.GetByIdAsync(System.Int64)">
+        <member name="M:Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Repositories.GenericRepository`1.GetByIdAsync(System.Int64)">
             <summary>
             Gets object by Id
             </summary>
             <param name="id">Generic type parameter.</param>
             <returns>Returns object of type parameter T.</returns>
         </member>
-        <member name="M:Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Repositories.EntityRepository`1.Remove(`0)">
+        <member name="M:Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Repositories.GenericRepository`1.Remove(`0)">
             <summary>
             Remove an object.
             </summary>
             <param name="entity">An object type parameter T.</param>
         </member>
-        <member name="M:Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Repositories.EntityRepository`1.Update(`0)">
+        <member name="M:Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Repositories.GenericRepository`1.Update(`0)">
             <summary>
             Update an object.
             </summary>
             <param name="entity">An object type parameter T.</param>
         </member>
-        <member name="T:Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Repositories.LineItemEntityRepository">
+        <member name="T:Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Repositories.LineItemRepository">
             <summary>
             Customer repository class.
             </summary>
         </member>
-        <member name="M:Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Repositories.LineItemEntityRepository.#ctor(Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Data.ApplicationDbContext)">
+        <member name="M:Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Repositories.LineItemRepository.#ctor(Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Data.ApplicationDbContext)">
             <summary>
-            Initializes a new instance of the <see cref="T:Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Repositories.LineItemEntityRepository"/> class.
+            Initializes a new instance of the <see cref="T:Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Repositories.LineItemRepository"/> class.
             </summary>
             <param name="context">Db context.</param>
         </member>
-        <member name="M:Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Repositories.LineItemEntityRepository.GetOrderItemsAsync(System.Int64)">
+        <member name="M:Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Repositories.LineItemRepository.GetOrderItemsAsync(System.Int64)">
             <summary>
             Gets collection of order items asynchronously.
             </summary>
             <param name="orderId">Id of object.</param>
             <returns>Returns collection of order items.</returns>
         </member>
-        <member name="T:Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Repositories.OrderEntityRepository">
+        <member name="T:Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Repositories.OrderRepository">
             <summary>
             Customer repository class.
             </summary>
         </member>
-        <member name="M:Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Repositories.OrderEntityRepository.#ctor(Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Data.ApplicationDbContext)">
+        <member name="M:Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Repositories.OrderRepository.#ctor(Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Data.ApplicationDbContext)">
             <summary>
-            Initializes a new instance of the <see cref="T:Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Repositories.OrderEntityRepository"/> class.
+            Initializes a new instance of the <see cref="T:Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Repositories.OrderRepository"/> class.
             </summary>
             <param name="context">Db context.</param>
         </member>
-        <member name="M:Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Repositories.OrderEntityRepository.GetAllOrdersAsync">
+        <member name="M:Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Repositories.OrderRepository.GetAllOrdersAsync">
             <summary>
             Gets collection of object asynchronously.
             </summary>
             <returns>Returns collection of object of type parameter T.</returns>
         </member>
-        <member name="M:Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Repositories.OrderEntityRepository.GetOrderByIdAsync(System.Int64)">
+        <member name="M:Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Repositories.OrderRepository.GetOrderByIdAsync(System.Int64)">
             <summary>
             Gets object by Id asynchronously.
             </summary>
             <param name="id">Id of object.</param>
             <returns>Returns object.</returns>
         </member>
-        <member name="T:Retail.Api.Orders.src.CleanArchitecture.Infrastructure.UnitOfWork.EntityUnitOfWork">
+        <member name="T:Retail.Api.Orders.src.CleanArchitecture.Infrastructure.UnitOfWork.UnitOfWork">
             <summary>
             Unit of work class.
             </summary>
         </member>
-        <member name="M:Retail.Api.Orders.src.CleanArchitecture.Infrastructure.UnitOfWork.EntityUnitOfWork.#ctor(Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Data.ApplicationDbContext)">
+        <member name="M:Retail.Api.Orders.src.CleanArchitecture.Infrastructure.UnitOfWork.UnitOfWork.#ctor(Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Data.ApplicationDbContext)">
             <summary>
-            Initializes a new instance of the <see cref="T:Retail.Api.Orders.src.CleanArchitecture.Infrastructure.UnitOfWork.EntityUnitOfWork"/> class.
+            Initializes a new instance of the <see cref="T:Retail.Api.Orders.src.CleanArchitecture.Infrastructure.UnitOfWork.UnitOfWork"/> class.
             </summary>
             <param name="entityContext">Entity framework Db context.</param>
         </member>
-        <member name="P:Retail.Api.Orders.src.CleanArchitecture.Infrastructure.UnitOfWork.EntityUnitOfWork.OrderRepository">
-            <summary>
-            Gets or sets customer repository.
-            </summary>
-        </member>
-        <member name="P:Retail.Api.Orders.src.CleanArchitecture.Infrastructure.UnitOfWork.EntityUnitOfWork.LineItemRepository">
-            <summary>
-            Gets or sets customer repository.
-            </summary>
-        </member>
-        <member name="M:Retail.Api.Orders.src.CleanArchitecture.Infrastructure.UnitOfWork.EntityUnitOfWork.BeginTransaction">
+        <member name="M:Retail.Api.Orders.src.CleanArchitecture.Infrastructure.UnitOfWork.UnitOfWork.BeginTransactionAsync">
             <summary>
             Method to begin transaction.
             </summary>
         </member>
-        <member name="M:Retail.Api.Orders.src.CleanArchitecture.Infrastructure.UnitOfWork.EntityUnitOfWork.Commit">
+        <member name="M:Retail.Api.Orders.src.CleanArchitecture.Infrastructure.UnitOfWork.UnitOfWork.CommitTransactionAsync">
             <summary>
             Method to commit changes.
             </summary>
         </member>
-        <member name="M:Retail.Api.Orders.src.CleanArchitecture.Infrastructure.UnitOfWork.EntityUnitOfWork.Rollback">
+        <member name="M:Retail.Api.Orders.src.CleanArchitecture.Infrastructure.UnitOfWork.UnitOfWork.RollbackTransactionAsync">
             <summary>
             Method to rollback changes.
             </summary>

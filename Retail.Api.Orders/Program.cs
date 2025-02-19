@@ -22,10 +22,10 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Configure database connection
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-   options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+   options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")), ServiceLifetime.Scoped);
 
-builder.Services.AddScoped(typeof(IRepository<>), typeof(EntityRepository<>));
-builder.Services.AddScoped(typeof(IUnitOfWork), typeof(EntityUnitOfWork));
+builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+builder.Services.AddScoped(typeof(IUnitOfWork), typeof(UnitOfWork));
 builder.Services.AddScoped(typeof(IOrderService), typeof(OrderService));
 
 // Add RabbitMQ from the common project

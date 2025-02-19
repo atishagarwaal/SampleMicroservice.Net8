@@ -11,26 +11,16 @@ namespace Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Interfaces
         /// <summary>
         /// Gets or sets order repository.
         /// </summary>
-        IOrderRepository OrderRepository { get; }
+        IOrderRepository Orders { get; }
 
         /// <summary>
         /// Gets or sets line item repository.
         /// </summary>
-        ILineItemRepository LineItemRepository { get; }
+        ILineItemRepository LineItems { get; }
 
-        /// <summary>
-        /// Method to begin transaction.
-        /// </summary>
-        void BeginTransaction();
-
-        /// <summary>
-        /// Method to commit changes.
-        /// </summary>
-        void Commit();
-
-        /// <summary>
-        /// Method to commit changes.
-        /// </summary>
-        void Rollback();
+        Task<int> CompleteAsync();
+        Task BeginTransactionAsync();
+        Task CommitTransactionAsync();
+        Task RollbackTransactionAsync();
     }
 }

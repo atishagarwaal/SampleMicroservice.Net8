@@ -6,7 +6,7 @@ namespace Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Interfaces
     /// <summary>
     /// Interface definition for orders repository.
     /// </summary>
-    public interface IOrderRepository : IRepository<Order>
+    public interface IOrderRepository : IGenericRepository<Order>
     {
         /// <summary>
         /// Gets collection of object asynchronously.

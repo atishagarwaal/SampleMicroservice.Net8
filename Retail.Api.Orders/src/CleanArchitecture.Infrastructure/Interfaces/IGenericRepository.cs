@@ -11,7 +11,7 @@ namespace Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Interfaces
     /// Interface definition for data access layer
     /// </summary>
     /// <typeparam name="T">Generic type parameter.</typeparam>
-    public interface IRepository<T> where T : class
+    public interface IGenericRepository<T> where T : class
     {
         /// <summary>
         /// Add a new object asynchronously.
@@ -43,5 +43,8 @@ namespace Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Interfaces
         /// </summary>
         /// <param name="entity">An object type parameter T.</param>
         T Update(T entity);
+
+        Task<IEnumerable<T>> ExecuteQueryAsync(Expression<Func<T, bool>> predicate);
     }
 }
+

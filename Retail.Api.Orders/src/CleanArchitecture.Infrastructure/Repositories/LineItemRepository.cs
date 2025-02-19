@@ -8,15 +8,15 @@ namespace Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Repositories
     /// <summary>
     /// Customer repository class.
     /// </summary>
-    public class LineItemEntityRepository : EntityRepository<LineItem>, ILineItemRepository
+    public class LineItemRepository : GenericRepository<LineItem>, ILineItemRepository
     {
         private readonly ApplicationDbContext _context;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="LineItemEntityRepository"/> class.
+        /// Initializes a new instance of the <see cref="LineItemRepository"/> class.
         /// </summary>
         /// <param name="context">Db context.</param>
-        public LineItemEntityRepository(ApplicationDbContext context) : base(context)
+        public LineItemRepository(ApplicationDbContext context) : base(context)
         {
             _context = context;
         }

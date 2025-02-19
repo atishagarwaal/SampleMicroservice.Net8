@@ -3,21 +3,24 @@
     using Microsoft.EntityFrameworkCore;
     using Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Data;
     using Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Interfaces;
+    using System.Linq.Expressions;
 
     /// <summary>
     /// Generic repository class.
     /// </summary>
-    public class EntityRepository<T> : IRepository<T> where T : class
+    public class GenericRepository<T> : IGenericRepository<T> where T : class
     {
-        private readonly ApplicationDbContext _dbContext;
+        protected readonly ApplicationDbContext _context;
+        protected readonly DbSet<T> _dbSet;
 
         /// <summary>
         /// Initializes a new instance of the GenericRepository class.
         /// </summary>
         /// <param name="dbcontext">Db context.</param>
-        public EntityRepository(ApplicationDbContext dbcontext)
+        public GenericRepository(ApplicationDbContext context)
         {
-            _dbContext = dbcontext;
+            _context = context;
+            _dbSet = context.Set<T>();
         }
 
         /// <summary>
@@ -26,7 +29,7 @@
         /// <param name="entity">An object type parameter T.</param>
         public async Task<T> AddAsync(T entity)
         {
-            var entry = await _dbContext.Set<T>().AddAsync(entity);
+            var entry = await _dbSet.AddAsync(entity);
             return entry.Entity;
         }
 
@@ -35,7 +38,7 @@
         /// </summary>
         /// <returns>Returns collection of object of type parameter T.</returns>
         public async Task<IEnumerable<T>> GetAllAsync()
-            => await _dbContext.Set<T>().ToListAsync();
+            => await _dbSet.ToListAsync();
 
         /// <summary>
         /// Gets object by Id
@@ -43,14 +46,14 @@
         /// <param name="id">Generic type parameter.</param>
         /// <returns>Returns object of type parameter T.</returns>
         public async Task<T?> GetByIdAsync(long id)
-            => await _dbContext.Set<T>().FindAsync(id);
+            => await _dbSet.FindAsync(id);
 
         /// <summary>
         /// Remove an object.
         /// </summary>
         /// <param name="entity">An object type parameter T.</param>
         public void Remove(T entity)
-            => _dbContext.Set<T>().Remove(entity);
+            => _dbSet.Remove(entity);
 
         /// <summary>
         /// Update an object.
@@ -58,8 +61,14 @@
         /// <param name="entity">An object type parameter T.</param>
         public T Update(T entity)
         {
-            var entry = _dbContext.Update(entity);
+            var entry = _dbSet.Attach(entity);
+            _context.Entry(entity).State = EntityState.Modified;
             return entry.Entity;
+        }
+
+        public async Task<IEnumerable<T>> ExecuteQueryAsync(Expression<Func<T, bool>> predicate)
+        {
+            return await _dbSet.Where(predicate).ToListAsync();
         }
     }
 }
