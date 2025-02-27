@@ -17,7 +17,7 @@ namespace Retail.Api.Customers.src.CleanArchitecture.Application.Service
 
         public async Task Initialize()
         {
-            //await _messageSubscriber.SubscribeAsync<OrderCreatedEvent>(_orderCreatedHandler.HandleAsync);
+            await _messageSubscriber.SubscribeAsync<OrderCreatedEvent>(_orderCreatedHandler.HandleAsync);
         }
     }
 }

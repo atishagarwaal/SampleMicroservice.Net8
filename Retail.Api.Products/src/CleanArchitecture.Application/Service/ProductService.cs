@@ -162,7 +162,7 @@ namespace Retail.Api.Products.src.CleanArchitecture.Application.Service
                         unitOfWork.Skus.Update(sku);
                     }
 
-                    var newOrderMessage = new OrderInventoryEvent
+                    var newOrderMessage = new OrderCreatedEvent
                     {
                         CustomerId = orderCreatedEvent.CustomerId,
                         OrderDate = orderCreatedEvent.OrderDate,
@@ -170,7 +170,7 @@ namespace Retail.Api.Products.src.CleanArchitecture.Application.Service
                         TotalAmount = orderCreatedEvent.TotalAmount,
                     };
 
-                    await _messagePublisher.PublishAsync<OrderInventoryEvent>(newOrderMessage, "OrderInventory").ConfigureAwait(false);
+                    await _messagePublisher.PublishAsync<OrderCreatedEvent>(newOrderMessage, "OrderCreated").ConfigureAwait(false);
                 }
             }
             catch (Exception ex) 

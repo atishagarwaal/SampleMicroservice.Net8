@@ -47,7 +47,7 @@ namespace MessagingLibrary.Service
 
             // Extract event name by removing "Handler" at the end
             string eventName = handler.Target.ToString().Substring(handler.Target.ToString().LastIndexOf('.') + 1)
-                                           .Replace("Handler", "");
+                                           .Replace("EventHandler", "");
 
             if (!routes.TryGetValue(eventName, out var route))
             {
