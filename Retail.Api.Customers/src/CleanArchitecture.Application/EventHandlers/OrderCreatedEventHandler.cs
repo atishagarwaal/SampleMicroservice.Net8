@@ -1,18 +1,31 @@
 ﻿using CommonLibrary.Handlers;
 using CommonLibrary.MessageContract;
+using MessagingLibrary.Interface;
+using Retail.Api.Customers.src.CleanArchitecture.Application.Interfaces;
 
 namespace Retail.Api.Customers.src.CleanArchitecture.Application.EventHandlers
 {
     public class OrderCreatedEventHandler : IEventHandler<OrderCreatedEvent>
     {
-        public OrderCreatedEventHandler()
+        private readonly ICustomerService _customerService;
+        private readonly IMessagePublisher _messagePublisher;
+
+        public OrderCreatedEventHandler(ICustomerService productService, IMessagePublisher messagePublisher)
         {
+            _customerService = productService;
+            _messagePublisher = messagePublisher;
         }
 
         public async Task HandleAsync(OrderCreatedEvent orderCreatedEvent)
         {
-            Console.WriteLine($"Order {orderCreatedEvent.OrderId} received in Customer service. Notifying customer...");
-            await Task.CompletedTask;
+        try
+        {
+            _customerService.HandleOrderCreatedEvent(orderCreatedEvent);
+
         }
+        catch (Exception ex)
+        {
+        }
+    }
     }
 }

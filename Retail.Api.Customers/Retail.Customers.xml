@@ -148,7 +148,7 @@
             Customer service class.
             </summary>
         </member>
-        <member name="M:Retail.Api.Customers.src.CleanArchitecture.Application.Service.CustomerService.#ctor(Retail.Api.Customers.src.CleanArchitecture.Infrastructure.Interfaces.IUnitOfWork,AutoMapper.IMapper)">
+        <member name="M:Retail.Api.Customers.src.CleanArchitecture.Application.Service.CustomerService.#ctor(Retail.Api.Customers.src.CleanArchitecture.Infrastructure.Interfaces.IUnitOfWork,AutoMapper.IMapper,Microsoft.Extensions.DependencyInjection.IServiceScopeFactory)">
             <summary>
             Initializes a new instance of the <see cref="T:Retail.Api.Customers.src.CleanArchitecture.Application.Service.CustomerService"/> class.
             </summary>

@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using CommonLibrary.MessageContract;
+using Microsoft.Extensions.DependencyInjection;
 using Retail.Api.Customers.src.CleanArchitecture.Application.Dto;
 using Retail.Api.Customers.src.CleanArchitecture.Application.Interfaces;
 using Retail.Api.Customers.src.CleanArchitecture.Domain.Entities;
@@ -11,6 +13,7 @@ namespace Retail.Api.Customers.src.CleanArchitecture.Application.Service
     /// </summary>
     internal class CustomerService : ICustomerService
     {
+        private readonly IServiceScopeFactory _serviceScopeFactory;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
@@ -19,10 +22,11 @@ namespace Retail.Api.Customers.src.CleanArchitecture.Application.Service
         /// </summary>
         /// <param name="unitOfWork">Intance of unit of work class.</param>
         /// <param name="mapper">Intance of mapper class.</param>
-        public CustomerService(IUnitOfWork unitOfWork, IMapper mapper)
+        public CustomerService(IUnitOfWork unitOfWork, IMapper mapper, IServiceScopeFactory serviceScopeFactory)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _serviceScopeFactory = serviceScopeFactory;
         }
 
         /// <summary>
@@ -131,6 +135,34 @@ namespace Retail.Api.Customers.src.CleanArchitecture.Application.Service
             }
 
             return false;
+        }
+
+        public async Task HandleOrderCreatedEvent(OrderCreatedEvent orderCreatedEvent)
+        {
+            try
+            {
+                using (var scope = _serviceScopeFactory.CreateScope())
+                {
+                    var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
+
+                    var orderId = orderCreatedEvent.OrderId;
+                    var customerId = orderCreatedEvent.CustomerId;
+                    var notification = new Notification
+                    {
+                        OrderId = orderId,
+                        CustomerId = customerId,
+                        Message = "Order created successfully",
+                        OrderDate = DateTime.Now,
+                    };
+
+                    notification = await unitOfWork.Notifications.AddAsync(notification);
+
+                    Console.WriteLine(notification.Message);
+                }
+            }
+            catch (Exception ex)
+            {
+            }
         }
     }
 }
