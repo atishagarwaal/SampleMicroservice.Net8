@@ -43,6 +43,6 @@ namespace Retail.Api.Customers.src.CleanArchitecture.Application.Interfaces
         /// <returns>Customer object.</returns>
         Task<bool> DeleteCustomerAsync(long id);
 
-        Task HandleOrderCreatedEvent(OrderCreatedEvent orderCreatedEvent);
+        Task HandleOrderCreatedEvent(InventoryUpdatedEvent inventoryUpdatedEvent);
     }
 }

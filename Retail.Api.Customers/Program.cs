@@ -36,7 +36,7 @@ builder.Services.AddScoped(typeof(ICustomerService), typeof(CustomerService));
 // Add RabbitMQ from the common project
 builder.Services.AddRabbitMQServices(builder.Configuration);
 
-builder.Services.AddScoped<IEventHandler<OrderCreatedEvent>, OrderCreatedEventHandler>();
+builder.Services.AddScoped<IEventHandler<InventoryUpdatedEvent>, InventoryUpdatedEventHandler>();
 builder.Services.AddScoped<IServiceInitializer, ServiceInitializer>();
 
 builder.Services.AddAutoMapper(typeof(Program));

@@ -137,7 +137,7 @@ namespace Retail.Api.Customers.src.CleanArchitecture.Application.Service
             return false;
         }
 
-        public async Task HandleOrderCreatedEvent(OrderCreatedEvent orderCreatedEvent)
+        public async Task HandleOrderCreatedEvent(InventoryUpdatedEvent inventoryUpdatedEvent)
         {
             try
             {
@@ -145,8 +145,8 @@ namespace Retail.Api.Customers.src.CleanArchitecture.Application.Service
                 {
                     var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
 
-                    var orderId = orderCreatedEvent.OrderId;
-                    var customerId = orderCreatedEvent.CustomerId;
+                    var orderId = inventoryUpdatedEvent.OrderId;
+                    var customerId = inventoryUpdatedEvent.CustomerId;
                     var notification = new Notification
                     {
                         OrderId = orderId,

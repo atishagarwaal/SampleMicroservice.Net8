@@ -5,22 +5,22 @@ using Retail.Api.Customers.src.CleanArchitecture.Application.Interfaces;
 
 namespace Retail.Api.Customers.src.CleanArchitecture.Application.EventHandlers
 {
-    public class OrderCreatedEventHandler : IEventHandler<OrderCreatedEvent>
+    public class InventoryUpdatedEventHandler : IEventHandler<InventoryUpdatedEvent>
     {
         private readonly ICustomerService _customerService;
         private readonly IMessagePublisher _messagePublisher;
 
-        public OrderCreatedEventHandler(ICustomerService productService, IMessagePublisher messagePublisher)
+        public InventoryUpdatedEventHandler(ICustomerService productService, IMessagePublisher messagePublisher)
         {
             _customerService = productService;
             _messagePublisher = messagePublisher;
         }
 
-        public async Task HandleAsync(OrderCreatedEvent orderCreatedEvent)
+        public async Task HandleAsync(InventoryUpdatedEvent inventoryUpdatedEvent)
         {
         try
         {
-            _customerService.HandleOrderCreatedEvent(orderCreatedEvent);
+            _customerService.HandleOrderCreatedEvent(inventoryUpdatedEvent);
 
         }
         catch (Exception ex)

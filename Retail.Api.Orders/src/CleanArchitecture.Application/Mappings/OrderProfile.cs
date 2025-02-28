@@ -4,10 +4,9 @@
 
 namespace Retail.Api.Orders.src.CleanArchitecture.Application.Mappings
 {
+    using CommonLibrary.MessageContract;
     using Retail.Api.Orders.src.CleanArchitecture.Application.Dto;
-    using Retail.Api.Orders.src.CleanArchitecture.Application.MessageContracts;
     using Retail.Api.Orders.src.CleanArchitecture.Domain.Entities;
-    using OrderCreatedEvent = MessageContracts.OrderCreatedEvent;
 
     /// <summary>
     /// Defines Order profile for AutoMapper.

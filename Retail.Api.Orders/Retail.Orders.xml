@@ -166,31 +166,6 @@
             Initializes a new instance of the <see cref="T:Retail.Api.Orders.src.CleanArchitecture.Application.Mappings.OrderProfile"/> class.
             </summary>
         </member>
-        <member name="P:Retail.Api.Orders.src.CleanArchitecture.Application.MessageContracts.OrderCreatedEvent.Id">
-            <summary>
-            Gets or sets the Id.
-            </summary>
-        </member>
-        <member name="P:Retail.Api.Orders.src.CleanArchitecture.Application.MessageContracts.OrderCreatedEvent.CustomerId">
-            <summary>
-            Gets or sets the customer Id.
-            </summary>
-        </member>
-        <member name="P:Retail.Api.Orders.src.CleanArchitecture.Application.MessageContracts.OrderCreatedEvent.OrderDate">
-            <summary>
-            Gets or sets the order date.
-            </summary>
-        </member>
-        <member name="P:Retail.Api.Orders.src.CleanArchitecture.Application.MessageContracts.OrderCreatedEvent.TotalAmount">
-            <summary>
-            Gets or sets the total amount.
-            </summary>
-        </member>
-        <member name="P:Retail.Api.Orders.src.CleanArchitecture.Application.MessageContracts.OrderCreatedEvent.LineItems">
-            <summary>
-            Gets or sets the Line Items.
-            </summary>
-        </member>
         <member name="T:Retail.Api.Orders.src.CleanArchitecture.Application.Service.OrderService">
             <summary>
             Order service class.

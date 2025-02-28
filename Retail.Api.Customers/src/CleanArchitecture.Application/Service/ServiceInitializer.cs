@@ -8,16 +8,16 @@ namespace Retail.Api.Customers.src.CleanArchitecture.Application.Service
     internal class ServiceInitializer : IServiceInitializer
     {
         private readonly IMessageSubscriber _messageSubscriber;
-        private readonly IEventHandler<OrderCreatedEvent> _orderCreatedHandler;
-        public ServiceInitializer(IMessageSubscriber messageSubscriber, IEventHandler<OrderCreatedEvent> orderCreatedHandler)
+        private readonly IEventHandler<InventoryUpdatedEvent> _inventoryUpdatedHandler;
+        public ServiceInitializer(IMessageSubscriber messageSubscriber, IEventHandler<InventoryUpdatedEvent> orderCreatedHandler)
         {
             _messageSubscriber = messageSubscriber;
-            _orderCreatedHandler = orderCreatedHandler;
+            _inventoryUpdatedHandler = orderCreatedHandler;
         }
 
         public async Task Initialize()
         {
-            await _messageSubscriber.SubscribeAsync<OrderCreatedEvent>(_orderCreatedHandler.HandleAsync);
+            await _messageSubscriber.SubscribeAsync<InventoryUpdatedEvent>(_inventoryUpdatedHandler.HandleAsync);
         }
     }
 }

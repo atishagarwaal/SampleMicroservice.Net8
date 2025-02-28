@@ -1,15 +1,20 @@
 ﻿using CommonLibrary;
+using CommonLibrary.Handlers.Dto;
 using CommonLibrary.MessageContract;
-using Retail.Api.Orders.src.CleanArchitecture.Application.Dto;
 
-namespace Retail.Api.Orders.src.CleanArchitecture.Application.MessageContracts
+namespace CommonLibrary.MessageContract
 {
-    public class OrderCreatedEvent : EventBase
+    public class InventoryUpdatedEvent : EventBase
     {
         /// <summary>
         /// Gets or sets the Id.
         /// </summary>
         public long Id { get; set; }
+
+        /// <summary>
+        /// Gets or sets the order Id.
+        /// </summary>
+        public long OrderId { get; set; }
 
         /// <summary>
         /// Gets or sets the customer Id.
