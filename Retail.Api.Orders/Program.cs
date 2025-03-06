@@ -4,6 +4,8 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
+using CommonLibrary.Handlers;
+using CommonLibrary.MessageContract;
 using MessagingInfrastructure.Service;
 using MessagingLibrary.Interface;
 using MessagingLibrary.Service;
@@ -15,6 +17,7 @@ using Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Data;
 using Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Interfaces;
 using Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Repositories;
 using Retail.Api.Orders.src.CleanArchitecture.Infrastructure.UnitOfWork;
+using Retail.Api.Products.src.CleanArchitecture.Application.EventHandlers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,6 +30,9 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 builder.Services.AddScoped(typeof(IUnitOfWork), typeof(UnitOfWork));
 builder.Services.AddScoped(typeof(IOrderService), typeof(OrderService));
+
+builder.Services.AddScoped<IEventHandler<InventoryErrorEvent>, InventoryErrorEventHandler>();
+builder.Services.AddScoped<IServiceInitializer, ServiceInitializer>();
 
 // Add RabbitMQ from the common project
 builder.Services.AddRabbitMQServices(builder.Configuration);
@@ -52,6 +58,9 @@ var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
 {
+    var serviceInitializer = scope.ServiceProvider.GetRequiredService<IServiceInitializer>();
+    await serviceInitializer.Initialize();
+
     var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
     db.Database.EnsureCreatedAsync();
 }

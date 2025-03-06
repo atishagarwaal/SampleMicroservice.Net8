@@ -2,7 +2,9 @@
 {
     using AutoMapper;
     using CommonLibrary.MessageContract;
+    using MessagingInfrastructure;
     using MessagingLibrary.Interface;
+    using Microsoft.Extensions.DependencyInjection;
     using Retail.Api.Orders.src.CleanArchitecture.Application.Dto;
     using Retail.Api.Orders.src.CleanArchitecture.Application.Interfaces;
     using Retail.Api.Orders.src.CleanArchitecture.Domain.Entities;
@@ -14,6 +16,7 @@
     /// </summary>
     public class OrderService : IOrderService
     {
+        private readonly IServiceScopeFactory _serviceScopeFactory;
         private readonly IMessagePublisher _messagePublisher;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
@@ -23,11 +26,12 @@
         /// </summary>
         /// <param name="unitOfWork">Intance of unit of work class.</param>
         /// <param name="mapper">Intance of mapper class.</param>
-        public OrderService(IUnitOfWork unitOfWork, IMapper mapper, IMessagePublisher messagePublisher)
+        public OrderService(IUnitOfWork unitOfWork, IMapper mapper, IMessagePublisher messagePublisher, IServiceScopeFactory serviceScopeFactory)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _messagePublisher = messagePublisher;
+            _serviceScopeFactory = serviceScopeFactory;
         }
 
         /// <summary>
@@ -98,7 +102,7 @@
             };
 
             // Publish order creation event
-            await _messagePublisher.PublishAsync<OrderCreatedEvent>(newOrderMessage, "OrderCreated").ConfigureAwait(false);
+            await _messagePublisher.PublishAsync<OrderCreatedEvent>(newOrderMessage, RabbitmqConstants.OrderCreated).ConfigureAwait(false);
 
             return orderDto;
         }
@@ -185,6 +189,34 @@
             await _unitOfWork.CommitTransactionAsync();
 
             return true;
+        }
+
+        public async Task HandleInventoryErrorEvent(InventoryErrorEvent inventoryUpdatedFailedEvent)
+        {
+            try
+            {
+                using (var scope = _serviceScopeFactory.CreateScope())
+                {
+                    var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
+
+                    // Find order
+                    var order = await unitOfWork.Orders.GetByIdAsync(inventoryUpdatedFailedEvent.OrderId);
+
+                    if (order == null)
+                    {
+                        throw new Exception("Order does not exists");
+                    }
+
+                    await unitOfWork.BeginTransactionAsync();
+                    unitOfWork.Orders.Remove(order);
+                    await unitOfWork.CompleteAsync();
+                    await unitOfWork.CommitTransactionAsync();                   
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
         }
     }
 }

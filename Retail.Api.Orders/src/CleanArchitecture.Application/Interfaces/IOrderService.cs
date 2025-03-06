@@ -1,4 +1,5 @@
-﻿using Retail.Api.Orders.src.CleanArchitecture.Application.Dto;
+﻿using CommonLibrary.MessageContract;
+using Retail.Api.Orders.src.CleanArchitecture.Application.Dto;
 
 namespace Retail.Api.Orders.src.CleanArchitecture.Application.Interfaces
 {
@@ -41,5 +42,7 @@ namespace Retail.Api.Orders.src.CleanArchitecture.Application.Interfaces
         /// <param name="id">Order Id.</param>
         /// <returns>Order object.</returns>
         Task<bool> RemoveOrderAsync(long id);
+
+        Task HandleInventoryErrorEvent(InventoryErrorEvent inventoryUpdatedFailedEvent);
     }
 }

@@ -171,7 +171,7 @@
             Order service class.
             </summary>
         </member>
-        <member name="M:Retail.Api.Orders.src.CleanArchitecture.Application.Service.OrderService.#ctor(Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Interfaces.IUnitOfWork,AutoMapper.IMapper,MessagingLibrary.Interface.IMessagePublisher)">
+        <member name="M:Retail.Api.Orders.src.CleanArchitecture.Application.Service.OrderService.#ctor(Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Interfaces.IUnitOfWork,AutoMapper.IMapper,MessagingLibrary.Interface.IMessagePublisher,Microsoft.Extensions.DependencyInjection.IServiceScopeFactory)">
             <summary>
             Initializes a new instance of the <see cref="T:Retail.Api.Orders.src.CleanArchitecture.Application.Service.OrderService"/> class.
             </summary>

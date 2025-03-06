@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using CommonLibrary.MessageContract;
+using MessagingInfrastructure;
 using MessagingLibrary.Interface;
 using Retail.Api.Products.src.CleanArchitecture.Application.Dto;
 using Retail.Api.Products.src.CleanArchitecture.Application.Interfaces;
@@ -141,6 +142,8 @@ namespace Retail.Api.Products.src.CleanArchitecture.Application.Service
         {
             try
             {
+                throw new Exception();
+
                 using (var scope = _serviceScopeFactory.CreateScope())
                 {
                     var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
@@ -170,11 +173,20 @@ namespace Retail.Api.Products.src.CleanArchitecture.Application.Service
                         TotalAmount = orderCreatedEvent.TotalAmount,
                     };
 
-                    await _messagePublisher.PublishAsync<InventoryUpdatedEvent>(inventoryUpdatedMessage, "InventoryUpdated").ConfigureAwait(false);
+                    await _messagePublisher.PublishAsync<InventoryUpdatedEvent>(inventoryUpdatedMessage, RabbitmqConstants.InventoryUpdated).ConfigureAwait(false);
                 }
             }
             catch (Exception ex) 
-            { 
+            {
+                var inventoryErrorMessage = new InventoryErrorEvent
+                {
+                    CustomerId = orderCreatedEvent.CustomerId,
+                    OrderDate = orderCreatedEvent.OrderDate,
+                    OrderId = orderCreatedEvent.OrderId,
+                    TotalAmount = orderCreatedEvent.TotalAmount,
+                };
+
+                await _messagePublisher.PublishAsync<InventoryErrorEvent>(inventoryErrorMessage, RabbitmqConstants.InventoryError).ConfigureAwait(false);
             }
         }
     }
