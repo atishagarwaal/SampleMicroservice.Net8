@@ -13,6 +13,7 @@ namespace MessagingInfrastructure.Service
     {
         private readonly TopologyConfiguration _config;
         private readonly IConnection _connection;
+        private const string X_Message_TTL = "x-message-ttl";
 
         public TopologyInitializer(IOptions<TopologyConfiguration> options, IConnection connection)
         {
@@ -41,12 +42,17 @@ namespace MessagingInfrastructure.Service
                 // Create queues idempotently
                 foreach (var queue in _config.Queues)
                 {
+                    if (queue.Arguments != null && queue.Arguments.ContainsKey(X_Message_TTL))
+                    {
+                        queue.Arguments[X_Message_TTL] = Convert.ToInt32(queue.Arguments[X_Message_TTL]);
+                    }
+
                     await channel.QueueDeclareAsync(
                         queue.Name,
                         queue.Durable,
                         queue.Exclusive,
                         queue.AutoDelete,
-                        queue.Arguments);
+                        queue.Arguments?.Count > 0 ? queue.Arguments : null);
 
                     Console.WriteLine($"Queue created or already exists: {queue.Name}");
 
@@ -57,7 +63,7 @@ namespace MessagingInfrastructure.Service
                             queue.Name,
                             binding.ExchangeName,
                             binding.RoutingKey,
-                            binding.Arguments);
+                            binding.Arguments?.Count > 0 ? binding.Arguments : null);
 
                         Console.WriteLine($"Binding created: {queue.Name} -> {binding.ExchangeName} ({binding.RoutingKey})");
                     }

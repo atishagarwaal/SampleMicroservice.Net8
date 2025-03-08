@@ -37,6 +37,12 @@ namespace MessagingLibrary.Service
 
         public async Task SubscribeAsync<T>(Func<T, Task> handler)
         {
+            // Validate handler is not null
+            if (handler == null)
+            {
+                throw new ArgumentNullException(nameof(handler), "Handler cannot be null.");
+            }
+
             var routes = _configuration.GetSection("MessagingConfiguration:SubscriptionRoutes")
                                    .Get<Dictionary<string, SubscriptionRoutes>>();
 
@@ -46,26 +52,55 @@ namespace MessagingLibrary.Service
             }
 
             // Extract event name by removing "Handler" at the end
-            string eventName = handler.Target.ToString().Substring(handler.Target.ToString().LastIndexOf('.') + 1)
-                                           .Replace("EventHandler", "");
+            string eventName = handler.Target.ToString()
+                                .Substring(handler.Target.ToString()
+                                .LastIndexOf('.') + 1)
+                                .Replace("EventHandler", "");
 
             if (!routes.TryGetValue(eventName, out var route))
             {
                 throw new Exception($"No route configured for event type: {eventName}");
             }
 
-            await _channel.QueueDeclareAsync(route.QueueName, true, false, false, null);
-            await _channel.QueueBindAsync(route.QueueName, route.Exchange, route.RoutingKey);
+            await _channel.QueueBindAsync(queue: route.QueueName,
+                             exchange: route.Exchange,
+                             routingKey: route.RoutingKey);
 
             var consumer = new AsyncEventingBasicConsumer(_channel);
+
             consumer.ReceivedAsync += async (model, ea) =>
             {
-                var body = ea.Body.ToArray();
-                var message = JsonSerializer.Deserialize<T>(Encoding.UTF8.GetString(body));
-                await handler(message);
+                try
+                {
+                    var body = ea.Body.ToArray();
+                    var message = JsonSerializer.Deserialize<T>(Encoding.UTF8.GetString(body));
+
+                    try
+                    {
+                        await handler(message);
+                        await _channel.BasicAckAsync(ea.DeliveryTag, false);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Error processing message: {ex.Message}");
+
+                        // Requeue for immediate re-processing
+                        await _channel.BasicNackAsync(ea.DeliveryTag, false, true);
+                    }
+                }
+                catch(Exception ex)
+                {
+                    Console.WriteLine($"Error processing message: {ex.Message}");
+
+                    // Send to DLX queue
+                    await _channel.BasicNackAsync(ea.DeliveryTag, false, false);
+                }
             };
 
-            await _channel.BasicConsumeAsync(route.QueueName, true, consumer);
+            // Disable auto acknowledgment
+            await _channel.BasicConsumeAsync(queue: route.QueueName,
+                                            autoAck: false,
+                                            consumer: consumer);
         }
     }
 }

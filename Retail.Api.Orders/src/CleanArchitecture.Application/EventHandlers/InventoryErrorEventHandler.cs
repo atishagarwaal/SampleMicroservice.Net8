@@ -21,14 +21,7 @@ namespace Retail.Api.Products.src.CleanArchitecture.Application.EventHandlers
 
         public async Task HandleAsync(InventoryErrorEvent inventoryUpdateFailedEvent)
         {
-            try
-            {
-                _orderService.HandleInventoryErrorEvent(inventoryUpdateFailedEvent);
-
-            }
-            catch (Exception ex)
-            {
-            }
+            _orderService.HandleInventoryErrorEvent(inventoryUpdateFailedEvent);
         }
     }
 }

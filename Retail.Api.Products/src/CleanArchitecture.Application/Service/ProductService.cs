@@ -142,7 +142,7 @@ namespace Retail.Api.Products.src.CleanArchitecture.Application.Service
         {
             try
             {
-                throw new Exception();
+                //throw new Exception();
 
                 using (var scope = _serviceScopeFactory.CreateScope())
                 {

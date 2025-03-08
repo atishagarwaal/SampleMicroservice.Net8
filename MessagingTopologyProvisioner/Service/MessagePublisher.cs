@@ -36,23 +36,17 @@ namespace MessagingLibrary.Service
 
         public async Task PublishAsync<T>(T message, string eventType)
         {
-            try
-            {
-                var routes = _configuration.GetSection("MessagingConfiguration:PublishingRoutes")
-                                       .Get<Dictionary<string, PublishingRoutes>>();
+            var routes = _configuration.GetSection("MessagingConfiguration:PublishingRoutes")
+                                    .Get<Dictionary<string, PublishingRoutes>>();
 
-                if (!routes.TryGetValue(eventType, out var route))
-                {
-                    throw new Exception($"No route configured for event type: {eventType}");
-                }
-
-                var messageBody = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(message));
-                await _channel.ExchangeDeclareAsync(route.Exchange, ExchangeType.Topic, true);
-                await _channel.BasicPublishAsync(route.Exchange, route.RoutingKey, messageBody);
-            }
-            catch (Exception ex)
+            if (!routes.TryGetValue(eventType, out var route))
             {
+                throw new Exception($"No route configured for event type: {eventType}");
             }
+
+            var messageBody = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(message));
+            await _channel.ExchangeDeclareAsync(route.Exchange, ExchangeType.Topic, true);
+            await _channel.BasicPublishAsync(route.Exchange, route.RoutingKey, messageBody);
         }
     }
 }

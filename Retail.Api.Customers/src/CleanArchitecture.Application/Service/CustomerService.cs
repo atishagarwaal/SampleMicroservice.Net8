@@ -139,29 +139,25 @@ namespace Retail.Api.Customers.src.CleanArchitecture.Application.Service
 
         public async Task HandleOrderCreatedEvent(InventoryUpdatedEvent inventoryUpdatedEvent)
         {
-            try
+            throw new Exception();
+
+            using (var scope = _serviceScopeFactory.CreateScope())
             {
-                using (var scope = _serviceScopeFactory.CreateScope())
+                var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
+
+                var orderId = inventoryUpdatedEvent.OrderId;
+                var customerId = inventoryUpdatedEvent.CustomerId;
+                var notification = new Notification
                 {
-                    var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
+                    OrderId = orderId,
+                    CustomerId = customerId,
+                    Message = "Order created successfully",
+                    OrderDate = DateTime.Now,
+                };
 
-                    var orderId = inventoryUpdatedEvent.OrderId;
-                    var customerId = inventoryUpdatedEvent.CustomerId;
-                    var notification = new Notification
-                    {
-                        OrderId = orderId,
-                        CustomerId = customerId,
-                        Message = "Order created successfully",
-                        OrderDate = DateTime.Now,
-                    };
+                notification = await unitOfWork.Notifications.AddAsync(notification);
 
-                    notification = await unitOfWork.Notifications.AddAsync(notification);
-
-                    Console.WriteLine(notification.Message);
-                }
-            }
-            catch (Exception ex)
-            {
+                Console.WriteLine(notification.Message);
             }
         }
     }

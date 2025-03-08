@@ -24,14 +24,7 @@ namespace Retail.Api.Products.src.CleanArchitecture.Application.EventHandlers
 
         public async Task HandleAsync(OrderCreatedEvent orderCreatedEvent)
         {
-            try
-            {
-                _productService.HandleOrderCreatedEvent(orderCreatedEvent);
-
-            }
-            catch (Exception ex)
-            {
-            }
+            _productService.HandleOrderCreatedEvent(orderCreatedEvent);
         }
     }
 }

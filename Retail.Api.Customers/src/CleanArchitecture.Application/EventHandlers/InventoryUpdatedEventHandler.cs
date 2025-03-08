@@ -18,14 +18,7 @@ namespace Retail.Api.Customers.src.CleanArchitecture.Application.EventHandlers
 
         public async Task HandleAsync(InventoryUpdatedEvent inventoryUpdatedEvent)
         {
-        try
-        {
             _customerService.HandleOrderCreatedEvent(inventoryUpdatedEvent);
-
         }
-        catch (Exception ex)
-        {
-        }
-    }
     }
 }

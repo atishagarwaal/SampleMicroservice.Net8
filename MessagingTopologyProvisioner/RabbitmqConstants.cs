@@ -11,5 +11,7 @@ namespace MessagingInfrastructure
         public const string OrderCreated = "OrderCreated";
         public const string InventoryUpdated = "InventoryUpdated";
         public const string InventoryError = "InventoryError";
+        public const string DeadLetterExchange = "dlx.topic.exchange";
+        public const string DeadLetterRoutingKey = "failure";
     }
 }
