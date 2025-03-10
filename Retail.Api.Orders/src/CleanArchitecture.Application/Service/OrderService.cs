@@ -40,12 +40,8 @@
         /// <returns>List of orders.</returns>
         public async Task<IEnumerable<OrderDto>> GetAllOrdersAsync()
         {
-            var orders = new List<OrderDto>();
-
-            // Get all orders
-            var list = await _unitOfWork.Orders.GetAllAsync();
-
-            return _mapper.Map<IEnumerable<OrderDto>>(list);
+            var orders = await _unitOfWork.Orders.GetAllAsync();
+            return _mapper.Map<IEnumerable<OrderDto>>(orders);
         }
 
         /// <summary>
@@ -55,13 +51,8 @@
         /// <returns>Order object.</returns>
         public async Task<OrderDto> GetOrderByIdAsync(long id)
         {
-            // Find record
             var order = await _unitOfWork.Orders.GetByIdAsync(id);
-
-            // Transform data
-            var orderDto = _mapper.Map<OrderDto>(order);
-
-            return orderDto;
+            return _mapper.Map<OrderDto>(order);
         }
 
         /// <summary>
@@ -71,40 +62,43 @@
         /// <returns>Order object.</returns>
         public async Task<OrderDto> AddOrderAsync(OrderDto orderDto)
         {
-            // Get order values
-            var order = _mapper.Map<Order>(orderDto);
-
-            // Update order in database
-            await _unitOfWork.BeginTransactionAsync();
-            var orderRecord = await _unitOfWork.Orders.AddAsync(order);
-            await _unitOfWork.CompleteAsync();
-            await _unitOfWork.CommitTransactionAsync();
-
-            // Find record
-            var record = await _unitOfWork.Orders.GetByIdAsync(orderRecord.Id);
-
-            // Transform data
-            orderDto = _mapper.Map<OrderDto>(record);
-
-            var newOrderMessage = new OrderCreatedEvent
+            try
             {
-                CustomerId = record.CustomerId,
-                OrderDate = record.OrderDate,
-                TotalAmount = record.TotalAmount,
-                OrderId = record.Id,
-                LineItems = record.LineItems.AsEnumerable().Select(item => new CommonLibrary.Handlers.Dto.LineItemDto()
+                // Start transaction
+                await _unitOfWork.BeginTransactionAsync();
+
+                var order = _mapper.Map<Order>(orderDto);
+                var orderRecord = await _unitOfWork.Orders.AddAsync(order);
+                await _unitOfWork.CompleteAsync();
+
+                // Publish event only after successful database operation
+                var newOrderMessage = new OrderCreatedEvent
                 {
-                    Id = item.Id,
-                    OrderId = record.Id,
-                    SkuId = item.SkuId,
-                    Qty = item.Qty,
-                }),
-            };
+                    CustomerId = orderRecord.CustomerId,
+                    OrderDate = orderRecord.OrderDate,
+                    TotalAmount = orderRecord.TotalAmount,
+                    OrderId = orderRecord.Id,
+                    LineItems = orderRecord.LineItems.Select(item => new CommonLibrary.Handlers.Dto.LineItemDto()
+                    {
+                        Id = item.Id,
+                        OrderId = orderRecord.Id,
+                        SkuId = item.SkuId,
+                        Qty = item.Qty,
+                    }),
+                };
 
-            // Publish order creation event
-            await _messagePublisher.PublishAsync<OrderCreatedEvent>(newOrderMessage, RabbitmqConstants.OrderCreated).ConfigureAwait(false);
+                await _messagePublisher.PublishAsync(newOrderMessage, RabbitmqConstants.OrderCreated);
 
-            return orderDto;
+                // Commit transaction
+                await _unitOfWork.CommitTransactionAsync();
+
+                return _mapper.Map<OrderDto>(orderRecord);
+            }
+            catch
+            {
+                await _unitOfWork.RollbackTransactionAsync();
+                throw;
+            }
         }
 
         /// <summary>
@@ -115,39 +109,33 @@
         /// <returns>Order object.</returns>
         public async Task<OrderDto> UpdateOrderAsync(long id, OrderDto orderDto)
         {
-            // Get order values
-            var order = _mapper.Map<Order>(orderDto);
-
-            // Update order in database
-            await _unitOfWork.BeginTransactionAsync();
-            _unitOfWork.Orders.Update(order);
-
-            var lineitems = orderDto?.LineItems;
-
-            if (lineitems != null)
+            try
             {
-                foreach (var lineitem in lineitems)
-                {
-                    if (lineitem != null)
-                    {
-                        // Get lineitem values
-                        var lineRecord = _mapper.Map<LineItem>(lineitem);
+                await _unitOfWork.BeginTransactionAsync();
 
-                        // Update line item in database
+                var order = _mapper.Map<Order>(orderDto);
+                _unitOfWork.Orders.Update(order);
+
+                if (orderDto.LineItems != null)
+                {
+                    foreach (var lineItem in orderDto.LineItems)
+                    {
+                        var lineRecord = _mapper.Map<LineItem>(lineItem);
                         _unitOfWork.LineItems.Update(lineRecord);
                     }
                 }
+
+                await _unitOfWork.CompleteAsync();
+                await _unitOfWork.CommitTransactionAsync();
+
+                var updatedOrder = await _unitOfWork.Orders.GetByIdAsync(id);
+                return _mapper.Map<OrderDto>(updatedOrder);
             }
-
-            await _unitOfWork.CommitTransactionAsync();
-
-            // Find record
-            var record = await _unitOfWork.Orders.GetByIdAsync(id);
-
-            // Transform data
-            orderDto = _mapper.Map<OrderDto>(record);
-
-            return orderDto;
+            catch
+            {
+                await _unitOfWork.RollbackTransactionAsync();
+                throw;
+            }
         }
 
         /// <summary>
@@ -157,65 +145,55 @@
         /// <returns>Order object.</returns>
         public async Task<bool> RemoveOrderAsync(long id)
         {
-            // Find record
-            var order = await _unitOfWork.Orders.GetByIdAsync(id);
-
-            if (order?.Id == 0)
+            try
             {
-                return true;
-            }
+                var order = await _unitOfWork.Orders.GetByIdAsync(id);
+                if (order == null)
+                    return false;
 
-            // Update order in database
-            await _unitOfWork.BeginTransactionAsync();
-            _unitOfWork.Orders.Remove(order);
+                await _unitOfWork.BeginTransactionAsync();
 
-            var lineitems = order?.LineItems;
-
-            if (lineitems != null)
-            {
-                foreach (var lineitem in lineitems)
+                _unitOfWork.Orders.Remove(order);
+                if (order.LineItems != null)
                 {
-                    if (lineitem != null)
+                    foreach (var lineItem in order.LineItems)
                     {
-                        // Get lineitem values
-                        var lineRecord = _mapper.Map<LineItem>(lineitem);
-
-                        // Update line item in database
-                        _unitOfWork.LineItems.Remove(lineRecord);
+                        _unitOfWork.LineItems.Remove(lineItem);
                     }
                 }
+
+                await _unitOfWork.CompleteAsync();
+                await _unitOfWork.CommitTransactionAsync();
+
+                return true;
             }
-
-            await _unitOfWork.CommitTransactionAsync();
-
-            return true;
+            catch
+            {
+                await _unitOfWork.RollbackTransactionAsync();
+                throw;
+            }
         }
 
         public async Task HandleInventoryErrorEvent(InventoryErrorEvent inventoryUpdatedFailedEvent)
         {
             try
             {
-                using (var scope = _serviceScopeFactory.CreateScope())
-                {
-                    var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
+                using var scope = _serviceScopeFactory.CreateScope();
+                var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
 
-                    // Find order
-                    var order = await unitOfWork.Orders.GetByIdAsync(inventoryUpdatedFailedEvent.OrderId);
+                var order = await unitOfWork.Orders.GetByIdAsync(inventoryUpdatedFailedEvent.OrderId);
+                if (order == null)
+                    throw new Exception("Order does not exist");
 
-                    if (order == null)
-                    {
-                        throw new Exception("Order does not exists");
-                    }
-
-                    await unitOfWork.BeginTransactionAsync();
-                    unitOfWork.Orders.Remove(order);
-                    await unitOfWork.CompleteAsync();
-                    await unitOfWork.CommitTransactionAsync();                   
-                }
+                await unitOfWork.BeginTransactionAsync();
+                unitOfWork.Orders.Remove(order);
+                await unitOfWork.CompleteAsync();
+                await unitOfWork.CommitTransactionAsync();
             }
-            catch (Exception ex)
+            catch
             {
-                throw new Exception(ex.Message);
+                await _unitOfWork.RollbackTransactionAsync();
+                throw;
             }
         }
     }
