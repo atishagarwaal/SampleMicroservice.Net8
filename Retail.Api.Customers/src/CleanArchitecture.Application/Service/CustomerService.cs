@@ -35,19 +35,8 @@ namespace Retail.Api.Customers.src.CleanArchitecture.Application.Service
         /// <returns>List of customers.</returns>
         public async Task<IEnumerable<CustomerDto>> GetAllCustomersAsync()
         {
-            var returnList = new List<CustomerDto>();
-
-            // Get all customers
-            var list = await _unitOfWork.Customers.GetAllAsync();
-
-            // Transform data
-            foreach (var item in list)
-            {
-                var custDto = _mapper.Map<CustomerDto>(item);
-                returnList.Add(custDto);
-            }
-
-            return returnList;
+            var customers = await _unitOfWork.Customers.GetAllAsync();
+            return _mapper.Map<IEnumerable<CustomerDto>>(customers);
         }
 
         /// <summary>
@@ -57,13 +46,8 @@ namespace Retail.Api.Customers.src.CleanArchitecture.Application.Service
         /// <returns>Customer object.</returns>
         public async Task<CustomerDto> GetCustomerByIdAsync(long id)
         {
-            // Find record
-            var record = await _unitOfWork.Customers.GetByIdAsync(id);
-
-            // Transform data
-            var custDto = _mapper.Map<CustomerDto>(record);
-
-            return custDto;
+            var customer = await _unitOfWork.Customers.GetByIdAsync(id);
+            return _mapper.Map<CustomerDto>(customer);
         }
 
         /// <summary>
@@ -77,16 +61,19 @@ namespace Retail.Api.Customers.src.CleanArchitecture.Application.Service
             var custObj = _mapper.Map<Customer>(custDto);
 
             // Add customer
-            await _unitOfWork.BeginTransactionAsync();
-            var result = await _unitOfWork.Customers.AddAsync(custObj);
-            await _unitOfWork.CompleteAsync();
-            await _unitOfWork.CommitTransactionAsync();
+            try
+            {
+                var result = await _unitOfWork.Customers.AddAsync(custObj);
+                await _unitOfWork.CompleteAsync();
+                await _unitOfWork.CommitTransactionAsync();
 
-            // Transform data
-            custDto = _mapper.Map<CustomerDto>(result);
-
-            return custDto;
-
+                return _mapper.Map<CustomerDto>(result);
+            }
+            catch
+            {
+                await _unitOfWork.RollbackTransactionAsync();
+                throw;
+            }
         }
 
         /// <summary>
@@ -97,20 +84,29 @@ namespace Retail.Api.Customers.src.CleanArchitecture.Application.Service
         /// <returns>Customer object.</returns>
         public async Task<CustomerDto> UpdateCustomerAsync(long id, CustomerDto custDto)
         {
-            var record = _mapper.Map<Customer>(custDto);
+            var existingCustomer = await _unitOfWork.Customers.GetByIdAsync(id);
+            if (existingCustomer == null)
+            {
+                throw new KeyNotFoundException($"Customer with ID {id} not found.");
+            }
+
+            _mapper.Map(custDto, existingCustomer);
 
             // Update record
             await _unitOfWork.BeginTransactionAsync();
-            _unitOfWork.Customers.Update(record);
-            await _unitOfWork.CompleteAsync();
-            await _unitOfWork.CommitTransactionAsync();
+            try
+            {
+                _unitOfWork.Customers.Update(existingCustomer);
+                await _unitOfWork.CompleteAsync();
+                await _unitOfWork.CommitTransactionAsync();
 
-            record = await _unitOfWork.Customers.GetByIdAsync(id);
-
-            // Transform data
-            custDto = _mapper.Map<CustomerDto>(record);
-
-            return custDto;
+                return _mapper.Map<CustomerDto>(existingCustomer);
+            }
+            catch
+            {
+                await _unitOfWork.RollbackTransactionAsync();
+                throw;
+            }
         }
 
         /// <summary>
@@ -123,41 +119,51 @@ namespace Retail.Api.Customers.src.CleanArchitecture.Application.Service
             // Find record
             var record = await _unitOfWork.Customers.GetByIdAsync(id);
 
-            if (record != null)
+            if (record == null)
             {
-                // Delete record
-                await _unitOfWork.BeginTransactionAsync();
+                return false;
+            }
+
+            // Delete record
+            await _unitOfWork.BeginTransactionAsync();
+            try
+            {
                 _unitOfWork.Customers.Remove(record);
                 await _unitOfWork.CompleteAsync();
                 await _unitOfWork.CommitTransactionAsync();
-
                 return true;
             }
-
-            return false;
+            catch
+            {
+                await _unitOfWork.RollbackTransactionAsync();
+                throw;
+            }
         }
 
         public async Task HandleOrderCreatedEvent(InventoryUpdatedEvent inventoryUpdatedEvent)
         {
-            throw new Exception();
+            using var scope = _serviceScopeFactory.CreateScope();
+            var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
 
-            using (var scope = _serviceScopeFactory.CreateScope())
+            var notification = new Notification
             {
-                var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
+                OrderId = inventoryUpdatedEvent.OrderId,
+                CustomerId = inventoryUpdatedEvent.CustomerId,
+                Message = "Order created successfully",
+                OrderDate = DateTime.UtcNow,
+            };
 
-                var orderId = inventoryUpdatedEvent.OrderId;
-                var customerId = inventoryUpdatedEvent.CustomerId;
-                var notification = new Notification
-                {
-                    OrderId = orderId,
-                    CustomerId = customerId,
-                    Message = "Order created successfully",
-                    OrderDate = DateTime.Now,
-                };
-
-                notification = await unitOfWork.Notifications.AddAsync(notification);
-
-                Console.WriteLine(notification.Message);
+            await unitOfWork.BeginTransactionAsync();
+            try
+            {
+                await unitOfWork.Notifications.AddAsync(notification);
+                await unitOfWork.CompleteAsync();
+                await unitOfWork.CommitTransactionAsync();
+            }
+            catch
+            {
+                await unitOfWork.RollbackTransactionAsync();
+                throw;
             }
         }
     }
