@@ -16,23 +16,13 @@ namespace MessagingLibrary.Service
     {
         private static IConnection _connection;
         private static IChannel _channel;
-        private static readonly object _lock = new();
         private readonly IConfiguration _configuration;
 
         public MessageSubscriber(IConnection connection, IConfiguration configuration)
         {
-            if (_connection == null)
-            {
-                lock (_lock)
-                {
-                    if (_connection == null)
-                    {
-                        _connection = connection;
-                        _channel = _connection.CreateChannelAsync().GetAwaiter().GetResult();
-                    }
-                }
-            }
-            _configuration = configuration;
+           _connection = connection;
+            _channel = _connection.CreateChannelAsync().GetAwaiter().GetResult();
+           _configuration = configuration;
         }
 
         public async Task SubscribeAsync<T>(Func<T, Task> handler)
@@ -64,7 +54,7 @@ namespace MessagingLibrary.Service
 
             await _channel.QueueBindAsync(queue: route.QueueName,
                              exchange: route.Exchange,
-                             routingKey: route.RoutingKey);
+                             routingKey: route.RoutingKey).ConfigureAwait(false);
 
             var consumer = new AsyncEventingBasicConsumer(_channel);
 
@@ -75,32 +65,28 @@ namespace MessagingLibrary.Service
                     var body = ea.Body.ToArray();
                     var message = JsonSerializer.Deserialize<T>(Encoding.UTF8.GetString(body));
 
-                    try
-                    {
-                        await handler(message);
-                        await _channel.BasicAckAsync(ea.DeliveryTag, false);
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine($"Error processing message: {ex.Message}");
+                    await handler(message).ConfigureAwait(false);
 
-                        // Requeue for immediate re-processing
-                        await _channel.BasicNackAsync(ea.DeliveryTag, false, true);
-                    }
                 }
                 catch(Exception ex)
                 {
                     Console.WriteLine($"Error processing message: {ex.Message}");
 
                     // Send to DLX queue
-                    await _channel.BasicNackAsync(ea.DeliveryTag, false, false);
+                    await _channel.BasicNackAsync(ea.DeliveryTag, false, false).ConfigureAwait(false);
                 }
+                finally
+                {
+                    // Acknowledge message
+                    await _channel.BasicAckAsync(ea.DeliveryTag, false).ConfigureAwait(false);
+                }
+                  
             };
 
             // Disable auto acknowledgment
             await _channel.BasicConsumeAsync(queue: route.QueueName,
                                             autoAck: false,
-                                            consumer: consumer);
+                                            consumer: consumer).ConfigureAwait(false);
         }
     }
 }

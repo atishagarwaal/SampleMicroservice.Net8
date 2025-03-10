@@ -15,22 +15,14 @@ namespace MessagingLibrary.Service
     {
         private static IConnection _connection;
         private static IChannel _channel;
-        private static readonly object _lock = new();
         private readonly IConfiguration _configuration;
 
         public MessagePublisher(IConnection connection, IConfiguration configuration)
         {
-            if (_connection == null)
-            {
-                lock (_lock)
-                {
-                    if (_connection == null)
-                    {
-                        _connection = connection;
-                        _channel = _connection.CreateChannelAsync().GetAwaiter().GetResult();
-                    }
-                }
-            }
+            _connection = connection;
+            _channel = _connection.CreateChannelAsync(new CreateChannelOptions(
+                            publisherConfirmationsEnabled: true,
+                            publisherConfirmationTrackingEnabled: true)).GetAwaiter().GetResult();
             _configuration = configuration;
         }
 
