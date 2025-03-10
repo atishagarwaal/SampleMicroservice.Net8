@@ -14,8 +14,8 @@ namespace MessagingLibrary.Service
 {
     public class MessageSubscriber : IMessageSubscriber
     {
-        private static IConnection _connection;
-        private static IChannel _channel;
+        private readonly IConnection _connection;
+        private readonly IChannel _channel;
         private readonly IConfiguration _configuration;
 
         public MessageSubscriber(IConnection connection, IConfiguration configuration)

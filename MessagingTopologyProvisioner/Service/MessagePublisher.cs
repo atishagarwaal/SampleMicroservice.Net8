@@ -13,8 +13,8 @@ namespace MessagingLibrary.Service
 {
     public class MessagePublisher : IMessagePublisher
     {
-        private static IConnection _connection;
-        private static IChannel _channel;
+        private readonly IConnection _connection;
+        private readonly IChannel _channel;
         private readonly IConfiguration _configuration;
 
         public MessagePublisher(IConnection connection, IConfiguration configuration)
