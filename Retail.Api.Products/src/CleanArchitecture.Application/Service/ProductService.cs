@@ -39,19 +39,8 @@ namespace Retail.Api.Products.src.CleanArchitecture.Application.Service
         /// <returns>List of products.</returns>
         public async Task<IEnumerable<SkuDto>> GetAllProductsAsync()
         {
-            var returnList = new List<SkuDto>();
-
-            // Get all customers
             var list = await _unitOfWork.Skus.GetAllAsync();
-
-            // Transform data
-            foreach (var item in list)
-            {
-                var custDto = _mapper.Map<SkuDto>(item);
-                returnList.Add(custDto);
-            }
-
-            return returnList;
+            return _mapper.Map<IEnumerable<SkuDto>>(list);
         }
 
         /// <summary>
@@ -61,13 +50,8 @@ namespace Retail.Api.Products.src.CleanArchitecture.Application.Service
         /// <returns>Product object.</returns>
         public async Task<SkuDto> GetProductByIdAsync(long id)
         {
-            // Find record
             var record = await _unitOfWork.Skus.GetByIdAsync(id);
-
-            // Transform data
-            var custDto = _mapper.Map<SkuDto>(record);
-
-            return custDto;
+            return _mapper.Map<SkuDto>(record);
         }
 
         /// <summary>
@@ -75,21 +59,24 @@ namespace Retail.Api.Products.src.CleanArchitecture.Application.Service
         /// </summary>
         /// <param name="custDto">Product record.</param>
         /// <returns>Product object.</returns>
-        public async Task<SkuDto> AddProductAsync(SkuDto custDto)
+        public async Task<SkuDto> AddProductAsync(SkuDto skuDto)
         {
-            // Transform data
-            var custObj = _mapper.Map<Sku>(custDto);
+            var sku = _mapper.Map<Sku>(skuDto);
 
-            // Add customer
             await _unitOfWork.BeginTransactionAsync();
-            var result = await _unitOfWork.Skus.AddAsync(custObj);
-            await _unitOfWork.BeginTransactionAsync();
+            try
+            {
+                var result = await _unitOfWork.Skus.AddAsync(sku);
+                await _unitOfWork.CompleteAsync();
+                await _unitOfWork.CommitTransactionAsync();
 
-            // Transform data
-            custDto = _mapper.Map<SkuDto>(result);
-
-            return custDto;
-
+                return _mapper.Map<SkuDto>(result);
+            }
+            catch
+            {
+                await _unitOfWork.RollbackTransactionAsync();
+                throw;
+            }
         }
 
         /// <summary>
@@ -98,21 +85,25 @@ namespace Retail.Api.Products.src.CleanArchitecture.Application.Service
         /// <param name="id">Product Id.</param>
         /// <param name="custDto">Product record.</param>
         /// <returns>Product object.</returns>
-        public async Task<SkuDto> UpdateProductAsync(long id, SkuDto custDto)
+        public async Task<SkuDto> UpdateProductAsync(long id, SkuDto skuDto)
         {
-            var record = _mapper.Map<Sku>(custDto);
+            var record = _mapper.Map<Sku>(skuDto);
 
-            // Update record
             await _unitOfWork.BeginTransactionAsync();
-            _unitOfWork.Skus.Update(record);
-            await _unitOfWork.BeginTransactionAsync();
+            try
+            {
+                _unitOfWork.Skus.Update(record);
+                await _unitOfWork.CompleteAsync();
+                await _unitOfWork.CommitTransactionAsync();
 
-            record = await _unitOfWork.Skus.GetByIdAsync(id);
-
-            // Transform data
-            custDto = _mapper.Map<SkuDto>(record);
-
-            return custDto;
+                var updatedRecord = await _unitOfWork.Skus.GetByIdAsync(id);
+                return _mapper.Map<SkuDto>(updatedRecord);
+            }
+            catch
+            {
+                await _unitOfWork.RollbackTransactionAsync();
+                throw;
+            }
         }
 
         /// <summary>
@@ -122,62 +113,65 @@ namespace Retail.Api.Products.src.CleanArchitecture.Application.Service
         /// <returns>Product object.</returns>
         public async Task<bool> DeleteProductAsync(long id)
         {
-            // Find record
             var record = await _unitOfWork.Skus.GetByIdAsync(id);
+            if (record == null)
+                return false;
 
-            if (record != null)
+            await _unitOfWork.BeginTransactionAsync();
+            try
             {
-                // Delete record
-                await _unitOfWork.BeginTransactionAsync();
                 _unitOfWork.Skus.Remove(record);
-                await _unitOfWork.BeginTransactionAsync();
-
+                await _unitOfWork.CompleteAsync();
+                await _unitOfWork.CommitTransactionAsync();
                 return true;
             }
-
-            return false;
+            catch
+            {
+                await _unitOfWork.RollbackTransactionAsync();
+                throw;
+            }
         }
 
         public async Task HandleOrderCreatedEvent(OrderCreatedEvent orderCreatedEvent)
         {
+            using var scope = _serviceScopeFactory.CreateScope();
+            var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
+
+            await unitOfWork.BeginTransactionAsync();
             try
             {
-                //throw new Exception();
+                var skuIds = orderCreatedEvent.LineItems.Select(i => i.SkuId).ToList();
+                var skuList = await unitOfWork.Skus.ExecuteQueryAsync(i => skuIds.Contains(i.Id));
 
-                using (var scope = _serviceScopeFactory.CreateScope())
+                if (skuList.Any(i => i.Inventory == 0 || i.Inventory - orderCreatedEvent.LineItems.FirstOrDefault(j => j.SkuId == i.Id)?.Qty < 0))
                 {
-                    var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
-
-
-                    var skuIds = orderCreatedEvent.LineItems.Select(i => i.SkuId).ToList();
-
-                    // Fetch all product SKUs at once to avoid multiple DB calls
-                    var skuList = await unitOfWork.Skus.ExecuteQueryAsync(i => skuIds.Contains(i.Id));
-
-                    if (skuList.Any(i => i.Inventory == 0 || i.Inventory - orderCreatedEvent.LineItems.FirstOrDefault(j => j.SkuId == i.Id)?.Qty < 0))
-                    {
-                        throw new Exception("Inventory is not sufficient");
-                    }
-
-                    foreach (var sku in skuList)
-                    {
-                        sku.Inventory = (int)(sku.Inventory - orderCreatedEvent.LineItems.FirstOrDefault(j => j.SkuId == sku.Id)?.Qty);
-                        unitOfWork.Skus.Update(sku);
-                    }
-
-                    var inventoryUpdatedMessage = new InventoryUpdatedEvent
-                    {
-                        CustomerId = orderCreatedEvent.CustomerId,
-                        OrderDate = orderCreatedEvent.OrderDate,
-                        OrderId = orderCreatedEvent.OrderId,
-                        TotalAmount = orderCreatedEvent.TotalAmount,
-                    };
-
-                    await _messagePublisher.PublishAsync<InventoryUpdatedEvent>(inventoryUpdatedMessage, RabbitmqConstants.InventoryUpdated).ConfigureAwait(false);
+                    throw new Exception("Inventory is not sufficient");
                 }
+
+                foreach (var sku in skuList)
+                {
+                    sku.Inventory -= orderCreatedEvent.LineItems.FirstOrDefault(j => j.SkuId == sku.Id)?.Qty ?? 0;
+                    unitOfWork.Skus.Update(sku);
+                }
+
+                await unitOfWork.CompleteAsync();
+
+                var inventoryUpdatedMessage = new InventoryUpdatedEvent
+                {
+                    CustomerId = orderCreatedEvent.CustomerId,
+                    OrderDate = orderCreatedEvent.OrderDate,
+                    OrderId = orderCreatedEvent.OrderId,
+                    TotalAmount = orderCreatedEvent.TotalAmount,
+                };
+
+                await _messagePublisher.PublishAsync<InventoryUpdatedEvent>(inventoryUpdatedMessage, RabbitmqConstants.InventoryUpdated).ConfigureAwait(false);
+
+                await unitOfWork.CommitTransactionAsync();
             }
-            catch (Exception ex) 
+            catch
             {
+                await unitOfWork.RollbackTransactionAsync();
+
                 var inventoryErrorMessage = new InventoryErrorEvent
                 {
                     CustomerId = orderCreatedEvent.CustomerId,
@@ -187,6 +181,7 @@ namespace Retail.Api.Products.src.CleanArchitecture.Application.Service
                 };
 
                 await _messagePublisher.PublishAsync<InventoryErrorEvent>(inventoryErrorMessage, RabbitmqConstants.InventoryError).ConfigureAwait(false);
+                throw;
             }
         }
     }
