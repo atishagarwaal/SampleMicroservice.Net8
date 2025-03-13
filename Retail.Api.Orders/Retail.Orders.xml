@@ -9,7 +9,7 @@
             Customer controller class.
             </summary>
         </member>
-        <member name="M:Retail.Api.Orders.src.CleanArchitecture.API.Controllers.OrderController.#ctor(Retail.Api.Orders.src.CleanArchitecture.Application.Interfaces.IOrderService)">
+        <member name="M:Retail.Api.Orders.src.CleanArchitecture.API.Controllers.OrderController.#ctor(MediatR.IMediator)">
             <summary>
             Initializes a new instance of the <see cref="T:Retail.Api.Orders.src.CleanArchitecture.API.Controllers.OrderController"/> class.
             </summary>
@@ -116,46 +116,6 @@
             Gets or sets the Line Items.
             </summary>
         </member>
-        <member name="T:Retail.Api.Orders.src.CleanArchitecture.Application.Interfaces.IOrderService">
-            <summary>
-            Interface definition for orders service.
-            </summary>
-        </member>
-        <member name="M:Retail.Api.Orders.src.CleanArchitecture.Application.Interfaces.IOrderService.GetAllOrdersAsync">
-            <summary>
-            Method to fetch all orders asynchronously.
-            </summary>
-            <returns>List of orders.</returns>
-        </member>
-        <member name="M:Retail.Api.Orders.src.CleanArchitecture.Application.Interfaces.IOrderService.GetOrderByIdAsync(System.Int64)">
-            <summary>
-            Method to fetch order record based on Id asynchronously.
-            </summary>
-            <param name="id">Order Id.</param>
-            <returns>Order object.</returns>
-        </member>
-        <member name="M:Retail.Api.Orders.src.CleanArchitecture.Application.Interfaces.IOrderService.AddOrderAsync(Retail.Api.Orders.src.CleanArchitecture.Application.Dto.OrderDto)">
-            <summary>
-            Method to add a new order record asynchronously.
-            </summary>
-            <param name="orderDto">Order record.</param>
-            <returns>Order object.</returns>
-        </member>
-        <member name="M:Retail.Api.Orders.src.CleanArchitecture.Application.Interfaces.IOrderService.UpdateOrderAsync(System.Int64,Retail.Api.Orders.src.CleanArchitecture.Application.Dto.OrderDto)">
-            <summary>
-            Method to update order record asynchronously.
-            </summary>
-            <param name="id">Order Id.</param>
-            <param name="orderDto">Order record.</param>
-            <returns>Order object.</returns>
-        </member>
-        <member name="M:Retail.Api.Orders.src.CleanArchitecture.Application.Interfaces.IOrderService.RemoveOrderAsync(System.Int64)">
-            <summary>
-            Method to delete order record asynchronously.
-            </summary>
-            <param name="id">Order Id.</param>
-            <returns>Order object.</returns>
-        </member>
         <member name="T:Retail.Api.Orders.src.CleanArchitecture.Application.Mappings.OrderProfile">
             <summary>
             Defines Order profile for AutoMapper.
@@ -165,53 +125,6 @@
             <summary>
             Initializes a new instance of the <see cref="T:Retail.Api.Orders.src.CleanArchitecture.Application.Mappings.OrderProfile"/> class.
             </summary>
-        </member>
-        <member name="T:Retail.Api.Orders.src.CleanArchitecture.Application.Service.OrderService">
-            <summary>
-            Order service class.
-            </summary>
-        </member>
-        <member name="M:Retail.Api.Orders.src.CleanArchitecture.Application.Service.OrderService.#ctor(Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Interfaces.IUnitOfWork,AutoMapper.IMapper,MessagingLibrary.Interface.IMessagePublisher,Microsoft.Extensions.DependencyInjection.IServiceScopeFactory)">
-            <summary>
-            Initializes a new instance of the <see cref="T:Retail.Api.Orders.src.CleanArchitecture.Application.Service.OrderService"/> class.
-            </summary>
-            <param name="unitOfWork">Intance of unit of work class.</param>
-            <param name="mapper">Intance of mapper class.</param>
-        </member>
-        <member name="M:Retail.Api.Orders.src.CleanArchitecture.Application.Service.OrderService.GetAllOrdersAsync">
-            <summary>
-            Method to fetch all orders asynchronously.
-            </summary>
-            <returns>List of orders.</returns>
-        </member>
-        <member name="M:Retail.Api.Orders.src.CleanArchitecture.Application.Service.OrderService.GetOrderByIdAsync(System.Int64)">
-            <summary>
-            Method to fetch order record based on Id asynchronously.
-            </summary>
-            <param name="id">Order Id.</param>
-            <returns>Order object.</returns>
-        </member>
-        <member name="M:Retail.Api.Orders.src.CleanArchitecture.Application.Service.OrderService.AddOrderAsync(Retail.Api.Orders.src.CleanArchitecture.Application.Dto.OrderDto)">
-            <summary>
-            Method to add a new order record asynchronously.
-            </summary>
-            <param name="orderDto">Order record.</param>
-            <returns>Order object.</returns>
-        </member>
-        <member name="M:Retail.Api.Orders.src.CleanArchitecture.Application.Service.OrderService.UpdateOrderAsync(System.Int64,Retail.Api.Orders.src.CleanArchitecture.Application.Dto.OrderDto)">
-            <summary>
-            Method to update order record asynchronously.
-            </summary>
-            <param name="id">Order Id.</param>
-            <param name="orderDto">Order record.</param>
-            <returns>Order object.</returns>
-        </member>
-        <member name="M:Retail.Api.Orders.src.CleanArchitecture.Application.Service.OrderService.RemoveOrderAsync(System.Int64)">
-            <summary>
-            Method to delete order record asynchronously.
-            </summary>
-            <param name="id">Order Id.</param>
-            <returns>Order object.</returns>
         </member>
         <member name="T:Retail.Api.Orders.src.CleanArchitecture.Domain.Entities.LineItem">
             <summary>

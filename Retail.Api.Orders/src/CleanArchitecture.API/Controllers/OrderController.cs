@@ -1,9 +1,13 @@
-﻿using MessagingLibrary.Interface;
+﻿using MediatR;
+using MessagingLibrary.Interface;
 using MessagingLibrary.Service;
+using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Mvc;
 using Retail.Api.Orders.src.CleanArchitecture.Application.Constants;
 using Retail.Api.Orders.src.CleanArchitecture.Application.Dto;
 using Retail.Api.Orders.src.CleanArchitecture.Application.Interfaces;
+using Retail.Orders.src.CleanArchitecture.Application.Commands;
+using Retail.Orders.src.CleanArchitecture.Application.Queries;
 using System.Runtime.InteropServices;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -18,15 +22,15 @@ namespace Retail.Api.Orders.src.CleanArchitecture.API.Controllers
     [ApiVersion("1.0")]
     public class OrderController : ControllerBase
     {
-        private readonly IOrderService _orderService;
+        private readonly IMediator _mediator;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="OrderController"/> class.
         /// </summary>
         /// <param name="orderService">Intance of customer service class.</param>
-        public OrderController(IOrderService orderService)
+        public OrderController(IMediator mediator)
         {
-            _orderService = orderService;
+            _mediator = mediator;
         }
 
         /// <summary>
@@ -38,17 +42,13 @@ namespace Retail.Api.Orders.src.CleanArchitecture.API.Controllers
         {
             try
             {
-                // Call business service
-                var list = await _orderService.GetAllOrdersAsync();
-
-                // Check if list is null
-                if (list == null)
+                var query = new GetAllOrdersQuery();
+                var result = await _mediator.Send(query);
+                if (result == null)
                 {
                     return NotFound();
                 }
-
-                // Return list
-                return Ok(list);
+                return Ok(result);
             }
             catch (Exception ex)
             {
@@ -66,23 +66,17 @@ namespace Retail.Api.Orders.src.CleanArchitecture.API.Controllers
         {
             try
             {
-                // Validate parameters
                 if (id == 0)
                 {
                     return BadRequest(MessageConstants.InvalidParameter);
                 }
-
-                // Call business service
-                var orderObj = await _orderService.GetOrderByIdAsync(id);
-
-                // Check if object is null
-                if (orderObj == null)
+                var query = new GetOrderByIdQuery { Id = id };
+                var result = await _mediator.Send(query);
+                if (result == null)
                 {
                     return NotFound();
                 }
-
-                // Return object
-                return Ok(orderObj);
+                return Ok(result);
             }
             catch (Exception ex)
             {
@@ -100,22 +94,16 @@ namespace Retail.Api.Orders.src.CleanArchitecture.API.Controllers
         {
             try
             {
-                // Validate parameters
                 if (value == null)
                 {
                     return BadRequest(MessageConstants.InvalidParameter);
                 }
-
-                // Call business service
-                var result = await _orderService.AddOrderAsync(value);
-
-                // Check if list is null
+                var command = new CreateOrderCommand { Order = value };
+                var result = await _mediator.Send(command);
                 if (result == null)
                 {
                     return StatusCode(500, MessageConstants.InternalServerError);
                 }
-
-                // Return list
                 return Ok(result);
             }
             catch (Exception ex)
@@ -135,22 +123,17 @@ namespace Retail.Api.Orders.src.CleanArchitecture.API.Controllers
         {
             try
             {
-                // Validate parameters
                 if (id == 0 || value == null)
                 {
                     return BadRequest(MessageConstants.InvalidParameter);
                 }
-
-                // Call business service
-                var result = await _orderService.UpdateOrderAsync(id, value);
-
-                // Check if list is null
+                value.Id = id; // Ensure the ID from the route is used
+                var command = new UpdateOrderCommand { Order = value };
+                var result = await _mediator.Send(command);
                 if (result == null)
                 {
                     return StatusCode(500, MessageConstants.InternalServerError);
                 }
-
-                // Return list
                 return Ok(result);
             }
             catch (Exception ex)
@@ -169,16 +152,12 @@ namespace Retail.Api.Orders.src.CleanArchitecture.API.Controllers
         {
             try
             {
-                // Validate parameters
                 if (id == 0)
                 {
                     return BadRequest(MessageConstants.InvalidParameter);
                 }
-
-                // Call business service
-                var result = await _orderService.RemoveOrderAsync(id);
-
-                // Return list
+                var command = new DeleteOrderCommand { Id = id };
+                var result = await _mediator.Send(command);
                 return Ok(result);
             }
             catch (Exception ex)

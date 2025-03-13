@@ -4,6 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
+using MediatR;
 using CommonLibrary.Handlers;
 using CommonLibrary.MessageContract;
 using MessagingInfrastructure.Service;
@@ -18,6 +19,8 @@ using Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Interfaces;
 using Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Repositories;
 using Retail.Api.Orders.src.CleanArchitecture.Infrastructure.UnitOfWork;
 using Retail.Api.Products.src.CleanArchitecture.Application.EventHandlers;
+using Retail.Orders.src.CleanArchitecture.Application.Commands;
+using Retail.Orders.src.CleanArchitecture.Application.Queries;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,7 +32,15 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 builder.Services.AddScoped(typeof(IUnitOfWork), typeof(UnitOfWork));
-builder.Services.AddScoped(typeof(IOrderService), typeof(OrderService));
+
+// Register MediatR with all relevant assemblies
+builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(
+    typeof(CreateOrderCommand).Assembly,
+    typeof(DeleteOrderCommand).Assembly,
+    typeof(UpdateOrderCommand).Assembly,
+    typeof(GetAllOrdersQuery).Assembly,
+    typeof(GetOrderByIdQuery).Assembly
+));
 
 builder.Services.AddScoped<IEventHandler<InventoryErrorEvent>, InventoryErrorEventHandler>();
 builder.Services.AddScoped<IServiceInitializer, ServiceInitializer>();
