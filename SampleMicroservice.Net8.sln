@@ -27,7 +27,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Database", "Database", "{4D
 		Database\Product..bak = Database\Product..bak
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MessagingInfrastructure", "MessagingTopologyProvisioner\MessagingInfrastructure.csproj", "{6A428DBC-47A5-4277-8F22-2E065594DF3A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MessagingInfrastructure", "MessagingInfrastructure\MessagingInfrastructure.csproj", "{6A428DBC-47A5-4277-8F22-2E065594DF3A}"
 	ProjectSection(ProjectDependencies) = postProject
 		{A412C780-67E8-4458-83E9-A6C895FC37B9} = {A412C780-67E8-4458-83E9-A6C895FC37B9}
 	EndProjectSection

@@ -46,7 +46,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\CommonLibrary\CommonLibrary.csproj" />
-    <ProjectReference Include="..\MessagingTopologyProvisioner\MessagingInfrastructure.csproj" />
+    <ProjectReference Include="..\MessagingInfrastructure\MessagingInfrastructure.csproj" />
   </ItemGroup>
 
   <ItemGroup>
