@@ -12,15 +12,15 @@ using MessagingLibrary.Interface;
 using MessagingLibrary.Service;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Retail.Api.Orders.src.CleanArchitecture.Application.Interfaces;
-using Retail.Api.Orders.src.CleanArchitecture.Application.Service;
-using Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Data;
-using Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Interfaces;
-using Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Repositories;
-using Retail.Api.Orders.src.CleanArchitecture.Infrastructure.UnitOfWork;
-using Retail.Api.Products.src.CleanArchitecture.Application.EventHandlers;
-using Retail.Orders.src.CleanArchitecture.Application.Commands;
-using Retail.Orders.src.CleanArchitecture.Application.Queries;
+using Retail.Orders.Write.src.CleanArchitecture.Application.Interfaces;
+using Retail.Orders.Write.src.CleanArchitecture.Application.Service;
+using Retail.Orders.Write.src.CleanArchitecture.Infrastructure.Data;
+using Retail.Orders.Write.src.CleanArchitecture.Infrastructure.Interfaces;
+using Retail.Orders.Write.src.CleanArchitecture.Infrastructure.Repositories;
+using Retail.Orders.Write.src.CleanArchitecture.Infrastructure.UnitOfWork;
+using Retail.Orders.Write.src.CleanArchitecture.Application.Commands;
+using Retail.Orders.Write.src.CleanArchitecture.Application.Queries;
+using Retail.Orders.Write.src.CleanArchitecture.Application.EventHandlers;
 
 var builder = WebApplication.CreateBuilder(args);
 

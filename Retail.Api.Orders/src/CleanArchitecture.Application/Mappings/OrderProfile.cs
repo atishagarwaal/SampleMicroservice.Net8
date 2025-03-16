@@ -2,11 +2,11 @@
 // Copyright (c) PlaceholderCompany. All rights reserved.
 // </copyright>
 
-namespace Retail.Api.Orders.src.CleanArchitecture.Application.Mappings
+namespace Retail.Orders.Write.src.CleanArchitecture.Application.Mappings
 {
     using CommonLibrary.MessageContract;
-    using Retail.Api.Orders.src.CleanArchitecture.Application.Dto;
-    using Retail.Api.Orders.src.CleanArchitecture.Domain.Entities;
+    using Retail.Orders.Write.src.CleanArchitecture.Application.Dto;
+    using Retail.Orders.Write.src.CleanArchitecture.Domain.Entities;
 
     /// <summary>
     /// Defines Order profile for AutoMapper.

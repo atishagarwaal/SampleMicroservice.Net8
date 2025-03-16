@@ -1,46 +1,46 @@
 <?xml version="1.0"?>
 <doc>
     <assembly>
-        <name>Retail.Orders</name>
+        <name>Retail.Orders.Write</name>
     </assembly>
     <members>
-        <member name="T:Retail.Orders.Write.src.CleanArchitecture.API.Controllers.OrderController">
+        <member name="T:Retail.Orders.Write.src.CleanArchitecture.API.Controllers.OrderWriteController">
             <summary>
             Customer controller class.
             </summary>
         </member>
-        <member name="M:Retail.Orders.Write.src.CleanArchitecture.API.Controllers.OrderController.#ctor(MediatR.IMediator)">
+        <member name="M:Retail.Orders.Write.src.CleanArchitecture.API.Controllers.OrderWriteController.#ctor(MediatR.IMediator)">
             <summary>
-            Initializes a new instance of the <see cref="T:Retail.Orders.Write.src.CleanArchitecture.API.Controllers.OrderController"/> class.
+            Initializes a new instance of the <see cref="T:Retail.Orders.Write.src.CleanArchitecture.API.Controllers.OrderWriteController"/> class.
             </summary>
             <param name="orderService">Intance of customer service class.</param>
         </member>
-        <member name="M:Retail.Orders.Write.src.CleanArchitecture.API.Controllers.OrderController.Get">
+        <member name="M:Retail.Orders.Write.src.CleanArchitecture.API.Controllers.OrderWriteController.Get">
             <summary>
             Method to return list of all customers.
             </summary>
             <returns>List of customers.</returns>
         </member>
-        <member name="M:Retail.Orders.Write.src.CleanArchitecture.API.Controllers.OrderController.Get(System.Int64)">
+        <member name="M:Retail.Orders.Write.src.CleanArchitecture.API.Controllers.OrderWriteController.Get(System.Int64)">
             <summary>
             Method to fetch customer record based on Id.
             </summary>
             <returns>Customer object.</returns>
         </member>
-        <member name="M:Retail.Orders.Write.src.CleanArchitecture.API.Controllers.OrderController.Post(Retail.Orders.Write.src.CleanArchitecture.Application.Dto.OrderDto)">
+        <member name="M:Retail.Orders.Write.src.CleanArchitecture.API.Controllers.OrderWriteController.Post(Retail.Orders.Write.src.CleanArchitecture.Application.Dto.OrderDto)">
             <summary>
             Method to add a new customer record.
             </summary>
             <param name="value">Customer record.</param>
         </member>
-        <member name="M:Retail.Orders.Write.src.CleanArchitecture.API.Controllers.OrderController.Put(System.Int64,Retail.Orders.Write.src.CleanArchitecture.Application.Dto.OrderDto)">
+        <member name="M:Retail.Orders.Write.src.CleanArchitecture.API.Controllers.OrderWriteController.Put(System.Int64,Retail.Orders.Write.src.CleanArchitecture.Application.Dto.OrderDto)">
             <summary>
             Method to update a customer record.
             </summary>
             <param name="id">Customer Id.</param>
             <param name="value">Customer record.</param>
         </member>
-        <member name="M:Retail.Orders.Write.src.CleanArchitecture.API.Controllers.OrderController.Delete(System.Int64)">
+        <member name="M:Retail.Orders.Write.src.CleanArchitecture.API.Controllers.OrderWriteController.Delete(System.Int64)">
             <summary>
             Method to delete a customer record.
             </summary>

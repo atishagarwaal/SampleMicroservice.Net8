@@ -1,4 +1,4 @@
-﻿namespace Retail.Api.Orders.src.CleanArchitecture.Application.Interfaces
+﻿namespace Retail.Orders.Write.src.CleanArchitecture.Application.Interfaces
 {
     public interface IServiceInitializer
     {

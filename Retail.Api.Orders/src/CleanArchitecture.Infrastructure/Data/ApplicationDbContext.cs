@@ -2,10 +2,10 @@
 // Copyright (c) PlaceholderCompany. All rights reserved.
 // </copyright>
 
-namespace Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Data
+namespace Retail.Orders.Write.src.CleanArchitecture.Infrastructure.Data
 {
     using Microsoft.EntityFrameworkCore;
-    using Retail.Api.Orders.src.CleanArchitecture.Domain.Entities;
+    using Retail.Orders.Write.src.CleanArchitecture.Domain.Entities;
 
     /// <summary>
     /// Application db context class.

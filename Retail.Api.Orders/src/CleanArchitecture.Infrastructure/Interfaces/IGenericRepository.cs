@@ -2,7 +2,7 @@
 // Copyright (c) PlaceholderCompany. All rights reserved.
 // </copyright>
 
-namespace Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Interfaces
+namespace Retail.Orders.Write.src.CleanArchitecture.Infrastructure.Interfaces
 {
     using Microsoft.EntityFrameworkCore;
     using System.Linq.Expressions;

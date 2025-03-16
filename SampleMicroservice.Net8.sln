@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Retail.Products", "Retail.A
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Retail.Customers", "Retail.Api.Customers\Retail.Customers.csproj", "{A4DD1512-F91E-4A2B-B45F-FF55004B7171}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Retail.Orders", "Retail.Api.Orders\Retail.Orders.csproj", "{5A478A1C-1500-42CE-94E4-C14CE4B939F0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Retail.Orders.Write", "Retail.Api.Orders\Retail.Orders.Write.csproj", "{5A478A1C-1500-42CE-94E4-C14CE4B939F0}"
 	ProjectSection(ProjectDependencies) = postProject
 		{6A428DBC-47A5-4277-8F22-2E065594DF3A} = {6A428DBC-47A5-4277-8F22-2E065594DF3A}
 		{A412C780-67E8-4458-83E9-A6C895FC37B9} = {A412C780-67E8-4458-83E9-A6C895FC37B9}

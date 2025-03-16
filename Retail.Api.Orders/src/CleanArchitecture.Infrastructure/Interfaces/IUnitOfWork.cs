@@ -1,7 +1,7 @@
-﻿using Retail.Api.Orders.src.CleanArchitecture.Domain.Entities;
+﻿using Retail.Orders.Write.src.CleanArchitecture.Domain.Entities;
 using System.Data;
 
-namespace Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Interfaces
+namespace Retail.Orders.Write.src.CleanArchitecture.Infrastructure.Interfaces
 {
     /// <summary>
     /// Interface definition for unit of work.

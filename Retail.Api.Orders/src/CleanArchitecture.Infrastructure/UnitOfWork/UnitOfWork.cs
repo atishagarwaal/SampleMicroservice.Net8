@@ -1,11 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
-using Retail.Api.Orders.src.CleanArchitecture.Domain.Entities;
-using Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Data;
-using Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Interfaces;
-using Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Repositories;
+using Retail.Orders.Write.src.CleanArchitecture.Domain.Entities;
+using Retail.Orders.Write.src.CleanArchitecture.Infrastructure.Data;
+using Retail.Orders.Write.src.CleanArchitecture.Infrastructure.Interfaces;
+using Retail.Orders.Write.src.CleanArchitecture.Infrastructure.Repositories;
 
-namespace Retail.Api.Orders.src.CleanArchitecture.Infrastructure.UnitOfWork
+namespace Retail.Orders.Write.src.CleanArchitecture.Infrastructure.UnitOfWork
 {
     /// <summary>
     /// Unit of work class.

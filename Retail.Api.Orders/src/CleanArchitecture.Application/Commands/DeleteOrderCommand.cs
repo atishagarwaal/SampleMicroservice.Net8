@@ -1,6 +1,6 @@
 ﻿using MediatR;
 
-namespace Retail.Orders.src.CleanArchitecture.Application.Commands
+namespace Retail.Orders.Write.src.CleanArchitecture.Application.Commands
 {
     public class DeleteOrderCommand : IRequest<bool>
     {

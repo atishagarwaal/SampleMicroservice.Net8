@@ -3,12 +3,12 @@ using CommonLibrary.MessageContract;
 using MediatR;
 using MessagingInfrastructure;
 using MessagingLibrary.Interface;
-using Retail.Api.Orders.src.CleanArchitecture.Application.Dto;
-using Retail.Api.Orders.src.CleanArchitecture.Domain.Entities;
-using Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Interfaces;
-using Retail.Orders.src.CleanArchitecture.Application.Commands;
+using Retail.Orders.Write.src.CleanArchitecture.Application.Dto;
+using Retail.Orders.Write.src.CleanArchitecture.Domain.Entities;
+using Retail.Orders.Write.src.CleanArchitecture.Infrastructure.Interfaces;
+using Retail.Orders.Write.src.CleanArchitecture.Application.Commands;
 
-namespace Retail.Orders.src.CleanArchitecture.Application.Handlers
+namespace Retail.Orders.Write.src.CleanArchitecture.Application.Handlers
 {
     public class CreateOrderCommandHandler : IRequestHandler<CreateOrderCommand, OrderDto>
     {

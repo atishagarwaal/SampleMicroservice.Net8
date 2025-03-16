@@ -2,7 +2,7 @@
 // Copyright (c) PlaceholderCompany. All rights reserved.
 // </copyright>
 
-namespace Retail.Api.Orders.src.CleanArchitecture.Domain.Entities
+namespace Retail.Orders.Write.src.CleanArchitecture.Domain.Entities
 {
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;

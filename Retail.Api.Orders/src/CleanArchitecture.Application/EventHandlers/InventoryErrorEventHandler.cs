@@ -4,11 +4,11 @@ using MessagingLibrary.Interface;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
 using System.Text.Json;
 using CommonLibrary.Handlers.Dto;
-using Retail.Api.Orders.src.CleanArchitecture.Application.Interfaces;
-using Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Interfaces;
+using Retail.Orders.Write.src.CleanArchitecture.Application.Interfaces;
+using Retail.Orders.Write.src.CleanArchitecture.Infrastructure.Interfaces;
 using AutoMapper;
 
-namespace Retail.Api.Products.src.CleanArchitecture.Application.EventHandlers
+namespace Retail.Orders.Write.src.CleanArchitecture.Application.EventHandlers
 {
     public class InventoryErrorEventHandler : IEventHandler<InventoryErrorEvent>
     {

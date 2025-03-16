@@ -3,16 +3,16 @@ using MessagingLibrary.Interface;
 using MessagingLibrary.Service;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Mvc;
-using Retail.Api.Orders.src.CleanArchitecture.Application.Constants;
-using Retail.Api.Orders.src.CleanArchitecture.Application.Dto;
-using Retail.Api.Orders.src.CleanArchitecture.Application.Interfaces;
-using Retail.Orders.src.CleanArchitecture.Application.Commands;
-using Retail.Orders.src.CleanArchitecture.Application.Queries;
+using Retail.Orders.Write.src.CleanArchitecture.Application.Commands;
+using Retail.Orders.Write.src.CleanArchitecture.Application.Constants;
+using Retail.Orders.Write.src.CleanArchitecture.Application.Dto;
+using Retail.Orders.Write.src.CleanArchitecture.Application.Interfaces;
+using Retail.Orders.Write.src.CleanArchitecture.Application.Queries;
 using System.Runtime.InteropServices;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
-namespace Retail.Api.Orders.src.CleanArchitecture.API.Controllers
+namespace Retail.Orders.Write.src.CleanArchitecture.API.Controllers
 {
     /// <summary>
     /// Customer controller class.
@@ -20,15 +20,15 @@ namespace Retail.Api.Orders.src.CleanArchitecture.API.Controllers
     [ApiController]
     [Route("api/v{version:apiVersion}/[controller]")]
     [ApiVersion("1.0")]
-    public class OrderController : ControllerBase
+    public class OrderWriteController : ControllerBase
     {
         private readonly IMediator _mediator;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="OrderController"/> class.
+        /// Initializes a new instance of the <see cref="OrderWriteController"/> class.
         /// </summary>
         /// <param name="orderService">Intance of customer service class.</param>
-        public OrderController(IMediator mediator)
+        public OrderWriteController(IMediator mediator)
         {
             _mediator = mediator;
         }

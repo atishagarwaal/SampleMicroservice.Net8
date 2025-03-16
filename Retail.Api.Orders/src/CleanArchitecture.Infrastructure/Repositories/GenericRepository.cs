@@ -1,8 +1,8 @@
-﻿namespace Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Repositories
+﻿namespace Retail.Orders.Write.src.CleanArchitecture.Infrastructure.Repositories
 {
     using Microsoft.EntityFrameworkCore;
-    using Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Data;
-    using Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Interfaces;
+    using Retail.Orders.Write.src.CleanArchitecture.Infrastructure.Data;
+    using Retail.Orders.Write.src.CleanArchitecture.Infrastructure.Interfaces;
     using System.Linq.Expressions;
 
     /// <summary>

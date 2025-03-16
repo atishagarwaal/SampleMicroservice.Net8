@@ -2,7 +2,7 @@
 // Copyright (c) PlaceholderCompany. All rights reserved.
 // </copyright>
 
-namespace Retail.Api.Orders.src.CleanArchitecture.Application.Dto
+namespace Retail.Orders.Write.src.CleanArchitecture.Application.Dto
 {
     /// <summary>
     /// Defines Order item entity.

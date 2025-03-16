@@ -1,9 +1,9 @@
 ﻿using MediatR;
 using Microsoft.Extensions.DependencyInjection;
-using Retail.Api.Orders.src.CleanArchitecture.Infrastructure.Interfaces;
-using Retail.Orders.src.CleanArchitecture.Application.Commands;
+using Retail.Orders.Write.src.CleanArchitecture.Infrastructure.Interfaces;
+using Retail.Orders.Write.src.CleanArchitecture.Application.Commands;
 
-namespace Retail.Orders.src.CleanArchitecture.Application.Handlers
+namespace Retail.Orders.Write.src.CleanArchitecture.Application.Handlers
 {
     public class DeleteOrderCommandHandler : IRequestHandler<DeleteOrderCommand, bool>
     {
