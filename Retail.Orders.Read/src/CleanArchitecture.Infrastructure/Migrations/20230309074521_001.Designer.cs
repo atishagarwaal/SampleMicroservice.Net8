@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using Retail.Orders.Write.src.CleanArchitecture.Infrastructure.Data;
+using Retail.Orders.Read.src.CleanArchitecture.Infrastructure.Data;
 
 #nullable disable
 

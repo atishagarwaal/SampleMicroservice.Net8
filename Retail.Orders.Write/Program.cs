@@ -19,7 +19,6 @@ using Retail.Orders.Write.src.CleanArchitecture.Infrastructure.Interfaces;
 using Retail.Orders.Write.src.CleanArchitecture.Infrastructure.Repositories;
 using Retail.Orders.Write.src.CleanArchitecture.Infrastructure.UnitOfWork;
 using Retail.Orders.Write.src.CleanArchitecture.Application.Commands;
-using Retail.Orders.Write.src.CleanArchitecture.Application.Queries;
 using Retail.Orders.Write.src.CleanArchitecture.Application.EventHandlers;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -37,10 +36,8 @@ builder.Services.AddScoped(typeof(IUnitOfWork), typeof(UnitOfWork));
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(
     typeof(CreateOrderCommand).Assembly,
     typeof(DeleteOrderCommand).Assembly,
-    typeof(UpdateOrderCommand).Assembly,
-    typeof(GetAllOrdersQuery).Assembly,
-    typeof(GetOrderByIdQuery).Assembly
-));
+    typeof(UpdateOrderCommand).Assembly)
+);
 
 builder.Services.AddScoped<IEventHandler<InventoryErrorEvent>, InventoryErrorEventHandler>();
 builder.Services.AddScoped<IServiceInitializer, ServiceInitializer>();

@@ -1,4 +1,4 @@
-﻿namespace Retail.Orders.Write.src.CleanArchitecture.Application.Constants
+﻿namespace Retail.Orders.Read.src.CleanArchitecture.Application.Constants
 {
     /// <summary>
     /// Constants class.

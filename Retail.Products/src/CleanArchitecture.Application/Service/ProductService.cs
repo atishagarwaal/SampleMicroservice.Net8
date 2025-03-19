@@ -115,7 +115,9 @@ namespace Retail.Api.Products.src.CleanArchitecture.Application.Service
         {
             var record = await _unitOfWork.Skus.GetByIdAsync(id);
             if (record == null)
+            {
                 return false;
+            }
 
             await _unitOfWork.BeginTransactionAsync();
             try

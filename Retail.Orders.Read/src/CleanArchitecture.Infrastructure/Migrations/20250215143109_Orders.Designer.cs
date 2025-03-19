@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using Retail.Orders.Write.src.CleanArchitecture.Infrastructure.Data;
+using Retail.Orders.Read.src.CleanArchitecture.Infrastructure.Data;
 
 #nullable disable
 
@@ -25,7 +25,7 @@ namespace Retail.Api.Orders.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("Retail.Orders.Write.src.CleanArchitecture.Domain.Model.LineItem", b =>
+            modelBuilder.Entity("Retail.Orders.Read.src.CleanArchitecture.Domain.Model.LineItem", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -100,7 +100,7 @@ namespace Retail.Api.Orders.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Retail.Orders.Write.src.CleanArchitecture.Domain.Model.Order", b =>
+            modelBuilder.Entity("Retail.Orders.Read.src.CleanArchitecture.Domain.Model.Order", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -145,9 +145,9 @@ namespace Retail.Api.Orders.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Retail.Orders.Write.src.CleanArchitecture.Domain.Model.LineItem", b =>
+            modelBuilder.Entity("Retail.Orders.Read.src.CleanArchitecture.Domain.Model.LineItem", b =>
                 {
-                    b.HasOne("Retail.Orders.Write.src.CleanArchitecture.Domain.Model.Order", "Order")
+                    b.HasOne("Retail.Orders.Read.src.CleanArchitecture.Domain.Model.Order", "Order")
                         .WithMany("LineItems")
                         .HasForeignKey("OrderId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -156,7 +156,7 @@ namespace Retail.Api.Orders.Migrations
                     b.Navigation("Order");
                 });
 
-            modelBuilder.Entity("Retail.Orders.Write.src.CleanArchitecture.Domain.Model.Order", b =>
+            modelBuilder.Entity("Retail.Orders.Read.src.CleanArchitecture.Domain.Model.Order", b =>
                 {
                     b.Navigation("LineItems");
                 });

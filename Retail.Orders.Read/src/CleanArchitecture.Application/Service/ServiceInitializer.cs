@@ -1,9 +1,9 @@
 ﻿using CommonLibrary.Handlers;
 using CommonLibrary.MessageContract;
 using MessagingLibrary.Interface;
-using Retail.Orders.Write.src.CleanArchitecture.Application.Interfaces;
+using Retail.Orders.Read.src.CleanArchitecture.Application.Interfaces;
 
-namespace Retail.Orders.Write.src.CleanArchitecture.Application.Service
+namespace Retail.Orders.Read.src.CleanArchitecture.Application.Service
 {
     internal class ServiceInitializer : IServiceInitializer
     {

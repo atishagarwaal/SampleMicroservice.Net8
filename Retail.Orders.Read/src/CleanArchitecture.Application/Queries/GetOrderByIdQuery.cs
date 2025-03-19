@@ -1,7 +1,7 @@
 ﻿using MediatR;
 
-using Retail.Orders.Write.src.CleanArchitecture.Application.Dto;
-namespace Retail.Orders.Write.src.CleanArchitecture.Application.Queries
+using Retail.Orders.Read.src.CleanArchitecture.Application.Dto;
+namespace Retail.Orders.Read.src.CleanArchitecture.Application.Queries
 {
     public class GetOrderByIdQuery : IRequest<OrderDto>
     {

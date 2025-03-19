@@ -1,9 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Retail.Orders.Write.src.CleanArchitecture.Domain.Entities;
-using Retail.Orders.Write.src.CleanArchitecture.Infrastructure.Data;
-using Retail.Orders.Write.src.CleanArchitecture.Infrastructure.Interfaces;
+using Retail.Orders.Read.src.CleanArchitecture.Domain.Entities;
+using Retail.Orders.Read.src.CleanArchitecture.Infrastructure.Data;
+using Retail.Orders.Read.src.CleanArchitecture.Infrastructure.Interfaces;
 
-namespace Retail.Orders.Write.src.CleanArchitecture.Infrastructure.Repositories
+namespace Retail.Orders.Read.src.CleanArchitecture.Infrastructure.Repositories
 {
     /// <summary>
     /// Customer repository class.

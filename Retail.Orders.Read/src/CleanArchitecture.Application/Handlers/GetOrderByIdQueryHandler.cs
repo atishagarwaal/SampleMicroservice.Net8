@@ -1,10 +1,10 @@
 ﻿using AutoMapper;
 using MediatR;
-using Retail.Orders.Write.src.CleanArchitecture.Application.Dto;
-using Retail.Orders.Write.src.CleanArchitecture.Application.Queries;
-using Retail.Orders.Write.src.CleanArchitecture.Infrastructure.Interfaces;
+using Retail.Orders.Read.src.CleanArchitecture.Application.Dto;
+using Retail.Orders.Read.src.CleanArchitecture.Application.Queries;
+using Retail.Orders.Read.src.CleanArchitecture.Infrastructure.Interfaces;
 
-namespace Retail.Orders.Write.src.CleanArchitecture.Application.Handlers
+namespace Retail.Orders.Read.src.CleanArchitecture.Application.Handlers
 {
     public class GetOrderByIdQueryHandler : IRequestHandler<GetOrderByIdQuery, OrderDto>
     {
