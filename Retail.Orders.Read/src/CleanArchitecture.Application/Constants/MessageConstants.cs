@@ -8,6 +8,11 @@
         /// <summary>
         /// Get or sets InvalidParameter.
         /// </summary>
+        public const string DefaultConnection = "DefaultConnection";
+
+        /// <summary>
+        /// Get or sets InvalidParameter.
+        /// </summary>
         public const string InvalidParameter = "Invalid parameter";
 
         /// <summary>

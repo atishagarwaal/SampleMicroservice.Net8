@@ -11,24 +11,18 @@ using MessagingInfrastructure.Service;
 using MessagingLibrary.Interface;
 using MessagingLibrary.Service;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Retail.Orders.Read.src.CleanArchitecture.Application.Interfaces;
 using Retail.Orders.Read.src.CleanArchitecture.Application.Service;
 using Retail.Orders.Read.src.CleanArchitecture.Infrastructure.Data;
 using Retail.Orders.Read.src.CleanArchitecture.Infrastructure.Interfaces;
-using Retail.Orders.Read.src.CleanArchitecture.Infrastructure.Repositories;
 using Retail.Orders.Read.src.CleanArchitecture.Infrastructure.UnitOfWork;
 using Retail.Orders.Read.src.CleanArchitecture.Application.Queries;
+using Retail.Orders.Read.src.CleanArchitecture.Domain.Entities;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
 // Configure database connection
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-   options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")), ServiceLifetime.Scoped);
-
-builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+builder.Services.AddScoped<ApplicationDbContext>();
 builder.Services.AddScoped(typeof(IUnitOfWork), typeof(UnitOfWork));
 
 // Register MediatR with all relevant assemblies
@@ -66,8 +60,24 @@ using (var scope = app.Services.CreateScope())
     var serviceInitializer = scope.ServiceProvider.GetRequiredService<IServiceInitializer>();
     await serviceInitializer.Initialize();
 
-    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-    db.Database.EnsureCreatedAsync();
+    var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
+
+    var newOrder = new Order
+    {
+        Id = 1,
+        CustomerId = 1,
+        OrderDate = DateTime.Now,
+        TotalAmount = 80,
+        LineItems = new List<LineItem> {
+                        new LineItem { 
+                            Id = 1, 
+                            OrderId = 1, 
+                            SkuId = 1, 
+                            Qty = 1 }
+        }
+    };
+
+    await unitOfWork.Orders.AddAsync(newOrder);
 }
 
 if (app.Environment.IsDevelopment())

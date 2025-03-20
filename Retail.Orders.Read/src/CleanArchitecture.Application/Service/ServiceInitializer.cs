@@ -8,16 +8,13 @@ namespace Retail.Orders.Read.src.CleanArchitecture.Application.Service
     internal class ServiceInitializer : IServiceInitializer
     {
         private readonly IMessageSubscriber _messageSubscriber;
-        private readonly IEventHandler<InventoryErrorEvent> _inventoryErrorHandler;
-        public ServiceInitializer(IMessageSubscriber messageSubscriber, IEventHandler<InventoryErrorEvent> inventoryErrorHandler)
+        public ServiceInitializer(IMessageSubscriber messageSubscriber)
         {
             _messageSubscriber = messageSubscriber;
-            _inventoryErrorHandler = inventoryErrorHandler;
         }
 
         public async Task Initialize()
-        {
-            await _messageSubscriber.SubscribeAsync<InventoryErrorEvent>(_inventoryErrorHandler.HandleAsync);
+        {            
         }
     }
 }
