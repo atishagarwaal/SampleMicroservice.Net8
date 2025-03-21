@@ -24,7 +24,7 @@ namespace Retail.Orders.Read.src.CleanArchitecture.Application.Handlers
             using var scope = _serviceScopeFactory.CreateScope();
             var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
 
-            var order = await unitOfWork.Orders.GetByIdAsync(request.Id.ToString());
+            var order = await unitOfWork.Orders.GetByIdAsync(request.Id);
             return _mapper.Map<OrderDto>(order);
         }
     }

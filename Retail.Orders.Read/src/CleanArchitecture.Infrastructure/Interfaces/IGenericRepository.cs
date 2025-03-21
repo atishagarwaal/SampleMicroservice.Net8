@@ -10,9 +10,9 @@ namespace Retail.Orders.Read.src.CleanArchitecture.Infrastructure.Interfaces
     {
         Task<T> AddAsync(T entity);
         Task<IEnumerable<T>> GetAllAsync();
-        Task<T?> GetByIdAsync(string id);
-        Task RemoveAsync(string id);
-        Task UpdateAsync(string id, T entity);
+        Task<T?> GetByIdAsync(long id);
+        Task RemoveAsync(long id);
+        Task UpdateAsync(long id, T entity);
         Task<IEnumerable<T>> ExecuteQueryAsync(Expression<Func<T, bool>> predicate);
     }
 }

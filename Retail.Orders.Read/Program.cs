@@ -59,25 +59,6 @@ using (var scope = app.Services.CreateScope())
 {
     var serviceInitializer = scope.ServiceProvider.GetRequiredService<IServiceInitializer>();
     await serviceInitializer.Initialize();
-
-    var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
-
-    var newOrder = new Order
-    {
-        Id = 1,
-        CustomerId = 1,
-        OrderDate = DateTime.Now,
-        TotalAmount = 80,
-        LineItems = new List<LineItem> {
-                        new LineItem { 
-                            Id = 1, 
-                            OrderId = 1, 
-                            SkuId = 1, 
-                            Qty = 1 }
-        }
-    };
-
-    await unitOfWork.Orders.AddAsync(newOrder);
 }
 
 if (app.Environment.IsDevelopment())
