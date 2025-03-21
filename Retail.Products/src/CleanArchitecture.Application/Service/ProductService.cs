@@ -164,6 +164,7 @@ namespace Retail.Api.Products.src.CleanArchitecture.Application.Service
                     OrderDate = orderCreatedEvent.OrderDate,
                     OrderId = orderCreatedEvent.OrderId,
                     TotalAmount = orderCreatedEvent.TotalAmount,
+                    LineItems = orderCreatedEvent.LineItems.ToList(),
                 };
 
                 await _messagePublisher.PublishAsync<InventoryUpdatedEvent>(inventoryUpdatedMessage, RabbitmqConstants.InventoryUpdated).ConfigureAwait(false);

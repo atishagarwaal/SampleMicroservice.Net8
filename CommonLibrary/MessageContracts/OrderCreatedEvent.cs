@@ -29,6 +29,6 @@ namespace CommonLibrary.MessageContract
         /// <summary>
         /// Gets or sets the Line Items.
         /// </summary>
-        public IEnumerable<LineItemDto> LineItems { get; set; }
+        public IEnumerable<LineItemDto>? LineItems { get; set; }
     }
 }

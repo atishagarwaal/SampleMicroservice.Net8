@@ -18,6 +18,7 @@ using Retail.Orders.Read.src.CleanArchitecture.Infrastructure.Interfaces;
 using Retail.Orders.Read.src.CleanArchitecture.Infrastructure.UnitOfWork;
 using Retail.Orders.Read.src.CleanArchitecture.Application.Queries;
 using Retail.Orders.Read.src.CleanArchitecture.Domain.Entities;
+using Retail.Orders.Read.src.CleanArchitecture.Application.EventHandlers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -31,6 +32,7 @@ builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(
     typeof(GetOrderByIdQuery).Assembly
 ));
 
+builder.Services.AddScoped<IEventHandler<InventoryUpdatedEvent>, InventoryUpdatedEventHandler>();
 builder.Services.AddScoped<IServiceInitializer, ServiceInitializer>();
 
 // Add RabbitMQ from the common project
