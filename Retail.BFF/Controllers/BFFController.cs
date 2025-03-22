@@ -42,25 +42,50 @@ namespace Retail.BFFWeb.Api.Controller
         {
             try
             {
-                // Call customer API
-                var customers = await _customerProvider.GetAllCustomersAsync();
-
-                // Call orders API
+                //  Get orders first (MongoDB)
                 var orders = await _orderProvider.GetAllOrdersAsync();
+                var customerIds = orders.Select(o => o.CustomerId).Distinct().ToList();
+                var skuIds = orders
+                            .SelectMany(o => o.LineItems)
+                            .Select(li => li.SkuId)
+                            .Distinct()
+                            .ToList();
 
-                // Call products API
-                var products = await _productProvider.GetAllProductsAsync();
+                // Get only required customers (SQL Server)
+                var customerTasks = customerIds.Select(id => _customerProvider.GetCustomerByIdAsync(id));
+                var customers = await Task.WhenAll(customerTasks);
+
+                // Convert customers list into a dictionary for fast lookups
+                var customerDict = customers.Where(c => c != null).ToDictionary(c => c.Id);
+
+                // Get only required products (SQL Server)
+                var productTasks = skuIds.Select(id => _productProvider.GetProductByIdAsync(id));
+                var products = await Task.WhenAll(productTasks);
+
+                // Convert products to a dictionary for fast lookup
+                var productDict = products
+                    .Where(p => p != null)
+                    .ToDictionary(p => p.Id, p => p.Name);
 
                 // Aggregrate data
-                var aggregatedData = from o in orders
-                                     from c in customers.Where(c => c.Id == o.CustomerId).DefaultIfEmpty()
-                                     select new
+                var aggregatedData = orders.Select(o =>
                 {
-                    CustomerId = c.Id,
-                    CustomerName = string.Concat(c.FirstName, " ", c.LastName),
-                    OrderId = o.Id,
-                    OrderDate = o.OrderDate,
-                };
+                    customerDict.TryGetValue(o.CustomerId, out var customer);
+
+                    return new
+                    {
+                        CustomerId = customer?.Id ?? 0,
+                        CustomerName = customer != null ? $"{customer.FirstName} {customer.LastName}" : "Unknown",
+                        OrderId = o.Id,
+                        OrderDate = o.OrderDate,
+                        LineItems = o.LineItems.Select(li => new
+                        {
+                            SkuId = li.SkuId,
+                            SkuName = productDict.TryGetValue(li.SkuId, out var name) ? name : "Unknown",
+                            Qty = li.Qty
+                        }).ToList()
+                    };
+                });
 
                 // Return list
                 return Ok(aggregatedData);

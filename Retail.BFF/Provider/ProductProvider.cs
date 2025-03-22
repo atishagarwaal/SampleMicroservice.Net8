@@ -55,11 +55,19 @@ namespace Retail.BFFWeb.Api.Interface
         {
             using var client = _httpClientFactory.CreateClient();
 
-            var serviceTask = client.GetStringAsync(_serviceConfig.BaseUrl + _serviceConfig.Endpoints.GetProductByIdV1 + "/" + id);
-            await serviceTask;
+            // Set the base address
+            client.BaseAddress = new Uri(_serviceConfig.BaseUrl);
+
+            // Construct the request URL
+            var url = _serviceConfig.Endpoints.GetProductByIdV1.Replace("{id}", id.ToString());
+
+            var jsonString = await client.GetStringAsync(url);
 
             // Parse JSON responses
-            var serviceData = JsonSerializer.Deserialize<SkuDto>(serviceTask.Result);
+            var serviceData = JsonSerializer.Deserialize<SkuDto>(jsonString, new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            });
 
             return serviceData;
         }
