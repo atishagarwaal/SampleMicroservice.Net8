@@ -11,7 +11,7 @@ namespace Retail.Api.Customers.src.CleanArchitecture.Application.Service
     /// <summary>
     /// Customer service class.
     /// </summary>
-    internal class CustomerService : ICustomerService
+    public class CustomerService : ICustomerService
     {
         private readonly IServiceScopeFactory _serviceScopeFactory;
         private readonly IUnitOfWork _unitOfWork;
