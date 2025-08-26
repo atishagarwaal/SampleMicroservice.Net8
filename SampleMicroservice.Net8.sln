@@ -48,17 +48,17 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{3811D32A
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Retail.Customers.ServiceTests", "Retail.Customers.ServiceTests\Retail.Customers.ServiceTests.csproj", "{BC3C4E47-18AE-472F-82E4-0CF19EEC7C7B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Retail.Customers.ComponentTests", "Retail.Customers.ComponentTests\Retail.Customers.ComponentTests.csproj", "{0FEEA821-77C1-4AC5-9FD0-AFBABF6506A2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Retail.Customers.UnitTests", "Retail.Customers.ComponentTests\Retail.Customers.UnitTests.csproj", "{0FEEA821-77C1-4AC5-9FD0-AFBABF6506A2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Retail.Orders.Read.ComponentTests", "Retail.Orders.Read.ComponentTests\Retail.Orders.Read.ComponentTests.csproj", "{C32D0525-91B2-4952-B5BC-97106B93C49B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Retail.Orders.Read.ServiceTests", "Retail.Orders.Read.ComponentTests\Retail.Orders.Read.ServiceTests.csproj", "{C32D0525-91B2-4952-B5BC-97106B93C49B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Retail.Orders.Read.ServiceTests", "Retail.Orders.Read.ServiceTests\Retail.Orders.Read.ServiceTests.csproj", "{0082E373-61AB-4674-A671-C6DC9C0316FA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Retail.Orders.Read.UnitTests", "Retail.Orders.Read.ServiceTests\Retail.Orders.Read.UnitTests.csproj", "{0082E373-61AB-4674-A671-C6DC9C0316FA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Retail.Orders.Write.ComponentTests", "Retail.Orders.Write.ComponentTests\Retail.Orders.Write.ComponentTests.csproj", "{A4666307-F7E2-49D9-9035-56C9D2B26528}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Retail.Orders.Write.UnitTests", "Retail.Orders.Write.ComponentTests\Retail.Orders.Write.UnitTests.csproj", "{A4666307-F7E2-49D9-9035-56C9D2B26528}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Retail.Orders.Write.ServiceTests", "Retail.Orders.Write.ServiceTests\Retail.Orders.Write.ServiceTests.csproj", "{8A916366-6D68-443A-B975-D8FE99F83AF3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Retail.Products.ComponentTests", "Retail.Products.ComponentTests\Retail.Products.ComponentTests.csproj", "{1FB8DE19-3942-49EC-B261-8B5A994749AC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Retail.Products.UnitTests", "Retail.Products.ComponentTests\Retail.Products.UnitTests.csproj", "{1FB8DE19-3942-49EC-B261-8B5A994749AC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Retail.Products.ServiceTests", "Retail.Products.ServiceTests\Retail.Products.ServiceTests.csproj", "{0F382480-234C-4371-9D77-791B1153B79E}"
 EndProject
