@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
 using System;
 using System.Collections.Generic;
@@ -13,61 +14,185 @@ namespace MessagingInfrastructure.Service
     {
         private readonly TopologyConfiguration _config;
         private readonly IConnection _connection;
+        private readonly ILogger<TopologyInitializer>? _logger;
         private const string X_Message_TTL = "x-message-ttl";
+        private const string X_Dead_Letter_Exchange = "x-dead-letter-exchange";
+        private const string X_Dead_Letter_Routing_Key = "x-dead-letter-routing-key";
+        private const string X_Max_Priority = "x-max-priority";
 
-        public TopologyInitializer(IOptions<TopologyConfiguration> options, IConnection connection)
+        public TopologyInitializer(IOptions<TopologyConfiguration> options, IConnection connection, ILogger<TopologyInitializer>? logger = null)
         {
-            _config = options.Value;
-            _connection = connection;
+            _config = options.Value ?? throw new ArgumentNullException(nameof(options));
+            _connection = connection ?? throw new ArgumentNullException(nameof(connection));
+            _logger = logger;
         }
 
         public async Task SetupInfrastructure()
         {
-            // Establish a connection
-            using (var channel = await _connection.CreateChannelAsync())
+            try
             {
-                // Create exchanges idempotently
-                foreach (var exchange in _config.Exchanges)
-                {
-                    await channel.ExchangeDeclareAsync(
-                        exchange.Name,
-                        exchange.Type,
-                        exchange.Durable,
-                        exchange.AutoDelete,
-                        exchange.Arguments);
+                _logger?.LogInformation("Starting RabbitMQ topology initialization...");
 
-                    Console.WriteLine($"Exchange created or already exists: {exchange.Name}");
-                }
-
-                // Create queues idempotently
-                foreach (var queue in _config.Queues)
+                // Establish a connection
+                using (var channel = await _connection.CreateChannelAsync())
                 {
-                    if (queue.Arguments != null && queue.Arguments.ContainsKey(X_Message_TTL))
+                    // Create dead letter exchange first
+                    await CreateDeadLetterExchange(channel);
+
+                    // Create exchanges idempotently
+                    foreach (var exchange in _config.Exchanges)
                     {
-                        queue.Arguments[X_Message_TTL] = Convert.ToInt32(queue.Arguments[X_Message_TTL]);
+                        await channel.ExchangeDeclareAsync(
+                            exchange.Name,
+                            exchange.Type,
+                            exchange.Durable,
+                            exchange.AutoDelete,
+                            exchange.Arguments);
+
+                        _logger?.LogInformation("Exchange created or already exists: {ExchangeName}", exchange.Name);
                     }
 
-                    await channel.QueueDeclareAsync(
+                    // Create queues idempotently
+                    foreach (var queue in _config.Queues)
+                    {
+                        await CreateQueueWithEnhancedConfiguration(channel, queue);
+                    }
+
+                    _logger?.LogInformation("RabbitMQ topology initialization completed successfully");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger?.LogError(ex, "Failed to initialize RabbitMQ topology");
+                throw;
+            }
+        }
+
+        private async Task CreateDeadLetterExchange(IChannel channel)
+        {
+            try
+            {
+                // Create dead letter exchange for failed messages
+                await channel.ExchangeDeclareAsync(
+                    exchange: "dlx.topic.exchange",
+                    type: ExchangeType.Topic,
+                    durable: true,
+                    autoDelete: false,
+                    arguments: null);
+
+                // Create dead letter queue
+                await channel.QueueDeclareAsync(
+                    queue: "dlq.failure",
+                    durable: true,
+                    exclusive: false,
+                    autoDelete: false,
+                    arguments: new Dictionary<string, object>
+                    {
+                        ["x-message-ttl"] = 604800000, // 7 days in milliseconds
+                        ["x-max-length"] = 10000 // Maximum number of messages in DLQ
+                    });
+
+                // Bind DLQ to DLX
+                await channel.QueueBindAsync(
+                    queue: "dlq.failure",
+                    exchange: "dlx.topic.exchange",
+                    routingKey: "failure");
+
+                _logger?.LogInformation("Dead letter exchange and queue created successfully");
+            }
+            catch (Exception ex)
+            {
+                _logger?.LogError(ex, "Failed to create dead letter exchange");
+                throw;
+            }
+        }
+
+        private async Task CreateQueueWithEnhancedConfiguration(IChannel channel, QueueConfig queue)
+        {
+            try
+            {
+                var arguments = new Dictionary<string, object>();
+
+                // Add dead letter configuration
+                arguments[X_Dead_Letter_Exchange] = "dlx.topic.exchange";
+                arguments[X_Dead_Letter_Routing_Key] = "failure";
+
+                // Add message TTL if specified in enhanced configuration
+                if (queue.MessageTTL > 0)
+                {
+                    arguments[X_Message_TTL] = queue.MessageTTL;
+                }
+                // Fallback to arguments if not set in enhanced config
+                else if (queue.Arguments != null && queue.Arguments.ContainsKey(X_Message_TTL))
+                {
+                    arguments[X_Message_TTL] = Convert.ToInt32(queue.Arguments[X_Message_TTL]);
+                }
+
+                // Add priority support for queues that need it
+                if (queue.EnablePriority)
+                {
+                    arguments[X_Max_Priority] = queue.MaxPriority;
+                }
+                // Fallback to arguments if not set in enhanced config
+                else if (queue.Arguments != null && queue.Arguments.ContainsKey("priority-enabled") && 
+                    Convert.ToBoolean(queue.Arguments["priority-enabled"]))
+                {
+                    arguments[X_Max_Priority] = 10; // Support priority levels 0-10
+                }
+
+                // Add max length to prevent queue overflow
+                if (queue.MaxLength > 0)
+                {
+                    arguments["x-max-length"] = queue.MaxLength;
+                }
+                // Fallback to arguments if not set in enhanced config
+                else if (queue.Arguments != null && queue.Arguments.ContainsKey("max-length"))
+                {
+                    arguments["x-max-length"] = Convert.ToInt32(queue.Arguments["max-length"]);
+                }
+                else
+                {
+                    arguments["x-max-length"] = 1000; // Default max length
+                }
+
+                // Merge with existing arguments
+                if (queue.Arguments != null)
+                {
+                    foreach (var arg in queue.Arguments)
+                    {
+                        if (!arguments.ContainsKey(arg.Key))
+                        {
+                            arguments[arg.Key] = arg.Value;
+                        }
+                    }
+                }
+
+                await channel.QueueDeclareAsync(
+                    queue.Name,
+                    queue.Durable,
+                    queue.Exclusive,
+                    queue.AutoDelete,
+                    arguments);
+
+                _logger?.LogInformation("Queue created or already exists: {QueueName}", queue.Name);
+
+                // Bind queues to exchanges
+                foreach (var binding in queue.Bindings)
+                {
+                    await channel.QueueBindAsync(
                         queue.Name,
-                        queue.Durable,
-                        queue.Exclusive,
-                        queue.AutoDelete,
-                        queue.Arguments?.Count > 0 ? queue.Arguments : null);
+                        binding.ExchangeName,
+                        binding.RoutingKey,
+                        binding.Arguments?.ToDictionary(kvp => kvp.Key, kvp => (object?)kvp.Value));
 
-                    Console.WriteLine($"Queue created or already exists: {queue.Name}");
-
-                    // Bind queues to exchanges
-                    foreach (var binding in queue.Bindings)
-                    {
-                        await channel.QueueBindAsync(
-                            queue.Name,
-                            binding.ExchangeName,
-                            binding.RoutingKey,
-                            binding.Arguments?.Count > 0 ? binding.Arguments : null);
-
-                        Console.WriteLine($"Binding created: {queue.Name} -> {binding.ExchangeName} ({binding.RoutingKey})");
-                    }
+                    _logger?.LogInformation("Binding created: {QueueName} -> {ExchangeName} ({RoutingKey})", 
+                        queue.Name, binding.ExchangeName, binding.RoutingKey);
                 }
+            }
+            catch (Exception ex)
+            {
+                _logger?.LogError(ex, "Failed to create queue: {QueueName}", queue.Name);
+                throw;
             }
         }
     }

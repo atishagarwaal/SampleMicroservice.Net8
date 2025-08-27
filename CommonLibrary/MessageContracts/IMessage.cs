@@ -10,5 +10,9 @@ namespace CommonLibrary.MessageContract
     {
         Guid MessageId { get; }
         DateTime Timestamp { get; }
+        string MessageType { get; }
+        string MessageVersion { get; }
+        string RoutingKey { get; }
+        IDictionary<string, object> Headers { get; }
     }
 }

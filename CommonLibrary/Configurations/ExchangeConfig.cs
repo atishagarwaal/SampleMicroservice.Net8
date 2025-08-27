@@ -15,5 +15,10 @@ namespace TopologyManager.Configuration
         public bool AutoDelete { get; set; }
         public bool Internal { get; set; }
         public IDictionary<string, object> Arguments { get; set; } = new ExchangeArguments();
+        
+        // Enhanced properties for priority and TTL support
+        public bool EnablePriority { get; set; } = false;
+        public int MaxPriority { get; set; } = 10;
+        public int MessageTTL { get; set; } = 86400000; // 24 hours in milliseconds
     }
 }
