@@ -28,3 +28,28 @@ Scenario: Service error handling with database unavailable
     And the database is unavailable
     When I attempt to perform a database operation
     Then an error should be handled gracefully
+
+@OrderWrite
+Scenario: Validate service configuration
+    Given the Order Write Service is running
+    When I check the service configuration
+    Then the following configuration should be properly set:
+        | Setting           | Expected Value | Description                    |
+        | DatabaseTimeout   | 30             | Database connection timeout   |
+        | MaxConnections    | 100            | Maximum database connections  |
+        | LogLevel          | Information    | Logging level                 |
+        | EnableCaching     | true           | Enable response caching       |
+        | CommandTimeout    | 60             | Command processing timeout    |
+
+@OrderWrite
+Scenario: Health check response structure validation
+    Given the Order Write Service is running
+    When I request a health check
+    Then the health check response should contain:
+        | Field           | Type   | Description                    |
+        | Status          | String | Service health status         |
+        | Timestamp       | String | Health check timestamp        |
+        | DatabaseStatus  | String | Database connection status    |
+        | ServiceVersion  | String | Current service version       |
+        | Uptime          | String | Service uptime duration       |
+        | CommandQueue    | Number | Pending commands in queue     |

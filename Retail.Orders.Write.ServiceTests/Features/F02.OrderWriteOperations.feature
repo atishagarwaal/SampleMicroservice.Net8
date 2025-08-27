@@ -51,3 +51,50 @@ Scenario: Handle duplicate order creation
     When I attempt to create the duplicate order
     Then the operation should fail gracefully
     And an appropriate error should be returned
+
+@OrderWrite
+Scenario: Validate order data structure
+    Given there is a valid order with the following data:
+        | Field       | Value      | Type   | Description                |
+        | CustomerId  | 12345      | Number | Customer identifier        |
+        | OrderDate   | 2024-01-15 | Date   | Date when order placed    |
+        | TotalAmount | 299.99     | Number | Total order amount         |
+        | Status      | Pending    | String | Current order status       |
+    When I create the order
+    Then the order should be created successfully
+    And the order data should match the input structure
+
+@OrderWrite
+Scenario: Validate line item data structure
+    Given there is a valid order with the following line items:
+        | SkuId | SkuName | Quantity | UnitPrice | TotalPrice |
+        | 1001  | Laptop  | 1        | 999.99    | 999.99     |
+        | 1002  | Mouse   | 2        | 29.99     | 59.98      |
+        | 1003  | Keyboard| 1        | 89.99     | 89.99      |
+    When I create the order with line items
+    Then the order should be created successfully
+    And all line items should be persisted correctly
+    And the order total should be 1149.96
+
+@OrderWrite
+Scenario: Bulk update order statuses
+    Given the following orders exist in the system:
+        | OrderId | CustomerId | Status      | ExpectedResult |
+        | 1001    | 12345      | Pending     | Success        |
+        | 1002    | 12346      | Processing  | Success        |
+        | 1003    | 12347      | Shipped     | Success        |
+        | 1004    | 12348      | Pending     | Success        |
+    When I bulk update the order statuses
+    Then all status updates should be successful
+    And the new statuses should match the expected values
+
+@OrderWrite
+Scenario: Validate order constraints and business rules
+    Given I attempt to create an order with invalid constraints
+    When I submit the order data
+    Then the following validation rules should be enforced:
+        | Field       | Constraint        | Description                    |
+        | CustomerId  | Required, Valid   | Customer must exist in system |
+        | OrderDate   | Required, Future  | Order date cannot be past     |
+        | TotalAmount | Min 0.01          | Order must have positive total|
+        | Status      | Enum Values       | Status must be valid enum     |

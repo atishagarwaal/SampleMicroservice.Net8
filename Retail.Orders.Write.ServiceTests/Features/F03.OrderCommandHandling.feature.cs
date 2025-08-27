@@ -311,6 +311,254 @@ this.ScenarioInitialize(scenarioInfo);
             }
             this.ScenarioCleanup();
         }
+        
+        [NUnit.Framework.TestAttribute()]
+        [NUnit.Framework.DescriptionAttribute("Validate CreateOrderCommand data structure")]
+        [NUnit.Framework.CategoryAttribute("OrderWrite")]
+        public void ValidateCreateOrderCommandDataStructure()
+        {
+            string[] tagsOfScenario = new string[] {
+                    "OrderWrite"};
+            System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Validate CreateOrderCommand data structure", null, tagsOfScenario, argumentsOfScenario, featureTags);
+#line 60
+this.ScenarioInitialize(scenarioInfo);
+#line hidden
+            if ((TagHelper.ContainsIgnoreTag(tagsOfScenario) || TagHelper.ContainsIgnoreTag(featureTags)))
+            {
+                testRunner.SkipScenario();
+            }
+            else
+            {
+                this.ScenarioStart();
+                TechTalk.SpecFlow.Table table7 = new TechTalk.SpecFlow.Table(new string[] {
+                            "Field",
+                            "Value",
+                            "Type",
+                            "Description"});
+                table7.AddRow(new string[] {
+                            "CommandId",
+                            "cmd-001",
+                            "String",
+                            "Unique command identifier"});
+                table7.AddRow(new string[] {
+                            "CustomerId",
+                            "12345",
+                            "Number",
+                            "Customer identifier"});
+                table7.AddRow(new string[] {
+                            "OrderDate",
+                            "2024-01-15",
+                            "Date",
+                            "Date when order placed"});
+                table7.AddRow(new string[] {
+                            "LineItems",
+                            "3",
+                            "Number",
+                            "Number of line items"});
+                table7.AddRow(new string[] {
+                            "TotalAmount",
+                            "299.99",
+                            "Number",
+                            "Total order amount"});
+#line 61
+    testRunner.Given("a CreateOrderCommand with the following data:", ((string)(null)), table7, "Given ");
+#line hidden
+#line 68
+    testRunner.When("the command is processed", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line hidden
+#line 69
+    testRunner.Then("the command should be validated successfully", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+#line 70
+    testRunner.And("the order should be created in the database", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line hidden
+            }
+            this.ScenarioCleanup();
+        }
+        
+        [NUnit.Framework.TestAttribute()]
+        [NUnit.Framework.DescriptionAttribute("Validate command event publishing structure")]
+        [NUnit.Framework.CategoryAttribute("OrderWrite")]
+        public void ValidateCommandEventPublishingStructure()
+        {
+            string[] tagsOfScenario = new string[] {
+                    "OrderWrite"};
+            System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Validate command event publishing structure", null, tagsOfScenario, argumentsOfScenario, featureTags);
+#line 73
+this.ScenarioInitialize(scenarioInfo);
+#line hidden
+            if ((TagHelper.ContainsIgnoreTag(tagsOfScenario) || TagHelper.ContainsIgnoreTag(featureTags)))
+            {
+                testRunner.SkipScenario();
+            }
+            else
+            {
+                this.ScenarioStart();
+#line 74
+    testRunner.Given("a valid command is processed successfully", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line hidden
+#line 75
+    testRunner.When("the corresponding event is published", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line hidden
+                TechTalk.SpecFlow.Table table8 = new TechTalk.SpecFlow.Table(new string[] {
+                            "Field",
+                            "Type",
+                            "Description"});
+                table8.AddRow(new string[] {
+                            "EventId",
+                            "String",
+                            "Unique event identifier"});
+                table8.AddRow(new string[] {
+                            "EventType",
+                            "String",
+                            "Type of event published"});
+                table8.AddRow(new string[] {
+                            "AggregateId",
+                            "Number",
+                            "Order identifier"});
+                table8.AddRow(new string[] {
+                            "Timestamp",
+                            "String",
+                            "Event occurrence time"});
+                table8.AddRow(new string[] {
+                            "Version",
+                            "Number",
+                            "Event version number"});
+                table8.AddRow(new string[] {
+                            "Data",
+                            "Object",
+                            "Event payload data"});
+#line 76
+    testRunner.Then("the event should contain the following structure:", ((string)(null)), table8, "Then ");
+#line hidden
+            }
+            this.ScenarioCleanup();
+        }
+        
+        [NUnit.Framework.TestAttribute()]
+        [NUnit.Framework.DescriptionAttribute("Handle multiple commands in sequence")]
+        [NUnit.Framework.CategoryAttribute("OrderWrite")]
+        public void HandleMultipleCommandsInSequence()
+        {
+            string[] tagsOfScenario = new string[] {
+                    "OrderWrite"};
+            System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Handle multiple commands in sequence", null, tagsOfScenario, argumentsOfScenario, featureTags);
+#line 86
+this.ScenarioInitialize(scenarioInfo);
+#line hidden
+            if ((TagHelper.ContainsIgnoreTag(tagsOfScenario) || TagHelper.ContainsIgnoreTag(featureTags)))
+            {
+                testRunner.SkipScenario();
+            }
+            else
+            {
+                this.ScenarioStart();
+                TechTalk.SpecFlow.Table table9 = new TechTalk.SpecFlow.Table(new string[] {
+                            "CommandType",
+                            "OrderId",
+                            "CustomerId",
+                            "Status",
+                            "ExpectedResult"});
+                table9.AddRow(new string[] {
+                            "CreateOrderCommand",
+                            "1001",
+                            "12345",
+                            "Pending",
+                            "Success"});
+                table9.AddRow(new string[] {
+                            "UpdateOrderCommand",
+                            "1001",
+                            "12345",
+                            "Processing",
+                            "Success"});
+                table9.AddRow(new string[] {
+                            "UpdateOrderCommand",
+                            "1001",
+                            "12345",
+                            "Shipped",
+                            "Success"});
+                table9.AddRow(new string[] {
+                            "UpdateOrderCommand",
+                            "1001",
+                            "12345",
+                            "Delivered",
+                            "Success"});
+#line 87
+    testRunner.Given("the following commands are received in sequence:", ((string)(null)), table9, "Given ");
+#line hidden
+#line 93
+    testRunner.When("all commands are processed", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line hidden
+#line 94
+    testRunner.Then("all commands should be processed successfully", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+#line 95
+    testRunner.And("the order should progress through all statuses", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line hidden
+#line 96
+    testRunner.And("corresponding events should be published for each command", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line hidden
+            }
+            this.ScenarioCleanup();
+        }
+        
+        [NUnit.Framework.TestAttribute()]
+        [NUnit.Framework.DescriptionAttribute("Validate transaction rollback scenarios")]
+        [NUnit.Framework.CategoryAttribute("OrderWrite")]
+        public void ValidateTransactionRollbackScenarios()
+        {
+            string[] tagsOfScenario = new string[] {
+                    "OrderWrite"};
+            System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Validate transaction rollback scenarios", null, tagsOfScenario, argumentsOfScenario, featureTags);
+#line 99
+this.ScenarioInitialize(scenarioInfo);
+#line hidden
+            if ((TagHelper.ContainsIgnoreTag(tagsOfScenario) || TagHelper.ContainsIgnoreTag(featureTags)))
+            {
+                testRunner.SkipScenario();
+            }
+            else
+            {
+                this.ScenarioStart();
+                TechTalk.SpecFlow.Table table10 = new TechTalk.SpecFlow.Table(new string[] {
+                            "FailureType",
+                            "Description",
+                            "ExpectedBehavior"});
+                table10.AddRow(new string[] {
+                            "DatabaseConnection",
+                            "Database connection lost",
+                            "Rollback, No Event"});
+                table10.AddRow(new string[] {
+                            "ValidationError",
+                            "Command data validation fails",
+                            "Rollback, No Event"});
+                table10.AddRow(new string[] {
+                            "EventPublishError",
+                            "Event publishing fails",
+                            "Rollback, No Persist"});
+                table10.AddRow(new string[] {
+                            "ConcurrentAccess",
+                            "Order modified by another user",
+                            "Rollback, Retry Logic"});
+#line 100
+    testRunner.Given("a command processing scenario with the following failures:", ((string)(null)), table10, "Given ");
+#line hidden
+#line 106
+    testRunner.When("the failure occurs during command processing", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line hidden
+#line 107
+    testRunner.Then("the transaction should be rolled back appropriately", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+#line 108
+    testRunner.And("the system should handle the failure gracefully", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line hidden
+            }
+            this.ScenarioCleanup();
+        }
     }
 }
 #pragma warning restore

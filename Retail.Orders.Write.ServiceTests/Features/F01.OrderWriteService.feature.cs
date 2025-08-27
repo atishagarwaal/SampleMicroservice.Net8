@@ -188,6 +188,122 @@ this.ScenarioInitialize(scenarioInfo);
             }
             this.ScenarioCleanup();
         }
+        
+        [NUnit.Framework.TestAttribute()]
+        [NUnit.Framework.DescriptionAttribute("Validate service configuration")]
+        [NUnit.Framework.CategoryAttribute("OrderWrite")]
+        public void ValidateServiceConfiguration()
+        {
+            string[] tagsOfScenario = new string[] {
+                    "OrderWrite"};
+            System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Validate service configuration", null, tagsOfScenario, argumentsOfScenario, featureTags);
+#line 33
+this.ScenarioInitialize(scenarioInfo);
+#line hidden
+            if ((TagHelper.ContainsIgnoreTag(tagsOfScenario) || TagHelper.ContainsIgnoreTag(featureTags)))
+            {
+                testRunner.SkipScenario();
+            }
+            else
+            {
+                this.ScenarioStart();
+#line 34
+    testRunner.Given("the Order Write Service is running", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line hidden
+#line 35
+    testRunner.When("I check the service configuration", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line hidden
+                TechTalk.SpecFlow.Table table1 = new TechTalk.SpecFlow.Table(new string[] {
+                            "Setting",
+                            "Expected Value",
+                            "Description"});
+                table1.AddRow(new string[] {
+                            "DatabaseTimeout",
+                            "30",
+                            "Database connection timeout"});
+                table1.AddRow(new string[] {
+                            "MaxConnections",
+                            "100",
+                            "Maximum database connections"});
+                table1.AddRow(new string[] {
+                            "LogLevel",
+                            "Information",
+                            "Logging level"});
+                table1.AddRow(new string[] {
+                            "EnableCaching",
+                            "true",
+                            "Enable response caching"});
+                table1.AddRow(new string[] {
+                            "CommandTimeout",
+                            "60",
+                            "Command processing timeout"});
+#line 36
+    testRunner.Then("the following configuration should be properly set:", ((string)(null)), table1, "Then ");
+#line hidden
+            }
+            this.ScenarioCleanup();
+        }
+        
+        [NUnit.Framework.TestAttribute()]
+        [NUnit.Framework.DescriptionAttribute("Health check response structure validation")]
+        [NUnit.Framework.CategoryAttribute("OrderWrite")]
+        public void HealthCheckResponseStructureValidation()
+        {
+            string[] tagsOfScenario = new string[] {
+                    "OrderWrite"};
+            System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Health check response structure validation", null, tagsOfScenario, argumentsOfScenario, featureTags);
+#line 45
+this.ScenarioInitialize(scenarioInfo);
+#line hidden
+            if ((TagHelper.ContainsIgnoreTag(tagsOfScenario) || TagHelper.ContainsIgnoreTag(featureTags)))
+            {
+                testRunner.SkipScenario();
+            }
+            else
+            {
+                this.ScenarioStart();
+#line 46
+    testRunner.Given("the Order Write Service is running", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line hidden
+#line 47
+    testRunner.When("I request a health check", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line hidden
+                TechTalk.SpecFlow.Table table2 = new TechTalk.SpecFlow.Table(new string[] {
+                            "Field",
+                            "Type",
+                            "Description"});
+                table2.AddRow(new string[] {
+                            "Status",
+                            "String",
+                            "Service health status"});
+                table2.AddRow(new string[] {
+                            "Timestamp",
+                            "String",
+                            "Health check timestamp"});
+                table2.AddRow(new string[] {
+                            "DatabaseStatus",
+                            "String",
+                            "Database connection status"});
+                table2.AddRow(new string[] {
+                            "ServiceVersion",
+                            "String",
+                            "Current service version"});
+                table2.AddRow(new string[] {
+                            "Uptime",
+                            "String",
+                            "Service uptime duration"});
+                table2.AddRow(new string[] {
+                            "CommandQueue",
+                            "Number",
+                            "Pending commands in queue"});
+#line 48
+    testRunner.Then("the health check response should contain:", ((string)(null)), table2, "Then ");
+#line hidden
+            }
+            this.ScenarioCleanup();
+        }
     }
 }
 #pragma warning restore

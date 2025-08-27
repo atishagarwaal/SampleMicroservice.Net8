@@ -299,6 +299,240 @@ this.ScenarioInitialize(scenarioInfo);
             }
             this.ScenarioCleanup();
         }
+        
+        [NUnit.Framework.TestAttribute()]
+        [NUnit.Framework.DescriptionAttribute("Validate order data structure")]
+        [NUnit.Framework.CategoryAttribute("OrderWrite")]
+        public void ValidateOrderDataStructure()
+        {
+            string[] tagsOfScenario = new string[] {
+                    "OrderWrite"};
+            System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Validate order data structure", null, tagsOfScenario, argumentsOfScenario, featureTags);
+#line 56
+this.ScenarioInitialize(scenarioInfo);
+#line hidden
+            if ((TagHelper.ContainsIgnoreTag(tagsOfScenario) || TagHelper.ContainsIgnoreTag(featureTags)))
+            {
+                testRunner.SkipScenario();
+            }
+            else
+            {
+                this.ScenarioStart();
+                TechTalk.SpecFlow.Table table3 = new TechTalk.SpecFlow.Table(new string[] {
+                            "Field",
+                            "Value",
+                            "Type",
+                            "Description"});
+                table3.AddRow(new string[] {
+                            "CustomerId",
+                            "12345",
+                            "Number",
+                            "Customer identifier"});
+                table3.AddRow(new string[] {
+                            "OrderDate",
+                            "2024-01-15",
+                            "Date",
+                            "Date when order placed"});
+                table3.AddRow(new string[] {
+                            "TotalAmount",
+                            "299.99",
+                            "Number",
+                            "Total order amount"});
+                table3.AddRow(new string[] {
+                            "Status",
+                            "Pending",
+                            "String",
+                            "Current order status"});
+#line 57
+    testRunner.Given("there is a valid order with the following data:", ((string)(null)), table3, "Given ");
+#line hidden
+#line 63
+    testRunner.When("I create the order", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line hidden
+#line 64
+    testRunner.Then("the order should be created successfully", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+#line 65
+    testRunner.And("the order data should match the input structure", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line hidden
+            }
+            this.ScenarioCleanup();
+        }
+        
+        [NUnit.Framework.TestAttribute()]
+        [NUnit.Framework.DescriptionAttribute("Validate line item data structure")]
+        [NUnit.Framework.CategoryAttribute("OrderWrite")]
+        public void ValidateLineItemDataStructure()
+        {
+            string[] tagsOfScenario = new string[] {
+                    "OrderWrite"};
+            System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Validate line item data structure", null, tagsOfScenario, argumentsOfScenario, featureTags);
+#line 68
+this.ScenarioInitialize(scenarioInfo);
+#line hidden
+            if ((TagHelper.ContainsIgnoreTag(tagsOfScenario) || TagHelper.ContainsIgnoreTag(featureTags)))
+            {
+                testRunner.SkipScenario();
+            }
+            else
+            {
+                this.ScenarioStart();
+                TechTalk.SpecFlow.Table table4 = new TechTalk.SpecFlow.Table(new string[] {
+                            "SkuId",
+                            "SkuName",
+                            "Quantity",
+                            "UnitPrice",
+                            "TotalPrice"});
+                table4.AddRow(new string[] {
+                            "1001",
+                            "Laptop",
+                            "1",
+                            "999.99",
+                            "999.99"});
+                table4.AddRow(new string[] {
+                            "1002",
+                            "Mouse",
+                            "2",
+                            "29.99",
+                            "59.98"});
+                table4.AddRow(new string[] {
+                            "1003",
+                            "Keyboard",
+                            "1",
+                            "89.99",
+                            "89.99"});
+#line 69
+    testRunner.Given("there is a valid order with the following line items:", ((string)(null)), table4, "Given ");
+#line hidden
+#line 74
+    testRunner.When("I create the order with line items", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line hidden
+#line 75
+    testRunner.Then("the order should be created successfully", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+#line 76
+    testRunner.And("all line items should be persisted correctly", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line hidden
+#line 77
+    testRunner.And("the order total should be 1149.96", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line hidden
+            }
+            this.ScenarioCleanup();
+        }
+        
+        [NUnit.Framework.TestAttribute()]
+        [NUnit.Framework.DescriptionAttribute("Bulk update order statuses")]
+        [NUnit.Framework.CategoryAttribute("OrderWrite")]
+        public void BulkUpdateOrderStatuses()
+        {
+            string[] tagsOfScenario = new string[] {
+                    "OrderWrite"};
+            System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Bulk update order statuses", null, tagsOfScenario, argumentsOfScenario, featureTags);
+#line 80
+this.ScenarioInitialize(scenarioInfo);
+#line hidden
+            if ((TagHelper.ContainsIgnoreTag(tagsOfScenario) || TagHelper.ContainsIgnoreTag(featureTags)))
+            {
+                testRunner.SkipScenario();
+            }
+            else
+            {
+                this.ScenarioStart();
+                TechTalk.SpecFlow.Table table5 = new TechTalk.SpecFlow.Table(new string[] {
+                            "OrderId",
+                            "CustomerId",
+                            "Status",
+                            "ExpectedResult"});
+                table5.AddRow(new string[] {
+                            "1001",
+                            "12345",
+                            "Pending",
+                            "Success"});
+                table5.AddRow(new string[] {
+                            "1002",
+                            "12346",
+                            "Processing",
+                            "Success"});
+                table5.AddRow(new string[] {
+                            "1003",
+                            "12347",
+                            "Shipped",
+                            "Success"});
+                table5.AddRow(new string[] {
+                            "1004",
+                            "12348",
+                            "Pending",
+                            "Success"});
+#line 81
+    testRunner.Given("the following orders exist in the system:", ((string)(null)), table5, "Given ");
+#line hidden
+#line 87
+    testRunner.When("I bulk update the order statuses", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line hidden
+#line 88
+    testRunner.Then("all status updates should be successful", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+#line 89
+    testRunner.And("the new statuses should match the expected values", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line hidden
+            }
+            this.ScenarioCleanup();
+        }
+        
+        [NUnit.Framework.TestAttribute()]
+        [NUnit.Framework.DescriptionAttribute("Validate order constraints and business rules")]
+        [NUnit.Framework.CategoryAttribute("OrderWrite")]
+        public void ValidateOrderConstraintsAndBusinessRules()
+        {
+            string[] tagsOfScenario = new string[] {
+                    "OrderWrite"};
+            System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Validate order constraints and business rules", null, tagsOfScenario, argumentsOfScenario, featureTags);
+#line 92
+this.ScenarioInitialize(scenarioInfo);
+#line hidden
+            if ((TagHelper.ContainsIgnoreTag(tagsOfScenario) || TagHelper.ContainsIgnoreTag(featureTags)))
+            {
+                testRunner.SkipScenario();
+            }
+            else
+            {
+                this.ScenarioStart();
+#line 93
+    testRunner.Given("I attempt to create an order with invalid constraints", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line hidden
+#line 94
+    testRunner.When("I submit the order data", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line hidden
+                TechTalk.SpecFlow.Table table6 = new TechTalk.SpecFlow.Table(new string[] {
+                            "Field",
+                            "Constraint",
+                            "Description"});
+                table6.AddRow(new string[] {
+                            "CustomerId",
+                            "Required, Valid",
+                            "Customer must exist in system"});
+                table6.AddRow(new string[] {
+                            "OrderDate",
+                            "Required, Future",
+                            "Order date cannot be past"});
+                table6.AddRow(new string[] {
+                            "TotalAmount",
+                            "Min 0.01",
+                            "Order must have positive total"});
+                table6.AddRow(new string[] {
+                            "Status",
+                            "Enum Values",
+                            "Status must be valid enum"});
+#line 95
+    testRunner.Then("the following validation rules should be enforced:", ((string)(null)), table6, "Then ");
+#line hidden
+            }
+            this.ScenarioCleanup();
+        }
     }
 }
 #pragma warning restore
