@@ -1,0 +1,56 @@
+[
+  {
+    "Id": 1,
+    "CustomerId": 123,
+    "OrderDate": "2024-01-15T10:00:00Z",
+    "TotalAmount": 99.99,
+    "LineItems": [
+      {
+        "Id": 1,
+        "OrderId": 1,
+        "SkuId": 100,
+        "Qty": 2
+      },
+      {
+        "Id": 2,
+        "OrderId": 1,
+        "SkuId": 200,
+        "Qty": 1
+      }
+    ]
+  },
+  {
+    "Id": 2,
+    "CustomerId": 456,
+    "OrderDate": "2024-01-16T14:30:00Z",
+    "TotalAmount": 149.50,
+    "LineItems": [
+      {
+        "Id": 3,
+        "OrderId": 2,
+        "SkuId": 300,
+        "Qty": 3
+      }
+    ]
+  },
+  {
+    "Id": 3,
+    "CustomerId": 789,
+    "OrderDate": "2024-01-17T09:15:00Z",
+    "TotalAmount": 75.25,
+    "LineItems": [
+      {
+        "Id": 4,
+        "OrderId": 3,
+        "SkuId": 400,
+        "Qty": 1
+      },
+      {
+        "Id": 5,
+        "OrderId": 3,
+        "SkuId": 500,
+        "Qty": 2
+      }
+    ]
+  }
+]
