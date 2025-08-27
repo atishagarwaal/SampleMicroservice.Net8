@@ -104,22 +104,25 @@ this.ScenarioInitialize(scenarioInfo);
 #line 12
     testRunner.And("the database connection is established", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-                TechTalk.SpecFlow.Table table1 = new TechTalk.SpecFlow.Table(new string[] {
+                TechTalk.SpecFlow.Table table4 = new TechTalk.SpecFlow.Table(new string[] {
+                            "Field",
+                            "Value"});
+                table4.AddRow(new string[] {
                             "FirstName",
-                            "LastName"});
-                table1.AddRow(new string[] {
-                            "Jane",
+                            "Jane"});
+                table4.AddRow(new string[] {
+                            "LastName",
                             "Smith"});
 #line 13
-    testRunner.And("a valid customer with the following data:", ((string)(null)), table1, "And ");
-#line hidden
-#line 16
-    testRunner.When("I create a new customer", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+    testRunner.And("a valid customer with the following data:", ((string)(null)), table4, "And ");
 #line hidden
 #line 17
-    testRunner.Then("the customer should be created successfully", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+    testRunner.When("I create a new customer", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
 #line 18
+    testRunner.Then("the customer should be created successfully", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+#line 19
     testRunner.And("the customer should be persisted in the database", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             }
@@ -135,7 +138,7 @@ this.ScenarioInitialize(scenarioInfo);
                     "CustomerCreate"};
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Create an invalid customer", null, tagsOfScenario, argumentsOfScenario, featureTags);
-#line 21
+#line 22
 this.ScenarioInitialize(scenarioInfo);
 #line hidden
             if ((TagHelper.ContainsIgnoreTag(tagsOfScenario) || TagHelper.ContainsIgnoreTag(featureTags)))
@@ -145,28 +148,31 @@ this.ScenarioInitialize(scenarioInfo);
             else
             {
                 this.ScenarioStart();
-#line 22
+#line 23
     testRunner.Given("the Customer Service is running", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line hidden
-#line 23
+#line 24
     testRunner.And("the database connection is established", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-                TechTalk.SpecFlow.Table table2 = new TechTalk.SpecFlow.Table(new string[] {
+                TechTalk.SpecFlow.Table table5 = new TechTalk.SpecFlow.Table(new string[] {
+                            "Field",
+                            "Value"});
+                table5.AddRow(new string[] {
                             "FirstName",
-                            "LastName"});
-                table2.AddRow(new string[] {
-                            "",
                             ""});
-#line 24
-    testRunner.And("an invalid customer with the following data:", ((string)(null)), table2, "And ");
-#line hidden
-#line 27
-    testRunner.When("I create a new customer", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line hidden
-#line 28
-    testRunner.Then("a validation error should be returned", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+                table5.AddRow(new string[] {
+                            "LastName",
+                            ""});
+#line 25
+    testRunner.And("an invalid customer with the following data:", ((string)(null)), table5, "And ");
 #line hidden
 #line 29
+    testRunner.When("I create a new customer", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line hidden
+#line 30
+    testRunner.Then("a validation error should be returned", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+#line 31
     testRunner.And("the customer should not be created", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             }
@@ -182,7 +188,7 @@ this.ScenarioInitialize(scenarioInfo);
                     "CustomerRead"};
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Retrieve customer by ID", null, tagsOfScenario, argumentsOfScenario, featureTags);
-#line 32
+#line 34
 this.ScenarioInitialize(scenarioInfo);
 #line hidden
             if ((TagHelper.ContainsIgnoreTag(tagsOfScenario) || TagHelper.ContainsIgnoreTag(featureTags)))
@@ -192,19 +198,19 @@ this.ScenarioInitialize(scenarioInfo);
             else
             {
                 this.ScenarioStart();
-#line 33
+#line 35
     testRunner.Given("the Customer Service is running", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line hidden
-#line 34
+#line 36
     testRunner.And("the database connection is established", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-#line 35
+#line 37
     testRunner.And("a customer with ID 1 exists in the database", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-#line 36
+#line 38
     testRunner.When("I retrieve the customer by ID", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
-#line 37
+#line 39
     testRunner.Then("the customer data should be returned", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             }
@@ -220,7 +226,7 @@ this.ScenarioInitialize(scenarioInfo);
                     "CustomerRead"};
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Retrieve all customers", null, tagsOfScenario, argumentsOfScenario, featureTags);
-#line 40
+#line 42
 this.ScenarioInitialize(scenarioInfo);
 #line hidden
             if ((TagHelper.ContainsIgnoreTag(tagsOfScenario) || TagHelper.ContainsIgnoreTag(featureTags)))
@@ -230,34 +236,38 @@ this.ScenarioInitialize(scenarioInfo);
             else
             {
                 this.ScenarioStart();
-#line 41
+#line 43
     testRunner.Given("the Customer Service is running", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line hidden
-#line 42
+#line 44
     testRunner.And("the database connection is established", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-                TechTalk.SpecFlow.Table table3 = new TechTalk.SpecFlow.Table(new string[] {
+                TechTalk.SpecFlow.Table table6 = new TechTalk.SpecFlow.Table(new string[] {
+                            "CustomerId",
                             "FirstName",
                             "LastName"});
-                table3.AddRow(new string[] {
+                table6.AddRow(new string[] {
+                            "1",
                             "John",
                             "Doe"});
-                table3.AddRow(new string[] {
+                table6.AddRow(new string[] {
+                            "2",
                             "Jane",
                             "Smith"});
-                table3.AddRow(new string[] {
+                table6.AddRow(new string[] {
+                            "3",
                             "Bob",
                             "Johnson"});
-#line 43
-    testRunner.And("the following customers exist in the database:", ((string)(null)), table3, "And ");
-#line hidden
-#line 48
-    testRunner.When("I retrieve all customers", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line hidden
-#line 49
-    testRunner.Then("all customers should be returned", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line 45
+    testRunner.And("the following customers exist in the database:", ((string)(null)), table6, "And ");
 #line hidden
 #line 50
+    testRunner.When("I retrieve all customers", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line hidden
+#line 51
+    testRunner.Then("all customers should be returned", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+#line 52
     testRunner.And("the customer count should match the expected count", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             }
@@ -273,7 +283,7 @@ this.ScenarioInitialize(scenarioInfo);
                     "CustomerRead"};
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Retrieve non-existent customer", null, tagsOfScenario, argumentsOfScenario, featureTags);
-#line 53
+#line 55
 this.ScenarioInitialize(scenarioInfo);
 #line hidden
             if ((TagHelper.ContainsIgnoreTag(tagsOfScenario) || TagHelper.ContainsIgnoreTag(featureTags)))
@@ -283,19 +293,19 @@ this.ScenarioInitialize(scenarioInfo);
             else
             {
                 this.ScenarioStart();
-#line 54
+#line 56
     testRunner.Given("the Customer Service is running", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line hidden
-#line 55
+#line 57
     testRunner.And("the database connection is established", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-#line 56
+#line 58
     testRunner.And("no customer with ID 999 exists in the database", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-#line 57
+#line 59
     testRunner.When("I retrieve the customer by ID", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
-#line 58
+#line 60
     testRunner.Then("a not found error should be returned", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             }
@@ -311,7 +321,7 @@ this.ScenarioInitialize(scenarioInfo);
                     "CustomerUpdate"};
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Update existing customer", null, tagsOfScenario, argumentsOfScenario, featureTags);
-#line 61
+#line 63
 this.ScenarioInitialize(scenarioInfo);
 #line hidden
             if ((TagHelper.ContainsIgnoreTag(tagsOfScenario) || TagHelper.ContainsIgnoreTag(featureTags)))
@@ -321,28 +331,31 @@ this.ScenarioInitialize(scenarioInfo);
             else
             {
                 this.ScenarioStart();
-#line 62
+#line 64
     testRunner.Given("the Customer Service is running", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line hidden
-#line 63
+#line 65
     testRunner.And("the database connection is established", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-#line 64
+#line 66
     testRunner.And("a customer with ID 1 exists in the database", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-                TechTalk.SpecFlow.Table table4 = new TechTalk.SpecFlow.Table(new string[] {
+                TechTalk.SpecFlow.Table table7 = new TechTalk.SpecFlow.Table(new string[] {
+                            "Field",
+                            "Value"});
+                table7.AddRow(new string[] {
                             "FirstName",
-                            "LastName"});
-                table4.AddRow(new string[] {
-                            "Updated",
+                            "Updated"});
+                table7.AddRow(new string[] {
+                            "LastName",
                             "Name"});
-#line 65
-    testRunner.When("I update the customer with the following data:", ((string)(null)), table4, "When ");
+#line 67
+    testRunner.When("I update the customer with the following data:", ((string)(null)), table7, "When ");
 #line hidden
-#line 68
+#line 71
     testRunner.Then("the customer should be updated successfully", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
-#line 69
+#line 72
     testRunner.And("the customer should be persisted in the database", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             }
@@ -358,7 +371,7 @@ this.ScenarioInitialize(scenarioInfo);
                     "CustomerUpdate"};
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Update non-existent customer", null, tagsOfScenario, argumentsOfScenario, featureTags);
-#line 72
+#line 75
 this.ScenarioInitialize(scenarioInfo);
 #line hidden
             if ((TagHelper.ContainsIgnoreTag(tagsOfScenario) || TagHelper.ContainsIgnoreTag(featureTags)))
@@ -368,25 +381,28 @@ this.ScenarioInitialize(scenarioInfo);
             else
             {
                 this.ScenarioStart();
-#line 73
+#line 76
     testRunner.Given("the Customer Service is running", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line hidden
-#line 74
+#line 77
     testRunner.And("the database connection is established", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-#line 75
+#line 78
     testRunner.And("no customer with ID 999 exists in the database", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-                TechTalk.SpecFlow.Table table5 = new TechTalk.SpecFlow.Table(new string[] {
+                TechTalk.SpecFlow.Table table8 = new TechTalk.SpecFlow.Table(new string[] {
+                            "Field",
+                            "Value"});
+                table8.AddRow(new string[] {
                             "FirstName",
-                            "LastName"});
-                table5.AddRow(new string[] {
-                            "Updated",
+                            "Updated"});
+                table8.AddRow(new string[] {
+                            "LastName",
                             "Name"});
-#line 76
-    testRunner.When("I update the customer with the following data:", ((string)(null)), table5, "When ");
-#line hidden
 #line 79
+    testRunner.When("I update the customer with the following data:", ((string)(null)), table8, "When ");
+#line hidden
+#line 83
     testRunner.Then("a not found error should be returned", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             }
@@ -402,7 +418,7 @@ this.ScenarioInitialize(scenarioInfo);
                     "CustomerDelete"};
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Delete existing customer", null, tagsOfScenario, argumentsOfScenario, featureTags);
-#line 82
+#line 86
 this.ScenarioInitialize(scenarioInfo);
 #line hidden
             if ((TagHelper.ContainsIgnoreTag(tagsOfScenario) || TagHelper.ContainsIgnoreTag(featureTags)))
@@ -412,22 +428,22 @@ this.ScenarioInitialize(scenarioInfo);
             else
             {
                 this.ScenarioStart();
-#line 83
+#line 87
     testRunner.Given("the Customer Service is running", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line hidden
-#line 84
+#line 88
     testRunner.And("the database connection is established", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-#line 85
+#line 89
     testRunner.And("a customer with ID 1 exists in the database", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-#line 86
+#line 90
     testRunner.When("I delete the customer", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
-#line 87
+#line 91
     testRunner.Then("the customer should be deleted successfully", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
-#line 88
+#line 92
     testRunner.And("the customer should not be retrievable from the database", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             }
@@ -443,7 +459,7 @@ this.ScenarioInitialize(scenarioInfo);
                     "CustomerDelete"};
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Delete non-existent customer", null, tagsOfScenario, argumentsOfScenario, featureTags);
-#line 91
+#line 95
 this.ScenarioInitialize(scenarioInfo);
 #line hidden
             if ((TagHelper.ContainsIgnoreTag(tagsOfScenario) || TagHelper.ContainsIgnoreTag(featureTags)))
@@ -453,20 +469,130 @@ this.ScenarioInitialize(scenarioInfo);
             else
             {
                 this.ScenarioStart();
-#line 92
+#line 96
     testRunner.Given("the Customer Service is running", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line hidden
-#line 93
+#line 97
     testRunner.And("the database connection is established", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-#line 94
+#line 98
     testRunner.And("no customer with ID 999 exists in the database", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-#line 95
+#line 99
     testRunner.When("I delete the customer", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
-#line 96
+#line 100
     testRunner.Then("a not found error should be returned", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+            }
+            this.ScenarioCleanup();
+        }
+        
+        [NUnit.Framework.TestAttribute()]
+        [NUnit.Framework.DescriptionAttribute("Validate customer data constraints")]
+        [NUnit.Framework.CategoryAttribute("CustomerValidation")]
+        public void ValidateCustomerDataConstraints()
+        {
+            string[] tagsOfScenario = new string[] {
+                    "CustomerValidation"};
+            System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Validate customer data constraints", null, tagsOfScenario, argumentsOfScenario, featureTags);
+#line 103
+this.ScenarioInitialize(scenarioInfo);
+#line hidden
+            if ((TagHelper.ContainsIgnoreTag(tagsOfScenario) || TagHelper.ContainsIgnoreTag(featureTags)))
+            {
+                testRunner.SkipScenario();
+            }
+            else
+            {
+                this.ScenarioStart();
+#line 104
+    testRunner.Given("the Customer Service is running", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line hidden
+#line 105
+    testRunner.And("the database connection is established", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line hidden
+#line 106
+    testRunner.When("I attempt to create a customer with invalid constraints", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line hidden
+                TechTalk.SpecFlow.Table table9 = new TechTalk.SpecFlow.Table(new string[] {
+                            "Field",
+                            "Constraint",
+                            "Description"});
+                table9.AddRow(new string[] {
+                            "FirstName",
+                            "Required, Max 100",
+                            "First name is mandatory"});
+                table9.AddRow(new string[] {
+                            "LastName",
+                            "Required, Max 100",
+                            "Last name is mandatory"});
+#line 107
+    testRunner.Then("the following validation rules should be enforced:", ((string)(null)), table9, "Then ");
+#line hidden
+            }
+            this.ScenarioCleanup();
+        }
+        
+        [NUnit.Framework.TestAttribute()]
+        [NUnit.Framework.DescriptionAttribute("Search customers by criteria")]
+        [NUnit.Framework.CategoryAttribute("CustomerSearch")]
+        public void SearchCustomersByCriteria()
+        {
+            string[] tagsOfScenario = new string[] {
+                    "CustomerSearch"};
+            System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Search customers by criteria", null, tagsOfScenario, argumentsOfScenario, featureTags);
+#line 113
+this.ScenarioInitialize(scenarioInfo);
+#line hidden
+            if ((TagHelper.ContainsIgnoreTag(tagsOfScenario) || TagHelper.ContainsIgnoreTag(featureTags)))
+            {
+                testRunner.SkipScenario();
+            }
+            else
+            {
+                this.ScenarioStart();
+#line 114
+    testRunner.Given("the Customer Service is running", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line hidden
+#line 115
+    testRunner.And("the database connection is established", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line hidden
+                TechTalk.SpecFlow.Table table10 = new TechTalk.SpecFlow.Table(new string[] {
+                            "CustomerId",
+                            "FirstName",
+                            "LastName"});
+                table10.AddRow(new string[] {
+                            "1",
+                            "John",
+                            "Doe"});
+                table10.AddRow(new string[] {
+                            "2",
+                            "Jane",
+                            "Smith"});
+                table10.AddRow(new string[] {
+                            "3",
+                            "Bob",
+                            "Johnson"});
+#line 116
+    testRunner.And("the following customers exist in the database:", ((string)(null)), table10, "And ");
+#line hidden
+                TechTalk.SpecFlow.Table table11 = new TechTalk.SpecFlow.Table(new string[] {
+                            "Field",
+                            "Value"});
+                table11.AddRow(new string[] {
+                            "FirstName",
+                            "John"});
+#line 121
+    testRunner.When("I search for customers with criteria:", ((string)(null)), table11, "When ");
+#line hidden
+#line 124
+    testRunner.Then("I should receive matching customers", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+#line 125
+    testRunner.And("the results should contain customer ID 1", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             }
             this.ScenarioCleanup();

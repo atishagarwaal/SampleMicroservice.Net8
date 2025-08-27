@@ -103,28 +103,28 @@ this.ScenarioInitialize(scenarioInfo);
 #line 12
     testRunner.And("the database connection is established", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-                TechTalk.SpecFlow.Table table6 = new TechTalk.SpecFlow.Table(new string[] {
+                TechTalk.SpecFlow.Table table12 = new TechTalk.SpecFlow.Table(new string[] {
                             "OrderId",
                             "CustomerId",
                             "ServiceName"});
-                table6.AddRow(new string[] {
+                table12.AddRow(new string[] {
                             "12345",
                             "67890",
                             "Retail.Customers"});
 #line 13
-    testRunner.And("a valid order created event with the following data:", ((string)(null)), table6, "And ");
+    testRunner.And("a valid order created event with the following data:", ((string)(null)), table12, "And ");
 #line hidden
-                TechTalk.SpecFlow.Table table7 = new TechTalk.SpecFlow.Table(new string[] {
+                TechTalk.SpecFlow.Table table13 = new TechTalk.SpecFlow.Table(new string[] {
                             "FirstName",
                             "LastName"});
-                table7.AddRow(new string[] {
+                table13.AddRow(new string[] {
                             "John",
                             "Doe"});
-                table7.AddRow(new string[] {
+                table13.AddRow(new string[] {
                             "Jane",
                             "Smith"});
 #line 16
-    testRunner.And("the following customers exist for event processing:", ((string)(null)), table7, "And ");
+    testRunner.And("the following customers exist for event processing:", ((string)(null)), table13, "And ");
 #line hidden
 #line 20
     testRunner.When("I process the order created event", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
@@ -173,16 +173,16 @@ this.ScenarioInitialize(scenarioInfo);
 #line 30
     testRunner.And("the database connection is established", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-                TechTalk.SpecFlow.Table table8 = new TechTalk.SpecFlow.Table(new string[] {
+                TechTalk.SpecFlow.Table table14 = new TechTalk.SpecFlow.Table(new string[] {
                             "OrderId",
                             "CustomerId",
                             "ServiceName"});
-                table8.AddRow(new string[] {
+                table14.AddRow(new string[] {
                             "12346",
                             "67891",
                             "Retail.Customers"});
 #line 31
-    testRunner.And("a valid order created event with the following data:", ((string)(null)), table8, "And ");
+    testRunner.And("a valid order created event with the following data:", ((string)(null)), table14, "And ");
 #line hidden
 #line 34
     testRunner.And("no customers exist in the database for event processing", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
@@ -237,16 +237,16 @@ this.ScenarioInitialize(scenarioInfo);
 #line 46
     testRunner.And("the database connection is established", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-                TechTalk.SpecFlow.Table table9 = new TechTalk.SpecFlow.Table(new string[] {
+                TechTalk.SpecFlow.Table table15 = new TechTalk.SpecFlow.Table(new string[] {
                             "OrderId",
                             "CustomerId",
                             "ServiceName"});
-                table9.AddRow(new string[] {
+                table15.AddRow(new string[] {
                             "0",
                             "-1",
                             ""});
 #line 47
-    testRunner.And("an invalid order created event with the following data:", ((string)(null)), table9, "And ");
+    testRunner.And("an invalid order created event with the following data:", ((string)(null)), table15, "And ");
 #line hidden
 #line 50
     testRunner.When("I process the order created event", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
@@ -289,16 +289,16 @@ this.ScenarioInitialize(scenarioInfo);
 #line 58
     testRunner.And("the database connection is established", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-                TechTalk.SpecFlow.Table table10 = new TechTalk.SpecFlow.Table(new string[] {
+                TechTalk.SpecFlow.Table table16 = new TechTalk.SpecFlow.Table(new string[] {
                             "OrderId",
                             "CustomerId",
                             "ServiceName"});
-                table10.AddRow(new string[] {
+                table16.AddRow(new string[] {
                             "12347",
                             "67892",
                             "Retail.Customers"});
 #line 59
-    testRunner.And("a valid order created event with the following data:", ((string)(null)), table10, "And ");
+    testRunner.And("a valid order created event with the following data:", ((string)(null)), table16, "And ");
 #line hidden
 #line 62
     testRunner.And("the database is unavailable", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");

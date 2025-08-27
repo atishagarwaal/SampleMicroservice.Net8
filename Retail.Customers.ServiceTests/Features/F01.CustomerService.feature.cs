@@ -192,6 +192,165 @@ this.ScenarioInitialize(scenarioInfo);
             }
             this.ScenarioCleanup();
         }
+        
+        [NUnit.Framework.TestAttribute()]
+        [NUnit.Framework.DescriptionAttribute("Validate customer data structure")]
+        [NUnit.Framework.CategoryAttribute("CustomerService")]
+        public void ValidateCustomerDataStructure()
+        {
+            string[] tagsOfScenario = new string[] {
+                    "CustomerService"};
+            System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Validate customer data structure", null, tagsOfScenario, argumentsOfScenario, featureTags);
+#line 34
+this.ScenarioInitialize(scenarioInfo);
+#line hidden
+            if ((TagHelper.ContainsIgnoreTag(tagsOfScenario) || TagHelper.ContainsIgnoreTag(featureTags)))
+            {
+                testRunner.SkipScenario();
+            }
+            else
+            {
+                this.ScenarioStart();
+#line 35
+    testRunner.Given("the Customer Service is running", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line hidden
+#line 36
+    testRunner.And("the database connection is established", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line hidden
+#line 37
+    testRunner.When("I request customer information", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line hidden
+                TechTalk.SpecFlow.Table table1 = new TechTalk.SpecFlow.Table(new string[] {
+                            "Field",
+                            "Type",
+                            "Description"});
+                table1.AddRow(new string[] {
+                            "CustomerId",
+                            "Number",
+                            "Unique customer identifier"});
+                table1.AddRow(new string[] {
+                            "FirstName",
+                            "String",
+                            "Customer first name"});
+                table1.AddRow(new string[] {
+                            "LastName",
+                            "String",
+                            "Customer last name"});
+#line 38
+    testRunner.Then("each customer should contain the following structure:", ((string)(null)), table1, "Then ");
+#line hidden
+            }
+            this.ScenarioCleanup();
+        }
+        
+        [NUnit.Framework.TestAttribute()]
+        [NUnit.Framework.DescriptionAttribute("Service configuration validation")]
+        [NUnit.Framework.CategoryAttribute("CustomerService")]
+        public void ServiceConfigurationValidation()
+        {
+            string[] tagsOfScenario = new string[] {
+                    "CustomerService"};
+            System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Service configuration validation", null, tagsOfScenario, argumentsOfScenario, featureTags);
+#line 45
+this.ScenarioInitialize(scenarioInfo);
+#line hidden
+            if ((TagHelper.ContainsIgnoreTag(tagsOfScenario) || TagHelper.ContainsIgnoreTag(featureTags)))
+            {
+                testRunner.SkipScenario();
+            }
+            else
+            {
+                this.ScenarioStart();
+#line 46
+    testRunner.Given("the Customer Service is running", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line hidden
+#line 47
+    testRunner.When("I check the service configuration", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line hidden
+                TechTalk.SpecFlow.Table table2 = new TechTalk.SpecFlow.Table(new string[] {
+                            "Setting",
+                            "Expected Value",
+                            "Description"});
+                table2.AddRow(new string[] {
+                            "DatabaseTimeout",
+                            "30",
+                            "Database connection timeout"});
+                table2.AddRow(new string[] {
+                            "MaxConnections",
+                            "100",
+                            "Maximum database connections"});
+                table2.AddRow(new string[] {
+                            "LogLevel",
+                            "Information",
+                            "Logging level"});
+                table2.AddRow(new string[] {
+                            "EnableCaching",
+                            "true",
+                            "Enable response caching"});
+#line 48
+    testRunner.Then("the following configuration should be properly set:", ((string)(null)), table2, "Then ");
+#line hidden
+            }
+            this.ScenarioCleanup();
+        }
+        
+        [NUnit.Framework.TestAttribute()]
+        [NUnit.Framework.DescriptionAttribute("Health check response structure")]
+        [NUnit.Framework.CategoryAttribute("CustomerService")]
+        public void HealthCheckResponseStructure()
+        {
+            string[] tagsOfScenario = new string[] {
+                    "CustomerService"};
+            System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Health check response structure", null, tagsOfScenario, argumentsOfScenario, featureTags);
+#line 56
+this.ScenarioInitialize(scenarioInfo);
+#line hidden
+            if ((TagHelper.ContainsIgnoreTag(tagsOfScenario) || TagHelper.ContainsIgnoreTag(featureTags)))
+            {
+                testRunner.SkipScenario();
+            }
+            else
+            {
+                this.ScenarioStart();
+#line 57
+    testRunner.Given("the Customer Service is running", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line hidden
+#line 58
+    testRunner.When("I request a health check", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line hidden
+                TechTalk.SpecFlow.Table table3 = new TechTalk.SpecFlow.Table(new string[] {
+                            "Field",
+                            "Type",
+                            "Description"});
+                table3.AddRow(new string[] {
+                            "Status",
+                            "String",
+                            "Service health status"});
+                table3.AddRow(new string[] {
+                            "Timestamp",
+                            "String",
+                            "Health check timestamp"});
+                table3.AddRow(new string[] {
+                            "DatabaseStatus",
+                            "String",
+                            "Database connection status"});
+                table3.AddRow(new string[] {
+                            "ServiceVersion",
+                            "String",
+                            "Current service version"});
+                table3.AddRow(new string[] {
+                            "Uptime",
+                            "String",
+                            "Service uptime duration"});
+#line 59
+    testRunner.Then("the health check response should contain:", ((string)(null)), table3, "Then ");
+#line hidden
+            }
+            this.ScenarioCleanup();
+        }
     }
 }
 #pragma warning restore

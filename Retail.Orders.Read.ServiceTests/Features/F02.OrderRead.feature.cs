@@ -249,6 +249,323 @@ this.ScenarioInitialize(scenarioInfo);
             }
             this.ScenarioCleanup();
         }
+        
+        [NUnit.Framework.TestAttribute()]
+        [NUnit.Framework.DescriptionAttribute("Validate order data structure")]
+        [NUnit.Framework.CategoryAttribute("OrderStructure")]
+        public void ValidateOrderDataStructure()
+        {
+            string[] tagsOfScenario = new string[] {
+                    "OrderStructure"};
+            System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Validate order data structure", null, tagsOfScenario, argumentsOfScenario, featureTags);
+#line 44
+this.ScenarioInitialize(scenarioInfo);
+#line hidden
+            if ((TagHelper.ContainsIgnoreTag(tagsOfScenario) || TagHelper.ContainsIgnoreTag(featureTags)))
+            {
+                testRunner.SkipScenario();
+            }
+            else
+            {
+                this.ScenarioStart();
+#line 45
+    testRunner.Given("there are orders in the system", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line hidden
+#line 46
+    testRunner.When("I request all orders", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line hidden
+                TechTalk.SpecFlow.Table table5 = new TechTalk.SpecFlow.Table(new string[] {
+                            "Field",
+                            "Type",
+                            "Description"});
+                table5.AddRow(new string[] {
+                            "OrderId",
+                            "Number",
+                            "Unique order identifier"});
+                table5.AddRow(new string[] {
+                            "CustomerId",
+                            "Number",
+                            "Customer who placed the order"});
+                table5.AddRow(new string[] {
+                            "OrderDate",
+                            "Date",
+                            "Date when order was placed"});
+                table5.AddRow(new string[] {
+                            "TotalAmount",
+                            "Number",
+                            "Total order amount"});
+                table5.AddRow(new string[] {
+                            "Status",
+                            "String",
+                            "Current order status"});
+                table5.AddRow(new string[] {
+                            "LineItems",
+                            "Array",
+                            "List of order line items"});
+#line 47
+    testRunner.Then("each order should contain the following structure:", ((string)(null)), table5, "Then ");
+#line hidden
+            }
+            this.ScenarioCleanup();
+        }
+        
+        [NUnit.Framework.TestAttribute()]
+        [NUnit.Framework.DescriptionAttribute("Validate line item data structure")]
+        [NUnit.Framework.CategoryAttribute("LineItemStructure")]
+        public void ValidateLineItemDataStructure()
+        {
+            string[] tagsOfScenario = new string[] {
+                    "LineItemStructure"};
+            System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Validate line item data structure", null, tagsOfScenario, argumentsOfScenario, featureTags);
+#line 57
+this.ScenarioInitialize(scenarioInfo);
+#line hidden
+            if ((TagHelper.ContainsIgnoreTag(tagsOfScenario) || TagHelper.ContainsIgnoreTag(featureTags)))
+            {
+                testRunner.SkipScenario();
+            }
+            else
+            {
+                this.ScenarioStart();
+#line 58
+    testRunner.Given("there are orders with line items in the system", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line hidden
+#line 59
+    testRunner.When("I request order details", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line hidden
+                TechTalk.SpecFlow.Table table6 = new TechTalk.SpecFlow.Table(new string[] {
+                            "Field",
+                            "Type",
+                            "Description"});
+                table6.AddRow(new string[] {
+                            "SkuId",
+                            "Number",
+                            "Product identifier"});
+                table6.AddRow(new string[] {
+                            "SkuName",
+                            "String",
+                            "Product name"});
+                table6.AddRow(new string[] {
+                            "Quantity",
+                            "Number",
+                            "Quantity ordered"});
+                table6.AddRow(new string[] {
+                            "UnitPrice",
+                            "Number",
+                            "Price per unit"});
+                table6.AddRow(new string[] {
+                            "TotalPrice",
+                            "Number",
+                            "Total price for line item"});
+#line 60
+    testRunner.Then("each line item should contain:", ((string)(null)), table6, "Then ");
+#line hidden
+            }
+            this.ScenarioCleanup();
+        }
+        
+        [NUnit.Framework.TestAttribute()]
+        [NUnit.Framework.DescriptionAttribute("Read orders by status")]
+        [NUnit.Framework.CategoryAttribute("OrderStatus")]
+        public void ReadOrdersByStatus()
+        {
+            string[] tagsOfScenario = new string[] {
+                    "OrderStatus"};
+            System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Read orders by status", null, tagsOfScenario, argumentsOfScenario, featureTags);
+#line 69
+this.ScenarioInitialize(scenarioInfo);
+#line hidden
+            if ((TagHelper.ContainsIgnoreTag(tagsOfScenario) || TagHelper.ContainsIgnoreTag(featureTags)))
+            {
+                testRunner.SkipScenario();
+            }
+            else
+            {
+                this.ScenarioStart();
+                TechTalk.SpecFlow.Table table7 = new TechTalk.SpecFlow.Table(new string[] {
+                            "OrderId",
+                            "Status",
+                            "CustomerId",
+                            "TotalAmount"});
+                table7.AddRow(new string[] {
+                            "1",
+                            "Pending",
+                            "100",
+                            "150.00"});
+                table7.AddRow(new string[] {
+                            "2",
+                            "Processing",
+                            "101",
+                            "75.50"});
+                table7.AddRow(new string[] {
+                            "3",
+                            "Shipped",
+                            "102",
+                            "200.00"});
+                table7.AddRow(new string[] {
+                            "4",
+                            "Delivered",
+                            "103",
+                            "125.75"});
+#line 70
+    testRunner.Given("there are orders with different statuses in the system:", ((string)(null)), table7, "Given ");
+#line hidden
+#line 76
+    testRunner.When("I request orders with status \"Pending\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line hidden
+#line 77
+    testRunner.Then("I should receive only pending orders", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+#line 78
+    testRunner.And("the results should contain order ID 1", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line hidden
+#line 79
+    testRunner.And("the results should not contain other status orders", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line hidden
+            }
+            this.ScenarioCleanup();
+        }
+        
+        [NUnit.Framework.TestAttribute()]
+        [NUnit.Framework.DescriptionAttribute("Filter orders by date range")]
+        [NUnit.Framework.CategoryAttribute("OrderFiltering")]
+        public void FilterOrdersByDateRange()
+        {
+            string[] tagsOfScenario = new string[] {
+                    "OrderFiltering"};
+            System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Filter orders by date range", null, tagsOfScenario, argumentsOfScenario, featureTags);
+#line 82
+this.ScenarioInitialize(scenarioInfo);
+#line hidden
+            if ((TagHelper.ContainsIgnoreTag(tagsOfScenario) || TagHelper.ContainsIgnoreTag(featureTags)))
+            {
+                testRunner.SkipScenario();
+            }
+            else
+            {
+                this.ScenarioStart();
+                TechTalk.SpecFlow.Table table8 = new TechTalk.SpecFlow.Table(new string[] {
+                            "OrderId",
+                            "OrderDate",
+                            "CustomerId",
+                            "TotalAmount"});
+                table8.AddRow(new string[] {
+                            "1",
+                            "2024-01-15",
+                            "100",
+                            "150.00"});
+                table8.AddRow(new string[] {
+                            "2",
+                            "2024-02-01",
+                            "101",
+                            "75.50"});
+                table8.AddRow(new string[] {
+                            "3",
+                            "2024-02-15",
+                            "102",
+                            "200.00"});
+                table8.AddRow(new string[] {
+                            "4",
+                            "2024-03-01",
+                            "103",
+                            "125.75"});
+#line 83
+    testRunner.Given("there are orders in different date ranges:", ((string)(null)), table8, "Given ");
+#line hidden
+#line 89
+    testRunner.When("I request orders between \"2024-02-01\" and \"2024-02-28\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line hidden
+#line 90
+    testRunner.Then("I should receive orders from February 2024", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+#line 91
+    testRunner.And("the results should contain order IDs 2 and 3", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line hidden
+#line 92
+    testRunner.And("the results should not contain orders from January or March", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line hidden
+            }
+            this.ScenarioCleanup();
+        }
+        
+        [NUnit.Framework.TestAttribute()]
+        [NUnit.Framework.DescriptionAttribute("Get order summary statistics")]
+        [NUnit.Framework.CategoryAttribute("OrderAggregation")]
+        public void GetOrderSummaryStatistics()
+        {
+            string[] tagsOfScenario = new string[] {
+                    "OrderAggregation"};
+            System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Get order summary statistics", null, tagsOfScenario, argumentsOfScenario, featureTags);
+#line 95
+this.ScenarioInitialize(scenarioInfo);
+#line hidden
+            if ((TagHelper.ContainsIgnoreTag(tagsOfScenario) || TagHelper.ContainsIgnoreTag(featureTags)))
+            {
+                testRunner.SkipScenario();
+            }
+            else
+            {
+                this.ScenarioStart();
+                TechTalk.SpecFlow.Table table9 = new TechTalk.SpecFlow.Table(new string[] {
+                            "OrderId",
+                            "CustomerId",
+                            "TotalAmount",
+                            "Status"});
+                table9.AddRow(new string[] {
+                            "1",
+                            "100",
+                            "150.00",
+                            "Pending"});
+                table9.AddRow(new string[] {
+                            "2",
+                            "101",
+                            "75.50",
+                            "Shipped"});
+                table9.AddRow(new string[] {
+                            "3",
+                            "102",
+                            "200.00",
+                            "Delivered"});
+                table9.AddRow(new string[] {
+                            "4",
+                            "103",
+                            "125.75",
+                            "Pending"});
+#line 96
+    testRunner.Given("there are orders with various amounts in the system:", ((string)(null)), table9, "Given ");
+#line hidden
+#line 102
+    testRunner.When("I request order summary statistics", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line hidden
+                TechTalk.SpecFlow.Table table10 = new TechTalk.SpecFlow.Table(new string[] {
+                            "Metric",
+                            "Value"});
+                table10.AddRow(new string[] {
+                            "TotalOrders",
+                            "4"});
+                table10.AddRow(new string[] {
+                            "TotalAmount",
+                            "551.25"});
+                table10.AddRow(new string[] {
+                            "PendingCount",
+                            "2"});
+                table10.AddRow(new string[] {
+                            "ShippedCount",
+                            "1"});
+                table10.AddRow(new string[] {
+                            "DeliveredCount",
+                            "1"});
+#line 103
+    testRunner.Then("I should receive the following summary:", ((string)(null)), table10, "Then ");
+#line hidden
+            }
+            this.ScenarioCleanup();
+        }
     }
 }
 #pragma warning restore

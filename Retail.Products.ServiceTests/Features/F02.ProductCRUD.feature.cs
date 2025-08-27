@@ -96,16 +96,31 @@ this.ScenarioInitialize(scenarioInfo);
 #line 8
     testRunner.Given("I have a product service", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line hidden
+                TechTalk.SpecFlow.Table table5 = new TechTalk.SpecFlow.Table(new string[] {
+                            "Field",
+                            "Value"});
+                table5.AddRow(new string[] {
+                            "SkuName",
+                            "Test Product"});
+                table5.AddRow(new string[] {
+                            "Price",
+                            "29.99"});
+                table5.AddRow(new string[] {
+                            "Category",
+                            "Electronics"});
+                table5.AddRow(new string[] {
+                            "Description",
+                            "A test product"});
 #line 9
-    testRunner.And("I have a valid product to add", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+    testRunner.And("I have a valid product to add with the following data:", ((string)(null)), table5, "And ");
 #line hidden
-#line 10
+#line 15
     testRunner.When("I add the new product", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
-#line 11
+#line 16
     testRunner.Then("the product should be added successfully", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
-#line 12
+#line 17
     testRunner.And("I should receive the added product with an ID", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             }
@@ -121,7 +136,7 @@ this.ScenarioInitialize(scenarioInfo);
                     "ProductCRUD"};
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Update existing product successfully", null, tagsOfScenario, argumentsOfScenario, featureTags);
-#line 15
+#line 20
 this.ScenarioInitialize(scenarioInfo);
 #line hidden
             if ((TagHelper.ContainsIgnoreTag(tagsOfScenario) || TagHelper.ContainsIgnoreTag(featureTags)))
@@ -131,22 +146,37 @@ this.ScenarioInitialize(scenarioInfo);
             else
             {
                 this.ScenarioStart();
-#line 16
+#line 21
     testRunner.Given("I have a product service", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line hidden
-#line 17
+#line 22
     testRunner.And("there is an existing product with ID \"1\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-#line 18
-    testRunner.And("I have updated product information", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+                TechTalk.SpecFlow.Table table6 = new TechTalk.SpecFlow.Table(new string[] {
+                            "Field",
+                            "Value"});
+                table6.AddRow(new string[] {
+                            "SkuName",
+                            "Updated Product"});
+                table6.AddRow(new string[] {
+                            "Price",
+                            "39.99"});
+                table6.AddRow(new string[] {
+                            "Category",
+                            "Electronics"});
+                table6.AddRow(new string[] {
+                            "Description",
+                            "An updated product"});
+#line 23
+    testRunner.And("I have updated product information:", ((string)(null)), table6, "And ");
 #line hidden
-#line 19
+#line 29
     testRunner.When("I update the product with ID \"1\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
-#line 20
+#line 30
     testRunner.Then("the product should be updated successfully", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
-#line 21
+#line 31
     testRunner.And("I should receive the updated product details", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             }
@@ -162,7 +192,7 @@ this.ScenarioInitialize(scenarioInfo);
                     "ProductCRUD"};
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Delete existing product successfully", null, tagsOfScenario, argumentsOfScenario, featureTags);
-#line 24
+#line 34
 this.ScenarioInitialize(scenarioInfo);
 #line hidden
             if ((TagHelper.ContainsIgnoreTag(tagsOfScenario) || TagHelper.ContainsIgnoreTag(featureTags)))
@@ -172,19 +202,19 @@ this.ScenarioInitialize(scenarioInfo);
             else
             {
                 this.ScenarioStart();
-#line 25
+#line 35
     testRunner.Given("I have a product service", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line hidden
-#line 26
+#line 36
     testRunner.And("there is an existing product with ID \"1\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-#line 27
+#line 37
     testRunner.When("I delete the product with ID \"1\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
-#line 28
+#line 38
     testRunner.Then("the product should be deleted successfully", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
-#line 29
+#line 39
     testRunner.And("the operation should return true", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             }
@@ -200,7 +230,7 @@ this.ScenarioInitialize(scenarioInfo);
                     "ProductCRUD"};
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Delete non-existent product returns false", null, tagsOfScenario, argumentsOfScenario, featureTags);
-#line 32
+#line 42
 this.ScenarioInitialize(scenarioInfo);
 #line hidden
             if ((TagHelper.ContainsIgnoreTag(tagsOfScenario) || TagHelper.ContainsIgnoreTag(featureTags)))
@@ -210,16 +240,16 @@ this.ScenarioInitialize(scenarioInfo);
             else
             {
                 this.ScenarioStart();
-#line 33
+#line 43
     testRunner.Given("I have a product service", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line hidden
-#line 34
+#line 44
     testRunner.And("there is no product with ID \"999\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-#line 35
+#line 45
     testRunner.When("I delete the product with ID \"999\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
-#line 36
+#line 46
     testRunner.Then("the operation should return false", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             }
@@ -235,7 +265,7 @@ this.ScenarioInitialize(scenarioInfo);
                     "ProductCRUD"};
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Add product with invalid data fails", null, tagsOfScenario, argumentsOfScenario, featureTags);
-#line 39
+#line 49
 this.ScenarioInitialize(scenarioInfo);
 #line hidden
             if ((TagHelper.ContainsIgnoreTag(tagsOfScenario) || TagHelper.ContainsIgnoreTag(featureTags)))
@@ -245,20 +275,219 @@ this.ScenarioInitialize(scenarioInfo);
             else
             {
                 this.ScenarioStart();
-#line 40
+#line 50
     testRunner.Given("I have a product service", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line hidden
-#line 41
-    testRunner.And("I have invalid product data", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+                TechTalk.SpecFlow.Table table7 = new TechTalk.SpecFlow.Table(new string[] {
+                            "Field",
+                            "Value"});
+                table7.AddRow(new string[] {
+                            "SkuName",
+                            ""});
+                table7.AddRow(new string[] {
+                            "Price",
+                            "-5.00"});
+                table7.AddRow(new string[] {
+                            "Category",
+                            ""});
+                table7.AddRow(new string[] {
+                            "Description",
+                            ""});
+#line 51
+    testRunner.And("I have invalid product data:", ((string)(null)), table7, "And ");
 #line hidden
-#line 42
+#line 57
     testRunner.When("I add the invalid product", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
-#line 43
+#line 58
     testRunner.Then("the operation should fail", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
-#line 44
+#line 59
     testRunner.And("an appropriate error should be thrown", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line hidden
+            }
+            this.ScenarioCleanup();
+        }
+        
+        [NUnit.Framework.TestAttribute()]
+        [NUnit.Framework.DescriptionAttribute("Validate product data constraints")]
+        [NUnit.Framework.CategoryAttribute("ProductValidation")]
+        public void ValidateProductDataConstraints()
+        {
+            string[] tagsOfScenario = new string[] {
+                    "ProductValidation"};
+            System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Validate product data constraints", null, tagsOfScenario, argumentsOfScenario, featureTags);
+#line 62
+this.ScenarioInitialize(scenarioInfo);
+#line hidden
+            if ((TagHelper.ContainsIgnoreTag(tagsOfScenario) || TagHelper.ContainsIgnoreTag(featureTags)))
+            {
+                testRunner.SkipScenario();
+            }
+            else
+            {
+                this.ScenarioStart();
+#line 63
+    testRunner.Given("I have a product service", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line hidden
+#line 64
+    testRunner.When("I attempt to create a product with invalid constraints", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line hidden
+                TechTalk.SpecFlow.Table table8 = new TechTalk.SpecFlow.Table(new string[] {
+                            "Field",
+                            "Constraint",
+                            "Description"});
+                table8.AddRow(new string[] {
+                            "SkuName",
+                            "Required, Max 100",
+                            "Product name is mandatory"});
+                table8.AddRow(new string[] {
+                            "Price",
+                            "Required, Min 0",
+                            "Price must be non-negative"});
+                table8.AddRow(new string[] {
+                            "Category",
+                            "Required, Max 50",
+                            "Category is mandatory"});
+                table8.AddRow(new string[] {
+                            "Description",
+                            "Optional, Max 500",
+                            "Description is optional"});
+#line 65
+    testRunner.Then("the following validation rules should be enforced:", ((string)(null)), table8, "Then ");
+#line hidden
+            }
+            this.ScenarioCleanup();
+        }
+        
+        [NUnit.Framework.TestAttribute()]
+        [NUnit.Framework.DescriptionAttribute("Search products by criteria")]
+        [NUnit.Framework.CategoryAttribute("ProductSearch")]
+        public void SearchProductsByCriteria()
+        {
+            string[] tagsOfScenario = new string[] {
+                    "ProductSearch"};
+            System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Search products by criteria", null, tagsOfScenario, argumentsOfScenario, featureTags);
+#line 73
+this.ScenarioInitialize(scenarioInfo);
+#line hidden
+            if ((TagHelper.ContainsIgnoreTag(tagsOfScenario) || TagHelper.ContainsIgnoreTag(featureTags)))
+            {
+                testRunner.SkipScenario();
+            }
+            else
+            {
+                this.ScenarioStart();
+#line 74
+    testRunner.Given("I have a product service", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line hidden
+                TechTalk.SpecFlow.Table table9 = new TechTalk.SpecFlow.Table(new string[] {
+                            "SkuId",
+                            "SkuName",
+                            "Price",
+                            "Category",
+                            "Description"});
+                table9.AddRow(new string[] {
+                            "1",
+                            "Laptop",
+                            "999.99",
+                            "Electronics",
+                            "High-end laptop"});
+                table9.AddRow(new string[] {
+                            "2",
+                            "Mouse",
+                            "29.99",
+                            "Electronics",
+                            "Wireless mouse"});
+                table9.AddRow(new string[] {
+                            "3",
+                            "Keyboard",
+                            "79.99",
+                            "Electronics",
+                            "Mechanical keyboard"});
+#line 75
+    testRunner.And("the following products exist in the system:", ((string)(null)), table9, "And ");
+#line hidden
+                TechTalk.SpecFlow.Table table10 = new TechTalk.SpecFlow.Table(new string[] {
+                            "Field",
+                            "Value"});
+                table10.AddRow(new string[] {
+                            "Category",
+                            "Electronics"});
+                table10.AddRow(new string[] {
+                            "MinPrice",
+                            "50.00"});
+#line 80
+    testRunner.When("I search for products with criteria:", ((string)(null)), table10, "When ");
+#line hidden
+#line 84
+    testRunner.Then("I should receive matching products", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+#line 85
+    testRunner.And("the results should contain laptop and keyboard", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line hidden
+#line 86
+    testRunner.And("the results should not contain mouse", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line hidden
+            }
+            this.ScenarioCleanup();
+        }
+        
+        [NUnit.Framework.TestAttribute()]
+        [NUnit.Framework.DescriptionAttribute("Bulk update product prices")]
+        [NUnit.Framework.CategoryAttribute("ProductBulkOperations")]
+        public void BulkUpdateProductPrices()
+        {
+            string[] tagsOfScenario = new string[] {
+                    "ProductBulkOperations"};
+            System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Bulk update product prices", null, tagsOfScenario, argumentsOfScenario, featureTags);
+#line 89
+this.ScenarioInitialize(scenarioInfo);
+#line hidden
+            if ((TagHelper.ContainsIgnoreTag(tagsOfScenario) || TagHelper.ContainsIgnoreTag(featureTags)))
+            {
+                testRunner.SkipScenario();
+            }
+            else
+            {
+                this.ScenarioStart();
+#line 90
+    testRunner.Given("I have a product service", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line hidden
+                TechTalk.SpecFlow.Table table11 = new TechTalk.SpecFlow.Table(new string[] {
+                            "SkuId",
+                            "SkuName",
+                            "CurrentPrice",
+                            "NewPrice"});
+                table11.AddRow(new string[] {
+                            "1",
+                            "Product A",
+                            "10.00",
+                            "12.00"});
+                table11.AddRow(new string[] {
+                            "2",
+                            "Product B",
+                            "20.00",
+                            "24.00"});
+                table11.AddRow(new string[] {
+                            "3",
+                            "Product C",
+                            "30.00",
+                            "36.00"});
+#line 91
+    testRunner.And("the following products exist in the system:", ((string)(null)), table11, "And ");
+#line hidden
+#line 96
+    testRunner.When("I update all product prices by 20%", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line hidden
+#line 97
+    testRunner.Then("all products should be updated successfully", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+#line 98
+    testRunner.And("the new prices should match the expected values", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             }
             this.ScenarioCleanup();

@@ -63,3 +63,31 @@ Feature: BFF Service Operations
         When I send multiple concurrent requests
         Then all requests should complete successfully
         And response times should be reasonable
+
+    Scenario: Validate customer data structure
+        When I request all order details
+        Then each customer should contain:
+            | Field        | Type   | Description                |
+            | CustomerId   | Number | Unique customer identifier |
+            | CustomerName | String | Full customer name        |
+            | Email        | String | Customer email address    |
+            | Phone        | String | Customer phone number     |
+
+    Scenario: Validate product data structure
+        When I request all order details
+        Then each product should contain:
+            | Field    | Type   | Description                |
+            | SkuId    | Number | Unique product identifier  |
+            | SkuName  | String | Product name               |
+            | Price    | Number | Product unit price         |
+            | Category | String | Product category           |
+
+    Scenario: Validate order summary data
+        When I request all order details
+        Then each order should contain:
+            | Field           | Type   | Description                    |
+            | OrderId         | Number | Unique order identifier       |
+            | OrderDate       | Date   | Date when order was placed    |
+            | TotalAmount     | Number | Total order amount            |
+            | Status          | String | Current order status          |
+            | LineItemCount   | Number | Number of items in order      |

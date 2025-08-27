@@ -11,8 +11,9 @@ Scenario: Create a valid customer
     Given the Customer Service is running
     And the database connection is established
     And a valid customer with the following data:
-        | FirstName | LastName |
-        | Jane      | Smith    |
+        | Field      | Value |
+        | FirstName  | Jane  |
+        | LastName   | Smith |
     When I create a new customer
     Then the customer should be created successfully
     And the customer should be persisted in the database
@@ -22,8 +23,9 @@ Scenario: Create an invalid customer
     Given the Customer Service is running
     And the database connection is established
     And an invalid customer with the following data:
-        | FirstName | LastName |
-        |           |          |
+        | Field      | Value |
+        | FirstName  |       |
+        | LastName   |       |
     When I create a new customer
     Then a validation error should be returned
     And the customer should not be created
@@ -41,10 +43,10 @@ Scenario: Retrieve all customers
     Given the Customer Service is running
     And the database connection is established
     And the following customers exist in the database:
-        | FirstName | LastName |
-        | John      | Doe      |
-        | Jane      | Smith    |
-        | Bob       | Johnson  |
+        | CustomerId | FirstName | LastName |
+        | 1          | John      | Doe      |
+        | 2          | Jane      | Smith    |
+        | 3          | Bob       | Johnson  |
     When I retrieve all customers
     Then all customers should be returned
     And the customer count should match the expected count
@@ -63,8 +65,9 @@ Scenario: Update existing customer
     And the database connection is established
     And a customer with ID 1 exists in the database
     When I update the customer with the following data:
-        | FirstName | LastName |
-        | Updated   | Name     |
+        | Field      | Value   |
+        | FirstName  | Updated |
+        | LastName   | Name    |
     Then the customer should be updated successfully
     And the customer should be persisted in the database
 
@@ -74,8 +77,9 @@ Scenario: Update non-existent customer
     And the database connection is established
     And no customer with ID 999 exists in the database
     When I update the customer with the following data:
-        | FirstName | LastName |
-        | Updated   | Name     |
+        | Field      | Value   |
+        | FirstName  | Updated |
+        | LastName   | Name    |
     Then a not found error should be returned
 
 @CustomerDelete
@@ -94,3 +98,28 @@ Scenario: Delete non-existent customer
     And no customer with ID 999 exists in the database
     When I delete the customer
     Then a not found error should be returned
+
+@CustomerValidation
+Scenario: Validate customer data constraints
+    Given the Customer Service is running
+    And the database connection is established
+    When I attempt to create a customer with invalid constraints
+    Then the following validation rules should be enforced:
+        | Field      | Constraint           | Description                    |
+        | FirstName  | Required, Max 100   | First name is mandatory       |
+        | LastName   | Required, Max 100   | Last name is mandatory        |
+
+@CustomerSearch
+Scenario: Search customers by criteria
+    Given the Customer Service is running
+    And the database connection is established
+    And the following customers exist in the database:
+        | CustomerId | FirstName | LastName |
+        | 1          | John      | Doe      |
+        | 2          | Jane      | Smith    |
+        | 3          | Bob       | Johnson  |
+    When I search for customers with criteria:
+        | Field      | Value |
+        | FirstName  | John  |
+    Then I should receive matching customers
+    And the results should contain customer ID 1

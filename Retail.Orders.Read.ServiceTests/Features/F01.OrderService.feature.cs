@@ -192,6 +192,245 @@ this.ScenarioInitialize(scenarioInfo);
             }
             this.ScenarioCleanup();
         }
+        
+        [NUnit.Framework.TestAttribute()]
+        [NUnit.Framework.DescriptionAttribute("Validate order data structure")]
+        [NUnit.Framework.CategoryAttribute("OrderService")]
+        public void ValidateOrderDataStructure()
+        {
+            string[] tagsOfScenario = new string[] {
+                    "OrderService"};
+            System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Validate order data structure", null, tagsOfScenario, argumentsOfScenario, featureTags);
+#line 34
+this.ScenarioInitialize(scenarioInfo);
+#line hidden
+            if ((TagHelper.ContainsIgnoreTag(tagsOfScenario) || TagHelper.ContainsIgnoreTag(featureTags)))
+            {
+                testRunner.SkipScenario();
+            }
+            else
+            {
+                this.ScenarioStart();
+#line 35
+    testRunner.Given("the Order Service is running", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line hidden
+#line 36
+    testRunner.And("the database connection is established", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line hidden
+#line 37
+    testRunner.When("I request order information", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line hidden
+                TechTalk.SpecFlow.Table table1 = new TechTalk.SpecFlow.Table(new string[] {
+                            "Field",
+                            "Type",
+                            "Description"});
+                table1.AddRow(new string[] {
+                            "OrderId",
+                            "Number",
+                            "Unique order identifier"});
+                table1.AddRow(new string[] {
+                            "CustomerId",
+                            "Number",
+                            "Customer who placed the order"});
+                table1.AddRow(new string[] {
+                            "OrderDate",
+                            "Date",
+                            "Date when order was placed"});
+                table1.AddRow(new string[] {
+                            "TotalAmount",
+                            "Number",
+                            "Total order amount"});
+                table1.AddRow(new string[] {
+                            "Status",
+                            "String",
+                            "Current order status"});
+                table1.AddRow(new string[] {
+                            "LineItems",
+                            "Array",
+                            "List of order line items"});
+#line 38
+    testRunner.Then("each order should contain the following structure:", ((string)(null)), table1, "Then ");
+#line hidden
+            }
+            this.ScenarioCleanup();
+        }
+        
+        [NUnit.Framework.TestAttribute()]
+        [NUnit.Framework.DescriptionAttribute("Service configuration validation")]
+        [NUnit.Framework.CategoryAttribute("OrderService")]
+        public void ServiceConfigurationValidation()
+        {
+            string[] tagsOfScenario = new string[] {
+                    "OrderService"};
+            System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Service configuration validation", null, tagsOfScenario, argumentsOfScenario, featureTags);
+#line 48
+this.ScenarioInitialize(scenarioInfo);
+#line hidden
+            if ((TagHelper.ContainsIgnoreTag(tagsOfScenario) || TagHelper.ContainsIgnoreTag(featureTags)))
+            {
+                testRunner.SkipScenario();
+            }
+            else
+            {
+                this.ScenarioStart();
+#line 49
+    testRunner.Given("the Order Service is running", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line hidden
+#line 50
+    testRunner.When("I check the service configuration", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line hidden
+                TechTalk.SpecFlow.Table table2 = new TechTalk.SpecFlow.Table(new string[] {
+                            "Setting",
+                            "Expected Value",
+                            "Description"});
+                table2.AddRow(new string[] {
+                            "DatabaseTimeout",
+                            "30",
+                            "Database connection timeout"});
+                table2.AddRow(new string[] {
+                            "MaxConnections",
+                            "100",
+                            "Maximum database connections"});
+                table2.AddRow(new string[] {
+                            "LogLevel",
+                            "Information",
+                            "Logging level"});
+                table2.AddRow(new string[] {
+                            "EnableCaching",
+                            "true",
+                            "Enable response caching"});
+                table2.AddRow(new string[] {
+                            "OrderHistoryDays",
+                            "365",
+                            "Days to retain order history"});
+#line 51
+    testRunner.Then("the following configuration should be properly set:", ((string)(null)), table2, "Then ");
+#line hidden
+            }
+            this.ScenarioCleanup();
+        }
+        
+        [NUnit.Framework.TestAttribute()]
+        [NUnit.Framework.DescriptionAttribute("Health check response structure")]
+        [NUnit.Framework.CategoryAttribute("OrderService")]
+        public void HealthCheckResponseStructure()
+        {
+            string[] tagsOfScenario = new string[] {
+                    "OrderService"};
+            System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Health check response structure", null, tagsOfScenario, argumentsOfScenario, featureTags);
+#line 60
+this.ScenarioInitialize(scenarioInfo);
+#line hidden
+            if ((TagHelper.ContainsIgnoreTag(tagsOfScenario) || TagHelper.ContainsIgnoreTag(featureTags)))
+            {
+                testRunner.SkipScenario();
+            }
+            else
+            {
+                this.ScenarioStart();
+#line 61
+    testRunner.Given("the Order Service is running", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line hidden
+#line 62
+    testRunner.When("I request a health check", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line hidden
+                TechTalk.SpecFlow.Table table3 = new TechTalk.SpecFlow.Table(new string[] {
+                            "Field",
+                            "Type",
+                            "Description"});
+                table3.AddRow(new string[] {
+                            "Status",
+                            "String",
+                            "Service health status"});
+                table3.AddRow(new string[] {
+                            "Timestamp",
+                            "String",
+                            "Health check timestamp"});
+                table3.AddRow(new string[] {
+                            "DatabaseStatus",
+                            "String",
+                            "Database connection status"});
+                table3.AddRow(new string[] {
+                            "ServiceVersion",
+                            "String",
+                            "Current service version"});
+                table3.AddRow(new string[] {
+                            "Uptime",
+                            "String",
+                            "Service uptime duration"});
+                table3.AddRow(new string[] {
+                            "OrderCount",
+                            "Number",
+                            "Total orders in system"});
+#line 63
+    testRunner.Then("the health check response should contain:", ((string)(null)), table3, "Then ");
+#line hidden
+            }
+            this.ScenarioCleanup();
+        }
+        
+        [NUnit.Framework.TestAttribute()]
+        [NUnit.Framework.DescriptionAttribute("Order status enumeration validation")]
+        [NUnit.Framework.CategoryAttribute("OrderService")]
+        public void OrderStatusEnumerationValidation()
+        {
+            string[] tagsOfScenario = new string[] {
+                    "OrderService"};
+            System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Order status enumeration validation", null, tagsOfScenario, argumentsOfScenario, featureTags);
+#line 73
+this.ScenarioInitialize(scenarioInfo);
+#line hidden
+            if ((TagHelper.ContainsIgnoreTag(tagsOfScenario) || TagHelper.ContainsIgnoreTag(featureTags)))
+            {
+                testRunner.SkipScenario();
+            }
+            else
+            {
+                this.ScenarioStart();
+#line 74
+    testRunner.Given("the Order Service is running", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line hidden
+#line 75
+    testRunner.When("I request available order statuses", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line hidden
+                TechTalk.SpecFlow.Table table4 = new TechTalk.SpecFlow.Table(new string[] {
+                            "Status",
+                            "Description",
+                            "IsActive"});
+                table4.AddRow(new string[] {
+                            "Pending",
+                            "Order received, not processed",
+                            "true"});
+                table4.AddRow(new string[] {
+                            "Processing",
+                            "Order is being processed",
+                            "true"});
+                table4.AddRow(new string[] {
+                            "Shipped",
+                            "Order has been shipped",
+                            "true"});
+                table4.AddRow(new string[] {
+                            "Delivered",
+                            "Order has been delivered",
+                            "true"});
+                table4.AddRow(new string[] {
+                            "Cancelled",
+                            "Order has been cancelled",
+                            "false"});
+                table4.AddRow(new string[] {
+                            "Returned",
+                            "Order has been returned",
+                            "false"});
+#line 76
+    testRunner.Then("the service should support the following order statuses:", ((string)(null)), table4, "Then ");
+#line hidden
+            }
+            this.ScenarioCleanup();
+        }
     }
 }
 #pragma warning restore

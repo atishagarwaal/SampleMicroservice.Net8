@@ -410,6 +410,160 @@ namespace Retail.BFF.ServiceTests.Features
             }
             this.ScenarioCleanup();
         }
+        
+        [NUnit.Framework.TestAttribute()]
+        [NUnit.Framework.DescriptionAttribute("Validate customer data structure")]
+        public void ValidateCustomerDataStructure()
+        {
+            string[] tagsOfScenario = ((string[])(null));
+            System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Validate customer data structure", null, tagsOfScenario, argumentsOfScenario, featureTags);
+#line 67
+    this.ScenarioInitialize(scenarioInfo);
+#line hidden
+            if ((TagHelper.ContainsIgnoreTag(tagsOfScenario) || TagHelper.ContainsIgnoreTag(featureTags)))
+            {
+                testRunner.SkipScenario();
+            }
+            else
+            {
+                this.ScenarioStart();
+#line 6
+    this.FeatureBackground();
+#line hidden
+#line 68
+        testRunner.When("I request all order details", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line hidden
+                TechTalk.SpecFlow.Table table3 = new TechTalk.SpecFlow.Table(new string[] {
+                            "Field",
+                            "Type",
+                            "Description"});
+                table3.AddRow(new string[] {
+                            "CustomerId",
+                            "Number",
+                            "Unique customer identifier"});
+                table3.AddRow(new string[] {
+                            "CustomerName",
+                            "String",
+                            "Full customer name"});
+                table3.AddRow(new string[] {
+                            "Email",
+                            "String",
+                            "Customer email address"});
+                table3.AddRow(new string[] {
+                            "Phone",
+                            "String",
+                            "Customer phone number"});
+#line 69
+        testRunner.Then("each customer should contain:", ((string)(null)), table3, "Then ");
+#line hidden
+            }
+            this.ScenarioCleanup();
+        }
+        
+        [NUnit.Framework.TestAttribute()]
+        [NUnit.Framework.DescriptionAttribute("Validate product data structure")]
+        public void ValidateProductDataStructure()
+        {
+            string[] tagsOfScenario = ((string[])(null));
+            System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Validate product data structure", null, tagsOfScenario, argumentsOfScenario, featureTags);
+#line 76
+    this.ScenarioInitialize(scenarioInfo);
+#line hidden
+            if ((TagHelper.ContainsIgnoreTag(tagsOfScenario) || TagHelper.ContainsIgnoreTag(featureTags)))
+            {
+                testRunner.SkipScenario();
+            }
+            else
+            {
+                this.ScenarioStart();
+#line 6
+    this.FeatureBackground();
+#line hidden
+#line 77
+        testRunner.When("I request all order details", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line hidden
+                TechTalk.SpecFlow.Table table4 = new TechTalk.SpecFlow.Table(new string[] {
+                            "Field",
+                            "Type",
+                            "Description"});
+                table4.AddRow(new string[] {
+                            "SkuId",
+                            "Number",
+                            "Unique product identifier"});
+                table4.AddRow(new string[] {
+                            "SkuName",
+                            "String",
+                            "Product name"});
+                table4.AddRow(new string[] {
+                            "Price",
+                            "Number",
+                            "Product unit price"});
+                table4.AddRow(new string[] {
+                            "Category",
+                            "String",
+                            "Product category"});
+#line 78
+        testRunner.Then("each product should contain:", ((string)(null)), table4, "Then ");
+#line hidden
+            }
+            this.ScenarioCleanup();
+        }
+        
+        [NUnit.Framework.TestAttribute()]
+        [NUnit.Framework.DescriptionAttribute("Validate order summary data")]
+        public void ValidateOrderSummaryData()
+        {
+            string[] tagsOfScenario = ((string[])(null));
+            System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Validate order summary data", null, tagsOfScenario, argumentsOfScenario, featureTags);
+#line 85
+    this.ScenarioInitialize(scenarioInfo);
+#line hidden
+            if ((TagHelper.ContainsIgnoreTag(tagsOfScenario) || TagHelper.ContainsIgnoreTag(featureTags)))
+            {
+                testRunner.SkipScenario();
+            }
+            else
+            {
+                this.ScenarioStart();
+#line 6
+    this.FeatureBackground();
+#line hidden
+#line 86
+        testRunner.When("I request all order details", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line hidden
+                TechTalk.SpecFlow.Table table5 = new TechTalk.SpecFlow.Table(new string[] {
+                            "Field",
+                            "Type",
+                            "Description"});
+                table5.AddRow(new string[] {
+                            "OrderId",
+                            "Number",
+                            "Unique order identifier"});
+                table5.AddRow(new string[] {
+                            "OrderDate",
+                            "Date",
+                            "Date when order was placed"});
+                table5.AddRow(new string[] {
+                            "TotalAmount",
+                            "Number",
+                            "Total order amount"});
+                table5.AddRow(new string[] {
+                            "Status",
+                            "String",
+                            "Current order status"});
+                table5.AddRow(new string[] {
+                            "LineItemCount",
+                            "Number",
+                            "Number of items in order"});
+#line 87
+        testRunner.Then("each order should contain:", ((string)(null)), table5, "Then ");
+#line hidden
+            }
+            this.ScenarioCleanup();
+        }
     }
 }
 #pragma warning restore
