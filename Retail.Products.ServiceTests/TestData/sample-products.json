@@ -1,0 +1,34 @@
+{
+  "products": [
+    {
+      "id": 1,
+      "name": "Laptop Computer",
+      "unitPrice": 999.99,
+      "inventory": 50
+    },
+    {
+      "id": 2,
+      "name": "Wireless Mouse",
+      "unitPrice": 29.99,
+      "inventory": 200
+    },
+    {
+      "id": 3,
+      "name": "USB Keyboard",
+      "unitPrice": 49.99,
+      "inventory": 150
+    },
+    {
+      "id": 4,
+      "name": "Monitor 24\"",
+      "unitPrice": 199.99,
+      "inventory": 75
+    },
+    {
+      "id": 5,
+      "name": "Webcam HD",
+      "unitPrice": 79.99,
+      "inventory": 100
+    }
+  ]
+}
