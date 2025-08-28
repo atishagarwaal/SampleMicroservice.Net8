@@ -1,142 +1,57 @@
 ﻿@page "/"
 
-<PageTitle>Home</PageTitle>
+<PageTitle>Home - Retail Microservices</PageTitle>
+<link href="css/home.css" rel="stylesheet" />
 
 <div class="home-container">
-    <div class="welcome-section">
-        <h1>Welcome to Retail Microservices</h1>
-        <p class="subtitle">A comprehensive microservices solution for retail operations</p>
-        
-        <div class="features-grid">
-            <div class="feature-card">
-                <div class="feature-icon">🏢</div>
-                <h3>BFF Service</h3>
-                <p>Backend for Frontend aggregation layer</p>
-            </div>
-            
-            <div class="feature-card">
-                <div class="feature-icon">👥</div>
-                <h3>Customer Management</h3>
-                <p>Customer data and profile management</p>
-            </div>
-            
-            <div class="feature-card">
-                <div class="feature-icon">📝</div>
-                <h3>Order Processing</h3>
-                <p>Order creation and management</p>
-            </div>
-            
-            <div class="feature-card">
-                <div class="feature-icon">📦</div>
-                <h3>Product Catalog</h3>
-                <p>Product information and inventory</p>
-            </div>
+    <div class="hero-section">
+        <h1>🏪 Welcome to Retail Microservices</h1>
+        <p class="hero-subtitle">A modern, event-driven microservices architecture for retail operations</p>
+    </div>
+
+    <div class="features-grid">
+        <div class="feature-card">
+            <div class="feature-icon">📊</div>
+            <h3>Service Monitoring</h3>
+            <p>Real-time monitoring of all microservices with status indicators and health checks.</p>
         </div>
-        
-        <div class="cta-section">
-            <h2>Monitor Your Services</h2>
-            <p>Get real-time insights into your microservices health and message flow</p>
-            <a href="/dashboard" class="cta-button">
-                🚀 Go to Dashboard
-            </a>
+
+        <div class="feature-card">
+            <div class="feature-icon">📦</div>
+            <h3>Inventory Management</h3>
+            <p>View and manage product inventory levels with real-time updates and adjustments.</p>
         </div>
+
+        <div class="feature-card">
+            <div class="feature-icon">📋</div>
+            <h3>Order Processing</h3>
+            <p>Create and manage customer orders with integrated inventory validation.</p>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon">👥</div>
+            <h3>Customer Management</h3>
+            <p>Access customer information and manage customer relationships.</p>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon">🔄</div>
+            <h3>Event-Driven Architecture</h3>
+            <p>Built on RabbitMQ for reliable, asynchronous communication between services.</p>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon">🏗️</div>
+            <h3>Microservices Pattern</h3>
+            <p>Independent, scalable services following domain-driven design principles.</p>
+        </div>
+    </div>
+
+    <div class="cta-section">
+        <h2>Ready to explore?</h2>
+        <p>Navigate to the Dashboard to start monitoring and managing your retail operations.</p>
+        <a href="dashboard" class="cta-button">🚀 Go to Dashboard</a>
     </div>
 </div>
 
-<style>
-    .home-container {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 40px 20px;
-    }
 
-    .welcome-section {
-        text-align: center;
-    }
-
-    .welcome-section h1 {
-        font-size: 3rem;
-        color: #333;
-        margin-bottom: 20px;
-        font-weight: bold;
-    }
-
-    .subtitle {
-        font-size: 1.3rem;
-        color: #666;
-        margin-bottom: 50px;
-    }
-
-    .features-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        gap: 30px;
-        margin-bottom: 60px;
-    }
-
-    .feature-card {
-        background: white;
-        padding: 30px 20px;
-        border-radius: 12px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
-    }
-
-    .feature-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
-    }
-
-    .feature-icon {
-        font-size: 3rem;
-        margin-bottom: 20px;
-    }
-
-    .feature-card h3 {
-        color: #333;
-        margin-bottom: 15px;
-        font-size: 1.4rem;
-    }
-
-    .feature-card p {
-        color: #666;
-        line-height: 1.6;
-    }
-
-    .cta-section {
-        background: linear-gradient(135deg, #007bff, #0056b3);
-        color: white;
-        padding: 40px;
-        border-radius: 16px;
-        margin-top: 40px;
-    }
-
-    .cta-section h2 {
-        font-size: 2rem;
-        margin-bottom: 15px;
-    }
-
-    .cta-section p {
-        font-size: 1.1rem;
-        margin-bottom: 30px;
-        opacity: 0.9;
-    }
-
-    .cta-button {
-        display: inline-block;
-        background: white;
-        color: #007bff;
-        padding: 15px 30px;
-        border-radius: 8px;
-        text-decoration: none;
-        font-weight: bold;
-        font-size: 1.1rem;
-        transition: all 0.2s ease;
-    }
-
-    .cta-button:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        text-decoration: none;
-    }
-</style>

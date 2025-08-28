@@ -6,8 +6,8 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
+  <!-- Usually you don’t need to add explicit references, the SDK brings them in -->
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.0" />
     <PackageReference Include="System.Text.Json" Version="8.0.0" />
   </ItemGroup>
 

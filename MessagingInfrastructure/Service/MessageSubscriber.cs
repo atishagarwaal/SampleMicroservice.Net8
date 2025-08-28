@@ -56,17 +56,44 @@ namespace MessagingLibrary.Service
                 throw new Exception($"No route configured for event type: {eventName}");
             }
 
+            // Clean up existing exchanges and queues before creating new ones
+            await CleanupExistingResources(route);
+
+            // Build queue arguments based on configuration
+            var queueArguments = new Dictionary<string, object>();
+            
+            if (!string.IsNullOrEmpty(route.DeadLetterExchange))
+            {
+                queueArguments["x-dead-letter-exchange"] = route.DeadLetterExchange;
+            }
+            
+            if (!string.IsNullOrEmpty(route.DeadLetterRoutingKey))
+            {
+                queueArguments["x-dead-letter-routing-key"] = route.DeadLetterRoutingKey;
+            }
+            
+            if (route.MessageTTL.HasValue)
+            {
+                queueArguments["x-message-ttl"] = route.MessageTTL.Value;
+            }
+            
+            if (route.MaxLength.HasValue)
+            {
+                queueArguments["x-max-length"] = route.MaxLength.Value;
+            }
+            
+            if (route.EnablePriority == true && route.MaxPriority.HasValue)
+            {
+                queueArguments["x-max-priority"] = route.MaxPriority.Value;
+            }
+
             // Ensure queue and exchange exist
             await _channel.QueueDeclareAsync(
                 queue: route.QueueName,
                 durable: true,
                 exclusive: false,
                 autoDelete: false,
-                arguments: new Dictionary<string, object>
-                {
-                    ["x-dead-letter-exchange"] = "dlx.topic.exchange",
-                    ["x-dead-letter-routing-key"] = "failure"
-                });
+                arguments: queueArguments);
 
             await _channel.ExchangeDeclareAsync(
                 exchange: route.Exchange,
@@ -204,6 +231,63 @@ namespace MessagingLibrary.Service
         public void Dispose()
         {
             _channel?.Dispose();
+        }
+
+        private async Task CleanupExistingResources(SubscriptionRoutes route)
+        {
+            try
+            {
+                _logger?.LogInformation("Cleaning up existing resources for queue: {QueueName}", route.QueueName);
+
+                // Delete the queue if it exists
+                try
+                {
+                    await _channel.QueueDeleteAsync(route.QueueName, false, false);
+                    _logger?.LogInformation("Deleted existing queue: {QueueName}", route.QueueName);
+                }
+                catch (Exception ex)
+                {
+                    // Queue might not exist, which is fine
+                    _logger?.LogDebug("Queue {QueueName} does not exist or could not be deleted: {Message}", 
+                        route.QueueName, ex.Message);
+                }
+
+                // Delete the exchange if it exists
+                try
+                {
+                    await _channel.ExchangeDeleteAsync(route.Exchange, false);
+                    _logger?.LogInformation("Deleted existing exchange: {Exchange}", route.Exchange);
+                }
+                catch (Exception ex)
+                {
+                    // Exchange might not exist, which is fine
+                    _logger?.LogDebug("Exchange {Exchange} does not exist or could not be deleted: {Message}", 
+                        route.Exchange, ex.Message);
+                }
+
+                // Also clean up dead letter exchange if specified
+                if (!string.IsNullOrEmpty(route.DeadLetterExchange))
+                {
+                    try
+                    {
+                        await _channel.ExchangeDeleteAsync(route.DeadLetterExchange, false);
+                        _logger?.LogInformation("Deleted existing dead letter exchange: {Exchange}", route.DeadLetterExchange);
+                    }
+                    catch (Exception ex)
+                    {
+                        // Exchange might not exist, which is fine
+                        _logger?.LogDebug("Dead letter exchange {Exchange} does not exist or could not be deleted: {Message}", 
+                            route.DeadLetterExchange, ex.Message);
+                    }
+                }
+
+                _logger?.LogInformation("Cleanup completed for queue: {QueueName}", route.QueueName);
+            }
+            catch (Exception ex)
+            {
+                _logger?.LogWarning(ex, "Error during cleanup of existing resources for queue: {QueueName}", route.QueueName);
+                // Don't throw - cleanup failure shouldn't prevent service startup
+            }
         }
     }
 }

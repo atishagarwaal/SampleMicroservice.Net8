@@ -42,6 +42,18 @@ namespace MessagingInfrastructure.Service
                     // Create exchanges idempotently
                     foreach (var exchange in _config.Exchanges)
                     {
+                        // First, try to delete the existing exchange if it exists to avoid PRECONDITION_FAILED errors
+                        try
+                        {
+                            await channel.ExchangeDeleteAsync(exchange.Name, false);
+                            _logger?.LogInformation("Deleted existing exchange: {ExchangeName}", exchange.Name);
+                        }
+                        catch (Exception ex)
+                        {
+                            // Exchange might not exist, which is fine
+                            _logger?.LogDebug("Exchange {ExchangeName} does not exist or could not be deleted: {Message}", exchange.Name, ex.Message);
+                        }
+
                         await channel.ExchangeDeclareAsync(
                             exchange.Name,
                             exchange.Type,
@@ -49,7 +61,7 @@ namespace MessagingInfrastructure.Service
                             exchange.AutoDelete,
                             exchange.Arguments);
 
-                        _logger?.LogInformation("Exchange created or already exists: {ExchangeName}", exchange.Name);
+                        _logger?.LogInformation("Exchange created successfully: {ExchangeName}", exchange.Name);
                     }
 
                     // Create queues idempotently
@@ -72,6 +84,29 @@ namespace MessagingInfrastructure.Service
         {
             try
             {
+                // First, try to delete existing dead letter queue and exchange to avoid PRECONDITION_FAILED errors
+                try
+                {
+                    await channel.QueueDeleteAsync("dlq.failure", false, false);
+                    _logger?.LogInformation("Deleted existing dead letter queue: dlq.failure");
+                }
+                catch (Exception ex)
+                {
+                    // Queue might not exist, which is fine
+                    _logger?.LogDebug("Dead letter queue does not exist or could not be deleted: {Message}", ex.Message);
+                }
+
+                try
+                {
+                    await channel.ExchangeDeleteAsync("dlx.topic.exchange", false);
+                    _logger?.LogInformation("Deleted existing dead letter exchange: dlx.topic.exchange");
+                }
+                catch (Exception ex)
+                {
+                    // Exchange might not exist, which is fine
+                    _logger?.LogDebug("Dead letter exchange does not exist or could not be deleted: {Message}", ex.Message);
+                }
+
                 // Create dead letter exchange for failed messages
                 await channel.ExchangeDeclareAsync(
                     exchange: "dlx.topic.exchange",
@@ -111,6 +146,18 @@ namespace MessagingInfrastructure.Service
         {
             try
             {
+                // First, try to delete the existing queue if it exists to avoid PRECONDITION_FAILED errors
+                try
+                {
+                    await channel.QueueDeleteAsync(queue.Name, false, false);
+                    _logger?.LogInformation("Deleted existing queue: {QueueName}", queue.Name);
+                }
+                catch (Exception ex)
+                {
+                    // Queue might not exist, which is fine
+                    _logger?.LogDebug("Queue {QueueName} does not exist or could not be deleted: {Message}", queue.Name, ex.Message);
+                }
+
                 var arguments = new Dictionary<string, object>();
 
                 // Add dead letter configuration
@@ -174,7 +221,7 @@ namespace MessagingInfrastructure.Service
                     queue.AutoDelete,
                     arguments);
 
-                _logger?.LogInformation("Queue created or already exists: {QueueName}", queue.Name);
+                _logger?.LogInformation("Queue created successfully: {QueueName}", queue.Name);
 
                 // Bind queues to exchanges
                 foreach (var binding in queue.Bindings)

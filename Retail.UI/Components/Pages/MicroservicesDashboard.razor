@@ -6,68 +6,355 @@
 @inject HttpClient Http
 @inject ILogger<MicroservicesDashboard> Logger
 
-<PageTitle>Microservices Dashboard</PageTitle>
 
-<HeadContent>
-    <link rel="stylesheet" href="css/dashboard.css" />
-</HeadContent>
+
+<PageTitle>Retail Microservices Dashboard</PageTitle>
+<link href="css/dashboard.css" rel="stylesheet" />
 
 <div class="dashboard-container">
     <div class="dashboard-header">
-        <h1>Microservices Monitoring Dashboard</h1>
-        <div class="status-indicator @(IsConnected ? "connected" : "disconnected")">
-            @(IsConnected ? "🟢 Connected" : "🔴 Disconnected")
+        <h1>🏪 Retail Microservices Dashboard</h1>
+        <p class="dashboard-subtitle">Monitor services, view data, and manage business operations</p>
+        <div class="header-actions">
+            <button class="btn btn-primary" @onclick="LoadData">🔄 Load All Data</button>
+            <button class="btn btn-success" @onclick="ShowCreateOrderModal">➕ Create Order</button>
         </div>
     </div>
+    
 
-    <ServiceManager />
 
-    <div class="services-grid">
-        @foreach (var service in Microservices)
-        {
-            <div class="service-card @(service.Status.ToString().ToLowerInvariant())">
-                <div class="service-header">
-                    <h3>@service.Name</h3>
-                    <span class="status-badge @(service.Status.ToString().ToLowerInvariant())">@service.Status</span>
-                </div>
-                <div class="service-details">
-                    <p><strong>URL:</strong> @service.Url</p>
-                    <p><strong>Last Check:</strong> @service.LastChecked?.ToString("HH:mm:ss")</p>
-                    <p><strong>Response Time:</strong> @(service.ResponseTime?.ToString("F0") ?? "N/A") ms</p>
-                    @if (service.ErrorMessage != null)
-                    {
-                        <p class="error-message"><strong>Error:</strong> @service.ErrorMessage</p>
-                    }
-                </div>
-                <div class="service-actions">
-                    <HealthCheckButton ServiceUrl="@service.Url" ServiceName="@service.Name" />
-                </div>
-            </div>
-        }
-    </div>
-
-    <MessageFlowVisualizer Messages="@RecentMessages" />
-
-    <div class="recent-messages">
-        <h2>Recent Messages</h2>
-        <div class="messages-list">
-            @foreach (var message in RecentMessages.Take(10))
+    <!-- Service Status Section -->
+    <div class="dashboard-section">
+        <h2>📊 Service Status</h2>
+        <div class="services-grid">
+            @foreach (var service in Services)
             {
-                <div class="message-item @(message.IsError ? "error" : "success")">
-                    <div class="message-header">
-                        <span class="message-type">@message.MessageType</span>
-                        <span class="message-time">@message.Timestamp.ToString("HH:mm:ss")</span>
-                    </div>
-                    <div class="message-details">
-                        <p><strong>From:</strong> @message.FromService</p>
-                        <p><strong>To:</strong> @message.ToService</p>
-                        @if (message.IsError)
-                        {
-                            <p class="error-details"><strong>Error:</strong> @message.ErrorMessage</p>
-                        }
+                <div class="service-status-card @(service.Status.ToString().ToLowerInvariant())">
+                    <div class="service-icon">@GetServiceIcon(service.Name)</div>
+                    <div class="service-info">
+                        <h3>@service.Name</h3>
+                        <p class="service-url">@service.Url</p>
+                        <div class="service-status @(service.Status.ToString().ToLowerInvariant())">
+                            @service.Status
+                        </div>
                     </div>
                 </div>
             }
         </div>
     </div>
+
+    <!-- Business Data Section -->
+    <div class="dashboard-section">
+        <h2>📦 Business Data</h2>
+        <div class="data-tabs">
+            <div class="tab-buttons">
+                <button class="tab-btn @(activeTab == "products" ? "active" : "")" @onclick="SwitchToProducts">
+                    📦 Products & Inventory
+                </button>
+                <button class="tab-btn @(activeTab == "orders" ? "active" : "")" @onclick="SwitchToOrders">
+                    📋 Orders
+                </button>
+                <button class="tab-btn @(activeTab == "customers" ? "active" : "")" @onclick="SwitchToCustomers">
+                    👥 Customers
+                </button>
+            </div>
+
+            <div class="tab-content">
+                @if (activeTab == "products")
+                {
+                    <div class="products-tab">
+                        <div class="tab-header">
+                            <h3>Products & Inventory</h3>
+                            <div class="tab-actions">
+                                <button class="btn btn-primary" @onclick="RefreshProducts">🔄 Refresh</button>
+                            </div>
+                        </div>
+                        @if (products != null && products.Any())
+                        {
+                            <div class="data-table">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Name</th>
+                                            <th>Unit Price</th>
+                                            <th>Inventory</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var product in products)
+                                        {
+                                            <tr>
+                                                <td>@product.Id</td>
+                                                <td>@product.Name</td>
+                                                <td>$@product.UnitPrice.ToString("F2")</td>
+                                                <td>
+                                                    <span class="inventory-count @(product.Inventory > 10 ? "high" : product.Inventory > 0 ? "medium" : "low")">
+                                                        @product.Inventory
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <button class="btn btn-sm btn-outline-primary" @onclick="() => ShowInventoryModal(product)">
+                                                        📝 Adjust
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="no-data">No products available</div>
+                        }
+                    </div>
+                }
+                else if (activeTab == "orders")
+                {
+                    <div class="orders-tab">
+                        <div class="tab-header">
+                            <h3>Orders</h3>
+                            <div class="tab-actions">
+                                <button class="btn btn-primary" @onclick="RefreshOrders">🔄 Refresh</button>
+                                <button class="btn btn-success" @onclick="ShowCreateOrderModal">➕ Create Order</button>
+                            </div>
+                        </div>
+                        @if (orders != null && orders.Any())
+                        {
+                            <div class="data-table">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Order ID</th>
+                                            <th>Customer</th>
+                                            <th>Date</th>
+                                            <th>Total</th>
+                                            <th>Items</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var order in orders)
+                                        {
+                                            <tr>
+                                                <td>@order.OrderId</td>
+                                                <td>@order.CustomerName</td>
+                                                <td>@order.OrderDate.ToString("MMM dd, yyyy")</td>
+                                                <td>$@order.TotalAmount.ToString("F2")</td>
+                                                <td>@order.LineItems?.Count ?? 0 items</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="no-data">No orders available</div>
+                        }
+                    </div>
+                }
+                else if (activeTab == "customers")
+                {
+                    <div class="customers-tab">
+                        <div class="tab-header">
+                            <h3>Customers</h3>
+                            <button class="btn btn-primary" @onclick="RefreshCustomers">🔄 Refresh</button>
+                        </div>
+                        @if (customers != null && customers.Any())
+                        {
+                            <div class="data-table">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>First Name</th>
+                                            <th>Last Name</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var customer in customers)
+                                        {
+                                            <tr>
+                                                <td>@customer.Id</td>
+                                                <td>@customer.FirstName</td>
+                                                <td>@customer.LastName</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="no-data">No customers available</div>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Message Flow Section -->
+    <div class="dashboard-section">
+        <h2>🔄 Message Flow</h2>
+        <div class="message-flow">
+            <div class="flow-diagram">
+                <div class="flow-row">
+                    <div class="flow-service bff">BFF Service</div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-service customers">Customer Service</div>
+                </div>
+                <div class="flow-row">
+                    <div class="flow-service bff">BFF Service</div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-service orders">Order Read Service</div>
+                </div>
+                <div class="flow-row">
+                    <div class="flow-service bff">BFF Service</div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-service products">Product Service</div>
+                </div>
+                <div class="flow-row">
+                    <div class="flow-service orders-write">Order Write Service</div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-service products">Product Service</div>
+                </div>
+            </div>
+            <div class="flow-description">
+                <p><strong>Event-Driven Architecture:</strong> When orders are created, the Product Service publishes inventory update events that are consumed by Customer Service and Order Read Service via RabbitMQ.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Event Flow Visualization Section -->
+    <div class="dashboard-section">
+        <h2>📊 Order Processing Events</h2>
+        <div class="event-flow">
+            <div class="event-timeline">
+                @if (eventHistory != null && eventHistory.Any())
+                {
+                    @foreach (var evt in eventHistory.OrderByDescending(e => e.Timestamp))
+                    {
+                        <div class="event-item @(evt.Status == "Success" ? "success" : evt.Status == "Error" ? "error" : "")">
+                            <div class="event-header">
+                                <span class="event-service">@evt.ServiceName</span>
+                                <span class="event-time">@evt.Timestamp.ToString("HH:mm:ss")</span>
+                            </div>
+                            <div class="event-message">@evt.Message</div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="no-data">
+                        <p>No events yet. Create an order to see the event flow in action!</p>
+                        <button class="btn btn-primary" @onclick="ShowCreateOrderModal">➕ Create Your First Order</button>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
 </div>
+
+<!-- Inventory Adjustment Modal -->
+@if (showInventoryModal)
+{
+    <div class="modal-overlay" @onclick="CloseInventoryModal">
+        <div class="modal-content" @onclick:stopPropagation="true">
+            <div class="modal-header">
+                <h3>Adjust Inventory - @selectedProduct?.Name</h3>
+                <button class="modal-close" @onclick="CloseInventoryModal">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Current Inventory: @selectedProduct?.Inventory</label>
+                    <input type="number" class="form-control" @bind="newInventoryValue" min="0" />
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" @onclick="CloseInventoryModal">Cancel</button>
+                <button class="btn btn-primary" @onclick="UpdateInventory">Update Inventory</button>
+            </div>
+        </div>
+    </div>
+}
+
+<!-- Create Order Modal -->
+@if (showCreateOrderModal)
+{
+    <div class="modal-overlay" @onclick="CloseCreateOrderModal">
+        <div class="modal-content" @onclick:stopPropagation="true">
+            <div class="modal-header">
+                <h3>Create New Order</h3>
+                <button class="modal-close" @onclick="CloseCreateOrderModal">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Customer:</label>
+                    <select class="form-control" @bind="newOrder.CustomerId">
+                        <option value="0">-- Select Customer --</option>
+                        @if (customers != null)
+                        {
+                            @foreach (var customer in customers)
+                            {
+                                <option value="@customer.Id">@customer.Id - @customer.FirstName @customer.LastName</option>
+                            }
+                        }
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Product:</label>
+                    <select class="form-control" @bind="newOrderLineItem.SkuId">
+                        <option value="0">-- Select Product --</option>
+                        @if (products != null)
+                        {
+                            @foreach (var product in products)
+                            {
+                                <option value="@product.Id">@product.Id - @product.Name ($@product.UnitPrice.ToString("F2")) - Stock: @product.Inventory</option>
+                            }
+                        }
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Quantity:</label>
+                    <input type="number" class="form-control" @bind="newOrderLineItem.Qty" min="1" />
+                </div>
+                @if (newOrderLineItem.SkuId > 0 && newOrderLineItem.Qty > 0)
+                {
+                    var selectedProduct = products?.FirstOrDefault(p => p.Id == newOrderLineItem.SkuId);
+                    if (selectedProduct != null)
+                    {
+                        var total = selectedProduct.UnitPrice * newOrderLineItem.Qty;
+                        var canOrder = selectedProduct.Inventory >= newOrderLineItem.Qty;
+                        <div class="order-summary">
+                            <h4>Order Summary</h4>
+                            <p><strong>Product:</strong> @selectedProduct.Name</p>
+                            <p><strong>Unit Price:</strong> $@selectedProduct.UnitPrice.ToString("F2")</p>
+                            <p><strong>Quantity:</strong> @newOrderLineItem.Qty</p>
+                            <p><strong>Total:</strong> $@total.ToString("F2")</p>
+                            <p><strong>Available Stock:</strong> @selectedProduct.Inventory</p>
+                            @if (!canOrder)
+                            {
+                                <div class="alert alert-warning">
+                                    ⚠️ Insufficient inventory! Available: @selectedProduct.Inventory, Requested: @newOrderLineItem.Qty
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="alert alert-success">
+                                    ✅ Order can be fulfilled with current inventory
+                                </div>
+                            }
+                        </div>
+                    }
+                }
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" @onclick="CloseCreateOrderModal">Cancel</button>
+                <button class="btn btn-success" @onclick="CreateOrder">Create Order</button>
+            </div>
+        </div>
+    </div>
+}
