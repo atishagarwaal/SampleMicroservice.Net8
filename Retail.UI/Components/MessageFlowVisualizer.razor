@@ -1,0 +1,290 @@
+@using System.Timers
+
+<div class="message-flow-visualizer">
+    <div class="flow-header">
+        <h3>Real-time Message Flow</h3>
+        <div class="flow-controls">
+            <button class="btn btn-sm @(IsAutoRefresh ? "btn-primary" : "btn-outline-primary")" @onclick="ToggleAutoRefresh">
+                @(IsAutoRefresh ? "🔄 Auto-refresh ON" : "⏸️ Auto-refresh OFF")
+            </button>
+            <button class="btn btn-sm btn-outline-secondary" @onclick="ClearMessages">
+                🗑️ Clear
+            </button>
+        </div>
+    </div>
+
+    <div class="flow-container">
+        <div class="service-layer">
+            <div class="service-node bff" title="BFF Service">
+                <div class="service-icon">🏢</div>
+                <div class="service-name">BFF</div>
+                <div class="message-count">@GetMessageCount("BFF")</div>
+            </div>
+        </div>
+
+        <div class="flow-arrows">
+            <div class="arrow-down">↓</div>
+            <div class="arrow-down">↓</div>
+        </div>
+
+        <div class="service-layer">
+            <div class="service-node customers" title="Customers Service">
+                <div class="service-icon">👥</div>
+                <div class="service-name">Customers</div>
+                <div class="message-count">@GetMessageCount("Customers")</div>
+            </div>
+            <div class="service-node orders-write" title="Orders Write Service">
+                <div class="service-icon">📝</div>
+                <div class="service-name">Orders.Write</div>
+                <div class="message-count">@GetMessageCount("Orders.Write")</div>
+            </div>
+        </div>
+
+        <div class="flow-arrows">
+            <div class="arrow-down">↓</div>
+            <div class="arrow-down">↓</div>
+            <div class="arrow-down">↓</div>
+        </div>
+
+        <div class="service-layer">
+            <div class="service-node products" title="Products Service">
+                <div class="service-icon">📦</div>
+                <div class="service-name">Products</div>
+                <div class="message-count">@GetMessageCount("Products")</div>
+            </div>
+            <div class="service-node orders-read" title="Orders Read Service">
+                <div class="service-icon">📖</div>
+                <div class="service-name">Orders.Read</div>
+                <div class="message-count">@GetMessageCount("Orders.Read")</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="message-log">
+        <h4>Message Log</h4>
+        <div class="log-container">
+            @foreach (var message in Messages.OrderByDescending(m => m.Timestamp).Take(20))
+            {
+                <div class="log-entry @(message.IsError ? "error" : "success")">
+                    <div class="log-timestamp">@message.Timestamp.ToString("HH:mm:ss")</div>
+                    <div class="log-content">
+                        <span class="log-type">@message.MessageType</span>
+                        <span class="log-flow">@message.FromService → @message.ToService</span>
+                        @if (message.IsError)
+                        {
+                            <span class="log-error">❌ @message.ErrorMessage</span>
+                        }
+                        else
+                        {
+                            <span class="log-success">✅ Success</span>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<style>
+    .message-flow-visualizer {
+        background: #f8f9fa;
+        border-radius: 12px;
+        padding: 20px;
+        margin: 20px 0;
+    }
+
+    .flow-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .flow-header h3 {
+        margin: 0;
+        color: #333;
+    }
+
+    .flow-controls {
+        display: flex;
+        gap: 10px;
+    }
+
+    .flow-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: 30px;
+    }
+
+    .service-layer {
+        display: flex;
+        gap: 40px;
+        justify-content: center;
+    }
+
+    .service-node {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 15px;
+        border-radius: 10px;
+        color: white;
+        min-width: 100px;
+        position: relative;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .service-node:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .service-node.bff { background: linear-gradient(135deg, #007bff, #0056b3); }
+    .service-node.customers { background: linear-gradient(135deg, #28a745, #1e7e34); }
+    .service-node.orders-write { background: linear-gradient(135deg, #ffc107, #e0a800); color: #212529; }
+    .service-node.orders-read { background: linear-gradient(135deg, #17a2b8, #138496); }
+    .service-node.products { background: linear-gradient(135deg, #6f42c1, #5a2d91); }
+
+    .service-icon {
+        font-size: 1.5rem;
+        margin-bottom: 5px;
+    }
+
+    .service-name {
+        font-weight: bold;
+        font-size: 0.9rem;
+        text-align: center;
+    }
+
+    .message-count {
+        position: absolute;
+        top: -8px;
+        right: -8px;
+        background: #dc3545;
+        color: white;
+        border-radius: 50%;
+        width: 24px;
+        height: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.8rem;
+        font-weight: bold;
+    }
+
+    .flow-arrows {
+        display: flex;
+        gap: 40px;
+        justify-content: center;
+    }
+
+    .arrow-down {
+        font-size: 1.5rem;
+        color: #666;
+        font-weight: bold;
+    }
+
+    .message-log {
+        border-top: 2px solid #e0e0e0;
+        padding-top: 20px;
+    }
+
+    .message-log h4 {
+        margin: 0 0 15px 0;
+        color: #333;
+    }
+
+    .log-container {
+        max-height: 300px;
+        overflow-y: auto;
+        background: white;
+        border-radius: 8px;
+        padding: 10px;
+    }
+
+    .log-entry {
+        display: flex;
+        gap: 15px;
+        padding: 8px 12px;
+        border-radius: 6px;
+        margin-bottom: 8px;
+        border-left: 4px solid;
+    }
+
+    .log-entry.success {
+        background: #d4edda;
+        border-left-color: #28a745;
+    }
+
+    .log-entry.error {
+        background: #f8d7da;
+        border-left-color: #dc3545;
+    }
+
+    .log-timestamp {
+        font-family: monospace;
+        font-size: 0.9rem;
+        color: #666;
+        min-width: 70px;
+    }
+
+    .log-content {
+        display: flex;
+        gap: 15px;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+
+    .log-type {
+        font-weight: bold;
+        color: #333;
+    }
+
+    .log-flow {
+        color: #666;
+        font-size: 0.9rem;
+    }
+
+    .log-error {
+        color: #dc3545;
+        font-weight: bold;
+    }
+
+    .log-success {
+        color: #28a745;
+        font-weight: bold;
+    }
+
+    .btn {
+        padding: 5px 12px;
+        border-radius: 6px;
+        border: 1px solid;
+        cursor: pointer;
+        font-size: 0.9rem;
+        transition: all 0.2s ease;
+    }
+
+    .btn:hover {
+        transform: translateY(-1px);
+    }
+
+    .btn-primary {
+        background: #007bff;
+        color: white;
+        border-color: #007bff;
+    }
+
+    .btn-outline-primary {
+        background: transparent;
+        color: #007bff;
+        border-color: #007bff;
+    }
+
+    .btn-outline-secondary {
+        background: transparent;
+        color: #6c757d;
+        border-color: #6c757d;
+    }
+</style>

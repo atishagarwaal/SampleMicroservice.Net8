@@ -1,0 +1,299 @@
+@using Retail.UI.Models
+@using System.Diagnostics
+@using System.IO
+
+<div class="service-manager">
+    <div class="manager-header">
+        <h3>Service Management</h3>
+        <div class="manager-controls">
+            <button class="btn btn-success" @onclick="StartAllServices" disabled="@IsAnyServiceStarting">
+                🚀 Start All Services
+            </button>
+            <button class="btn btn-danger" @onclick="StopAllServices" disabled="@IsAnyServiceStopping">
+                🛑 Stop All Services
+            </button>
+        </div>
+    </div>
+
+    <div class="services-control-grid">
+        @foreach (var service in Services)
+        {
+            <div class="service-control-card @(service.Status.ToString().ToLowerInvariant())">
+                <div class="service-control-header">
+                    <h4>@service.Name</h4>
+                    <div class="status-indicator @(service.Status.ToString().ToLowerInvariant())">
+                        @GetStatusIcon(service.Status) @service.Status
+                    </div>
+                </div>
+                
+                <div class="service-control-details">
+                    <p><strong>Port:</strong> @service.Port</p>
+                    <p><strong>URL:</strong> @service.Url</p>
+                    @if (service.StartedAt.HasValue)
+                    {
+                        <p><strong>Started:</strong> @service.StartedAt.Value.ToString("HH:mm:ss")</p>
+                    }
+                    @if (service.ProcessId != null)
+                    {
+                        <p><strong>PID:</strong> @service.ProcessId</p>
+                    }
+                    @if (!string.IsNullOrEmpty(service.ErrorMessage))
+                    {
+                        <p class="error-message"><strong>Error:</strong> @service.ErrorMessage</p>
+                    }
+                </div>
+
+                <div class="service-control-actions">
+                    @if (service.Status == ProcessStatus.Running)
+                    {
+                        <button class="btn btn-warning btn-sm" @onclick="() => StopService(service)" disabled="@service.IsStopping">
+                            @if (service.IsStopping)
+                            {
+                                <span>🔄 Stopping...</span>
+                            }
+                            else
+                            {
+                                <span>⏹️ Stop</span>
+                            }
+                        </button>
+                        <button class="btn btn-info btn-sm" @onclick="() => RestartService(service)" disabled="@service.IsStarting || service.IsStopping">
+                            🔄 Restart
+                        </button>
+                    }
+                    else
+                    {
+                        <button class="btn btn-success btn-sm" @onclick="() => StartService(service)" disabled="@service.IsStarting">
+                            @if (service.IsStarting)
+                            {
+                                <span>🔄 Starting...</span>
+                            }
+                            else
+                            {
+                                <span>▶️ Start</span>
+                            }
+                        </button>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+
+    <div class="service-logs">
+        <h4>Service Logs</h4>
+        <div class="log-container">
+            @foreach (var log in ServiceLogs.Take(20))
+            {
+                <div class="log-entry @(log.IsError ? "error" : "info")">
+                    <div class="log-timestamp">@log.Timestamp.ToString("HH:mm:ss")</div>
+                    <div class="log-content">
+                        <span class="log-type">@log.Action</span>
+                        <span class="log-flow">@log.ServiceName</span>
+                        @if (log.IsError)
+                        {
+                            <span class="log-error">❌ @log.Message</span>
+                        }
+                        else
+                        {
+                            <span class="log-success">✅ @log.Message</span>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<style>
+    .service-manager {
+        background: #f8f9fa;
+        border-radius: 12px;
+        padding: 20px;
+        margin: 20px 0;
+    }
+
+    .manager-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        padding-bottom: 15px;
+        border-bottom: 2px solid #e0e0e0;
+    }
+
+    .manager-header h3 {
+        margin: 0;
+        color: #333;
+    }
+
+    .manager-controls {
+        display: flex;
+        gap: 10px;
+    }
+
+    .services-control-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+
+    .service-control-card {
+        background: white;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        border-left: 4px solid;
+        transition: transform 0.2s ease;
+    }
+
+    .service-control-card:hover {
+        transform: translateY(-2px);
+    }
+
+    .service-control-card.running { border-left-color: #28a745; }
+    .service-control-card.stopped { border-left-color: #6c757d; }
+    .service-control-card.starting { border-left-color: #ffc107; }
+    .service-control-card.stopping { border-left-color: #fd7e14; }
+    .service-control-card.error { border-left-color: #dc3545; }
+
+    .service-control-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+    }
+
+    .service-control-header h4 {
+        margin: 0;
+        color: #333;
+    }
+
+    .status-indicator {
+        padding: 4px 8px;
+        border-radius: 12px;
+        font-size: 0.8rem;
+        font-weight: bold;
+        text-transform: uppercase;
+    }
+
+    .status-indicator.running { background: #d4edda; color: #155724; }
+    .status-indicator.stopped { background: #e2e3e5; color: #383d41; }
+    .status-indicator.starting { background: #fff3cd; color: #856404; }
+    .status-indicator.stopping { background: #ffeaa7; color: #d63031; }
+    .status-indicator.error { background: #f8d7da; color: #721c24; }
+
+    .service-control-details p {
+        margin: 5px 0;
+        color: #666;
+        font-size: 0.9rem;
+    }
+
+    .error-message {
+        color: #dc3545 !important;
+        font-weight: bold;
+    }
+
+    .service-control-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 15px;
+        padding-top: 15px;
+        border-top: 1px solid #e0e0e0;
+    }
+
+    .btn {
+        padding: 8px 16px;
+        border-radius: 6px;
+        border: none;
+        cursor: pointer;
+        font-size: 0.9rem;
+        transition: all 0.2s ease;
+    }
+
+    .btn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+
+    .btn:hover:not(:disabled) {
+        transform: translateY(-1px);
+    }
+
+    .btn-sm { padding: 6px 12px; font-size: 0.8rem; }
+    .btn-success { background: #28a745; color: white; }
+    .btn-danger { background: #dc3545; color: white; }
+    .btn-warning { background: #ffc107; color: #212529; }
+    .btn-info { background: #17a2b8; color: white; }
+
+    .service-logs {
+        border-top: 2px solid #e0e0e0;
+        padding-top: 20px;
+    }
+
+    .service-logs h4 {
+        margin: 0 0 15px 0;
+        color: #333;
+    }
+
+    .log-container {
+        max-height: 200px;
+        overflow-y: auto;
+        background: white;
+        border-radius: 8px;
+        padding: 10px;
+    }
+
+    .log-entry {
+        display: flex;
+        gap: 15px;
+        padding: 6px 10px;
+        border-radius: 4px;
+        margin-bottom: 6px;
+        border-left: 3px solid;
+        font-size: 0.85rem;
+    }
+
+    .log-entry.info {
+        background: #e3f2fd;
+        border-left-color: #2196f3;
+    }
+
+    .log-entry.error {
+        background: #ffebee;
+        border-left-color: #f44336;
+    }
+
+    .log-timestamp {
+        font-family: monospace;
+        color: #666;
+        min-width: 60px;
+    }
+
+    .log-content {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+    }
+
+    .log-type {
+        font-weight: bold;
+        color: #333;
+        min-width: 60px;
+    }
+
+    .log-flow {
+        font-weight: bold;
+        color: #333;
+        min-width: 80px;
+    }
+
+    .log-success {
+        color: #28a745;
+        font-weight: bold;
+    }
+
+    .log-error {
+        color: #d32f2f;
+        font-weight: bold;
+    }
+</style>

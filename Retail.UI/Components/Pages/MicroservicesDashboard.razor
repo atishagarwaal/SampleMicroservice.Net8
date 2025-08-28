@@ -1,0 +1,73 @@
+@page "/dashboard"
+@using System.Text.Json
+@using System.Net.Http
+@using System.Timers
+@using Retail.UI.Models
+@inject HttpClient Http
+@inject ILogger<MicroservicesDashboard> Logger
+
+<PageTitle>Microservices Dashboard</PageTitle>
+
+<HeadContent>
+    <link rel="stylesheet" href="css/dashboard.css" />
+</HeadContent>
+
+<div class="dashboard-container">
+    <div class="dashboard-header">
+        <h1>Microservices Monitoring Dashboard</h1>
+        <div class="status-indicator @(IsConnected ? "connected" : "disconnected")">
+            @(IsConnected ? "🟢 Connected" : "🔴 Disconnected")
+        </div>
+    </div>
+
+    <ServiceManager />
+
+    <div class="services-grid">
+        @foreach (var service in Microservices)
+        {
+            <div class="service-card @(service.Status.ToString().ToLowerInvariant())">
+                <div class="service-header">
+                    <h3>@service.Name</h3>
+                    <span class="status-badge @(service.Status.ToString().ToLowerInvariant())">@service.Status</span>
+                </div>
+                <div class="service-details">
+                    <p><strong>URL:</strong> @service.Url</p>
+                    <p><strong>Last Check:</strong> @service.LastChecked?.ToString("HH:mm:ss")</p>
+                    <p><strong>Response Time:</strong> @(service.ResponseTime?.ToString("F0") ?? "N/A") ms</p>
+                    @if (service.ErrorMessage != null)
+                    {
+                        <p class="error-message"><strong>Error:</strong> @service.ErrorMessage</p>
+                    }
+                </div>
+                <div class="service-actions">
+                    <HealthCheckButton ServiceUrl="@service.Url" ServiceName="@service.Name" />
+                </div>
+            </div>
+        }
+    </div>
+
+    <MessageFlowVisualizer Messages="@RecentMessages" />
+
+    <div class="recent-messages">
+        <h2>Recent Messages</h2>
+        <div class="messages-list">
+            @foreach (var message in RecentMessages.Take(10))
+            {
+                <div class="message-item @(message.IsError ? "error" : "success")">
+                    <div class="message-header">
+                        <span class="message-type">@message.MessageType</span>
+                        <span class="message-time">@message.Timestamp.ToString("HH:mm:ss")</span>
+                    </div>
+                    <div class="message-details">
+                        <p><strong>From:</strong> @message.FromService</p>
+                        <p><strong>To:</strong> @message.ToService</p>
+                        @if (message.IsError)
+                        {
+                            <p class="error-details"><strong>Error:</strong> @message.ErrorMessage</p>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
