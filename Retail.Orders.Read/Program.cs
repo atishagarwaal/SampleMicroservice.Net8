@@ -19,10 +19,11 @@ using Retail.Orders.Read.src.CleanArchitecture.Infrastructure.UnitOfWork;
 using Retail.Orders.Read.src.CleanArchitecture.Application.Queries;
 using Retail.Orders.Read.src.CleanArchitecture.Domain.Entities;
 using Retail.Orders.Read.src.CleanArchitecture.Application.EventHandlers;
+using Microsoft.Extensions.Logging;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Configure database connection
+// Configure MongoDB connection
 builder.Services.AddScoped<ApplicationDbContext>();
 builder.Services.AddScoped(typeof(IUnitOfWork), typeof(UnitOfWork));
 
@@ -32,6 +33,7 @@ builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(
     typeof(GetOrderByIdQuery).Assembly
 ));
 
+// Register event handlers with proper logging
 builder.Services.AddScoped<IEventHandler<InventoryUpdatedEvent>, InventoryUpdatedEventHandler>();
 builder.Services.AddScoped<IServiceInitializer, ServiceInitializer>();
 
@@ -52,7 +54,7 @@ builder.Services.AddApiVersioning(options =>
 
 builder.Services.AddSwaggerGen(c =>
 {
-    c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "Order", Version = "v1" });
+    c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "Order Read Service", Version = "v1" });
 });
 
 var app = builder.Build();

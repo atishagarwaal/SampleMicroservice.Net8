@@ -20,6 +20,13 @@ namespace Retail.Orders.Write.src.CleanArchitecture.Infrastructure.Interfaces
         Task<T> AddAsync(T entity);
 
         /// <summary>
+        /// Add a new object asynchronously and return it with generated ID.
+        /// This method saves changes immediately to ensure the ID is generated.
+        /// </summary>
+        /// <param name="entity">An object type parameter T.</param>
+        Task<T> AddAndGetIdAsync(T entity);
+
+        /// <summary>
         /// Gets collection of object asynchronously.
         /// </summary>
         /// <returns>Returns collection of object of type parameter T.</returns>
@@ -45,6 +52,14 @@ namespace Retail.Orders.Write.src.CleanArchitecture.Infrastructure.Interfaces
         T Update(T entity);
 
         Task<IEnumerable<T>> ExecuteQueryAsync(Expression<Func<T, bool>> predicate);
+
+        /// <summary>
+        /// Get the generated ID for an entity after SaveChanges.
+        /// This method should be called after SaveChanges to get the generated ID.
+        /// </summary>
+        /// <param name="entity">The entity to get the ID for.</param>
+        /// <returns>The generated ID as a long.</returns>
+        long GetGeneratedId(T entity);
     }
 }
 

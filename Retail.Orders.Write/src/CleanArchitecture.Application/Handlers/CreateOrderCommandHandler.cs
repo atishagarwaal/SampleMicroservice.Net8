@@ -30,23 +30,53 @@ namespace Retail.Orders.Write.src.CleanArchitecture.Application.Handlers
             using var scope = _serviceScopeFactory.CreateScope();
             var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
 
+            await unitOfWork.BeginTransactionAsync();
             try
             {
-                await unitOfWork.BeginTransactionAsync();
+                // Create and save the order (following Customer/Product service pattern)
                 var order = _mapper.Map<Order>(request.Order);
-                var orderRecord = await _unitOfWork.Orders.AddAsync(order);
-                await unitOfWork.CompleteAsync();
+                Console.WriteLine($"Mapped order - CustomerId: {order.CustomerId}, TotalAmount: {order.TotalAmount}");
+                Console.WriteLine($"LineItems count after mapping: {order.LineItems?.Count ?? 0}");
+                
+                // Ensure LineItems have proper OrderId references
+                if (order.LineItems != null && order.LineItems.Any())
+                {
+                    foreach (var lineItem in order.LineItems)
+                    {
+                        Console.WriteLine($"LineItem before save - Id: {lineItem.Id}, OrderId: {lineItem.OrderId}, SkuId: {lineItem.SkuId}, Qty: {lineItem.Qty}");
+                    }
+                }
+                
+                var orderRecord = await unitOfWork.Orders.AddAsync(order);
+                Console.WriteLine($"After AddAsync - Order ID: {orderRecord.Id}");
+                
+                // Save changes to generate the Order ID and save both Order and LineItems
+                var saveResult = await unitOfWork.CompleteAsync();
+                Console.WriteLine($"After CompleteAsync - SaveResult: {saveResult}, Order ID: {orderRecord.Id}");
 
+                // Get the complete order with line items
+                var savedOrder = await unitOfWork.Orders.GetByIdAsync(orderRecord.Id);
+                Console.WriteLine($"Retrieved order - ID: {savedOrder?.Id}, LineItems count: {savedOrder?.LineItems?.Count ?? 0}");
+                
+                if (savedOrder?.LineItems != null && savedOrder.LineItems.Any())
+                {
+                    foreach (var lineItem in savedOrder.LineItems)
+                    {
+                        Console.WriteLine($"LineItem after save - Id: {lineItem.Id}, OrderId: {lineItem.OrderId}, SkuId: {lineItem.SkuId}, Qty: {lineItem.Qty}");
+                    }
+                }
+
+                // Create and publish the event
                 var newOrderMessage = new OrderCreatedEvent
                 {
-                    CustomerId = orderRecord.CustomerId,
-                    OrderDate = orderRecord.OrderDate,
-                    TotalAmount = orderRecord.TotalAmount,
-                    OrderId = orderRecord.Id,
-                    LineItems = orderRecord.LineItems.Select(item => new CommonLibrary.Handlers.Dto.LineItemDto
+                    CustomerId = savedOrder.CustomerId,
+                    OrderDate = savedOrder.OrderDate,
+                    TotalAmount = savedOrder.TotalAmount,
+                    OrderId = savedOrder.Id,
+                    LineItems = savedOrder.LineItems.Select(item => new CommonLibrary.Handlers.Dto.LineItemDto
                     {
                         Id = item.Id,
-                        OrderId = orderRecord.Id,
+                        OrderId = savedOrder.Id,
                         SkuId = item.SkuId,
                         Qty = item.Qty,
                     }),
@@ -55,7 +85,7 @@ namespace Retail.Orders.Write.src.CleanArchitecture.Application.Handlers
                 await _messagePublisher.PublishAsync(newOrderMessage, RabbitmqConstants.OrderCreated);
                 await unitOfWork.CommitTransactionAsync();
 
-                return _mapper.Map<OrderDto>(orderRecord);
+                return _mapper.Map<OrderDto>(savedOrder);
             }
             catch
             {

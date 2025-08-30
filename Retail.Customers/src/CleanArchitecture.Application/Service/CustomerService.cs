@@ -142,6 +142,8 @@ namespace Retail.Api.Customers.src.CleanArchitecture.Application.Service
 
         public async Task HandleOrderCreatedEvent(InventoryUpdatedEvent inventoryUpdatedEvent)
         {
+            Console.WriteLine($"Customer Service: Received InventoryUpdatedEvent - OrderId: {inventoryUpdatedEvent.OrderId}, CustomerId: {inventoryUpdatedEvent.CustomerId}");
+            
             using var scope = _serviceScopeFactory.CreateScope();
             var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
 
@@ -153,15 +155,19 @@ namespace Retail.Api.Customers.src.CleanArchitecture.Application.Service
                 OrderDate = DateTime.UtcNow,
             };
 
+            Console.WriteLine($"Customer Service: Creating notification - OrderId: {notification.OrderId}, CustomerId: {notification.CustomerId}");
+
             await unitOfWork.BeginTransactionAsync();
             try
             {
                 await unitOfWork.Notifications.AddAsync(notification);
                 await unitOfWork.CompleteAsync();
                 await unitOfWork.CommitTransactionAsync();
+                Console.WriteLine($"Customer Service: Notification created successfully - ID: {notification.NotificationId}");
             }
-            catch
+            catch (Exception ex)
             {
+                Console.WriteLine($"Customer Service: Error creating notification - {ex.Message}");
                 await unitOfWork.RollbackTransactionAsync();
                 throw;
             }

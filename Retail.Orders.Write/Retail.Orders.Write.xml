@@ -208,6 +208,13 @@
             </summary>
             <param name="entity">An object type parameter T.</param>
         </member>
+        <member name="M:Retail.Orders.Write.src.CleanArchitecture.Infrastructure.Interfaces.IGenericRepository`1.AddAndGetIdAsync(`0)">
+            <summary>
+            Add a new object asynchronously and return it with generated ID.
+            This method saves changes immediately to ensure the ID is generated.
+            </summary>
+            <param name="entity">An object type parameter T.</param>
+        </member>
         <member name="M:Retail.Orders.Write.src.CleanArchitecture.Infrastructure.Interfaces.IGenericRepository`1.GetAllAsync">
             <summary>
             Gets collection of object asynchronously.
@@ -232,6 +239,14 @@
             Update an object.
             </summary>
             <param name="entity">An object type parameter T.</param>
+        </member>
+        <member name="M:Retail.Orders.Write.src.CleanArchitecture.Infrastructure.Interfaces.IGenericRepository`1.GetGeneratedId(`0)">
+            <summary>
+            Get the generated ID for an entity after SaveChanges.
+            This method should be called after SaveChanges to get the generated ID.
+            </summary>
+            <param name="entity">The entity to get the ID for.</param>
+            <returns>The generated ID as a long.</returns>
         </member>
         <member name="T:Retail.Orders.Write.src.CleanArchitecture.Infrastructure.Interfaces.ILineItemRepository">
             <summary>
@@ -274,6 +289,21 @@
             Add a new object asynchronously.
             </summary>
             <param name="entity">An object type parameter T.</param>
+        </member>
+        <member name="M:Retail.Orders.Write.src.CleanArchitecture.Infrastructure.Repositories.GenericRepository`1.AddAndGetIdAsync(`0)">
+            <summary>
+            Add a new object asynchronously and return it with generated ID.
+            This method saves changes immediately to ensure the ID is generated.
+            </summary>
+            <param name="entity">An object type parameter T.</param>
+        </member>
+        <member name="M:Retail.Orders.Write.src.CleanArchitecture.Infrastructure.Repositories.GenericRepository`1.GetGeneratedId(`0)">
+            <summary>
+            Get the generated ID for an entity after SaveChanges.
+            This method should be called after SaveChanges to get the generated ID.
+            </summary>
+            <param name="entity">The entity to get the ID for.</param>
+            <returns>The generated ID as a long.</returns>
         </member>
         <member name="M:Retail.Orders.Write.src.CleanArchitecture.Infrastructure.Repositories.GenericRepository`1.GetAllAsync">
             <summary>
@@ -321,6 +351,13 @@
             Initializes a new instance of the <see cref="T:Retail.Orders.Write.src.CleanArchitecture.Infrastructure.Repositories.OrderRepository"/> class.
             </summary>
             <param name="context">Db context.</param>
+        </member>
+        <member name="M:Retail.Orders.Write.src.CleanArchitecture.Infrastructure.Repositories.OrderRepository.GetByIdAsync(System.Int64)">
+            <summary>
+            Gets order by Id including LineItems
+            </summary>
+            <param name="id">Order Id.</param>
+            <returns>Returns order with LineItems.</returns>
         </member>
         <member name="T:Retail.Orders.Write.src.CleanArchitecture.Infrastructure.UnitOfWork.UnitOfWork">
             <summary>

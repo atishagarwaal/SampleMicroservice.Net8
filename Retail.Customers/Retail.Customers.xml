@@ -58,6 +58,31 @@
             </summary>
             <param name="id">Customer Id.</param>
         </member>
+        <member name="T:Retail.Api.Customers.src.CleanArchitecture.API.Controllers.NotificationController">
+            <summary>
+            Notification controller class.
+            </summary>
+        </member>
+        <member name="M:Retail.Api.Customers.src.CleanArchitecture.API.Controllers.NotificationController.#ctor(Retail.Api.Customers.src.CleanArchitecture.Infrastructure.Interfaces.INotificationRepository,AutoMapper.IMapper)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Retail.Api.Customers.src.CleanArchitecture.API.Controllers.NotificationController"/> class.
+            </summary>
+            <param name="notificationRepository">Instance of notification repository class.</param>
+            <param name="mapper">Instance of AutoMapper.</param>
+        </member>
+        <member name="M:Retail.Api.Customers.src.CleanArchitecture.API.Controllers.NotificationController.Get">
+            <summary>
+            Method to return list of all notifications.
+            </summary>
+            <returns>List of notifications.</returns>
+        </member>
+        <member name="M:Retail.Api.Customers.src.CleanArchitecture.API.Controllers.NotificationController.Get(System.Int64)">
+            <summary>
+            Method to fetch notification record based on Id.
+            </summary>
+            <param name="id">Notification Id.</param>
+            <returns>Notification object.</returns>
+        </member>
         <member name="T:Retail.Api.Customers.src.CleanArchitecture.Application.Constants.MessageConstants">
             <summary>
             Constants class.
@@ -141,6 +166,46 @@
         <member name="M:Retail.Api.Customers.src.CleanArchitecture.Application.Mappings.CustomerProfile.#ctor">
             <summary>
             Initializes a new instance of the <see cref="T:Retail.Api.Customers.src.CleanArchitecture.Application.Mappings.CustomerProfile"/> class.
+            </summary>
+        </member>
+        <member name="T:Retail.Api.Customers.src.CleanArchitecture.Application.Mappings.NotificationProfile">
+            <summary>
+            Defines Notification profile for AutoMapper.
+            </summary>
+        </member>
+        <member name="M:Retail.Api.Customers.src.CleanArchitecture.Application.Mappings.NotificationProfile.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Retail.Api.Customers.src.CleanArchitecture.Application.Mappings.NotificationProfile"/> class.
+            </summary>
+        </member>
+        <member name="T:Retail.Api.Customers.src.CleanArchitecture.Application.Mappings.NotificationDto">
+            <summary>
+            Notification DTO for API responses.
+            </summary>
+        </member>
+        <member name="P:Retail.Api.Customers.src.CleanArchitecture.Application.Mappings.NotificationDto.Id">
+            <summary>
+            Gets or sets the Id.
+            </summary>
+        </member>
+        <member name="P:Retail.Api.Customers.src.CleanArchitecture.Application.Mappings.NotificationDto.OrderId">
+            <summary>
+            Gets or sets the Order Id.
+            </summary>
+        </member>
+        <member name="P:Retail.Api.Customers.src.CleanArchitecture.Application.Mappings.NotificationDto.CustomerId">
+            <summary>
+            Gets or sets the Customer Id.
+            </summary>
+        </member>
+        <member name="P:Retail.Api.Customers.src.CleanArchitecture.Application.Mappings.NotificationDto.Message">
+            <summary>
+            Gets or sets the message.
+            </summary>
+        </member>
+        <member name="P:Retail.Api.Customers.src.CleanArchitecture.Application.Mappings.NotificationDto.OrderDate">
+            <summary>
+            Gets or sets the order date.
             </summary>
         </member>
         <member name="T:Retail.Api.Customers.src.CleanArchitecture.Application.Service.CustomerService">

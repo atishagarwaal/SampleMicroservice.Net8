@@ -12,36 +12,11 @@
 <link href="css/dashboard.css" rel="stylesheet" />
 
 <div class="dashboard-container">
-    <div class="dashboard-header">
-        <h1>🏪 Retail Microservices Dashboard</h1>
-        <p class="dashboard-subtitle">Monitor services, view data, and manage business operations</p>
-        <div class="header-actions">
-            <button class="btn btn-primary" @onclick="LoadData">🔄 Load All Data</button>
-            <button class="btn btn-success" @onclick="ShowCreateOrderModal">➕ Create Order</button>
-        </div>
-    </div>
-    
 
 
-    <!-- Service Status Section -->
-    <div class="dashboard-section">
-        <h2>📊 Service Status</h2>
-        <div class="services-grid">
-            @foreach (var service in Services)
-            {
-                <div class="service-status-card @(service.Status.ToString().ToLowerInvariant())">
-                    <div class="service-icon">@GetServiceIcon(service.Name)</div>
-                    <div class="service-info">
-                        <h3>@service.Name</h3>
-                        <p class="service-url">@service.Url</p>
-                        <div class="service-status @(service.Status.ToString().ToLowerInvariant())">
-                            @service.Status
-                        </div>
-                    </div>
-                </div>
-            }
-        </div>
-    </div>
+
+
+
 
     <!-- Business Data Section -->
     <div class="dashboard-section">
@@ -56,6 +31,9 @@
                 </button>
                 <button class="tab-btn @(activeTab == "customers" ? "active" : "")" @onclick="SwitchToCustomers">
                     👥 Customers
+                </button>
+                <button class="tab-btn @(activeTab == "notifications" ? "active" : "")" @onclick="SwitchToNotifications">
+                    🔔 Notifications
                 </button>
             </div>
 
@@ -127,27 +105,68 @@
                                 <table>
                                     <thead>
                                         <tr>
-                                            <th>Order ID</th>
-                                            <th>Customer</th>
-                                            <th>Date</th>
-                                            <th>Total</th>
-                                            <th>Items</th>
+                                            <th>Order #</th>
+                                            <th>Customer Name</th>
+                                            <th>Order Date</th>
+                                            <th>Total Amount</th>
+                                            <th>Items Count</th>
+                                            <th>Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         @foreach (var order in orders)
                                         {
-                                            <tr>
-                                                <td>@order.OrderId</td>
-                                                <td>@order.CustomerName</td>
+                                            <tr class="order-row">
+                                                <td><strong>#@order.OrderId</strong></td>
+                                                <td><strong>@order.CustomerName</strong></td>
                                                 <td>@order.OrderDate.ToString("MMM dd, yyyy")</td>
-                                                <td>$@order.TotalAmount.ToString("F2")</td>
-                                                <td>@order.LineItems?.Count ?? 0 items</td>
+                                                <td><strong>$@order.TotalAmount.ToString("F2")</strong></td>
+                                                <td>@(order.LineItems?.Count ?? 0) items</td>
+                                                <td>
+                                                    <button class="btn btn-sm btn-outline-info" @onclick="() => ToggleOrderDetails(order.OrderId)">
+                                                        @(expandedOrders.Contains(order.OrderId) ? "👁️ Hide" : "👁️ Show") Details
+                                                    </button>
+                                                </td>
                                             </tr>
+                                            @if (expandedOrders.Contains(order.OrderId) && order.LineItems != null && order.LineItems.Any())
+                                            {
+                                                <tr class="order-details-row">
+                                                    <td colspan="6">
+                                                        <div class="order-details">
+                                                            <h4>📦 Order Items</h4>
+                                                            <div class="line-items-table">
+                                                                <table>
+                                                                    <thead>
+                                                                        <tr>
+                                                                            <th>Item ID</th>
+                                                                            <th>SKU ID</th>
+                                                                            <th>Quantity</th>
+                                                                            <th>Unit Price</th>
+                                                                            <th>Line Total</th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        @foreach (var item in order.LineItems)
+                                                                        {
+                                                                            <tr>
+                                                                                <td>@item.Id</td>
+                                                                                <td>@item.SkuId</td>
+                                                                                <td>@item.Qty</td>
+                                                                                <td>$@(GetProductPrice(item.SkuId)?.ToString("F2") ?? "N/A")</td>
+                                                                                <td>$@((GetProductPrice(item.SkuId) * item.Qty)?.ToString("F2") ?? "N/A")</td>
+                                                                            </tr>
+                                                                        }
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            }
                                         }
                                     </tbody>
                                 </table>
-                            </div>
+                    </div>
                         }
                         else
                         {
@@ -192,41 +211,56 @@
                         }
                     </div>
                 }
-            </div>
+                else if (activeTab == "notifications")
+                {
+                    <div class="notifications-tab">
+                        <div class="tab-header">
+                            <h3>Customer Notifications</h3>
+                            <button class="btn btn-primary" @onclick="RefreshNotifications">🔄 Refresh</button>
+                        </div>
+                        @if (notifications != null && notifications.Any())
+                        {
+                            <div class="data-table">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Notification ID</th>
+                                            <th>Customer ID</th>
+                                            <th>Order ID</th>
+                                            <th>Message</th>
+                                            <th>Order Date</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var notification in notifications)
+                                        {
+                                            <tr>
+                                                <td>@notification.Id</td>
+                                                <td>@notification.CustomerId</td>
+                                                <td>@notification.OrderId</td>
+                                                <td>@notification.Message</td>
+                                                <td>@notification.OrderDate.ToString("MMM dd, yyyy")</td>
+                                                <td>
+                                                    <span class="status-badge success">✅ Sent</span>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="no-data">No notifications available</div>
+                        }
+                    </div>
+                }
+            }
         </div>
     </div>
 
-    <!-- Message Flow Section -->
-    <div class="dashboard-section">
-        <h2>🔄 Message Flow</h2>
-        <div class="message-flow">
-            <div class="flow-diagram">
-                <div class="flow-row">
-                    <div class="flow-service bff">BFF Service</div>
-                    <div class="flow-arrow">→</div>
-                    <div class="flow-service customers">Customer Service</div>
-                </div>
-                <div class="flow-row">
-                    <div class="flow-service bff">BFF Service</div>
-                    <div class="flow-arrow">→</div>
-                    <div class="flow-service orders">Order Read Service</div>
-                </div>
-                <div class="flow-row">
-                    <div class="flow-service bff">BFF Service</div>
-                    <div class="flow-arrow">→</div>
-                    <div class="flow-service products">Product Service</div>
-                </div>
-                <div class="flow-row">
-                    <div class="flow-service orders-write">Order Write Service</div>
-                    <div class="flow-arrow">→</div>
-                    <div class="flow-service products">Product Service</div>
-                </div>
-            </div>
-            <div class="flow-description">
-                <p><strong>Event-Driven Architecture:</strong> When orders are created, the Product Service publishes inventory update events that are consumed by Customer Service and Order Read Service via RabbitMQ.</p>
-            </div>
-        </div>
-    </div>
+
 
     <!-- Event Flow Visualization Section -->
     <div class="dashboard-section">
@@ -257,6 +291,8 @@
         </div>
     </div>
 </div>
+
+
 
 <!-- Inventory Adjustment Modal -->
 @if (showInventoryModal)
@@ -358,3 +394,5 @@
         </div>
     </div>
 }
+
+</div>

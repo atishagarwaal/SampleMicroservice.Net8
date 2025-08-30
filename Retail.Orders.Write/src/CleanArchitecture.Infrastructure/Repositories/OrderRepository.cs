@@ -20,5 +20,17 @@ namespace Retail.Orders.Write.src.CleanArchitecture.Infrastructure.Repositories
         {
             _context = context;
         }
+
+        /// <summary>
+        /// Gets order by Id including LineItems
+        /// </summary>
+        /// <param name="id">Order Id.</param>
+        /// <returns>Returns order with LineItems.</returns>
+        public override async Task<Order?> GetByIdAsync(long id)
+        {
+            return await _context.Orders
+                .Include(o => o.LineItems)
+                .FirstOrDefaultAsync(o => o.Id == id);
+        }
     }
 }

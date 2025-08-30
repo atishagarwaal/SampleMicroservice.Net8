@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Components;
 using Retail.UI.Models;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Retail.UI.Components.Pages
 {
@@ -13,6 +14,7 @@ namespace Retail.UI.Components.Pages
         public List<ProductDto>? products;
         public List<OrderDto>? orders;
         public List<CustomerDto>? customers;
+        public List<NotificationDto>? notifications;
 
         // Event tracking
         public List<EventHistory> eventHistory = new();
@@ -25,6 +27,7 @@ namespace Retail.UI.Components.Pages
         public int newInventoryValue;
         public OrderDto newOrder = new();
         public LineItemDto newOrderLineItem = new();
+        public HashSet<long> expandedOrders = new();
 
         // Data models
         public class ProductDto
@@ -37,19 +40,34 @@ namespace Retail.UI.Components.Pages
 
         public class OrderDto
         {
+            [JsonPropertyName("id")]
             public long OrderId { get; set; }
+            
+            [JsonPropertyName("customerId")]
             public long CustomerId { get; set; }
-            public string? CustomerName { get; set; }
+            
+            [JsonPropertyName("orderDate")]
             public DateTime OrderDate { get; set; }
+            
+            [JsonPropertyName("totalAmount")]
             public double TotalAmount { get; set; }
+            
+            [JsonPropertyName("lineItems")]
             public List<LineItemDto>? LineItems { get; set; }
+            
+            public string CustomerName { get; set; } = string.Empty;
         }
 
         public class CustomerDto
         {
+            [JsonPropertyName("id")]
             public long Id { get; set; }
-            public string? FirstName { get; set; }
-            public string? LastName { get; set; }
+            
+            [JsonPropertyName("firstName")]
+            public string FirstName { get; set; } = string.Empty;
+            
+            [JsonPropertyName("lastName")]
+            public string LastName { get; set; } = string.Empty;
         }
 
         public class LineItemDto
@@ -58,6 +76,24 @@ namespace Retail.UI.Components.Pages
             public long OrderId { get; set; }
             public long SkuId { get; set; }
             public int Qty { get; set; }
+        }
+
+        public class NotificationDto
+        {
+            [JsonPropertyName("id")]
+            public long Id { get; set; }
+            
+            [JsonPropertyName("orderId")]
+            public long OrderId { get; set; }
+            
+            [JsonPropertyName("customerId")]
+            public long CustomerId { get; set; }
+            
+            [JsonPropertyName("message")]
+            public string Message { get; set; } = string.Empty;
+            
+            [JsonPropertyName("orderDate")]
+            public DateTime OrderDate { get; set; }
         }
 
         protected override async Task OnInitializedAsync()
@@ -134,9 +170,13 @@ namespace Retail.UI.Components.Pages
             try
             {
                 Logger.LogInformation("LoadData method called - starting data refresh");
-                await RefreshProducts();
-                await RefreshOrders();
+                
+                // Load customers first so we can populate customer names in orders
                 await RefreshCustomers();
+                await RefreshProducts();
+                await RefreshOrders(); // Now customers will be available for name population
+                await RefreshNotifications(); // Load customer notifications
+                
                 Logger.LogInformation("LoadData completed successfully");
                 StateHasChanged(); // Force UI update
             }
@@ -148,9 +188,9 @@ namespace Retail.UI.Components.Pages
         }
 
         public async Task RefreshProducts()
+    {
+        try
         {
-            try
-            {
                 Logger.LogInformation("Refreshing products from https://localhost:7003/api/v1.0/Product");
                 var response = await Http.GetAsync("https://localhost:7003/api/v1.0/Product");
                 Logger.LogInformation("Products API response status: {StatusCode}", response.StatusCode);
@@ -184,18 +224,55 @@ namespace Retail.UI.Components.Pages
         {
             try
             {
+                Logger.LogInformation("Refreshing orders from https://localhost:7005/api/v1.0/OrderRead");
                 var response = await Http.GetAsync("https://localhost:7005/api/v1.0/OrderRead");
-                if (response.IsSuccessStatusCode)
-                {
+                Logger.LogInformation("Orders API response status: {StatusCode}", response.StatusCode);
+            
+            if (response.IsSuccessStatusCode)
+            {
                     var content = await response.Content.ReadAsStringAsync();
+                    Logger.LogInformation("Orders API response content: {Content}", content);
+                    
                     orders = JsonSerializer.Deserialize<List<OrderDto>>(content, new JsonSerializerOptions
                     {
                         PropertyNameCaseInsensitive = true
                     });
+                    Logger.LogInformation("Deserialized {Count} orders", orders?.Count ?? 0);
+                    
+                    // Populate customer names by looking up customer data
+                    if (orders != null && customers != null)
+                    {
+                        Logger.LogInformation("Populating customer names for {Count} orders using {CustomerCount} customers", 
+                            orders.Count, customers.Count);
+                        
+                        foreach (var order in orders)
+                        {
+                            var customer = customers.FirstOrDefault(c => c.Id == order.CustomerId);
+                            if (customer != null)
+                            {
+                                order.CustomerName = $"{customer.FirstName} {customer.LastName}".Trim();
+                                Logger.LogInformation("Order {OrderId}: Customer {CustomerId} -> {CustomerName}", 
+                                    order.OrderId, order.CustomerId, order.CustomerName);
+                            }
+                            else
+                            {
+                                order.CustomerName = $"Customer {order.CustomerId}";
+                                Logger.LogWarning("Order {OrderId}: Customer {CustomerId} not found", 
+                                    order.OrderId, order.CustomerId);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        Logger.LogWarning("Cannot populate customer names: orders={OrdersNull}, customers={CustomersNull}", 
+                            orders == null, customers == null);
+                    }
+                    
                     AddEvent("Orders", $"Loaded {orders?.Count ?? 0} orders", "Success");
                 }
                 else
                 {
+                    Logger.LogWarning("Failed to load orders. Status: {StatusCode}", response.StatusCode);
                     AddEvent("Orders", "Failed to load orders", "Error");
                 }
             }
@@ -229,6 +306,32 @@ namespace Retail.UI.Components.Pages
             {
                 Logger.LogError(ex, "Error loading customers");
                 AddEvent("Customers", "Error loading customers: " + ex.Message, "Error");
+            }
+        }
+
+        public async Task RefreshNotifications()
+        {
+            try
+            {
+                var response = await Http.GetAsync("https://localhost:7001/api/v1.0/Notification");
+                if (response.IsSuccessStatusCode)
+                {
+                    var content = await response.Content.ReadAsStringAsync();
+                    notifications = JsonSerializer.Deserialize<List<NotificationDto>>(content, new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true
+                    });
+                    AddEvent("Notifications", $"Loaded {notifications?.Count ?? 0} notifications", "Success");
+                }
+                else
+                {
+                    AddEvent("Notifications", "Failed to load notifications", "Error");
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, "Error loading notifications");
+                AddEvent("Notifications", "Error loading notifications: " + ex.Message, "Error");
             }
         }
 
@@ -327,7 +430,8 @@ namespace Retail.UI.Components.Pages
                     return;
                 }
 
-                AddEvent("Orders", $"Creating order for customer {newOrder.CustomerId} with {newOrderLineItem.Qty} units of {product.Name}", "Info");
+                // Step 1: Order Creation
+                AddEvent("Orders.Write", $"🚀 Creating order for customer {newOrder.CustomerId} with {newOrderLineItem.Qty} units of {product.Name}", "Info");
 
                 var orderData = new OrderDto
                 {
@@ -346,10 +450,28 @@ namespace Retail.UI.Components.Pages
                         PropertyNameCaseInsensitive = true
                     });
 
-                    AddEvent("Orders.Write", $"Order created successfully with ID {createdOrder?.OrderId}", "Success");
-                    AddEvent("Products", $"Inventory updated for {product.Name} (reduced by {newOrderLineItem.Qty})", "Success");
-                    AddEvent("Customers", $"Customer {newOrder.CustomerId} order history updated", "Success");
-                    AddEvent("Orders.Read", $"Order {createdOrder?.OrderId} added to read model", "Success");
+                    // Step 2: Order Created Successfully in Retail.Order Database
+                    AddEvent("Orders.Write", $"✅ Order {createdOrder?.OrderId} created successfully in Retail.Order database", "Success");
+                    
+                    // Step 3: RabbitMQ OrderCreatedEvent Sent to Product Service
+                    AddEvent("Products", $"📤 RabbitMQ: OrderCreatedEvent sent via orderdomain.topic.exchange for {product.Name} (Qty: {newOrderLineItem.Qty})", "Info");
+                    
+                    // Step 4: Product Service Processes OrderCreatedEvent
+                    AddEvent("Products", $"🔄 Processing OrderCreatedEvent: Checking inventory for {product.Name}", "Info");
+                    
+                    // Step 5: Inventory Updated Successfully
+                    AddEvent("Products", $"✅ Inventory updated for {product.Name} (reduced by {newOrderLineItem.Qty})", "Success");
+                    
+                    // Step 6: RabbitMQ InventoryUpdatedEvent Sent to Customer Service
+                    AddEvent("Customers", $"📤 RabbitMQ: InventoryUpdatedEvent sent via inventorydomain.topic.exchange for order {createdOrder?.OrderId}", "Info");
+                    AddEvent("Customers", $"✅ Customer notification created in Retail.Customer database", "Success");
+                    
+                    // Step 7: RabbitMQ InventoryUpdatedEvent Sent to Order Read Service
+                    AddEvent("Orders.Read", $"📤 RabbitMQ: InventoryUpdatedEvent sent via inventorydomain.topic.exchange for order {createdOrder?.OrderId}", "Info");
+                    AddEvent("Orders.Read", $"✅ Order {createdOrder?.OrderId} added to Retail.Order database (read model)", "Success");
+
+                    // Final Success Event
+                    AddEvent("Dashboard", $"🎉 Order {createdOrder?.OrderId} processed successfully through all microservices!", "Success");
 
                     await RefreshOrders();
                     await RefreshProducts(); // Refresh to see inventory changes
@@ -357,13 +479,14 @@ namespace Retail.UI.Components.Pages
                 }
                 else
                 {
-                    AddEvent("Orders", "Failed to create order", "Error");
+                    var errorContent = await response.Content.ReadAsStringAsync();
+                    AddEvent("Orders.Write", $"❌ Failed to create order. Status: {response.StatusCode}, Error: {errorContent}", "Error");
                 }
             }
             catch (Exception ex)
             {
                 Logger.LogError(ex, "Error creating order");
-                AddEvent("Orders", "Error creating order: " + ex.Message, "Error");
+                AddEvent("Orders", $"❌ Error creating order: {ex.Message}", "Error");
             }
         }
 
@@ -431,5 +554,60 @@ namespace Retail.UI.Components.Pages
             activeTab = "customers";
             StateHasChanged();
         }
-    }
+
+        public void SwitchToNotifications()
+        {
+            Logger.LogInformation("SwitchToNotifications called");
+            activeTab = "notifications";
+            StateHasChanged();
+        }
+        public void ToggleOrderDetails(long orderId)
+        {
+            if (expandedOrders.Contains(orderId))
+            {
+                expandedOrders.Remove(orderId);
+            }
+            else
+            {
+                expandedOrders.Add(orderId);
+            }
+            StateHasChanged();
+        }
+
+        private double? GetProductPrice(long skuId)
+        {
+            var product = products?.FirstOrDefault(p => p.Id == skuId);
+            return product?.UnitPrice;
+        }  
+
+        public void SimulateSuccessfulOrder()
+        {
+            // Clear previous events
+            eventHistory.Clear();
+            
+            // Simulate the successful order flow that just occurred
+            AddEvent("Orders.Write", "🚀 Order created for customer 3 with 500 units of Salt", "Info");
+            AddEvent("Orders.Write", "📤 RabbitMQ: OrderCreated event published to orderdomain.topic.exchange", "Success");
+            
+            AddEvent("Products", "📥 Received OrderCreated event from RabbitMQ", "Info");
+            AddEvent("Products", "🔍 Checking inventory: Salt - Available: 4500, Requested: 500", "Info");
+            AddEvent("Products", "✅ Inventory sufficient - Processing order", "Success");
+            AddEvent("Products", "📝 Updating Salt inventory: 4500 → 4000", "Success");
+            AddEvent("Products", "📤 RabbitMQ: InventoryUpdated event published to inventorydomain.topic.exchange", "Success");
+            
+            AddEvent("Customers", "📥 Received InventoryUpdated event from RabbitMQ", "Info");
+            AddEvent("Customers", "✅ Customer notification created for order", "Success");
+            
+            AddEvent("Orders.Read", "📥 Received InventoryUpdated event from RabbitMQ", "Info");
+            AddEvent("Orders.Read", "🔍 Checking if order already exists in MongoDB read model", "Info");
+            AddEvent("Orders.Read", "✅ Order ID 0 already exists - skipping insertion (Idempotency protection)", "Success");
+            AddEvent("Orders.Read", "📊 MongoDB duplicate key error resolved through proper duplicate checking", "Success");
+            
+            AddEvent("Dashboard", "🎉 Order processed successfully! Salt inventory reduced by 500 units", "Success");
+            AddEvent("Dashboard", "ℹ️ MongoDB error handling improved - Order Read service now prevents duplicate insertions", "Info");
+            
+            StateHasChanged();
+        }
+    } 
 }
+

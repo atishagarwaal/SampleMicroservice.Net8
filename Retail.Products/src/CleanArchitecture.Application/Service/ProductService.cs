@@ -167,7 +167,9 @@ namespace Retail.Api.Products.src.CleanArchitecture.Application.Service
                     LineItems = orderCreatedEvent.LineItems.ToList(),
                 };
 
+                Console.WriteLine($"Product Service: Sending InventoryUpdatedEvent - OrderId: {inventoryUpdatedMessage.OrderId}, CustomerId: {inventoryUpdatedMessage.CustomerId}");
                 await _messagePublisher.PublishAsync<InventoryUpdatedEvent>(inventoryUpdatedMessage, RabbitmqConstants.InventoryUpdated).ConfigureAwait(false);
+                Console.WriteLine($"Product Service: InventoryUpdatedEvent sent successfully");
 
                 await unitOfWork.CommitTransactionAsync();
             }

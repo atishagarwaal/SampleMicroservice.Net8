@@ -9,3 +9,18 @@
         </LayoutView>
     </NotFound>
 </Router>
+
+@code {
+    [Inject]
+    private NavigationManager NavigationManager { get; set; } = default!;
+
+    protected override void OnInitialized()
+    {
+        // Redirect to dashboard by default
+        var uri = NavigationManager.Uri;
+        if (uri.EndsWith("/") || uri.EndsWith("/home"))
+        {
+            NavigationManager.NavigateTo("/dashboard");
+        }
+    }
+}

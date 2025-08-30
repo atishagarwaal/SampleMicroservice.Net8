@@ -1,0 +1,199 @@
+@page "/design"
+@using Retail.UI.Models
+
+<PageTitle>Microservices Design Documentation</PageTitle>
+<link href="css/dashboard.css" rel="stylesheet" />
+
+<div class="dashboard-container">
+    <div class="dashboard-header">
+        <h1>📚 Microservices Design Documentation</h1>
+        <p class="dashboard-subtitle">Complete architecture overview and technical details</p>
+        <div class="header-actions">
+            <a href="/dashboard" class="btn btn-primary">🏠 Back to Dashboard</a>
+        </div>
+    </div>
+
+    <!-- Event-Driven Order Processing Flow Section -->
+    <div class="dashboard-section">
+        <h2>🔄 Event-Driven Order Processing Flow</h2>
+        <div class="message-flow">
+            <div class="flow-diagram">
+                <div class="flow-step">
+                    <div class="step-number">1</div>
+                    <div class="flow-service orders-write">Order Write Service</div>
+                    <div class="step-description">Creates order in Retail.Order database</div>
+                </div>
+                <div class="flow-arrow">📤 RabbitMQ: orderdomain.topic.exchange</div>
+                <div class="flow-step">
+                    <div class="step-number">2</div>
+                    <div class="flow-service products">Product Service</div>
+                    <div class="step-description">Checks inventory & updates stock</div>
+                </div>
+                <div class="flow-arrow">📤 RabbitMQ: inventorydomain.topic.exchange</div>
+                <div class="flow-step">
+                    <div class="step-number">3a</div>
+                    <div class="flow-service customers">Customer Service</div>
+                    <div class="step-description">Creates notification in Retail.Customer database</div>
+                </div>
+                <div class="flow-arrow">📤 RabbitMQ: inventorydomain.topic.exchange</div>
+                <div class="flow-step">
+                    <div class="step-number">3b</div>
+                    <div class="flow-service orders-read">Order Read Service</div>
+                    <div class="step-description">Creates order in Retail.Order database (read model)</div>
+                </div>
+                <div class="flow-arrow">📤 RabbitMQ: rollback.topic.exchange</div>
+                <div class="flow-step">
+                    <div class="step-number">4</div>
+                    <div class="flow-service orders-write">Order Write Service</div>
+                    <div class="step-description">Deletes order if inventory insufficient</div>
+                </div>
+            </div>
+            <div class="flow-description">
+                <p><strong>Actual Event-Driven Architecture Flow:</strong></p>
+                <ol>
+                    <li><strong>Order Creation:</strong> Order Write Service creates order in Retail.Order database</li>
+                    <li><strong>Inventory Check:</strong> RabbitMQ message (OrderCreatedEvent) sent to Product Service via orderdomain.topic.exchange</li>
+                    <li><strong>Success Path:</strong> If stock available → Product Service updates inventory → sends InventoryUpdatedEvent to Customer Service and Order Read Service via inventorydomain.topic.exchange</li>
+                    <li><strong>Failure Path:</strong> If stock unavailable → Product Service sends InventoryErrorEvent to Order Write Service via rollback.topic.exchange → Order Write Service deletes order</li>
+                </ol>
+                <div class="error-handling-note">
+                    <h4>🔄 Error Handling & Dead Letter Exchange:</h4>
+                    <p>When the Order Read Service encounters duplicate keys or other errors, messages are automatically sent to the <strong>dead letter exchange (dlx.topic.exchange)</strong>. This provides:</p>
+                    <ul>
+                        <li><strong>Retry Mechanisms:</strong> Failed messages can be reprocessed</li>
+                        <li><strong>Error Isolation:</strong> Problematic messages don't block the system</li>
+                        <li><strong>Monitoring:</strong> Failed messages can be analyzed and debugged</li>
+                        <li><strong>Idempotency:</strong> Prevents duplicate processing of the same event</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Database Tables & Data Flow Section -->
+    <div class="dashboard-section">
+        <h2>🗄️ Database Tables & Data Flow</h2>
+        <div class="database-flow">
+            <div class="database-diagram">
+                <div class="db-service">
+                    <div class="db-service-header">📝 Orders.Write Service</div>
+                    <div class="db-table">
+                        <h4>Retail.Order Database</h4>
+                        <ul>
+                            <li><strong>Orders Table:</strong> Stores order details (ID, CustomerID, OrderDate, TotalAmount)</li>
+                            <li><strong>LineItems Table:</strong> Stores order line items (ID, OrderID, SkuID, Qty)</li>
+                        </ul>
+                        <h4>Processes:</h4>
+                        <ul>
+                            <li><strong>Create Order:</strong> Receives order creation requests via API</li>
+                            <li><strong>Database Transaction:</strong> Creates order and line items in Retail.Order database</li>
+                            <li><strong>Event Publishing:</strong> Publishes OrderCreatedEvent to RabbitMQ</li>
+                            <li><strong>Rollback Handling:</strong> Receives InventoryErrorEvent and deletes failed orders</li>
+                            <li><strong>Error Recovery:</strong> Handles transaction rollbacks and cleanup</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="db-arrow">📤 OrderCreatedEvent</div>
+                <div class="db-service">
+                    <div class="db-service-header">📦 Products Service</div>
+                    <div class="db-table">
+                        <h4>Retail.Product Database</h4>
+                        <ul>
+                            <li><strong>Skus Table:</strong> Stores product inventory (ID, Name, UnitPrice, Inventory)</li>
+                        </ul>
+                        <h4>Processes:</h4>
+                        <ul>
+                            <li><strong>Event Subscription:</strong> Listens to OrderCreatedEvent from RabbitMQ</li>
+                            <li><strong>Inventory Validation:</strong> Checks if requested quantity is available</li>
+                            <li><strong>Stock Update:</strong> Reduces inventory when order is processed</li>
+                            <li><strong>Success Event:</strong> Publishes InventoryUpdatedEvent on success</li>
+                            <li><strong>Error Handling:</strong> Publishes InventoryErrorEvent if stock insufficient</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="db-arrow">📤 InventoryUpdatedEvent</div>
+                <div class="db-service">
+                    <div class="db-service-header">👥 Customers Service</div>
+                    <div class="db-table">
+                        <h4>Retail.Customer Database</h4>
+                        <ul>
+                            <li><strong>Customers Table:</strong> Stores customer info (ID, FirstName, LastName)</li>
+                            <li><strong>Notifications Table:</strong> Stores order notifications (NotificationID, CustomerID, OrderID, Message, OrderDate)</li>
+                        </ul>
+                        <h4>Processes:</h4>
+                        <ul>
+                            <li><strong>Event Subscription:</strong> Listens to InventoryUpdatedEvent from RabbitMQ</li>
+                            <li><strong>Customer Validation:</strong> Verifies customer exists in database</li>
+                            <li><strong>Notification Creation:</strong> Creates order success notifications</li>
+                            <li><strong>Data Persistence:</strong> Stores notifications in Retail.Customer database</li>
+                            <li><strong>Transaction Management:</strong> Handles database transactions safely</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="db-arrow">📤 InventoryUpdatedEvent</div>
+                <div class="db-service">
+                    <div class="db-service-header">📖 Orders.Read Service</div>
+                    <div class="db-table">
+                        <h4>Retail.Order Database (Read Model)</h4>
+                        <ul>
+                            <li><strong>Orders Table:</strong> Stores order read model (ID, CustomerID, OrderDate, TotalAmount)</li>
+                            <li><strong>LineItems Table:</strong> Stores order line items for read operations</li>
+                        </ul>
+                        <h4>Processes:</h4>
+                        <ul>
+                            <li><strong>Event Subscription:</strong> Listens to InventoryUpdatedEvent from RabbitMQ</li>
+                            <li><strong>Duplicate Prevention:</strong> Checks if order already exists before insertion</li>
+                            <li><strong>Read Model Update:</strong> Creates order records in MongoDB read model</li>
+                            <li><strong>Data Consistency:</strong> Maintains synchronized read model for queries</li>
+                            <li><strong>Error Handling:</strong> Gracefully handles duplicate key scenarios</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="db-description">
+                <p><strong>Data Flow Summary:</strong></p>
+                <ul>
+                    <li><strong>Write Operations:</strong> Orders.Write Service creates orders in Retail.Order database</li>
+                    <li><strong>Event Processing:</strong> Product Service processes OrderCreatedEvent and updates inventory</li>
+                    <li><strong>Read Operations:</strong> Orders.Read Service maintains a read model in Retail.Order database</li>
+                    <li><strong>Notifications:</strong> Customer Service creates notifications when orders are processed</li>
+                    <li><strong>Rollback:</strong> If inventory insufficient, Order Write Service deletes the order via InventoryErrorEvent</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Technical Architecture Section -->
+    <div class="dashboard-section">
+        <h2>🏗️ Technical Architecture</h2>
+        <div class="architecture-details">
+            <div class="arch-item">
+                <h3>🔌 Communication Protocol</h3>
+                <ul>
+                    <li><strong>RabbitMQ:</strong> Message broker for asynchronous communication</li>
+                    <li><strong>Topic Exchanges:</strong> Used for event routing between services</li>
+                    <li><strong>Dead Letter Exchange:</strong> Handles failed message processing</li>
+                    <li><strong>Routing Keys:</strong> Event-specific routing for message delivery</li>
+                </ul>
+            </div>
+            <div class="arch-item">
+                <h3>🗄️ Database Strategy</h3>
+                <ul>
+                    <li><strong>Write Model:</strong> SQL Server for transactional operations</li>
+                    <li><strong>Read Model:</strong> MongoDB for query performance</li>
+                    <li><strong>Event Sourcing:</strong> Events drive data consistency</li>
+                    <li><strong>CQRS Pattern:</strong> Separate read and write models</li>
+                </ul>
+            </div>
+            <div class="arch-item">
+                <h3>🔄 Event Flow</h3>
+                <ul>
+                    <li><strong>OrderCreatedEvent:</strong> Triggers inventory check</li>
+                    <li><strong>InventoryUpdatedEvent:</strong> Triggers customer notification and read model update</li>
+                    <li><strong>InventoryErrorEvent:</strong> Triggers order rollback</li>
+                    <li><strong>Idempotency:</strong> Prevents duplicate event processing</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>

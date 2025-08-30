@@ -9,7 +9,7 @@ namespace Retail.Api.Customers.src.CleanArchitecture.Infrastructure.Repositories
     /// <summary>
     /// Generic repository class.
     /// </summary>
-    internal class GenericRepository<T> : IGenericRepository<T> where T : class
+    public class GenericRepository<T> : IGenericRepository<T> where T : class
     {
         protected readonly ApplicationDbContext _context;
         protected readonly DbSet<T> _dbSet;

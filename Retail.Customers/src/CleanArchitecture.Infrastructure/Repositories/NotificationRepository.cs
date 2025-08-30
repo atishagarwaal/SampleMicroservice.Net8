@@ -1,13 +1,13 @@
 ﻿using Retail.Api.Customers.src.CleanArchitecture.Domain.Entities;
 using Retail.Api.Customers.src.CleanArchitecture.Infrastructure.Data;
-using Retail.Customers.src.CleanArchitecture.Infrastructure.Interfaces;
+using Retail.Api.Customers.src.CleanArchitecture.Infrastructure.Interfaces;
 
 namespace Retail.Api.Customers.src.CleanArchitecture.Infrastructure.Repositories
 {
     /// <summary>
     /// Notification repository class.
     /// </summary>
-    internal class NotificationRepository : GenericRepository<Notification>, INotificationRepository
+    public class NotificationRepository : GenericRepository<Notification>, INotificationRepository
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="NotificationRepository"/> class.
