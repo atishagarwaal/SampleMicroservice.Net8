@@ -1,88 +1,122 @@
-asyncapi: 2.6.0
+asyncapi: 3.0.0
 info:
-  title: Retail Orders Messaging API
+  title: Retail Orders Write Service Messaging API
   version: 1.0.0
-  description: AsyncAPI specification for retail orders messaging
+  description: Messaging API for the Retail Orders Write service, handling order creation and processing events
   license:
     name: Proprietary
+  contact:
+    name: Development Team
 servers:
-  production:
-    url: rabbitmq://rabbitmq-server:5672
-    protocol: amqp
-    description: Production RabbitMQ server
-  development:
-    url: rabbitmq://localhost:5672
+  rabbitmq-dev:
+    host: localhost:5672
     protocol: amqp
     description: Development RabbitMQ server
+  rabbitmq-prod:
+    host: rabbitmq-server:5672
+    protocol: amqp
+    description: Production RabbitMQ server
+defaultContentType: application/json
 channels:
-  order.created:
-    publish:
-      message:
-        $ref: '#/components/messages/OrderCreated'
-  order.updated:
-    publish:
-      message:
-        $ref: '#/components/messages/OrderUpdated'
-  order.cancelled:
-    publish:
-      message:
-        $ref: '#/components/messages/OrderCancelled'
-  order.completed:
-    publish:
-      message:
-        $ref: '#/components/messages/OrderCompleted'
-  customer.updated:
-    subscribe:
-      message:
-        $ref: '#/components/messages/CustomerUpdated'
-  product.updated:
-    subscribe:
-      message:
-        $ref: '#/components/messages/ProductUpdated'
+  orderCreatedEvent:
+    address: orderdomain.topic.exchange/order.created.event
+    description: Channel for publishing order creation events
+    messages:
+      orderCreated:
+        $ref: '#/components/messages/OrderCreatedEvent'
+    operations:
+      sendOrderCreated:
+        action: send
+        summary: Send order created event
+        description: Orders.Write service publishes order creation events when new orders are created
+  orderUpdatedEvent:
+    address: orderdomain.topic.exchange/order.updated.event
+    description: Channel for publishing order update events
+    messages:
+      orderUpdated:
+        $ref: '#/components/messages/OrderUpdatedEvent'
+    operations:
+      sendOrderUpdated:
+        action: send
+        summary: Send order updated event
+        description: Orders.Write service publishes order update events when orders are modified
+  orderCancelledEvent:
+    address: orderdomain.topic.exchange/order.cancelled.event
+    description: Channel for publishing order cancellation events
+    messages:
+      orderCancelled:
+        $ref: '#/components/messages/OrderCancelledEvent'
+    operations:
+      sendOrderCancelled:
+        action: send
+        summary: Send order cancelled event
+        description: Orders.Write service publishes order cancellation events when orders are cancelled
+  orderCompletedEvent:
+    address: orderdomain.topic.exchange/order.completed.event
+    description: Channel for publishing order completion events
+    messages:
+      orderCompleted:
+        $ref: '#/components/messages/OrderCompletedEvent'
+    operations:
+      sendOrderCompleted:
+        action: send
+        summary: Send order completed event
+        description: Orders.Write service publishes order completion events when orders are completed
+operations:
+  sendOrderCreated:
+    action: send
+    channel:
+      $ref: '#/channels/orderCreatedEvent'
+    summary: Send order created event
+    description: Orders.Write service publishes order creation events to trigger downstream processing
+  sendOrderUpdated:
+    action: send
+    channel:
+      $ref: '#/channels/orderUpdatedEvent'
+    summary: Send order updated event
+    description: Orders.Write service publishes order update events when order details change
+  sendOrderCancelled:
+    action: send
+    channel:
+      $ref: '#/channels/orderCancelledEvent'
+    summary: Send order cancelled event
+    description: Orders.Write service publishes order cancellation events when orders are cancelled
+  sendOrderCompleted:
+    action: send
+    channel:
+      $ref: '#/channels/orderCompletedEvent'
+    summary: Send order completed event
+    description: Orders.Write service publishes order completion events when orders are fulfilled
 components:
   messages:
-    OrderCreated:
-      name: OrderCreated
+    OrderCreatedEvent:
+      name: OrderCreatedEvent
       title: Order Created Event
-      summary: Published when a new order is created
+      summary: Event published when a new order is created
       contentType: application/json
       payload:
         $ref: '#/components/schemas/OrderCreatedEvent'
-    OrderUpdated:
-      name: OrderUpdated
+    OrderUpdatedEvent:
+      name: OrderUpdatedEvent
       title: Order Updated Event
-      summary: Published when an order is updated
+      summary: Event published when an order is updated
       contentType: application/json
       payload:
         $ref: '#/components/schemas/OrderUpdatedEvent'
-    OrderCancelled:
-      name: OrderCancelled
+    OrderCancelledEvent:
+      name: OrderCancelledEvent
       title: Order Cancelled Event
-      summary: Published when an order is cancelled
+      summary: Event published when an order is cancelled
       contentType: application/json
       payload:
         $ref: '#/components/schemas/OrderCancelledEvent'
-    OrderCompleted:
-      name: OrderCompleted
+    OrderCompletedEvent:
+      name: OrderCompletedEvent
       title: Order Completed Event
-      summary: Published when an order is completed
+      summary: Event published when an order is completed
       contentType: application/json
       payload:
         $ref: '#/components/schemas/OrderCompletedEvent'
-    CustomerUpdated:
-      name: CustomerUpdated
-      title: Customer Updated Event
-      summary: Received when a customer is updated
-      contentType: application/json
-      payload:
-        $ref: '#/components/schemas/CustomerUpdatedEvent'
-    ProductUpdated:
-      name: ProductUpdated
-      title: Product Updated Event
-      summary: Received when a product is updated
-      contentType: application/json
-      payload:
-        $ref: '#/components/schemas/ProductUpdatedEvent'
   schemas:
     OrderCreatedEvent:
       type: object
@@ -120,10 +154,12 @@ components:
           items:
             $ref: '#/components/schemas/OrderItem'
           description: Items in the order
+          minItems: 1
         totalAmount:
           type: number
           format: decimal
           description: Total amount of the order
+          minimum: 0
         shippingAddress:
           $ref: '#/components/schemas/Address'
     OrderUpdatedEvent:
@@ -212,64 +248,6 @@ components:
           type: string
           format: date-time
           description: When the order was completed
-    CustomerUpdatedEvent:
-      type: object
-      required:
-        - eventId
-        - eventType
-        - timestamp
-        - customerId
-        - changes
-      properties:
-        eventId:
-          type: string
-          format: uuid
-          description: Unique identifier for the event
-        eventType:
-          type: string
-          enum: [CustomerUpdated]
-          description: Type of the event
-        timestamp:
-          type: string
-          format: date-time
-          description: When the event occurred
-        customerId:
-          type: string
-          format: uuid
-          description: Unique identifier for the customer
-        changes:
-          type: object
-          description: Fields that were changed
-          additionalProperties: true
-    ProductUpdatedEvent:
-      type: object
-      required:
-        - eventId
-        - eventType
-        - timestamp
-        - productId
-        - changes
-      properties:
-        eventId:
-          type: string
-          format: uuid
-          description: Unique identifier for the event
-        eventType:
-          type: string
-          enum: [ProductUpdated]
-          description: Type of the event
-        timestamp:
-          type: string
-          format: date-time
-          description: When the event occurred
-        productId:
-          type: string
-          format: uuid
-          description: Unique identifier for the product
-        changes:
-          type: object
-          description: Fields that were changed
-          additionalProperties: true
     OrderItem:
       type: object
       required:
@@ -283,18 +261,19 @@ components:
           description: Unique identifier for the product
         quantity:
           type: integer
-          minimum: 1
           description: Quantity of the product
+          minimum: 1
         unitPrice:
           type: number
           format: decimal
-          minimum: 0
           description: Price per unit
+          minimum: 0
         totalPrice:
           type: number
           format: decimal
+          description: Total price for this line item (qty * unitPrice)
           minimum: 0
-          description: Total price for this line item
+
     Address:
       type: object
       properties:
@@ -313,3 +292,7 @@ components:
         country:
           type: string
           description: Country
+  securitySchemes:
+    userPassword:
+      type: userPassword
+      description: RabbitMQ username and password authentication

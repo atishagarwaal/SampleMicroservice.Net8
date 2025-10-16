@@ -79,19 +79,6 @@ components:
       contentType: application/json
       payload:
         $ref: '#/components/schemas/OrderCreatedEvent'
-      examples:
-        - name: OrderCreatedExample
-          summary: Example of order created event
-          payload:
-            customerId: "123e4567-e89b-12d3-a456-426614174000"
-            orderId: "987fcdeb-51a2-43d7-8f9e-123456789abc"
-            orderDate: "2024-01-15T10:30:00Z"
-            totalAmount: 299.99
-            lineItems:
-              - skuId: "456e7890-e89b-12d3-a456-426614174001"
-                qty: 2
-                unitPrice: 149.99
-                totalPrice: 299.98
     InventoryUpdatedEvent:
       name: InventoryUpdatedEvent
       title: Inventory Updated Event
@@ -99,19 +86,6 @@ components:
       contentType: application/json
       payload:
         $ref: '#/components/schemas/InventoryUpdatedEvent'
-      examples:
-        - name: InventoryUpdatedExample
-          summary: Example of inventory updated event
-          payload:
-            customerId: "123e4567-e89b-12d3-a456-426614174000"
-            orderId: "987fcdeb-51a2-43d7-8f9e-123456789abc"
-            orderDate: "2024-01-15T10:30:00Z"
-            totalAmount: 299.99
-            lineItems:
-              - skuId: "456e7890-e89b-12d3-a456-426614174001"
-                qty: 2
-                unitPrice: 149.99
-                totalPrice: 299.98
     InventoryErrorEvent:
       name: InventoryErrorEvent
       title: Inventory Error Event
@@ -119,15 +93,6 @@ components:
       contentType: application/json
       payload:
         $ref: '#/components/schemas/InventoryErrorEvent'
-      examples:
-        - name: InventoryErrorExample
-          summary: Example of inventory error event
-          payload:
-            customerId: "123e4567-e89b-12d3-a456-426614174000"
-            orderId: "987fcdeb-51a2-43d7-8f9e-123456789abc"
-            orderDate: "2024-01-15T10:30:00Z"
-            totalAmount: 299.99
-            errorMessage: "Insufficient inventory for SKU 456e7890-e89b-12d3-a456-426614174001"
   schemas:
     OrderCreatedEvent:
       type: object
@@ -142,23 +107,19 @@ components:
           type: string
           format: uuid
           description: Unique identifier of the customer who placed the order
-          example: "123e4567-e89b-12d3-a456-426614174000"
         orderId:
           type: string
           format: uuid
           description: Unique identifier of the order
-          example: "987fcdeb-51a2-43d7-8f9e-123456789abc"
         orderDate:
           type: string
           format: date-time
           description: Date and time when the order was created
-          example: "2024-01-15T10:30:00Z"
         totalAmount:
           type: number
           format: decimal
           description: Total amount of the order
           minimum: 0
-          example: 299.99
         lineItems:
           type: array
           description: List of items in the order
@@ -178,23 +139,19 @@ components:
           type: string
           format: uuid
           description: Unique identifier of the customer who placed the order
-          example: "123e4567-e89b-12d3-a456-426614174000"
         orderId:
           type: string
           format: uuid
           description: Unique identifier of the order
-          example: "987fcdeb-51a2-43d7-8f9e-123456789abc"
         orderDate:
           type: string
           format: date-time
           description: Date and time when the order was created
-          example: "2024-01-15T10:30:00Z"
         totalAmount:
           type: number
           format: decimal
           description: Total amount of the order
           minimum: 0
-          example: 299.99
         lineItems:
           type: array
           description: List of items in the order
@@ -213,27 +170,22 @@ components:
           type: string
           format: uuid
           description: Unique identifier of the customer who placed the order
-          example: "123e4567-e89b-12d3-a456-426614174000"
         orderId:
           type: string
           format: uuid
           description: Unique identifier of the order
-          example: "987fcdeb-51a2-43d7-8f9e-123456789abc"
         orderDate:
           type: string
           format: date-time
           description: Date and time when the order was created
-          example: "2024-01-15T10:30:00Z"
         totalAmount:
           type: number
           format: decimal
           description: Total amount of the order
           minimum: 0
-          example: 299.99
         errorMessage:
           type: string
           description: Description of the error that occurred during inventory processing
-          example: "Insufficient inventory for SKU 456e7890-e89b-12d3-a456-426614174001"
     LineItem:
       type: object
       required:
@@ -246,24 +198,21 @@ components:
           type: string
           format: uuid
           description: Unique identifier of the product SKU
-          example: "456e7890-e89b-12d3-a456-426614174001"
         qty:
           type: integer
           description: Quantity of the product ordered
           minimum: 1
-          example: 2
         unitPrice:
           type: number
           format: decimal
           description: Price per unit of the product
           minimum: 0
-          example: 149.99
         totalPrice:
           type: number
           format: decimal
           description: Total price for this line item (qty * unitPrice)
           minimum: 0
-          example: 299.98
+
   securitySchemes:
     userPassword:
       type: userPassword

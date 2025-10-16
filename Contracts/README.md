@@ -8,7 +8,8 @@ This folder contains API contracts and specifications for the Sample Microservic
 - **Retail-BFF-OpenAPI-v1.0.0.yaml**: REST API specification for the BFF service (external API)
 
 ### AsyncAPI Specifications
-- **Retail-Orders-AsyncAPI-v1.0.0.yaml**: Messaging API specification for order events (Orders.Write service)
+- **Retail-Orders-Write-AsyncAPI-v1.0.0.yaml**: Messaging API specification for order write events (Orders.Write service)
+- **Retail-Orders-Read-AsyncAPI-v1.0.0.yaml**: Messaging API specification for order read events (Orders.Read service)
 - **Retail-Customers-AsyncAPI-v1.0.0.yaml**: Messaging API specification for customer events (Customers service)
 - **Retail-Products-AsyncAPI-v1.0.0.yaml**: Messaging API specification for product/inventory events (Products service)
 
@@ -24,7 +25,7 @@ The BFF OpenAPI specification defines the external REST API contract that client
 ### AsyncAPI Specifications
 The AsyncAPI specifications define the messaging contracts for event-driven communication between the core microservices. Each service has its own AsyncAPI specification:
 
-- **Orders.Write**: Publishes `OrderCreatedEvent` when orders are created
+- **Orders.Write**: Publishes `OrderCreatedEvent`, `OrderUpdatedEvent`, `OrderCancelledEvent`, and `OrderCompletedEvent`
 - **Products**: Subscribes to `OrderCreatedEvent`, publishes `InventoryUpdatedEvent` and `InventoryErrorEvent`
 - **Customers**: Subscribes to `InventoryUpdatedEvent` for customer notifications
 - **Orders.Read**: Subscribes to `InventoryUpdatedEvent` for read model updates

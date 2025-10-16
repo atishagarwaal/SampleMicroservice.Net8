@@ -1,8 +1,8 @@
 asyncapi: 3.0.0
 info:
-  title: Retail Customers Service Messaging API
+  title: Retail Orders Read Service Messaging API
   version: 1.0.0
-  description: Messaging API for the Retail Customers service, handling customer-related events and notifications
+  description: Messaging API for the Retail Orders Read service, handling order read model updates and querying
   license:
     name: Proprietary
   contact:
@@ -28,20 +28,20 @@ channels:
       receiveInventoryUpdated:
         action: receive
         summary: Receive inventory updated event
-        description: Customer service receives inventory update notifications to process customer notifications
+        description: Orders.Read service receives inventory update events to update read models
 operations:
   receiveInventoryUpdated:
     action: receive
     channel:
       $ref: '#/channels/inventoryUpdatedEvent'
     summary: Receive inventory updated event
-    description: Customer service subscribes to inventory update events to notify customers about order status changes
+    description: Orders.Read service subscribes to inventory update events to maintain read model consistency
 components:
   messages:
     InventoryUpdatedEvent:
       name: InventoryUpdatedEvent
       title: Inventory Updated Event
-      summary: Event published when inventory is updated after an order
+      summary: Event received when inventory is updated after order processing
       contentType: application/json
       payload:
         $ref: '#/components/schemas/InventoryUpdatedEvent'
@@ -92,7 +92,7 @@ components:
           description: Unique identifier of the product SKU
         qty:
           type: integer
-          description: Quantity of the product ordered
+          description: Quantity of the product
           minimum: 1
         unitPrice:
           type: number
@@ -104,6 +104,7 @@ components:
           format: decimal
           description: Total price for this line item (qty * unitPrice)
           minimum: 0
+
   securitySchemes:
     userPassword:
       type: userPassword
