@@ -1,83 +1,57 @@
 asyncapi: 3.0.0
 info:
-  title: Retail Customers Service Messaging API
+  title: Retail Customers Service
   version: 1.0.0
   description: Messaging API for the Retail Customers service, handling customer-related events and notifications
-  license:
-    name: Proprietary
-  contact:
-    name: Development Team
-servers:
-  rabbitmq-dev:
-    host: localhost:5672
-    protocol: amqp
-    description: Development RabbitMQ server
-  rabbitmq-prod:
-    host: rabbitmq-server:5672
-    protocol: amqp
-    description: Production RabbitMQ server
-defaultContentType: application/json
 channels:
   inventoryUpdatedEvent:
     address: inventorydomain.topic.exchange/inventory.updated.event
-    description: Channel for receiving inventory update events from the Products service
     messages:
-      inventoryUpdated:
+      InventoryUpdatedEvent:
         $ref: '#/components/messages/InventoryUpdatedEvent'
-    operations:
-      receiveInventoryUpdated:
-        action: receive
-        summary: Receive inventory updated event
-        description: Customer service receives inventory update notifications to process customer notifications
 operations:
   receiveInventoryUpdated:
     action: receive
     channel:
       $ref: '#/channels/inventoryUpdatedEvent'
-    summary: Receive inventory updated event
-    description: Customer service subscribes to inventory update events to notify customers about order status changes
+    messages:
+      - $ref: '#/channels/inventoryUpdatedEvent/messages/InventoryUpdatedEvent'
 components:
   messages:
     InventoryUpdatedEvent:
-      name: InventoryUpdatedEvent
-      title: Inventory Updated Event
-      summary: Event published when inventory is updated after an order
-      contentType: application/json
       payload:
-        $ref: '#/components/schemas/InventoryUpdatedEvent'
+        type: object
+        required:
+          - customerId
+          - orderId
+          - orderDate
+          - totalAmount
+          - lineItems
+        properties:
+          customerId:
+            type: string
+            format: uuid
+            description: Unique identifier of the customer who placed the order
+          orderId:
+            type: string
+            format: uuid
+            description: Unique identifier of the order
+          orderDate:
+            type: string
+            format: date-time
+            description: Date and time when the order was created
+          totalAmount:
+            type: number
+            format: decimal
+            description: Total amount of the order
+            minimum: 0
+          lineItems:
+            type: array
+            description: List of items in the order
+            items:
+              $ref: '#/components/schemas/LineItem'
+            minItems: 1
   schemas:
-    InventoryUpdatedEvent:
-      type: object
-      required:
-        - customerId
-        - orderId
-        - orderDate
-        - totalAmount
-        - lineItems
-      properties:
-        customerId:
-          type: string
-          format: uuid
-          description: Unique identifier of the customer who placed the order
-        orderId:
-          type: string
-          format: uuid
-          description: Unique identifier of the order
-        orderDate:
-          type: string
-          format: date-time
-          description: Date and time when the order was created
-        totalAmount:
-          type: number
-          format: decimal
-          description: Total amount of the order
-          minimum: 0
-        lineItems:
-          type: array
-          description: List of items in the order
-          items:
-            $ref: '#/components/schemas/LineItem'
-          minItems: 1
     LineItem:
       type: object
       required:
@@ -104,7 +78,3 @@ components:
           format: decimal
           description: Total price for this line item (qty * unitPrice)
           minimum: 0
-  securitySchemes:
-    userPassword:
-      type: userPassword
-      description: RabbitMQ username and password authentication

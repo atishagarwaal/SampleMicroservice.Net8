@@ -59,6 +59,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="src\CleanArchitecture.Contracts\" />
     <Folder Include="tests\" />
   </ItemGroup>
 
