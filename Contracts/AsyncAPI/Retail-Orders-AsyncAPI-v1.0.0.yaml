@@ -1,0 +1,315 @@
+asyncapi: 2.6.0
+info:
+  title: Retail Orders Messaging API
+  version: 1.0.0
+  description: AsyncAPI specification for retail orders messaging
+  license:
+    name: Proprietary
+servers:
+  production:
+    url: rabbitmq://rabbitmq-server:5672
+    protocol: amqp
+    description: Production RabbitMQ server
+  development:
+    url: rabbitmq://localhost:5672
+    protocol: amqp
+    description: Development RabbitMQ server
+channels:
+  order.created:
+    publish:
+      message:
+        $ref: '#/components/messages/OrderCreated'
+  order.updated:
+    publish:
+      message:
+        $ref: '#/components/messages/OrderUpdated'
+  order.cancelled:
+    publish:
+      message:
+        $ref: '#/components/messages/OrderCancelled'
+  order.completed:
+    publish:
+      message:
+        $ref: '#/components/messages/OrderCompleted'
+  customer.updated:
+    subscribe:
+      message:
+        $ref: '#/components/messages/CustomerUpdated'
+  product.updated:
+    subscribe:
+      message:
+        $ref: '#/components/messages/ProductUpdated'
+components:
+  messages:
+    OrderCreated:
+      name: OrderCreated
+      title: Order Created Event
+      summary: Published when a new order is created
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/OrderCreatedEvent'
+    OrderUpdated:
+      name: OrderUpdated
+      title: Order Updated Event
+      summary: Published when an order is updated
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/OrderUpdatedEvent'
+    OrderCancelled:
+      name: OrderCancelled
+      title: Order Cancelled Event
+      summary: Published when an order is cancelled
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/OrderCancelledEvent'
+    OrderCompleted:
+      name: OrderCompleted
+      title: Order Completed Event
+      summary: Published when an order is completed
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/OrderCompletedEvent'
+    CustomerUpdated:
+      name: CustomerUpdated
+      title: Customer Updated Event
+      summary: Received when a customer is updated
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/CustomerUpdatedEvent'
+    ProductUpdated:
+      name: ProductUpdated
+      title: Product Updated Event
+      summary: Received when a product is updated
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/ProductUpdatedEvent'
+  schemas:
+    OrderCreatedEvent:
+      type: object
+      required:
+        - eventId
+        - eventType
+        - timestamp
+        - orderId
+        - customerId
+        - orderItems
+        - totalAmount
+      properties:
+        eventId:
+          type: string
+          format: uuid
+          description: Unique identifier for the event
+        eventType:
+          type: string
+          enum: [OrderCreated]
+          description: Type of the event
+        timestamp:
+          type: string
+          format: date-time
+          description: When the event occurred
+        orderId:
+          type: string
+          format: uuid
+          description: Unique identifier for the order
+        customerId:
+          type: string
+          format: uuid
+          description: ID of the customer who placed the order
+        orderItems:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderItem'
+          description: Items in the order
+        totalAmount:
+          type: number
+          format: decimal
+          description: Total amount of the order
+        shippingAddress:
+          $ref: '#/components/schemas/Address'
+    OrderUpdatedEvent:
+      type: object
+      required:
+        - eventId
+        - eventType
+        - timestamp
+        - orderId
+        - changes
+      properties:
+        eventId:
+          type: string
+          format: uuid
+          description: Unique identifier for the event
+        eventType:
+          type: string
+          enum: [OrderUpdated]
+          description: Type of the event
+        timestamp:
+          type: string
+          format: date-time
+          description: When the event occurred
+        orderId:
+          type: string
+          format: uuid
+          description: Unique identifier for the order
+        changes:
+          type: object
+          description: Fields that were changed
+          additionalProperties: true
+    OrderCancelledEvent:
+      type: object
+      required:
+        - eventId
+        - eventType
+        - timestamp
+        - orderId
+        - reason
+      properties:
+        eventId:
+          type: string
+          format: uuid
+          description: Unique identifier for the event
+        eventType:
+          type: string
+          enum: [OrderCancelled]
+          description: Type of the event
+        timestamp:
+          type: string
+          format: date-time
+          description: When the event occurred
+        orderId:
+          type: string
+          format: uuid
+          description: Unique identifier for the order
+        reason:
+          type: string
+          description: Reason for cancellation
+    OrderCompletedEvent:
+      type: object
+      required:
+        - eventId
+        - eventType
+        - timestamp
+        - orderId
+        - completedAt
+      properties:
+        eventId:
+          type: string
+          format: uuid
+          description: Unique identifier for the event
+        eventType:
+          type: string
+          enum: [OrderCompleted]
+          description: Type of the event
+        timestamp:
+          type: string
+          format: date-time
+          description: When the event occurred
+        orderId:
+          type: string
+          format: uuid
+          description: Unique identifier for the order
+        completedAt:
+          type: string
+          format: date-time
+          description: When the order was completed
+    CustomerUpdatedEvent:
+      type: object
+      required:
+        - eventId
+        - eventType
+        - timestamp
+        - customerId
+        - changes
+      properties:
+        eventId:
+          type: string
+          format: uuid
+          description: Unique identifier for the event
+        eventType:
+          type: string
+          enum: [CustomerUpdated]
+          description: Type of the event
+        timestamp:
+          type: string
+          format: date-time
+          description: When the event occurred
+        customerId:
+          type: string
+          format: uuid
+          description: Unique identifier for the customer
+        changes:
+          type: object
+          description: Fields that were changed
+          additionalProperties: true
+    ProductUpdatedEvent:
+      type: object
+      required:
+        - eventId
+        - eventType
+        - timestamp
+        - productId
+        - changes
+      properties:
+        eventId:
+          type: string
+          format: uuid
+          description: Unique identifier for the event
+        eventType:
+          type: string
+          enum: [ProductUpdated]
+          description: Type of the event
+        timestamp:
+          type: string
+          format: date-time
+          description: When the event occurred
+        productId:
+          type: string
+          format: uuid
+          description: Unique identifier for the product
+        changes:
+          type: object
+          description: Fields that were changed
+          additionalProperties: true
+    OrderItem:
+      type: object
+      required:
+        - productId
+        - quantity
+        - unitPrice
+      properties:
+        productId:
+          type: string
+          format: uuid
+          description: Unique identifier for the product
+        quantity:
+          type: integer
+          minimum: 1
+          description: Quantity of the product
+        unitPrice:
+          type: number
+          format: decimal
+          minimum: 0
+          description: Price per unit
+        totalPrice:
+          type: number
+          format: decimal
+          minimum: 0
+          description: Total price for this line item
+    Address:
+      type: object
+      properties:
+        street:
+          type: string
+          description: Street address
+        city:
+          type: string
+          description: City
+        state:
+          type: string
+          description: State or province
+        zipCode:
+          type: string
+          description: ZIP or postal code
+        country:
+          type: string
+          description: Country

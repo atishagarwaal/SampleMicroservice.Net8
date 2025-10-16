@@ -1,0 +1,25 @@
+{
+  "$schema": "https://raw.githubusercontent.com/DotNetAnalyzers/StyleCopAnalyzers/master/StyleCop.Analyzers/StyleCop.Analyzers/Settings/stylecop.schema.json",
+  "settings": {
+    "documentationRules": {
+      "companyName": "<Your Company>, LLC",
+      "copyrightText": "Copyright (c) {companyName}. All rights reserved.",
+      "xmlHeader": true,
+      "fileNamingConvention": "stylecop"
+    },
+    "indentation": {
+      "indentationSize": 4,
+      "tabSize": 4,
+      "useTabs": false
+    },
+    "spacingRules": {
+      "spacingMethod": "ignore"
+    },
+    "namingRules": {
+      "allowCommonHungarianPrefixes": true,
+      "allowedHungarianPrefixes": [
+        "as", "at", "by", "do", "go", "if", "in", "is", "it", "no", "of", "on", "or", "to", "up", "us", "we"
+      ]
+    }
+  }
+}

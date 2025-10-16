@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RuleSet Name="Code Analysis Rules" Description="Code analysis rules for the project" ToolsVersion="15.0">
+  <IncludeAll Action="Warning" />
+  <Rules AnalyzerId="Microsoft.CodeAnalysis.CSharp" RuleNamespace="Microsoft.CodeAnalysis.CSharp">
+    <Rule Id="CS1591" Action="None" />
+    <Rule Id="CS0168" Action="None" />
+    <Rule Id="CS0219" Action="None" />
+  </Rules>
+  <Rules AnalyzerId="StyleCop.Analyzers" RuleNamespace="StyleCop.Analyzers">
+    <Rule Id="SA1633" Action="None" />
+    <Rule Id="SA1502" Action="None" />
+    <Rule Id="SA1600" Action="None" />
+    <Rule Id="SA1636" Action="None" />
+  </Rules>
+</RuleSet>

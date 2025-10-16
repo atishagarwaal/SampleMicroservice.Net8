@@ -1,6 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
-  <PropertyGroup>
+  <Import Project="..\Build\Common.props" Condition="Exists('..\Build\Common.props')" />
+
+  <PropertyGroup Label="Build Properties">
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
@@ -29,7 +31,16 @@
     <None Remove="DefaultRepositories\**" />
   </ItemGroup>
   
-  <ItemGroup>
+  <ItemGroup Label="Code Analysis Packages">
+    <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="*">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.DotNet.Analyzers.Compatibility" Version="0.2.12-*" PrivateAssets="All" />
+    <PackageReference Include="StyleCop.Analyzers" Version="*" PrivateAssets="All" />
+  </ItemGroup>
+
+  <ItemGroup Label="Packages">
     <PackageReference Include="Asp.Versioning.Mvc.ApiExplorer" Version="8.1.0" />
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.0" />
     <PackageReference Include="Dapper" Version="2.0.123" />

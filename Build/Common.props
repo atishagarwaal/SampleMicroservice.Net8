@@ -1,0 +1,31 @@
+<Project>
+
+  <PropertyGroup Label="Package Information Properties">
+    <Copyright>Copyright (c) Your Company, LLC. All rights reserved.</Copyright>
+    <Authors>Your Company</Authors>
+    <AssemblyTitle>$(MSBuildProjectName)</AssemblyTitle>
+    <AssemblyName>$(MSBuildProjectName)</AssemblyName>
+    <PackageId>$(MSBuildProjectName)</PackageId>
+  </PropertyGroup>
+
+  <PropertyGroup Label="Build Properties">
+    <IsPackable>false</IsPackable>
+    <LangVersion>latest</LangVersion>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <GenerateAssemblyVersionAttribute>true</GenerateAssemblyVersionAttribute>
+    <GenerateAssemblyFileVersionAttribute>true</GenerateAssemblyFileVersionAttribute>
+  </PropertyGroup>
+
+  <PropertyGroup Label="Code Analysis Properties">
+    <CodeAnalysisRuleSet>$(SolutionDir)\Build\Code Analysis\Code Analysis Rules.ruleset</CodeAnalysisRuleSet>
+    <Features>IOperation</Features>
+  </PropertyGroup>
+
+  <ItemGroup Label="Code Analysis Files">
+    <AdditionalFiles Include="$(SolutionDir)\Build\Code Analysis\StyleCop.json" Link="StyleCop.json" />
+    <CodeAnalysisDictionary Include="$(SolutionDir)\Build\Code Analysis\CustomDictionary.xml">
+      <Link>Properties\CustomDictionary.xml</Link>
+    </CodeAnalysisDictionary>
+  </ItemGroup>
+</Project>

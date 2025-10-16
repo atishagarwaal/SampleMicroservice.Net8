@@ -1,0 +1,270 @@
+asyncapi: 3.0.0
+info:
+  title: Retail Products Service Messaging API
+  version: 1.0.0
+  description: Messaging API for the Retail Products service, handling product inventory and order processing events
+  license:
+    name: Proprietary
+  contact:
+    name: Development Team
+servers:
+  rabbitmq-dev:
+    host: localhost:5672
+    protocol: amqp
+    description: Development RabbitMQ server
+  rabbitmq-prod:
+    host: rabbitmq-server:5672
+    protocol: amqp
+    description: Production RabbitMQ server
+defaultContentType: application/json
+channels:
+  orderCreatedEvent:
+    address: orderdomain.topic.exchange/order.created.event
+    description: Channel for receiving order creation events from the Orders.Write service
+    messages:
+      orderCreated:
+        $ref: '#/components/messages/OrderCreatedEvent'
+    operations:
+      receiveOrderCreated:
+        action: receive
+        summary: Receive order created event
+        description: Products service receives order creation events to update inventory
+  inventoryUpdatedEvent:
+    address: inventorydomain.topic.exchange/inventory.updated.event
+    description: Channel for publishing inventory update events after processing orders
+    messages:
+      inventoryUpdated:
+        $ref: '#/components/messages/InventoryUpdatedEvent'
+    operations:
+      sendInventoryUpdated:
+        action: send
+        summary: Send inventory updated event
+        description: Products service publishes inventory update events after successfully processing orders
+  inventoryErrorEvent:
+    address: rollback.topic.exchange/inventory.error.event
+    description: Channel for publishing inventory error events when order processing fails
+    messages:
+      inventoryError:
+        $ref: '#/components/messages/InventoryErrorEvent'
+    operations:
+      sendInventoryError:
+        action: send
+        summary: Send inventory error event
+        description: Products service publishes error events when inventory processing fails
+operations:
+  receiveOrderCreated:
+    action: receive
+    channel:
+      $ref: '#/channels/orderCreatedEvent'
+    summary: Receive order created event
+    description: Products service subscribes to order creation events to update inventory levels
+  sendInventoryUpdated:
+    action: send
+    channel:
+      $ref: '#/channels/inventoryUpdatedEvent'
+    summary: Send inventory updated event
+    description: Products service publishes inventory update events after successfully processing orders
+  sendInventoryError:
+    action: send
+    channel:
+      $ref: '#/channels/inventoryErrorEvent'
+    summary: Send inventory error event
+    description: Products service publishes error events when inventory processing fails
+components:
+  messages:
+    OrderCreatedEvent:
+      name: OrderCreatedEvent
+      title: Order Created Event
+      summary: Event published when a new order is created
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/OrderCreatedEvent'
+      examples:
+        - name: OrderCreatedExample
+          summary: Example of order created event
+          payload:
+            customerId: "123e4567-e89b-12d3-a456-426614174000"
+            orderId: "987fcdeb-51a2-43d7-8f9e-123456789abc"
+            orderDate: "2024-01-15T10:30:00Z"
+            totalAmount: 299.99
+            lineItems:
+              - skuId: "456e7890-e89b-12d3-a456-426614174001"
+                qty: 2
+                unitPrice: 149.99
+                totalPrice: 299.98
+    InventoryUpdatedEvent:
+      name: InventoryUpdatedEvent
+      title: Inventory Updated Event
+      summary: Event published when inventory is successfully updated after processing an order
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/InventoryUpdatedEvent'
+      examples:
+        - name: InventoryUpdatedExample
+          summary: Example of inventory updated event
+          payload:
+            customerId: "123e4567-e89b-12d3-a456-426614174000"
+            orderId: "987fcdeb-51a2-43d7-8f9e-123456789abc"
+            orderDate: "2024-01-15T10:30:00Z"
+            totalAmount: 299.99
+            lineItems:
+              - skuId: "456e7890-e89b-12d3-a456-426614174001"
+                qty: 2
+                unitPrice: 149.99
+                totalPrice: 299.98
+    InventoryErrorEvent:
+      name: InventoryErrorEvent
+      title: Inventory Error Event
+      summary: Event published when inventory processing fails
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/InventoryErrorEvent'
+      examples:
+        - name: InventoryErrorExample
+          summary: Example of inventory error event
+          payload:
+            customerId: "123e4567-e89b-12d3-a456-426614174000"
+            orderId: "987fcdeb-51a2-43d7-8f9e-123456789abc"
+            orderDate: "2024-01-15T10:30:00Z"
+            totalAmount: 299.99
+            errorMessage: "Insufficient inventory for SKU 456e7890-e89b-12d3-a456-426614174001"
+  schemas:
+    OrderCreatedEvent:
+      type: object
+      required:
+        - customerId
+        - orderId
+        - orderDate
+        - totalAmount
+        - lineItems
+      properties:
+        customerId:
+          type: string
+          format: uuid
+          description: Unique identifier of the customer who placed the order
+          example: "123e4567-e89b-12d3-a456-426614174000"
+        orderId:
+          type: string
+          format: uuid
+          description: Unique identifier of the order
+          example: "987fcdeb-51a2-43d7-8f9e-123456789abc"
+        orderDate:
+          type: string
+          format: date-time
+          description: Date and time when the order was created
+          example: "2024-01-15T10:30:00Z"
+        totalAmount:
+          type: number
+          format: decimal
+          description: Total amount of the order
+          minimum: 0
+          example: 299.99
+        lineItems:
+          type: array
+          description: List of items in the order
+          items:
+            $ref: '#/components/schemas/LineItem'
+          minItems: 1
+    InventoryUpdatedEvent:
+      type: object
+      required:
+        - customerId
+        - orderId
+        - orderDate
+        - totalAmount
+        - lineItems
+      properties:
+        customerId:
+          type: string
+          format: uuid
+          description: Unique identifier of the customer who placed the order
+          example: "123e4567-e89b-12d3-a456-426614174000"
+        orderId:
+          type: string
+          format: uuid
+          description: Unique identifier of the order
+          example: "987fcdeb-51a2-43d7-8f9e-123456789abc"
+        orderDate:
+          type: string
+          format: date-time
+          description: Date and time when the order was created
+          example: "2024-01-15T10:30:00Z"
+        totalAmount:
+          type: number
+          format: decimal
+          description: Total amount of the order
+          minimum: 0
+          example: 299.99
+        lineItems:
+          type: array
+          description: List of items in the order
+          items:
+            $ref: '#/components/schemas/LineItem'
+          minItems: 1
+    InventoryErrorEvent:
+      type: object
+      required:
+        - customerId
+        - orderId
+        - orderDate
+        - totalAmount
+      properties:
+        customerId:
+          type: string
+          format: uuid
+          description: Unique identifier of the customer who placed the order
+          example: "123e4567-e89b-12d3-a456-426614174000"
+        orderId:
+          type: string
+          format: uuid
+          description: Unique identifier of the order
+          example: "987fcdeb-51a2-43d7-8f9e-123456789abc"
+        orderDate:
+          type: string
+          format: date-time
+          description: Date and time when the order was created
+          example: "2024-01-15T10:30:00Z"
+        totalAmount:
+          type: number
+          format: decimal
+          description: Total amount of the order
+          minimum: 0
+          example: 299.99
+        errorMessage:
+          type: string
+          description: Description of the error that occurred during inventory processing
+          example: "Insufficient inventory for SKU 456e7890-e89b-12d3-a456-426614174001"
+    LineItem:
+      type: object
+      required:
+        - skuId
+        - qty
+        - unitPrice
+        - totalPrice
+      properties:
+        skuId:
+          type: string
+          format: uuid
+          description: Unique identifier of the product SKU
+          example: "456e7890-e89b-12d3-a456-426614174001"
+        qty:
+          type: integer
+          description: Quantity of the product ordered
+          minimum: 1
+          example: 2
+        unitPrice:
+          type: number
+          format: decimal
+          description: Price per unit of the product
+          minimum: 0
+          example: 149.99
+        totalPrice:
+          type: number
+          format: decimal
+          description: Total price for this line item (qty * unitPrice)
+          minimum: 0
+          example: 299.98
+  securitySchemes:
+    userPassword:
+      type: userPassword
+      description: RabbitMQ username and password authentication

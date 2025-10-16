@@ -1,6 +1,6 @@
 //-----------------------------------------------------------------------
-// <copyright file="Program.cs" company="PlaceholderCompany">
-// Copyright (c) PlaceholderCompany. All rights reserved.
+// <copyright file="Program.cs" company="<Your Company>">
+// Copyright (c) <Your Company>. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 

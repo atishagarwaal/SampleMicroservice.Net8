@@ -1,0 +1,407 @@
+openapi: 3.0.3
+info:
+  title: Retail BFF Service API
+  description: Backend-for-Frontend API that aggregates data from multiple retail microservices
+  version: 1.0.0
+  license:
+    name: Proprietary
+servers:
+  - url: https://localhost:7004
+    description: Development server
+  - url: https://api-server:7004
+    description: Production server
+paths:
+  /orders:
+    get:
+      summary: Get all orders
+      description: Retrieve aggregated order data from Orders.Read service
+      operationId: getOrders
+      parameters:
+        - name: page
+          in: query
+          description: Page number for pagination
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: pageSize
+          in: query
+          description: Number of items per page
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  orders:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Order'
+                  totalCount:
+                    type: integer
+                  page:
+                    type: integer
+                  pageSize:
+                    type: integer
+    post:
+      summary: Create a new order
+      description: Create a new order by delegating to Orders.Write service
+      operationId: createOrder
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateOrderRequest'
+      responses:
+        '201':
+          description: Order created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '400':
+          description: Bad request
+  /orders/{orderId}:
+    get:
+      summary: Get order by ID
+      description: Retrieve a specific order by its ID
+      operationId: getOrderById
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          description: The order ID
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '404':
+          description: Order not found
+  /customers:
+    get:
+      summary: Get all customers
+      description: Retrieve customer data from Customers service
+      operationId: getCustomers
+      parameters:
+        - name: page
+          in: query
+          description: Page number for pagination
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: pageSize
+          in: query
+          description: Number of items per page
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  customers:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Customer'
+                  totalCount:
+                    type: integer
+                  page:
+                    type: integer
+                  pageSize:
+                    type: integer
+  /customers/{customerId}:
+    get:
+      summary: Get customer by ID
+      description: Retrieve a specific customer by their ID
+      operationId: getCustomerById
+      parameters:
+        - name: customerId
+          in: path
+          required: true
+          description: The customer ID
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+        '404':
+          description: Customer not found
+  /products:
+    get:
+      summary: Get all products
+      description: Retrieve product data from Products service
+      operationId: getProducts
+      parameters:
+        - name: page
+          in: query
+          description: Page number for pagination
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: pageSize
+          in: query
+          description: Number of items per page
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+        - name: category
+          in: query
+          description: Filter by product category
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  products:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Product'
+                  totalCount:
+                    type: integer
+                  page:
+                    type: integer
+                  pageSize:
+                    type: integer
+  /products/{productId}:
+    get:
+      summary: Get product by ID
+      description: Retrieve a specific product by its ID
+      operationId: getProductById
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          description: The product ID
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '404':
+          description: Product not found
+components:
+  schemas:
+    Order:
+      type: object
+      required:
+        - orderId
+        - customerId
+        - orderItems
+        - totalAmount
+        - createdAt
+      properties:
+        orderId:
+          type: string
+          format: uuid
+          description: Unique identifier for the order
+        customerId:
+          type: string
+          format: uuid
+          description: ID of the customer who placed the order
+        orderItems:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderItem'
+          description: Items in the order
+        totalAmount:
+          type: number
+          format: decimal
+          description: Total amount of the order
+        status:
+          type: string
+          description: Order status
+          enum: [Pending, Processing, Shipped, Delivered, Cancelled]
+        createdAt:
+          type: string
+          format: date-time
+          description: When the order was created
+        updatedAt:
+          type: string
+          format: date-time
+          description: When the order was last updated
+    OrderItem:
+      type: object
+      required:
+        - productId
+        - quantity
+        - unitPrice
+      properties:
+        productId:
+          type: string
+          format: uuid
+          description: Unique identifier for the product
+        quantity:
+          type: integer
+          minimum: 1
+          description: Quantity of the product
+        unitPrice:
+          type: number
+          format: decimal
+          minimum: 0
+          description: Price per unit
+        totalPrice:
+          type: number
+          format: decimal
+          minimum: 0
+          description: Total price for this line item
+    CreateOrderRequest:
+      type: object
+      required:
+        - customerId
+        - orderItems
+      properties:
+        customerId:
+          type: string
+          format: uuid
+          description: ID of the customer placing the order
+        orderItems:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderItem'
+          description: Items to be ordered
+    Customer:
+      type: object
+      required:
+        - id
+        - firstName
+        - lastName
+        - email
+        - createdAt
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier for the customer
+        firstName:
+          type: string
+          description: Customer's first name
+          maxLength: 100
+        lastName:
+          type: string
+          description: Customer's last name
+          maxLength: 100
+        email:
+          type: string
+          format: email
+          description: Customer's email address
+          maxLength: 255
+        phone:
+          type: string
+          description: Customer's phone number
+          maxLength: 20
+        createdAt:
+          type: string
+          format: date-time
+          description: When the customer was created
+        updatedAt:
+          type: string
+          format: date-time
+          description: When the customer was last updated
+    Product:
+      type: object
+      required:
+        - id
+        - name
+        - sku
+        - price
+        - category
+        - createdAt
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier for the product
+        name:
+          type: string
+          description: Product name
+          maxLength: 255
+        description:
+          type: string
+          description: Product description
+          maxLength: 1000
+        sku:
+          type: string
+          description: Stock Keeping Unit
+          maxLength: 50
+        price:
+          type: number
+          format: decimal
+          description: Product price
+          minimum: 0
+        category:
+          type: string
+          description: Product category
+          maxLength: 100
+        brand:
+          type: string
+          description: Product brand
+          maxLength: 100
+        isActive:
+          type: boolean
+          description: Whether the product is active
+          default: true
+        stockQuantity:
+          type: integer
+          description: Available stock quantity
+          minimum: 0
+        createdAt:
+          type: string
+          format: date-time
+          description: When the product was created
+        updatedAt:
+          type: string
+          format: date-time
+          description: When the product was last updated
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+security:
+  - BearerAuth: []
