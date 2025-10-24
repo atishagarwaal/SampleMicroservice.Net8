@@ -1,24 +1,19 @@
-asyncapi: 3.0.0
+asyncapi: '2.6.0'
 info:
   title: Retail Customers Service
   version: 1.0.0
   description: Messaging API for the Retail Customers service, handling customer-related events and notifications
+
 channels:
-  inventoryUpdatedEvent:
-    address: inventorydomain.topic.exchange/inventory.updated.event
-    messages:
-      InventoryUpdatedEvent:
-        $ref: '#/components/messages/InventoryUpdatedEvent'
-operations:
-  receiveInventoryUpdated:
-    action: receive
-    channel:
-      $ref: '#/channels/inventoryUpdatedEvent'
-    messages:
-      - $ref: '#/channels/inventoryUpdatedEvent/messages/InventoryUpdatedEvent'
+  "inventorydomain.topic.exchange/inventory.updated.event":
+    subscribe:
+      message:
+        $ref: "#/components/messages/InventoryUpdatedEvent"
+
 components:
   messages:
     InventoryUpdatedEvent:
+      messageId: InventoryUpdatedEvent
       payload:
         type: object
         required:
@@ -42,15 +37,18 @@ components:
             description: Date and time when the order was created
           totalAmount:
             type: number
-            format: decimal
+            # Note: JSON Schema / AsyncAPI don't define "decimal" format standardly.
+            # If you need precise decimal handling, consider using string with pattern,
+            # or indicate expected scale with "multipleOf: 0.01".
             description: Total amount of the order
             minimum: 0
           lineItems:
             type: array
             description: List of items in the order
             items:
-              $ref: '#/components/schemas/LineItem'
+              $ref: "#/components/schemas/LineItem"
             minItems: 1
+
   schemas:
     LineItem:
       type: object
@@ -70,11 +68,9 @@ components:
           minimum: 1
         unitPrice:
           type: number
-          format: decimal
           description: Price per unit of the product
           minimum: 0
         totalPrice:
           type: number
-          format: decimal
           description: Total price for this line item (qty * unitPrice)
           minimum: 0
