@@ -27,19 +27,19 @@ This documentation provides a comprehensive guide to the retail microservices ar
 npm install -g @asyncapi/generator@2.0.0
 
 # Generate all service contracts
-asyncapi-generator "Contracts\AsyncAPI\Retail-Customers-AsyncAPI-v1.0.0.yaml" @lagoni/asyncapi-quicktype-template@1.0.2 -o "Retail.Customers\src\CleanArchitecture.Contracts" -p quicktypeLanguage=csharp
+asyncapi-generator "Contracts/AsyncAPI/Retail-Customers-AsyncAPI-v1.0.0.yaml" @lagoni/asyncapi-quicktype-template@1.0.2 -o "Retail.Customers/src/CleanArchitecture.Contracts" -p quicktypeLanguage=csharp
 
-asyncapi-generator "Contracts\AsyncAPI\Retail-Orders-Read-AsyncAPI-v1.0.0.yaml" @lagoni/asyncapi-quicktype-template@1.0.2 -o "Retail.Orders.Read\src\CleanArchitecture.Contracts" -p quicktypeLanguage=csharp
+asyncapi-generator "Contracts/AsyncAPI/Retail-Orders-Read-AsyncAPI-v1.0.0.yaml" @lagoni/asyncapi-quicktype-template@1.0.2 -o "Retail.Orders.Read/src/CleanArchitecture.Contracts" -p quicktypeLanguage=csharp
 
-asyncapi-generator "Contracts\AsyncAPI\Retail-Orders-Write-AsyncAPI-v1.0.0.yaml" @lagoni/asyncapi-quicktype-template@1.0.2 -o "Retail.Orders.Write\src\CleanArchitecture.Contracts" -p quicktypeLanguage=csharp
+asyncapi-generator "Contracts/AsyncAPI/Retail-Orders-Write-AsyncAPI-v1.0.0.yaml" @lagoni/asyncapi-quicktype-template@1.0.2 -o "Retail.Orders.Write/src/CleanArchitecture.Contracts" -p quicktypeLanguage=csharp
 
-asyncapi-generator "Contracts\AsyncAPI\Retail-Products-AsyncAPI-v1.0.0.yaml" @lagoni/asyncapi-quicktype-template@1.0.2 -o "Retail.Products\src\CleanArchitecture.Contracts" -p quicktypeLanguage=csharp
+asyncapi-generator "Contracts/AsyncAPI/Retail-Products-AsyncAPI-v1.0.0.yaml" @lagoni/asyncapi-quicktype-template@1.0.2 -o "Retail.Products/src/CleanArchitecture.Contracts" -p quicktypeLanguage=csharp
 ```
 
 ### 3. Build and Run
 ```bash
-dotnet build SampleMicroservice.Net8.sln
-dotnet test SampleMicroservice.Net8.sln
+dotnet build
+dotnet test
 ```
 
 ## Architecture Summary
