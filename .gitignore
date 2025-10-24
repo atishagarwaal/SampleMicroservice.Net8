@@ -370,3 +370,4 @@ FodyWeavers.xsd
 /Retail.Api.Customers/Migrations/20230309070459_001.cs
 /.cursor/rules
 /Retail.Customers/src/CleanArchitecture.Contracts/.keep
+/Retail.Orders.Read/src/CleanArchitecture.Contracts/.keep
