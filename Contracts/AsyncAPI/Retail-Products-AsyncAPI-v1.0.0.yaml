@@ -1,46 +1,31 @@
-asyncapi: 3.0.0
+asyncapi: '2.0.0'
+defaultContentType: application/json
 info:
   title: Retail Products Service
   version: 1.0.0
   description: Messaging API for the Retail Products service, handling product inventory and order processing events
+
 channels:
-  orderCreatedEvent:
-    address: orderdomain.topic.exchange/order.created.event
-    messages:
-      OrderCreatedEvent:
-        $ref: '#/components/messages/OrderCreatedEvent'
-  inventoryUpdatedEvent:
-    address: inventorydomain.topic.exchange/inventory.updated.event
-    messages:
-      InventoryUpdatedEvent:
-        $ref: '#/components/messages/InventoryUpdatedEvent'
-  inventoryErrorEvent:
-    address: rollback.topic.exchange/inventory.error.event
-    messages:
-      InventoryErrorEvent:
-        $ref: '#/components/messages/InventoryErrorEvent'
-operations:
-  receiveOrderCreated:
-    action: receive
-    channel:
-      $ref: '#/channels/orderCreatedEvent'
-    messages:
-      - $ref: '#/channels/orderCreatedEvent/messages/OrderCreatedEvent'
-  sendInventoryUpdated:
-    action: send
-    channel:
-      $ref: '#/channels/inventoryUpdatedEvent'
-    messages:
-      - $ref: '#/channels/inventoryUpdatedEvent/messages/InventoryUpdatedEvent'
-  sendInventoryError:
-    action: send
-    channel:
-      $ref: '#/channels/inventoryErrorEvent'
-    messages:
-      - $ref: '#/channels/inventoryErrorEvent/messages/InventoryErrorEvent'
+  "orderdomain.topic.exchange/order.created.event":
+    subscribe:
+      message:
+        oneOf:
+          - $ref: "#/components/messages/OrderCreatedEvent"
+  "inventorydomain.topic.exchange/inventory.updated.event":
+    publish:
+      message:
+        oneOf:
+          - $ref: "#/components/messages/InventoryUpdatedEvent"
+  "rollback.topic.exchange/inventory.error.event":
+    publish:
+      message:
+        oneOf:
+          - $ref: "#/components/messages/InventoryErrorEvent"
+
 components:
   messages:
     OrderCreatedEvent:
+      # removed messageId to satisfy validator for 2.0.0
       payload:
         type: object
         required:
@@ -64,16 +49,16 @@ components:
             description: Date and time when the order was created
           totalAmount:
             type: number
-            format: decimal
             description: Total amount of the order
             minimum: 0
           lineItems:
             type: array
             description: List of items in the order
             items:
-              $ref: '#/components/schemas/LineItem'
+              $ref: "#/components/schemas/LineItem"
             minItems: 1
     InventoryUpdatedEvent:
+      # removed messageId to satisfy validator for 2.0.0
       payload:
         type: object
         required:
@@ -97,16 +82,16 @@ components:
             description: Date and time when the order was created
           totalAmount:
             type: number
-            format: decimal
             description: Total amount of the order
             minimum: 0
           lineItems:
             type: array
             description: List of items in the order
             items:
-              $ref: '#/components/schemas/LineItem'
+              $ref: "#/components/schemas/LineItem"
             minItems: 1
     InventoryErrorEvent:
+      # removed messageId to satisfy validator for 2.0.0
       payload:
         type: object
         required:
@@ -129,12 +114,12 @@ components:
             description: Date and time when the order was created
           totalAmount:
             type: number
-            format: decimal
             description: Total amount of the order
             minimum: 0
           errorMessage:
             type: string
             description: Description of the error that occurred during inventory processing
+
   schemas:
     LineItem:
       type: object
@@ -154,11 +139,9 @@ components:
           minimum: 1
         unitPrice:
           type: number
-          format: decimal
           description: Price per unit of the product
           minimum: 0
         totalPrice:
           type: number
-          format: decimal
           description: Total price for this line item (qty * unitPrice)
           minimum: 0

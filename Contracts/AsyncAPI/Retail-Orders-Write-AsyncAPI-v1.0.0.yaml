@@ -1,57 +1,36 @@
-asyncapi: 3.0.0
+asyncapi: '2.0.0'
+defaultContentType: application/json
 info:
   title: Retail Orders Write Service
   version: 1.0.0
   description: Messaging API for the Retail Orders Write service, handling order creation and processing events
+
 channels:
-  orderCreatedEvent:
-    address: orderdomain.topic.exchange/order.created.event
-    messages:
-      OrderCreatedEvent:
-        $ref: '#/components/messages/OrderCreatedEvent'
-  orderUpdatedEvent:
-    address: orderdomain.topic.exchange/order.updated.event
-    messages:
-      OrderUpdatedEvent:
-        $ref: '#/components/messages/OrderUpdatedEvent'
-  orderCancelledEvent:
-    address: orderdomain.topic.exchange/order.cancelled.event
-    messages:
-      OrderCancelledEvent:
-        $ref: '#/components/messages/OrderCancelledEvent'
-  orderCompletedEvent:
-    address: orderdomain.topic.exchange/order.completed.event
-    messages:
-      OrderCompletedEvent:
-        $ref: '#/components/messages/OrderCompletedEvent'
-operations:
-  sendOrderCreated:
-    action: send
-    channel:
-      $ref: '#/channels/orderCreatedEvent'
-    messages:
-      - $ref: '#/channels/orderCreatedEvent/messages/OrderCreatedEvent'
-  sendOrderUpdated:
-    action: send
-    channel:
-      $ref: '#/channels/orderUpdatedEvent'
-    messages:
-      - $ref: '#/channels/orderUpdatedEvent/messages/OrderUpdatedEvent'
-  sendOrderCancelled:
-    action: send
-    channel:
-      $ref: '#/channels/orderCancelledEvent'
-    messages:
-      - $ref: '#/channels/orderCancelledEvent/messages/OrderCancelledEvent'
-  sendOrderCompleted:
-    action: send
-    channel:
-      $ref: '#/channels/orderCompletedEvent'
-    messages:
-      - $ref: '#/channels/orderCompletedEvent/messages/OrderCompletedEvent'
+  "orderdomain.topic.exchange/order.created.event":
+    publish:
+      message:
+        oneOf:
+          - $ref: "#/components/messages/OrderCreatedEvent"
+  "orderdomain.topic.exchange/order.updated.event":
+    publish:
+      message:
+        oneOf:
+          - $ref: "#/components/messages/OrderUpdatedEvent"
+  "orderdomain.topic.exchange/order.cancelled.event":
+    publish:
+      message:
+        oneOf:
+          - $ref: "#/components/messages/OrderCancelledEvent"
+  "orderdomain.topic.exchange/order.completed.event":
+    publish:
+      message:
+        oneOf:
+          - $ref: "#/components/messages/OrderCompletedEvent"
+
 components:
   messages:
     OrderCreatedEvent:
+      # removed messageId to satisfy validator for 2.0.0
       payload:
         type: object
         required:
@@ -86,17 +65,17 @@ components:
           orderItems:
             type: array
             items:
-              $ref: '#/components/schemas/OrderItem'
+              $ref: "#/components/schemas/OrderItem"
             description: Items in the order
             minItems: 1
           totalAmount:
             type: number
-            format: decimal
             description: Total amount of the order
             minimum: 0
           shippingAddress:
-            $ref: '#/components/schemas/Address'
+            $ref: "#/components/schemas/Address"
     OrderUpdatedEvent:
+      # removed messageId to satisfy validator for 2.0.0
       payload:
         type: object
         required:
@@ -127,6 +106,7 @@ components:
             description: Fields that were changed
             additionalProperties: true
     OrderCancelledEvent:
+      # removed messageId to satisfy validator for 2.0.0
       payload:
         type: object
         required:
@@ -156,6 +136,7 @@ components:
             type: string
             description: Reason for cancellation
     OrderCompletedEvent:
+      # removed messageId to satisfy validator for 2.0.0
       payload:
         type: object
         required:
@@ -185,6 +166,7 @@ components:
             type: string
             format: date-time
             description: When the order was completed
+
   schemas:
     OrderItem:
       type: object
@@ -203,12 +185,10 @@ components:
           minimum: 1
         unitPrice:
           type: number
-          format: decimal
           description: Price per unit
           minimum: 0
         totalPrice:
           type: number
-          format: decimal
           description: Total price for this line item
           minimum: 0
     Address:
