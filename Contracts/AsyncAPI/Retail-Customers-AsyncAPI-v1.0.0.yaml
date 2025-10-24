@@ -1,4 +1,5 @@
-asyncapi: '2.6.0'
+asyncapi: '2.0.0'
+defaultContentType: application/json
 info:
   title: Retail Customers Service
   version: 1.0.0
@@ -8,12 +9,13 @@ channels:
   "inventorydomain.topic.exchange/inventory.updated.event":
     subscribe:
       message:
-        $ref: "#/components/messages/InventoryUpdatedEvent"
+        oneOf:
+          - $ref: "#/components/messages/InventoryUpdatedEvent"
 
 components:
   messages:
     InventoryUpdatedEvent:
-      messageId: InventoryUpdatedEvent
+      # removed messageId to satisfy validator for 2.0.0
       payload:
         type: object
         required:
@@ -37,9 +39,6 @@ components:
             description: Date and time when the order was created
           totalAmount:
             type: number
-            # Note: JSON Schema / AsyncAPI don't define "decimal" format standardly.
-            # If you need precise decimal handling, consider using string with pattern,
-            # or indicate expected scale with "multipleOf: 0.01".
             description: Total amount of the order
             minimum: 0
           lineItems:
