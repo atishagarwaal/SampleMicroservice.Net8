@@ -37,10 +37,20 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Retail.Orders.Read", "Source\Retail.Orders.Read\Retail.Orders.Read.csproj", "{694851B7-868F-4C20-B601-CA100102E8A3}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
+	ProjectSection(SolutionItems) = preProject
+		Build\Common.props = Build\Common.props
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Contracts", "Contracts", "{48B519E3-B5CA-4991-9083-B07580265A78}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentation", "{9EB14FF7-E272-4AA0-8ED0-99033DD1DB2F}"
+	ProjectSection(SolutionItems) = preProject
+		Documentation\AsyncAPI-Contract-Generation.md = Documentation\AsyncAPI-Contract-Generation.md
+		Documentation\Contract-Specifications.md = Documentation\Contract-Specifications.md
+		Documentation\README.md = Documentation\README.md
+		Documentation\RetailMicroservicesServiceManual.md = Documentation\RetailMicroservicesServiceManual.md
+		Documentation\Service-Architecture.md = Documentation\Service-Architecture.md
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Source", "Source", "{E7C746B5-4C87-4AB5-B127-AAA0D63F1545}"
 EndProject
@@ -79,6 +89,26 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Retail.Orders.Write", "Retail.Orders.Write", "{059D142C-D2B7-4828-B371-232D679823AA}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Retail.Orders.Products", "Retail.Orders.Products", "{E6741613-AD58-4F91-BCFF-16779E04247D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AsyncAPI", "AsyncAPI", "{23319A3C-CDA3-44FC-B89F-B00BAA6C1E98}"
+	ProjectSection(SolutionItems) = preProject
+		Contracts\AsyncAPI\Retail-Customers-AsyncAPI-v1.0.0.yaml = Contracts\AsyncAPI\Retail-Customers-AsyncAPI-v1.0.0.yaml
+		Contracts\AsyncAPI\Retail-Orders-Read-AsyncAPI-v1.0.0.yaml = Contracts\AsyncAPI\Retail-Orders-Read-AsyncAPI-v1.0.0.yaml
+		Contracts\AsyncAPI\Retail-Orders-Write-AsyncAPI-v1.0.0.yaml = Contracts\AsyncAPI\Retail-Orders-Write-AsyncAPI-v1.0.0.yaml
+		Contracts\AsyncAPI\Retail-Products-AsyncAPI-v1.0.0.yaml = Contracts\AsyncAPI\Retail-Products-AsyncAPI-v1.0.0.yaml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "OpenAPI", "OpenAPI", "{CCE7AE38-ED88-4B71-BB33-568DB595E683}"
+	ProjectSection(SolutionItems) = preProject
+		Contracts\OpenAPI\Retail-BFF-OpenAPI-v1.0.0.yaml = Contracts\OpenAPI\Retail-BFF-OpenAPI-v1.0.0.yaml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CodeAnalysis", "CodeAnalysis", "{AD33D497-2530-41C3-909A-E7F281C29BA5}"
+	ProjectSection(SolutionItems) = preProject
+		Build\Code Analysis\Code Analysis Rules.ruleset = Build\Code Analysis\Code Analysis Rules.ruleset
+		Build\Code Analysis\CustomDictionary.xml = Build\Code Analysis\CustomDictionary.xml
+		Build\Code Analysis\StyleCop.json = Build\Code Analysis\StyleCop.json
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -154,14 +184,14 @@ Global
 		{6964AAEE-2F8B-4F26-9836-135965EB59BF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6964AAEE-2F8B-4F26-9836-135965EB59BF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6964AAEE-2F8B-4F26-9836-135965EB59BF}.Release|Any CPU.Build.0 = Release|Any CPU
-		{71270C40-27B6-4F2B-A02C-4B0E8002FA59}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{71270C40-27B6-4F2B-A02C-4B0E8002FA59}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{71270C40-27B6-4F2B-A02C-4B0E8002FA59}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{71270C40-27B6-4F2B-A02C-4B0E8002FA59}.Release|Any CPU.Build.0 = Release|Any CPU
 		{7A8B9C0D-1E2F-3A4B-5C6D-7E8F9A0B1C2D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{7A8B9C0D-1E2F-3A4B-5C6D-7E8F9A0B1C2D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7A8B9C0D-1E2F-3A4B-5C6D-7E8F9A0B1C2D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7A8B9C0D-1E2F-3A4B-5C6D-7E8F9A0B1C2D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{71270C40-27B6-4F2B-A02C-4B0E8002FA59}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{71270C40-27B6-4F2B-A02C-4B0E8002FA59}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{71270C40-27B6-4F2B-A02C-4B0E8002FA59}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{71270C40-27B6-4F2B-A02C-4B0E8002FA59}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -191,6 +221,9 @@ Global
 		{5BFA4925-81A3-423A-A0ED-7AD793307999} = {3811D32A-3AB3-4B15-BED2-97391D60891B}
 		{059D142C-D2B7-4828-B371-232D679823AA} = {3811D32A-3AB3-4B15-BED2-97391D60891B}
 		{E6741613-AD58-4F91-BCFF-16779E04247D} = {3811D32A-3AB3-4B15-BED2-97391D60891B}
+		{23319A3C-CDA3-44FC-B89F-B00BAA6C1E98} = {48B519E3-B5CA-4991-9083-B07580265A78}
+		{CCE7AE38-ED88-4B71-BB33-568DB595E683} = {48B519E3-B5CA-4991-9083-B07580265A78}
+		{AD33D497-2530-41C3-909A-E7F281C29BA5} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {BBDC3B65-10EC-4A10-B062-B4B97CE74CBC}
