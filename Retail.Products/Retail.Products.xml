@@ -382,5 +382,120 @@
             Method to rollback changes.
             </summary>
         </member>
+        <member name="P:InventoryErrorEventNameSpace.InventoryErrorEvent.CustomerId">
+            <summary>
+            Unique identifier of the customer who placed the order
+            </summary>
+        </member>
+        <member name="P:InventoryErrorEventNameSpace.InventoryErrorEvent.ErrorMessage">
+            <summary>
+            Description of the error that occurred during inventory processing
+            </summary>
+        </member>
+        <member name="P:InventoryErrorEventNameSpace.InventoryErrorEvent.OrderDate">
+            <summary>
+            Date and time when the order was created
+            </summary>
+        </member>
+        <member name="P:InventoryErrorEventNameSpace.InventoryErrorEvent.OrderId">
+            <summary>
+            Unique identifier of the order
+            </summary>
+        </member>
+        <member name="P:InventoryErrorEventNameSpace.InventoryErrorEvent.TotalAmount">
+            <summary>
+            Total amount of the order
+            </summary>
+        </member>
+        <member name="P:InventoryUpdatedEventNameSpace.InventoryUpdatedEvent.CustomerId">
+            <summary>
+            Unique identifier of the customer who placed the order
+            </summary>
+        </member>
+        <member name="P:InventoryUpdatedEventNameSpace.InventoryUpdatedEvent.LineItems">
+            <summary>
+            List of items in the order
+            </summary>
+        </member>
+        <member name="P:InventoryUpdatedEventNameSpace.InventoryUpdatedEvent.OrderDate">
+            <summary>
+            Date and time when the order was created
+            </summary>
+        </member>
+        <member name="P:InventoryUpdatedEventNameSpace.InventoryUpdatedEvent.OrderId">
+            <summary>
+            Unique identifier of the order
+            </summary>
+        </member>
+        <member name="P:InventoryUpdatedEventNameSpace.InventoryUpdatedEvent.TotalAmount">
+            <summary>
+            Total amount of the order
+            </summary>
+        </member>
+        <member name="P:InventoryUpdatedEventNameSpace.LineItem.Qty">
+            <summary>
+            Quantity of the product ordered
+            </summary>
+        </member>
+        <member name="P:InventoryUpdatedEventNameSpace.LineItem.SkuId">
+            <summary>
+            Unique identifier of the product SKU
+            </summary>
+        </member>
+        <member name="P:InventoryUpdatedEventNameSpace.LineItem.TotalPrice">
+            <summary>
+            Total price for this line item (qty * unitPrice)
+            </summary>
+        </member>
+        <member name="P:InventoryUpdatedEventNameSpace.LineItem.UnitPrice">
+            <summary>
+            Price per unit of the product
+            </summary>
+        </member>
+        <member name="P:OrderCreatedEventNameSpace.OrderCreatedEvent.CustomerId">
+            <summary>
+            Unique identifier of the customer who placed the order
+            </summary>
+        </member>
+        <member name="P:OrderCreatedEventNameSpace.OrderCreatedEvent.LineItems">
+            <summary>
+            List of items in the order
+            </summary>
+        </member>
+        <member name="P:OrderCreatedEventNameSpace.OrderCreatedEvent.OrderDate">
+            <summary>
+            Date and time when the order was created
+            </summary>
+        </member>
+        <member name="P:OrderCreatedEventNameSpace.OrderCreatedEvent.OrderId">
+            <summary>
+            Unique identifier of the order
+            </summary>
+        </member>
+        <member name="P:OrderCreatedEventNameSpace.OrderCreatedEvent.TotalAmount">
+            <summary>
+            Total amount of the order
+            </summary>
+        </member>
+        <member name="P:OrderCreatedEventNameSpace.LineItem.Qty">
+            <summary>
+            Quantity of the product ordered
+            </summary>
+        </member>
+        <member name="P:OrderCreatedEventNameSpace.LineItem.SkuId">
+            <summary>
+            Unique identifier of the product SKU
+            </summary>
+        </member>
+        <member name="P:OrderCreatedEventNameSpace.LineItem.TotalPrice">
+            <summary>
+            Total price for this line item (qty * unitPrice)
+            </summary>
+        </member>
+        <member name="P:OrderCreatedEventNameSpace.LineItem.UnitPrice">
+            <summary>
+            Price per unit of the product
+            </summary>
+        </member>
     </members>
 </doc>

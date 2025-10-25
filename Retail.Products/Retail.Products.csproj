@@ -23,6 +23,13 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="tests\**" />
+    <Content Remove="tests\**" />
+    <EmbeddedResource Remove="tests\**" />
+    <None Remove="tests\**" />
+  </ItemGroup>
   
   <ItemGroup Label="Code Analysis Packages">
     <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="*">
@@ -56,7 +63,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="tests\" />
     <Folder Include="src\CleanArchitecture.Infrastructure\Migrations\" />
   </ItemGroup>
 

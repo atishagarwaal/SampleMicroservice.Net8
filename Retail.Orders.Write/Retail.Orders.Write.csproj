@@ -26,9 +26,13 @@
 
   <ItemGroup>
     <Compile Remove="DefaultRepositories\**" />
+    <Compile Remove="tests\**" />
     <Content Remove="DefaultRepositories\**" />
+    <Content Remove="tests\**" />
     <EmbeddedResource Remove="DefaultRepositories\**" />
+    <EmbeddedResource Remove="tests\**" />
     <None Remove="DefaultRepositories\**" />
+    <None Remove="tests\**" />
   </ItemGroup>
   
   <ItemGroup Label="Code Analysis Packages">
@@ -65,7 +69,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="tests\" />
     <Folder Include="src\CleanArchitecture.Infrastructure\Migrations\" />
   </ItemGroup>
 

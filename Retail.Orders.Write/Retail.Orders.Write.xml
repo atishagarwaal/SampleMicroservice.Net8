@@ -409,5 +409,180 @@
         <member name="M:Retail.Api.Orders.Migrations.Orders.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
             <inheritdoc />
         </member>
+        <member name="P:OrderCancelledEventNameSpace.OrderCancelledEvent.EventId">
+            <summary>
+            Unique identifier for the event
+            </summary>
+        </member>
+        <member name="P:OrderCancelledEventNameSpace.OrderCancelledEvent.EventType">
+            <summary>
+            Type of the event
+            </summary>
+        </member>
+        <member name="P:OrderCancelledEventNameSpace.OrderCancelledEvent.OrderId">
+            <summary>
+            Unique identifier for the order
+            </summary>
+        </member>
+        <member name="P:OrderCancelledEventNameSpace.OrderCancelledEvent.Reason">
+            <summary>
+            Reason for cancellation
+            </summary>
+        </member>
+        <member name="P:OrderCancelledEventNameSpace.OrderCancelledEvent.Timestamp">
+            <summary>
+            When the event occurred
+            </summary>
+        </member>
+        <member name="T:OrderCancelledEventNameSpace.EventType">
+            <summary>
+            Type of the event
+            </summary>
+        </member>
+        <member name="P:OrderCompletedEventNameSpace.OrderCompletedEvent.CompletedAt">
+            <summary>
+            When the order was completed
+            </summary>
+        </member>
+        <member name="P:OrderCompletedEventNameSpace.OrderCompletedEvent.EventId">
+            <summary>
+            Unique identifier for the event
+            </summary>
+        </member>
+        <member name="P:OrderCompletedEventNameSpace.OrderCompletedEvent.EventType">
+            <summary>
+            Type of the event
+            </summary>
+        </member>
+        <member name="P:OrderCompletedEventNameSpace.OrderCompletedEvent.OrderId">
+            <summary>
+            Unique identifier for the order
+            </summary>
+        </member>
+        <member name="P:OrderCompletedEventNameSpace.OrderCompletedEvent.Timestamp">
+            <summary>
+            When the event occurred
+            </summary>
+        </member>
+        <member name="T:OrderCompletedEventNameSpace.EventType">
+            <summary>
+            Type of the event
+            </summary>
+        </member>
+        <member name="P:OrderCreatedEventNameSpace.OrderCreatedEvent.CustomerId">
+            <summary>
+            ID of the customer who placed the order
+            </summary>
+        </member>
+        <member name="P:OrderCreatedEventNameSpace.OrderCreatedEvent.EventId">
+            <summary>
+            Unique identifier for the event
+            </summary>
+        </member>
+        <member name="P:OrderCreatedEventNameSpace.OrderCreatedEvent.EventType">
+            <summary>
+            Type of the event
+            </summary>
+        </member>
+        <member name="P:OrderCreatedEventNameSpace.OrderCreatedEvent.OrderId">
+            <summary>
+            Unique identifier for the order
+            </summary>
+        </member>
+        <member name="P:OrderCreatedEventNameSpace.OrderCreatedEvent.OrderItems">
+            <summary>
+            Items in the order
+            </summary>
+        </member>
+        <member name="P:OrderCreatedEventNameSpace.OrderCreatedEvent.Timestamp">
+            <summary>
+            When the event occurred
+            </summary>
+        </member>
+        <member name="P:OrderCreatedEventNameSpace.OrderCreatedEvent.TotalAmount">
+            <summary>
+            Total amount of the order
+            </summary>
+        </member>
+        <member name="P:OrderCreatedEventNameSpace.OrderItem.ProductId">
+            <summary>
+            Unique identifier for the product
+            </summary>
+        </member>
+        <member name="P:OrderCreatedEventNameSpace.OrderItem.Quantity">
+            <summary>
+            Quantity of the product
+            </summary>
+        </member>
+        <member name="P:OrderCreatedEventNameSpace.OrderItem.TotalPrice">
+            <summary>
+            Total price for this line item
+            </summary>
+        </member>
+        <member name="P:OrderCreatedEventNameSpace.OrderItem.UnitPrice">
+            <summary>
+            Price per unit
+            </summary>
+        </member>
+        <member name="P:OrderCreatedEventNameSpace.ShippingAddress.City">
+            <summary>
+            City
+            </summary>
+        </member>
+        <member name="P:OrderCreatedEventNameSpace.ShippingAddress.Country">
+            <summary>
+            Country
+            </summary>
+        </member>
+        <member name="P:OrderCreatedEventNameSpace.ShippingAddress.State">
+            <summary>
+            State or province
+            </summary>
+        </member>
+        <member name="P:OrderCreatedEventNameSpace.ShippingAddress.Street">
+            <summary>
+            Street address
+            </summary>
+        </member>
+        <member name="P:OrderCreatedEventNameSpace.ShippingAddress.ZipCode">
+            <summary>
+            ZIP or postal code
+            </summary>
+        </member>
+        <member name="T:OrderCreatedEventNameSpace.EventType">
+            <summary>
+            Type of the event
+            </summary>
+        </member>
+        <member name="P:OrderUpdatedEventNameSpace.OrderUpdatedEvent.Changes">
+            <summary>
+            Fields that were changed
+            </summary>
+        </member>
+        <member name="P:OrderUpdatedEventNameSpace.OrderUpdatedEvent.EventId">
+            <summary>
+            Unique identifier for the event
+            </summary>
+        </member>
+        <member name="P:OrderUpdatedEventNameSpace.OrderUpdatedEvent.EventType">
+            <summary>
+            Type of the event
+            </summary>
+        </member>
+        <member name="P:OrderUpdatedEventNameSpace.OrderUpdatedEvent.OrderId">
+            <summary>
+            Unique identifier for the order
+            </summary>
+        </member>
+        <member name="P:OrderUpdatedEventNameSpace.OrderUpdatedEvent.Timestamp">
+            <summary>
+            When the event occurred
+            </summary>
+        </member>
+        <member name="T:OrderUpdatedEventNameSpace.EventType">
+            <summary>
+            Type of the event
+            </summary>
+        </member>
     </members>
 </doc>
