@@ -46,6 +46,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentation", "{9EB14FF7-E272-4AA0-8ED0-99033DD1DB2F}"
 	ProjectSection(SolutionItems) = preProject
 		Documentation\AsyncAPI-Contract-Generation.md = Documentation\AsyncAPI-Contract-Generation.md
+		Documentation\Coding Guidelines.md = Documentation\Coding Guidelines.md
 		Documentation\Contract-Specifications.md = Documentation\Contract-Specifications.md
 		Documentation\README.md = Documentation\README.md
 		Documentation\RetailMicroservicesServiceManual.md = Documentation\RetailMicroservicesServiceManual.md
