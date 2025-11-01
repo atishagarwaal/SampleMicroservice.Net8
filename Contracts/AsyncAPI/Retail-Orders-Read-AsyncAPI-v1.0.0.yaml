@@ -19,19 +19,24 @@ components:
       payload:
         type: object
         required:
+          - id
           - customerId
           - orderId
           - orderDate
           - totalAmount
           - lineItems
         properties:
+          id:
+            type: integer
+            format: int64
+            description: Unique identifier of the event
           customerId:
-            type: string
-            format: uuid
+            type: integer
+            format: int64
             description: Unique identifier of the customer who placed the order
           orderId:
-            type: string
-            format: uuid
+            type: integer
+            format: int64
             description: Unique identifier of the order
           orderDate:
             type: string
@@ -52,24 +57,24 @@ components:
     LineItem:
       type: object
       required:
+        - id
+        - orderId
         - skuId
         - qty
-        - unitPrice
-        - totalPrice
       properties:
+        id:
+          type: integer
+          format: int64
+          description: Unique identifier of the line item
+        orderId:
+          type: integer
+          format: int64
+          description: Unique identifier of the order
         skuId:
-          type: string
-          format: uuid
+          type: integer
+          format: int64
           description: Unique identifier of the product SKU
         qty:
           type: integer
-          description: Quantity of the product
+          description: Quantity of the product ordered
           minimum: 1
-        unitPrice:
-          type: number
-          description: Price per unit of the product
-          minimum: 0
-        totalPrice:
-          type: number
-          description: Total price for this line item (qty * unitPrice)
-          minimum: 0
