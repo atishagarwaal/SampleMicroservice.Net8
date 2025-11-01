@@ -1,10 +1,10 @@
-﻿using CommonLibrary.Handlers;
-using CommonLibrary.MessageContract;
-using MessagingLibrary.Interface;
-using Retail.Orders.Read.src.CleanArchitecture.Application.Interfaces;
-
-namespace Retail.Orders.Read.src.CleanArchitecture.Application.Service
+﻿namespace Retail.Orders.Read.src.CleanArchitecture.Application.Service
 {
+    using CommonLibrary.Handlers;
+    using InventoryUpdatedEventNameSpace;
+    using MessagingLibrary.Interface;
+    using Retail.Orders.Read.src.CleanArchitecture.Application.Interfaces;
+
     internal class ServiceInitializer : IServiceInitializer
     {
         private readonly IMessageSubscriber _messageSubscriber;

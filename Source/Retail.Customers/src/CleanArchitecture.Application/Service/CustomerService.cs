@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using CommonLibrary.MessageContract;
+using InventoryUpdatedEventNameSpace;
 using Microsoft.Extensions.DependencyInjection;
 using Retail.Api.Customers.src.CleanArchitecture.Application.Dto;
 using Retail.Api.Customers.src.CleanArchitecture.Application.Interfaces;

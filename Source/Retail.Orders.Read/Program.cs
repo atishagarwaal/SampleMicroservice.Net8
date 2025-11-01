@@ -20,6 +20,7 @@ using Retail.Orders.Read.src.CleanArchitecture.Application.Queries;
 using Retail.Orders.Read.src.CleanArchitecture.Domain.Entities;
 using Retail.Orders.Read.src.CleanArchitecture.Application.EventHandlers;
 using Microsoft.Extensions.Logging;
+using InventoryUpdatedEventNameSpace;
 
 var builder = WebApplication.CreateBuilder(args);
 

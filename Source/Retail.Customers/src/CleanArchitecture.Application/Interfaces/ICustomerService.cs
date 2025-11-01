@@ -1,8 +1,8 @@
-﻿using CommonLibrary.MessageContract;
-using Retail.Api.Customers.src.CleanArchitecture.Application.Dto;
-
-namespace Retail.Api.Customers.src.CleanArchitecture.Application.Interfaces
+﻿namespace Retail.Api.Customers.src.CleanArchitecture.Application.Interfaces
 {
+    using InventoryUpdatedEventNameSpace;
+    using Retail.Api.Customers.src.CleanArchitecture.Application.Dto;
+
     /// <summary>
     /// Interface definition for customer service.
     /// </summary>

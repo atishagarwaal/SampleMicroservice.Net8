@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using CommonLibrary.MessageContract;
 using FluentAssertions;
+using InventoryUpdatedEventNameSpace;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;

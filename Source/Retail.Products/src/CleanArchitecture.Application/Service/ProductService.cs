@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using CommonLibrary.MessageContract;
+using InventoryUpdatedEventNameSpace;
 using MessagingInfrastructure;
 using MessagingLibrary.Interface;
 using Retail.Api.Products.src.CleanArchitecture.Application.Dto;

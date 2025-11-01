@@ -19,6 +19,7 @@ using Retail.Api.Customers.src.CleanArchitecture.Infrastructure.Interfaces;
 using Retail.Api.Customers.src.CleanArchitecture.Infrastructure.Repositories;
 using Retail.Api.Customers.src.CleanArchitecture.Infrastructure.UnitOfWork;
 using CommonLibrary.MessageContract;
+using InventoryUpdatedEventNameSpace;
 
 var builder = WebApplication.CreateBuilder(args);
 

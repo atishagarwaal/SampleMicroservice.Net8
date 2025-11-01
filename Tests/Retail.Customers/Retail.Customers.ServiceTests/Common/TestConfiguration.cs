@@ -7,6 +7,7 @@ using Retail.Api.Customers.src.CleanArchitecture.Application.Mappings;
 using Retail.Api.Customers.src.CleanArchitecture.Domain.Entities;
 using CommonLibrary.MessageContract;
 using AutoMapper;
+using InventoryUpdatedEventNameSpace;
 
 namespace Retail.Customers.ServiceTests.Common
 {

@@ -1,13 +1,12 @@
-﻿using AutoMapper;
-using CommonLibrary.Handlers;
-using CommonLibrary.MessageContract;
-using Retail.Orders.Read.src.CleanArchitecture.Application.Dto;
-using Retail.Orders.Read.src.CleanArchitecture.Domain.Entities;
-using Retail.Orders.Read.src.CleanArchitecture.Infrastructure.Interfaces;
-using Microsoft.Extensions.Logging;
-
-namespace Retail.Orders.Read.src.CleanArchitecture.Application.EventHandlers
+﻿namespace Retail.Orders.Read.src.CleanArchitecture.Application.EventHandlers
 {
+    using AutoMapper;
+    using CommonLibrary.Handlers;
+    using Retail.Orders.Read.src.CleanArchitecture.Domain.Entities;
+    using Retail.Orders.Read.src.CleanArchitecture.Infrastructure.Interfaces;
+    using Microsoft.Extensions.Logging;
+    using InventoryUpdatedEventNameSpace;
+
     public class InventoryUpdatedEventHandler : IEventHandler<InventoryUpdatedEvent>
     {
         private readonly IServiceScopeFactory _serviceScopeFactory;

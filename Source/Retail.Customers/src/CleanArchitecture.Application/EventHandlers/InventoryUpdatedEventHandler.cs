@@ -1,10 +1,10 @@
-﻿using CommonLibrary.Handlers;
-using CommonLibrary.MessageContract;
-using MessagingLibrary.Interface;
-using Retail.Api.Customers.src.CleanArchitecture.Application.Interfaces;
-
-namespace Retail.Api.Customers.src.CleanArchitecture.Application.EventHandlers
+﻿namespace Retail.Api.Customers.src.CleanArchitecture.Application.EventHandlers
 {
+    using CommonLibrary.Handlers;
+    using InventoryUpdatedEventNameSpace;
+    using MessagingLibrary.Interface;
+    using Retail.Api.Customers.src.CleanArchitecture.Application.Interfaces;
+
     public class InventoryUpdatedEventHandler : IEventHandler<InventoryUpdatedEvent>
     {
         private readonly ICustomerService _customerService;
