@@ -1,10 +1,14 @@
 ﻿namespace Retail.Orders.Read.src.CleanArchitecture.Application.EventHandlers
 {
+    using System;
+    using System.Linq;
+    using System.Threading.Tasks;
     using AutoMapper;
     using CommonLibrary.Handlers;
     using Retail.Orders.Read.src.CleanArchitecture.Domain.Entities;
     using Retail.Orders.Read.src.CleanArchitecture.Infrastructure.Interfaces;
     using Microsoft.Extensions.Logging;
+    using Microsoft.Extensions.DependencyInjection;
     using InventoryUpdatedEventNameSpace;
 
     public class InventoryUpdatedEventHandler : IEventHandler<InventoryUpdatedEvent>
@@ -41,14 +45,14 @@
                 {
                     Id = inventoryUpdatedEvent.OrderId,
                     CustomerId = inventoryUpdatedEvent.CustomerId,
-                    OrderDate = inventoryUpdatedEvent.OrderDate,
+                    OrderDate = inventoryUpdatedEvent.OrderDate.DateTime,
                     LineItems = inventoryUpdatedEvent.LineItems
-                                .Select(dto => new LineItem
+                                .Select(dto => new Retail.Orders.Read.src.CleanArchitecture.Domain.Entities.LineItem
                                 {
                                     Id = dto.Id,
                                     OrderId = dto.OrderId,
                                     SkuId = dto.SkuId,
-                                    Qty = dto.Qty
+                                    Qty = (int)dto.Qty
                                 })
                                 .ToList(),
                     TotalAmount = inventoryUpdatedEvent.TotalAmount,

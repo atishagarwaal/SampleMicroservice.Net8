@@ -165,7 +165,13 @@ namespace Retail.Api.Products.src.CleanArchitecture.Application.Service
                     OrderDate = orderCreatedEvent.OrderDate,
                     OrderId = orderCreatedEvent.OrderId,
                     TotalAmount = orderCreatedEvent.TotalAmount,
-                    LineItems = orderCreatedEvent.LineItems.ToList(),
+                    LineItems = orderCreatedEvent.LineItems.Select(li => new InventoryUpdatedEventNameSpace.LineItem
+                    {
+                        Id = li.Id,
+                        OrderId = li.OrderId,
+                        SkuId = li.SkuId,
+                        Qty = li.Qty
+                    }).ToArray(),
                 };
 
                 Console.WriteLine($"Product Service: Sending InventoryUpdatedEvent - OrderId: {inventoryUpdatedMessage.OrderId}, CustomerId: {inventoryUpdatedMessage.CustomerId}");

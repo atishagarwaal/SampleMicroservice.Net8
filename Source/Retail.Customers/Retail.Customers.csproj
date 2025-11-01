@@ -65,10 +65,4 @@
     <ProjectReference Include="..\..\MessagingInfrastructure\MessagingInfrastructure.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Compile Include="..\..\Retail.Customers\src\CleanArchitecture.Contracts\InventoryUpdatedEvent.cs">
-      <Link>src\CleanArchitecture.Contracts\InventoryUpdatedEvent.cs</Link>
-    </Compile>
-  </ItemGroup>
-
 </Project>

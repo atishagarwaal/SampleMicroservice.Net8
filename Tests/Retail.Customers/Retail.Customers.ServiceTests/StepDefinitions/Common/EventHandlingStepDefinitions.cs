@@ -9,6 +9,7 @@ using Retail.Api.Customers.src.CleanArchitecture.Application.Interfaces;
 using Retail.Api.Customers.src.CleanArchitecture.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Retail.Customers.ServiceTests.Common;
+using InventoryUpdatedEventNameSpace;
 
 namespace Retail.Customers.ServiceTests.StepDefinitions.Common
 {
@@ -44,9 +45,12 @@ namespace Retail.Customers.ServiceTests.StepDefinitions.Common
             
             var orderEvent = new InventoryUpdatedEvent
             {
+                Id = long.Parse(eventDataTable.Rows[0].ContainsKey("Id") ? eventDataTable.Rows[0]["Id"] : "0"),
                 OrderId = long.Parse(eventDataTable.Rows[0]["OrderId"]),
                 CustomerId = long.Parse(eventDataTable.Rows[0]["CustomerId"]),
-                ServiceName = eventDataTable.Rows[0]["ServiceName"]
+                OrderDate = DateTime.UtcNow,
+                TotalAmount = 0,
+                LineItems = Array.Empty<LineItem>()
             };
             
             _scenarioContext.Set(orderEvent, Constants.EventData);
@@ -61,9 +65,12 @@ namespace Retail.Customers.ServiceTests.StepDefinitions.Common
             
             var orderEvent = new InventoryUpdatedEvent
             {
+                Id = long.Parse(eventDataTable.Rows[0].ContainsKey("Id") ? eventDataTable.Rows[0]["Id"] : "0"),
                 OrderId = long.Parse(eventDataTable.Rows[0]["OrderId"]),
                 CustomerId = long.Parse(eventDataTable.Rows[0]["CustomerId"]),
-                ServiceName = eventDataTable.Rows[0]["ServiceName"]
+                OrderDate = DateTime.UtcNow,
+                TotalAmount = 0,
+                LineItems = Array.Empty<LineItem>()
             };
             
             _scenarioContext.Set(orderEvent, Constants.EventData);

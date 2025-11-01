@@ -208,8 +208,7 @@ namespace Retail.Customers.ServiceTests.Common
             // Mock implementation - validate event data
             if (inventoryUpdatedEvent == null || 
                 inventoryUpdatedEvent.OrderId <= 0 || 
-                inventoryUpdatedEvent.CustomerId <= 0 || 
-                string.IsNullOrWhiteSpace(inventoryUpdatedEvent.ServiceName))
+                inventoryUpdatedEvent.CustomerId <= 0)
             {
                 throw new ArgumentException("Invalid event data");
             }
