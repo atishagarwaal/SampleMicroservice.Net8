@@ -2,11 +2,11 @@
 //
 // To parse this JSON data, add NuGet 'Newtonsoft.Json' then do:
 //
-//    using OrderCreatedEventNameSpace;
+//    using InventoryUpdatedEventNameSpace;
 //
-//    var orderCreatedEvent = OrderCreatedEvent.FromJson(jsonString);
+//    var inventoryUpdatedEvent = InventoryUpdatedEvent.FromJson(jsonString);
 
-namespace OrderCreatedEventNameSpace
+namespace InventoryUpdatedEventNameSpace
 {
     using System;
     using System.Collections.Generic;
@@ -15,13 +15,19 @@ namespace OrderCreatedEventNameSpace
     using Newtonsoft.Json;
     using Newtonsoft.Json.Converters;
 
-    public partial class OrderCreatedEvent
+    public partial class InventoryUpdatedEvent
     {
         /// <summary>
         /// Unique identifier of the customer who placed the order
         /// </summary>
         [JsonProperty("customerId")]
-        public Guid CustomerId { get; set; }
+        public long CustomerId { get; set; }
+
+        /// <summary>
+        /// Unique identifier of the event
+        /// </summary>
+        [JsonProperty("id")]
+        public long Id { get; set; }
 
         /// <summary>
         /// List of items in the order
@@ -39,7 +45,7 @@ namespace OrderCreatedEventNameSpace
         /// Unique identifier of the order
         /// </summary>
         [JsonProperty("orderId")]
-        public Guid OrderId { get; set; }
+        public long OrderId { get; set; }
 
         /// <summary>
         /// Total amount of the order
@@ -76,14 +82,14 @@ namespace OrderCreatedEventNameSpace
         public long SkuId { get; set; }
     }
 
-    public partial class OrderCreatedEvent
+    public partial class InventoryUpdatedEvent
     {
-        public static OrderCreatedEvent FromJson(string json) => JsonConvert.DeserializeObject<OrderCreatedEvent>(json, OrderCreatedEventNameSpace.Converter.Settings);
+        public static InventoryUpdatedEvent FromJson(string json) => JsonConvert.DeserializeObject<InventoryUpdatedEvent>(json, InventoryUpdatedEventNameSpace.Converter.Settings);
     }
 
     public static class Serialize
     {
-        public static string ToJson(this OrderCreatedEvent self) => JsonConvert.SerializeObject(self, OrderCreatedEventNameSpace.Converter.Settings);
+        public static string ToJson(this InventoryUpdatedEvent self) => JsonConvert.SerializeObject(self, InventoryUpdatedEventNameSpace.Converter.Settings);
     }
 
     internal static class Converter
