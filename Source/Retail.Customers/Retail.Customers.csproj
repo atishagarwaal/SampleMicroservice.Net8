@@ -66,7 +66,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="src\CleanArchitecture.Contracts\" />
+    <Compile Include="..\..\Retail.Customers\src\CleanArchitecture.Contracts\InventoryUpdatedEvent.cs" />
   </ItemGroup>
 
 </Project>
