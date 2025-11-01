@@ -25,6 +25,7 @@ namespace MessagingInfrastructure
         public const string ServiceNameHeader = "X-Service-Name";
         public const string ContentTypeHeader = "Content-Type";
         public const string CorrelationIdHeader = "X-Correlation-Id";
+        public const string TimestampHeader = "X-Timestamp";
         public const string PriorityHeader = "X-Priority";
         public const string TTLHeader = "X-TTL";
         
