@@ -6,6 +6,11 @@ info:
   description: Messaging API for the Retail Orders Read service, handling order read model updates and querying
 
 channels:
+  "orderdomain.topic.exchange/order.created.event":
+    subscribe:
+      message:
+        oneOf:
+          - $ref: "#/components/messages/OrderCreatedEvent"
   "inventorydomain.topic.exchange/inventory.updated.event":
     subscribe:
       message:
@@ -14,6 +19,39 @@ channels:
 
 components:
   messages:
+    OrderCreatedEvent:
+      # removed messageId to satisfy validator for 2.0.0
+      payload:
+        type: object
+        required:
+          - customerId
+          - orderId
+          - orderDate
+          - totalAmount
+          - lineItems
+        properties:
+          customerId:
+            type: string
+            format: uuid
+            description: Unique identifier of the customer who placed the order
+          orderId:
+            type: string
+            format: uuid
+            description: Unique identifier of the order
+          orderDate:
+            type: string
+            format: date-time
+            description: Date and time when the order was created
+          totalAmount:
+            type: number
+            description: Total amount of the order
+            minimum: 0
+          lineItems:
+            type: array
+            description: List of items in the order
+            items:
+              $ref: "#/components/schemas/LineItem"
+            minItems: 1
     InventoryUpdatedEvent:
       # removed messageId to satisfy validator for 2.0.0
       payload:
