@@ -34,46 +34,34 @@ components:
       payload:
         type: object
         required:
-          - eventId
-          - eventType
-          - timestamp
-          - orderId
           - customerId
-          - orderItems
+          - orderId
+          - orderDate
           - totalAmount
+          - lineItems
         properties:
-          eventId:
-            type: string
-            format: uuid
-            description: Unique identifier for the event
-          eventType:
-            type: string
-            enum: [OrderCreated]
-            description: Type of the event
-          timestamp:
-            type: string
-            format: date-time
-            description: When the event occurred
-          orderId:
-            type: string
-            format: uuid
-            description: Unique identifier for the order
           customerId:
             type: string
             format: uuid
-            description: ID of the customer who placed the order
-          orderItems:
-            type: array
-            items:
-              $ref: "#/components/schemas/OrderItem"
-            description: Items in the order
-            minItems: 1
+            description: Unique identifier of the customer who placed the order
+          orderId:
+            type: string
+            format: uuid
+            description: Unique identifier of the order
+          orderDate:
+            type: string
+            format: date-time
+            description: Date and time when the order was created
           totalAmount:
             type: number
             description: Total amount of the order
             minimum: 0
-          shippingAddress:
-            $ref: "#/components/schemas/Address"
+          lineItems:
+            type: array
+            description: List of items in the order
+            items:
+              $ref: "#/components/schemas/LineItem"
+            minItems: 1
     OrderUpdatedEvent:
       # removed messageId to satisfy validator for 2.0.0
       payload:
@@ -168,29 +156,30 @@ components:
             description: When the order was completed
 
   schemas:
-    OrderItem:
+    LineItem:
       type: object
       required:
-        - productId
-        - quantity
-        - unitPrice
+        - id
+        - orderId
+        - skuId
+        - qty
       properties:
-        productId:
-          type: string
-          format: uuid
-          description: Unique identifier for the product
-        quantity:
+        id:
           type: integer
-          description: Quantity of the product
+          format: int64
+          description: Unique identifier of the line item
+        orderId:
+          type: integer
+          format: int64
+          description: Unique identifier of the order
+        skuId:
+          type: integer
+          format: int64
+          description: Unique identifier of the product SKU
+        qty:
+          type: integer
+          description: Quantity of the product ordered
           minimum: 1
-        unitPrice:
-          type: number
-          description: Price per unit
-          minimum: 0
-        totalPrice:
-          type: number
-          description: Total price for this line item
-          minimum: 0
     Address:
       type: object
       properties:
