@@ -18,43 +18,28 @@ namespace OrderCreatedEventNameSpace
     public partial class OrderCreatedEvent
     {
         /// <summary>
-        /// ID of the customer who placed the order
+        /// Unique identifier of the customer who placed the order
         /// </summary>
         [JsonProperty("customerId")]
         public Guid CustomerId { get; set; }
 
         /// <summary>
-        /// Unique identifier for the event
+        /// List of items in the order
         /// </summary>
-        [JsonProperty("eventId")]
-        public Guid EventId { get; set; }
+        [JsonProperty("lineItems")]
+        public LineItem[] LineItems { get; set; }
 
         /// <summary>
-        /// Type of the event
+        /// Date and time when the order was created
         /// </summary>
-        [JsonProperty("eventType")]
-        public EventType EventType { get; set; }
+        [JsonProperty("orderDate")]
+        public DateTimeOffset OrderDate { get; set; }
 
         /// <summary>
-        /// Unique identifier for the order
+        /// Unique identifier of the order
         /// </summary>
         [JsonProperty("orderId")]
         public Guid OrderId { get; set; }
-
-        /// <summary>
-        /// Items in the order
-        /// </summary>
-        [JsonProperty("orderItems")]
-        public OrderItem[] OrderItems { get; set; }
-
-        [JsonProperty("shippingAddress", NullValueHandling = NullValueHandling.Ignore)]
-        public ShippingAddress ShippingAddress { get; set; }
-
-        /// <summary>
-        /// When the event occurred
-        /// </summary>
-        [JsonProperty("timestamp")]
-        public DateTimeOffset Timestamp { get; set; }
 
         /// <summary>
         /// Total amount of the order
@@ -64,72 +49,32 @@ namespace OrderCreatedEventNameSpace
         public double TotalAmount { get; set; }
     }
 
-    public partial class OrderItem
+    public partial class LineItem
     {
         /// <summary>
-        /// Unique identifier for the product
+        /// Unique identifier of the line item
         /// </summary>
-        [JsonProperty("productId")]
-        public Guid ProductId { get; set; }
+        [JsonProperty("id")]
+        public long Id { get; set; }
 
         /// <summary>
-        /// Quantity of the product
+        /// Unique identifier of the order
         /// </summary>
-        [JsonProperty("quantity")]
-        public long Quantity { get; set; }
+        [JsonProperty("orderId")]
+        public long OrderId { get; set; }
 
         /// <summary>
-        /// Total price for this line item
+        /// Quantity of the product ordered
         /// </summary>
-        [JsonProperty("totalPrice", NullValueHandling = NullValueHandling.Ignore)]
-        [JsonConverter(typeof(MinMaxValueCheckConverter))]
-        public double? TotalPrice { get; set; }
+        [JsonProperty("qty")]
+        public long Qty { get; set; }
 
         /// <summary>
-        /// Price per unit
+        /// Unique identifier of the product SKU
         /// </summary>
-        [JsonProperty("unitPrice")]
-        [JsonConverter(typeof(MinMaxValueCheckConverter))]
-        public double UnitPrice { get; set; }
+        [JsonProperty("skuId")]
+        public long SkuId { get; set; }
     }
-
-    public partial class ShippingAddress
-    {
-        /// <summary>
-        /// City
-        /// </summary>
-        [JsonProperty("city", NullValueHandling = NullValueHandling.Ignore)]
-        public string City { get; set; }
-
-        /// <summary>
-        /// Country
-        /// </summary>
-        [JsonProperty("country", NullValueHandling = NullValueHandling.Ignore)]
-        public string Country { get; set; }
-
-        /// <summary>
-        /// State or province
-        /// </summary>
-        [JsonProperty("state", NullValueHandling = NullValueHandling.Ignore)]
-        public string State { get; set; }
-
-        /// <summary>
-        /// Street address
-        /// </summary>
-        [JsonProperty("street", NullValueHandling = NullValueHandling.Ignore)]
-        public string Street { get; set; }
-
-        /// <summary>
-        /// ZIP or postal code
-        /// </summary>
-        [JsonProperty("zipCode", NullValueHandling = NullValueHandling.Ignore)]
-        public string ZipCode { get; set; }
-    }
-
-    /// <summary>
-    /// Type of the event
-    /// </summary>
-    public enum EventType { OrderCreated };
 
     public partial class OrderCreatedEvent
     {
@@ -149,44 +94,9 @@ namespace OrderCreatedEventNameSpace
             DateParseHandling = DateParseHandling.None,
             Converters =
             {
-                EventTypeConverter.Singleton,
                 new IsoDateTimeConverter { DateTimeStyles = DateTimeStyles.AssumeUniversal }
             },
         };
-    }
-
-    internal class EventTypeConverter : JsonConverter
-    {
-        public override bool CanConvert(Type t) => t == typeof(EventType) || t == typeof(EventType?);
-
-        public override object ReadJson(JsonReader reader, Type t, object existingValue, JsonSerializer serializer)
-        {
-            if (reader.TokenType == JsonToken.Null) return null;
-            var value = serializer.Deserialize<string>(reader);
-            if (value == "OrderCreated")
-            {
-                return EventType.OrderCreated;
-            }
-            throw new Exception("Cannot unmarshal type EventType");
-        }
-
-        public override void WriteJson(JsonWriter writer, object untypedValue, JsonSerializer serializer)
-        {
-            if (untypedValue == null)
-            {
-                serializer.Serialize(writer, null);
-                return;
-            }
-            var value = (EventType)untypedValue;
-            if (value == EventType.OrderCreated)
-            {
-                serializer.Serialize(writer, "OrderCreated");
-                return;
-            }
-            throw new Exception("Cannot marshal type EventType");
-        }
-
-        public static readonly EventTypeConverter Singleton = new EventTypeConverter();
     }
 
     internal class MinMaxValueCheckConverter : JsonConverter
