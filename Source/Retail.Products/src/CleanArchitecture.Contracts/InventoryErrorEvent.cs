@@ -21,13 +21,19 @@ namespace InventoryErrorEventNameSpace
         /// Unique identifier of the customer who placed the order
         /// </summary>
         [JsonProperty("customerId")]
-        public Guid CustomerId { get; set; }
+        public long CustomerId { get; set; }
 
         /// <summary>
-        /// Description of the error that occurred during inventory processing
+        /// Unique identifier of the event
         /// </summary>
-        [JsonProperty("errorMessage", NullValueHandling = NullValueHandling.Ignore)]
-        public string ErrorMessage { get; set; }
+        [JsonProperty("id")]
+        public long Id { get; set; }
+
+        /// <summary>
+        /// List of items in the order
+        /// </summary>
+        [JsonProperty("lineItems", NullValueHandling = NullValueHandling.Ignore)]
+        public LineItem[] LineItems { get; set; }
 
         /// <summary>
         /// Date and time when the order was created
@@ -39,7 +45,7 @@ namespace InventoryErrorEventNameSpace
         /// Unique identifier of the order
         /// </summary>
         [JsonProperty("orderId")]
-        public Guid OrderId { get; set; }
+        public long OrderId { get; set; }
 
         /// <summary>
         /// Total amount of the order
@@ -47,6 +53,33 @@ namespace InventoryErrorEventNameSpace
         [JsonProperty("totalAmount")]
         [JsonConverter(typeof(MinMaxValueCheckConverter))]
         public double TotalAmount { get; set; }
+    }
+
+    public partial class LineItem
+    {
+        /// <summary>
+        /// Unique identifier of the line item
+        /// </summary>
+        [JsonProperty("id")]
+        public long Id { get; set; }
+
+        /// <summary>
+        /// Unique identifier of the order
+        /// </summary>
+        [JsonProperty("orderId")]
+        public long OrderId { get; set; }
+
+        /// <summary>
+        /// Quantity of the product ordered
+        /// </summary>
+        [JsonProperty("qty")]
+        public long Qty { get; set; }
+
+        /// <summary>
+        /// Unique identifier of the product SKU
+        /// </summary>
+        [JsonProperty("skuId")]
+        public long SkuId { get; set; }
     }
 
     public partial class InventoryErrorEvent
