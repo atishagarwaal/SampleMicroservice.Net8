@@ -36,12 +36,12 @@ components:
           - lineItems
         properties:
           customerId:
-            type: string
-            format: uuid
+            type: integer
+            format: int64
             description: Unique identifier of the customer who placed the order
           orderId:
-            type: string
-            format: uuid
+            type: integer
+            format: int64
             description: Unique identifier of the order
           orderDate:
             type: string
