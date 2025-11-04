@@ -9,6 +9,7 @@ using CommonLibrary.MessageContract;
 using MessagingInfrastructure.Service;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using OrderCreatedEventNameSpace;
 using Retail.Api.Customers.src.CleanArchitecture.Application.Interfaces;
 using Retail.Api.Customers.src.CleanArchitecture.Application.Service;
 using Retail.Api.Products.src.CleanArchitecture.Application.EventHandlers;

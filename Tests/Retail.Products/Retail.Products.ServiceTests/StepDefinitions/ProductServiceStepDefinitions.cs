@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using CommonLibrary.Handlers.Dto;
 using It = Moq.It;
+using OrderCreatedEventNameSpace;
 
 namespace Retail.Products.ServiceTests.StepDefinitions
 {
@@ -329,10 +330,10 @@ namespace Retail.Products.ServiceTests.StepDefinitions
             try
             {
                 // Set up mocks for event handling
-                var mockOrderCreatedEvent = new CommonLibrary.MessageContract.OrderCreatedEvent
+                var mockOrderCreatedEvent = new OrderCreatedEvent
                 {
                     OrderId = 1,
-                    LineItems = new List<CommonLibrary.Handlers.Dto.LineItemDto>
+                    LineItems = new List<LineItemDto>
                     {
                         new CommonLibrary.Handlers.Dto.LineItemDto { SkuId = 1, Qty = 2 },
                         new CommonLibrary.Handlers.Dto.LineItemDto { SkuId = 2, Qty = 1 }

@@ -7,6 +7,7 @@ using Retail.Orders.Write.src.CleanArchitecture.Application.Dto;
 using Retail.Orders.Write.src.CleanArchitecture.Domain.Entities;
 using Retail.Orders.Write.src.CleanArchitecture.Infrastructure.Interfaces;
 using Retail.Orders.Write.src.CleanArchitecture.Application.Commands;
+using OrderCreatedEventNameSpace;
 
 namespace Retail.Orders.Write.src.CleanArchitecture.Application.Handlers
 {

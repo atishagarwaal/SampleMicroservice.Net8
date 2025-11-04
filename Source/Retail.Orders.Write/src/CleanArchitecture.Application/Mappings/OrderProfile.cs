@@ -5,6 +5,7 @@
 namespace Retail.Orders.Write.src.CleanArchitecture.Application.Mappings
 {
     using CommonLibrary.MessageContract;
+    using OrderCreatedEventNameSpace;
     using Retail.Orders.Write.src.CleanArchitecture.Application.Dto;
     using Retail.Orders.Write.src.CleanArchitecture.Domain.Entities;
 
@@ -19,7 +20,7 @@ namespace Retail.Orders.Write.src.CleanArchitecture.Application.Mappings
         public OrderProfile()
         {
             CreateMap<Order, OrderDto>().ReverseMap(); ;
-            CreateMap<LineItem, LineItemDto>().ReverseMap();
+            CreateMap<Domain.Entities.LineItem, LineItemDto>().ReverseMap();
             CreateMap<OrderCreatedEvent, OrderDto>().ReverseMap();
         }
     }

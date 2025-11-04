@@ -1,6 +1,7 @@
 ﻿using CommonLibrary.Handlers;
 using CommonLibrary.MessageContract;
 using MessagingLibrary.Interface;
+using OrderCreatedEventNameSpace;
 using Retail.Api.Customers.src.CleanArchitecture.Application.Interfaces;
 
 namespace Retail.Api.Customers.src.CleanArchitecture.Application.Service

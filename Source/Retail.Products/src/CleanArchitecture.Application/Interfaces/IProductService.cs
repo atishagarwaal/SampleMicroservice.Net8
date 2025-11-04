@@ -1,4 +1,5 @@
 ﻿using CommonLibrary.MessageContract;
+using OrderCreatedEventNameSpace;
 using Retail.Api.Products.src.CleanArchitecture.Application.Dto;
 
 namespace Retail.Api.Products.src.CleanArchitecture.Application.Interfaces

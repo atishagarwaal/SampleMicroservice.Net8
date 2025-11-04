@@ -3,6 +3,7 @@ using CommonLibrary.MessageContract;
 using InventoryUpdatedEventNameSpace;
 using MessagingInfrastructure;
 using MessagingLibrary.Interface;
+using OrderCreatedEventNameSpace;
 using Retail.Api.Products.src.CleanArchitecture.Application.Dto;
 using Retail.Api.Products.src.CleanArchitecture.Application.Interfaces;
 using Retail.Api.Products.src.CleanArchitecture.Domain.Entities;
