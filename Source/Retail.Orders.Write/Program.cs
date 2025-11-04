@@ -20,6 +20,7 @@ using Retail.Orders.Write.src.CleanArchitecture.Infrastructure.Repositories;
 using Retail.Orders.Write.src.CleanArchitecture.Infrastructure.UnitOfWork;
 using Retail.Orders.Write.src.CleanArchitecture.Application.Commands;
 using Retail.Orders.Write.src.CleanArchitecture.Application.EventHandlers;
+using InventoryErrorEventNameSpace;
 
 var builder = WebApplication.CreateBuilder(args);
 

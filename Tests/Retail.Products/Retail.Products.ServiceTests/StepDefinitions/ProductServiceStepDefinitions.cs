@@ -6,7 +6,6 @@ using Retail.Products.ServiceTests.Common;
 using TechTalk.SpecFlow;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
-using CommonLibrary.Handlers.Dto;
 using It = Moq.It;
 using OrderCreatedEventNameSpace;
 

@@ -1,5 +1,6 @@
 ﻿using CommonLibrary.Handlers;
 using CommonLibrary.MessageContract;
+using InventoryErrorEventNameSpace;
 using MessagingLibrary.Interface;
 using Retail.Orders.Write.src.CleanArchitecture.Application.Interfaces;
 

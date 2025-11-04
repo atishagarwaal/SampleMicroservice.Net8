@@ -409,6 +409,56 @@
         <member name="M:Retail.Api.Orders.Migrations.Orders.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
             <inheritdoc />
         </member>
+        <member name="P:InventoryErrorEventNameSpace.InventoryErrorEvent.CustomerId">
+            <summary>
+            Unique identifier of the customer who placed the order
+            </summary>
+        </member>
+        <member name="P:InventoryErrorEventNameSpace.InventoryErrorEvent.Id">
+            <summary>
+            Unique identifier of the event
+            </summary>
+        </member>
+        <member name="P:InventoryErrorEventNameSpace.InventoryErrorEvent.LineItems">
+            <summary>
+            List of items in the order
+            </summary>
+        </member>
+        <member name="P:InventoryErrorEventNameSpace.InventoryErrorEvent.OrderDate">
+            <summary>
+            Date and time when the order was created
+            </summary>
+        </member>
+        <member name="P:InventoryErrorEventNameSpace.InventoryErrorEvent.OrderId">
+            <summary>
+            Unique identifier of the order
+            </summary>
+        </member>
+        <member name="P:InventoryErrorEventNameSpace.InventoryErrorEvent.TotalAmount">
+            <summary>
+            Total amount of the order
+            </summary>
+        </member>
+        <member name="P:InventoryErrorEventNameSpace.LineItem.Id">
+            <summary>
+            Unique identifier of the line item
+            </summary>
+        </member>
+        <member name="P:InventoryErrorEventNameSpace.LineItem.OrderId">
+            <summary>
+            Unique identifier of the order
+            </summary>
+        </member>
+        <member name="P:InventoryErrorEventNameSpace.LineItem.Qty">
+            <summary>
+            Quantity of the product ordered
+            </summary>
+        </member>
+        <member name="P:InventoryErrorEventNameSpace.LineItem.SkuId">
+            <summary>
+            Unique identifier of the product SKU
+            </summary>
+        </member>
         <member name="P:OrderCancelledEventNameSpace.OrderCancelledEvent.EventId">
             <summary>
             Unique identifier for the event

@@ -5,7 +5,6 @@ using Retail.Api.Products.src.CleanArchitecture.Domain.Entities;
 using MessagingLibrary.Interface;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
 using System.Text.Json;
-using CommonLibrary.Handlers.Dto;
 using Retail.Api.Products.src.CleanArchitecture.Application.Interfaces;
 using Retail.Api.Products.src.CleanArchitecture.Application.Dto;
 using OrderCreatedEventNameSpace;

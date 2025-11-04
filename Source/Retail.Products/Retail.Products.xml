@@ -387,9 +387,14 @@
             Unique identifier of the customer who placed the order
             </summary>
         </member>
-        <member name="P:InventoryErrorEventNameSpace.InventoryErrorEvent.ErrorMessage">
+        <member name="P:InventoryErrorEventNameSpace.InventoryErrorEvent.Id">
             <summary>
-            Description of the error that occurred during inventory processing
+            Unique identifier of the event
+            </summary>
+        </member>
+        <member name="P:InventoryErrorEventNameSpace.InventoryErrorEvent.LineItems">
+            <summary>
+            List of items in the order
             </summary>
         </member>
         <member name="P:InventoryErrorEventNameSpace.InventoryErrorEvent.OrderDate">
@@ -405,6 +410,26 @@
         <member name="P:InventoryErrorEventNameSpace.InventoryErrorEvent.TotalAmount">
             <summary>
             Total amount of the order
+            </summary>
+        </member>
+        <member name="P:InventoryErrorEventNameSpace.LineItem.Id">
+            <summary>
+            Unique identifier of the line item
+            </summary>
+        </member>
+        <member name="P:InventoryErrorEventNameSpace.LineItem.OrderId">
+            <summary>
+            Unique identifier of the order
+            </summary>
+        </member>
+        <member name="P:InventoryErrorEventNameSpace.LineItem.Qty">
+            <summary>
+            Quantity of the product ordered
+            </summary>
+        </member>
+        <member name="P:InventoryErrorEventNameSpace.LineItem.SkuId">
+            <summary>
+            Unique identifier of the product SKU
             </summary>
         </member>
         <member name="P:InventoryUpdatedEventNameSpace.InventoryUpdatedEvent.CustomerId">

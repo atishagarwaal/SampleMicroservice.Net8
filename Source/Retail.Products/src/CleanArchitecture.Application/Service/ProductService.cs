@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using CommonLibrary.MessageContract;
+using InventoryErrorEventNameSpace;
 using InventoryUpdatedEventNameSpace;
 using MessagingInfrastructure;
 using MessagingLibrary.Interface;

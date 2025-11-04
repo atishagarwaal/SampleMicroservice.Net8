@@ -3,10 +3,10 @@ using CommonLibrary.MessageContract;
 using MessagingLibrary.Interface;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
 using System.Text.Json;
-using CommonLibrary.Handlers.Dto;
 using Retail.Orders.Write.src.CleanArchitecture.Application.Interfaces;
 using Retail.Orders.Write.src.CleanArchitecture.Infrastructure.Interfaces;
 using AutoMapper;
+using InventoryErrorEventNameSpace;
 
 namespace Retail.Orders.Write.src.CleanArchitecture.Application.EventHandlers
 {
