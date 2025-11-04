@@ -333,10 +333,10 @@ namespace Retail.Products.ServiceTests.StepDefinitions
                 var mockOrderCreatedEvent = new OrderCreatedEvent
                 {
                     OrderId = 1,
-                    LineItems = new List<LineItemDto>
+                    LineItems = new []
                     {
-                        new CommonLibrary.Handlers.Dto.LineItemDto { SkuId = 1, Qty = 2 },
-                        new CommonLibrary.Handlers.Dto.LineItemDto { SkuId = 2, Qty = 1 }
+                        new OrderCreatedEventNameSpace.LineItem { SkuId = 1, Qty = 2 },
+                        new OrderCreatedEventNameSpace.LineItem { SkuId = 2, Qty = 1 }
                     }
                 };
 

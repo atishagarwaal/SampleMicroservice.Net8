@@ -471,32 +471,22 @@
         </member>
         <member name="P:OrderCreatedEventNameSpace.OrderCreatedEvent.CustomerId">
             <summary>
-            ID of the customer who placed the order
+            Unique identifier of the customer who placed the order
             </summary>
         </member>
-        <member name="P:OrderCreatedEventNameSpace.OrderCreatedEvent.EventId">
+        <member name="P:OrderCreatedEventNameSpace.OrderCreatedEvent.LineItems">
             <summary>
-            Unique identifier for the event
+            List of items in the order
             </summary>
         </member>
-        <member name="P:OrderCreatedEventNameSpace.OrderCreatedEvent.EventType">
+        <member name="P:OrderCreatedEventNameSpace.OrderCreatedEvent.OrderDate">
             <summary>
-            Type of the event
+            Date and time when the order was created
             </summary>
         </member>
         <member name="P:OrderCreatedEventNameSpace.OrderCreatedEvent.OrderId">
             <summary>
-            Unique identifier for the order
-            </summary>
-        </member>
-        <member name="P:OrderCreatedEventNameSpace.OrderCreatedEvent.OrderItems">
-            <summary>
-            Items in the order
-            </summary>
-        </member>
-        <member name="P:OrderCreatedEventNameSpace.OrderCreatedEvent.Timestamp">
-            <summary>
-            When the event occurred
+            Unique identifier of the order
             </summary>
         </member>
         <member name="P:OrderCreatedEventNameSpace.OrderCreatedEvent.TotalAmount">
@@ -504,54 +494,24 @@
             Total amount of the order
             </summary>
         </member>
-        <member name="P:OrderCreatedEventNameSpace.OrderItem.ProductId">
+        <member name="P:OrderCreatedEventNameSpace.LineItem.Id">
             <summary>
-            Unique identifier for the product
+            Unique identifier of the line item
             </summary>
         </member>
-        <member name="P:OrderCreatedEventNameSpace.OrderItem.Quantity">
+        <member name="P:OrderCreatedEventNameSpace.LineItem.OrderId">
             <summary>
-            Quantity of the product
+            Unique identifier of the order
             </summary>
         </member>
-        <member name="P:OrderCreatedEventNameSpace.OrderItem.TotalPrice">
+        <member name="P:OrderCreatedEventNameSpace.LineItem.Qty">
             <summary>
-            Total price for this line item
+            Quantity of the product ordered
             </summary>
         </member>
-        <member name="P:OrderCreatedEventNameSpace.OrderItem.UnitPrice">
+        <member name="P:OrderCreatedEventNameSpace.LineItem.SkuId">
             <summary>
-            Price per unit
-            </summary>
-        </member>
-        <member name="P:OrderCreatedEventNameSpace.ShippingAddress.City">
-            <summary>
-            City
-            </summary>
-        </member>
-        <member name="P:OrderCreatedEventNameSpace.ShippingAddress.Country">
-            <summary>
-            Country
-            </summary>
-        </member>
-        <member name="P:OrderCreatedEventNameSpace.ShippingAddress.State">
-            <summary>
-            State or province
-            </summary>
-        </member>
-        <member name="P:OrderCreatedEventNameSpace.ShippingAddress.Street">
-            <summary>
-            Street address
-            </summary>
-        </member>
-        <member name="P:OrderCreatedEventNameSpace.ShippingAddress.ZipCode">
-            <summary>
-            ZIP or postal code
-            </summary>
-        </member>
-        <member name="T:OrderCreatedEventNameSpace.EventType">
-            <summary>
-            Type of the event
+            Unique identifier of the product SKU
             </summary>
         </member>
         <member name="P:OrderUpdatedEventNameSpace.OrderUpdatedEvent.Changes">

@@ -74,13 +74,15 @@ namespace Retail.Orders.Write.src.CleanArchitecture.Application.Handlers
                     OrderDate = savedOrder.OrderDate,
                     TotalAmount = savedOrder.TotalAmount,
                     OrderId = savedOrder.Id,
-                    LineItems = savedOrder.LineItems.Select(item => new CommonLibrary.Handlers.Dto.LineItemDto
-                    {
-                        Id = item.Id,
-                        OrderId = savedOrder.Id,
-                        SkuId = item.SkuId,
-                        Qty = item.Qty,
-                    }),
+                    LineItems = savedOrder.LineItems
+                        .Select(item => new OrderCreatedEventNameSpace.LineItem
+                        {
+                            Id = item.Id,
+                            OrderId = savedOrder.Id,
+                            SkuId = item.SkuId,
+                            Qty = item.Qty,
+                        })
+                        .ToArray(),
                 };
 
                 await _messagePublisher.PublishAsync(newOrderMessage, RabbitmqConstants.OrderCreated);

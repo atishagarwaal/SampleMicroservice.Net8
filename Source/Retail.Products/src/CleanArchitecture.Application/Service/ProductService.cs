@@ -154,7 +154,8 @@ namespace Retail.Api.Products.src.CleanArchitecture.Application.Service
 
                 foreach (var sku in skuList)
                 {
-                    sku.Inventory -= orderCreatedEvent.LineItems.FirstOrDefault(j => j.SkuId == sku.Id)?.Qty ?? 0;
+                    var qty = orderCreatedEvent.LineItems.FirstOrDefault(j => j.SkuId == sku.Id)?.Qty ?? 0;
+                    sku.Inventory -= (int)qty;
                     unitOfWork.Skus.Update(sku);
                 }
 
@@ -188,7 +189,7 @@ namespace Retail.Api.Products.src.CleanArchitecture.Application.Service
                 var inventoryErrorMessage = new InventoryErrorEvent
                 {
                     CustomerId = orderCreatedEvent.CustomerId,
-                    OrderDate = orderCreatedEvent.OrderDate,
+                    OrderDate = orderCreatedEvent.OrderDate.DateTime,
                     OrderId = orderCreatedEvent.OrderId,
                     TotalAmount = orderCreatedEvent.TotalAmount,
                 };
