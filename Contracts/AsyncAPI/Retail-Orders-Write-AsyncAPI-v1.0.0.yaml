@@ -11,6 +11,11 @@ channels:
       message:
         oneOf:
           - $ref: "#/components/messages/OrderCreatedEvent"
+  "rollback.topic.exchange/inventory.error.event":
+    subscribe:
+      message:
+        oneOf:
+          - $ref: "#/components/messages/InventoryErrorEvent"
   "orderdomain.topic.exchange/order.updated.event":
     publish:
       message:
@@ -154,6 +159,42 @@ components:
             type: string
             format: date-time
             description: When the order was completed
+    InventoryErrorEvent:
+      # removed messageId to satisfy validator for 2.0.0
+      payload:
+        type: object
+        required:
+          - id
+          - customerId
+          - orderId
+          - orderDate
+          - totalAmount
+        properties:
+          id:
+            type: integer
+            format: int64
+            description: Unique identifier of the event
+          customerId:
+            type: integer
+            format: int64
+            description: Unique identifier of the customer who placed the order
+          orderId:
+            type: integer
+            format: int64
+            description: Unique identifier of the order
+          orderDate:
+            type: string
+            format: date-time
+            description: Date and time when the order was created
+          totalAmount:
+            type: number
+            description: Total amount of the order
+            minimum: 0
+          lineItems:
+            type: array
+            description: List of items in the order
+            items:
+              $ref: "#/components/schemas/LineItem"
 
   schemas:
     LineItem:

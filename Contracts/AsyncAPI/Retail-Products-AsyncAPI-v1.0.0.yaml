@@ -100,18 +100,23 @@ components:
       payload:
         type: object
         required:
+          - id
           - customerId
           - orderId
           - orderDate
           - totalAmount
         properties:
+          id:
+            type: integer
+            format: int64
+            description: Unique identifier of the event
           customerId:
-            type: string
-            format: uuid
+            type: integer
+            format: int64
             description: Unique identifier of the customer who placed the order
           orderId:
-            type: string
-            format: uuid
+            type: integer
+            format: int64
             description: Unique identifier of the order
           orderDate:
             type: string
@@ -121,9 +126,11 @@ components:
             type: number
             description: Total amount of the order
             minimum: 0
-          errorMessage:
-            type: string
-            description: Description of the error that occurred during inventory processing
+          lineItems:
+            type: array
+            description: List of items in the order
+            items:
+              $ref: "#/components/schemas/LineItem"
 
   schemas:
     LineItem:
