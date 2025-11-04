@@ -21,7 +21,7 @@ namespace OrderCreatedEventNameSpace
         /// Unique identifier of the customer who placed the order
         /// </summary>
         [JsonProperty("customerId")]
-        public Guid CustomerId { get; set; }
+        public long CustomerId { get; set; }
 
         /// <summary>
         /// List of items in the order
@@ -39,7 +39,7 @@ namespace OrderCreatedEventNameSpace
         /// Unique identifier of the order
         /// </summary>
         [JsonProperty("orderId")]
-        public Guid OrderId { get; set; }
+        public long OrderId { get; set; }
 
         /// <summary>
         /// Total amount of the order
