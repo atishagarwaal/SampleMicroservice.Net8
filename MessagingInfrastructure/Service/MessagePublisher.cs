@@ -116,17 +116,24 @@ namespace MessagingLibrary.Service
         /// - X-Message-Type: Identifies the message contract type
         /// - X-Message-Version: Enables contract evolution and backward compatibility
         /// - X-Routing-Key: Useful for debugging and logging (mirrors RabbitMQ routing key)
+        /// - X-Service-Name: Identifies the originating service for distributed tracing
         /// - X-Timestamp: Enables message flow tracking and latency diagnosis
         /// - X-Correlation-Id: Essential for distributed tracing across microservices
         /// - Content-Type: Specifies message body format
         /// </summary>
         private IDictionary<string, object?> CreateMessageHeaders(string eventType, string routingKey)
         {
+            // Get service name from configuration or use assembly name as fallback
+            var serviceName = _configuration["ServiceName"] 
+                ?? Assembly.GetExecutingAssembly().GetName().Name 
+                ?? "Unknown";
+
             var headers = new Dictionary<string, object?>
             {
                 [RabbitmqConstants.MessageTypeHeader] = eventType,
                 [RabbitmqConstants.MessageVersionHeader] = RabbitmqConstants.DefaultMessageVersion,
                 [RabbitmqConstants.RoutingKeyHeader] = routingKey,
+                [RabbitmqConstants.ServiceNameHeader] = serviceName,
                 [RabbitmqConstants.ContentTypeHeader] = RabbitmqConstants.DefaultContentType,
                 [RabbitmqConstants.TimestampHeader] = DateTime.UtcNow.ToString("O"),
                 [RabbitmqConstants.CorrelationIdHeader] = Guid.NewGuid().ToString()
