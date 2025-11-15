@@ -20,6 +20,12 @@ using Retail.Api.Customers.src.CleanArchitecture.Infrastructure.Repositories;
 using Retail.Api.Customers.src.CleanArchitecture.Infrastructure.UnitOfWork;
 using CommonLibrary.MessageContract;
 using InventoryUpdatedEventNameSpace;
+using Retail.Api.Customers.src.CleanArchitecture.Application.Validation;
+using Retail.Api.Customers.src.CleanArchitecture.Application.Validation.Interfaces;
+using Retail.Api.Customers.src.CleanArchitecture.Application.Dto;
+using Retail.Api.Customers.src.CleanArchitecture.Application.Converters;
+using Retail.Api.Customers.src.CleanArchitecture.Application.Converters.Interfaces;
+using Retail.Api.Customers.src.CleanArchitecture.Domain.Entities;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -41,7 +47,14 @@ builder.Services.AddRabbitMQServices(builder.Configuration);
 builder.Services.AddScoped<IEventHandler<InventoryUpdatedEvent>, InventoryUpdatedEventHandler>();
 builder.Services.AddScoped<IServiceInitializer, ServiceInitializer>();
 
-builder.Services.AddAutoMapper(typeof(Program));
+// Register validators
+builder.Services.AddScoped<IMessageValidator<CustomerDto>, CustomerDtoValidator>();
+
+// Register converters
+builder.Services.AddScoped<IConverter<CustomerDto, Customer>, CustomerConverter>();
+builder.Services.AddScoped<IConverter<Customer, CustomerDto>, CustomerDtoConverter>();
+builder.Services.AddScoped<IConverter<NotificationDto, Notification>, NotificationConverter>();
+builder.Services.AddScoped<IConverter<Notification, NotificationDto>, NotificationDtoConverter>();
 
 // Add API versioning
 builder.Services.AddApiVersioning(options =>

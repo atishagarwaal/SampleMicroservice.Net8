@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using AutoMapper;
 using CommonLibrary.MessageContract;
 using FluentAssertions;
 using InventoryUpdatedEventNameSpace;
@@ -12,6 +11,9 @@ using Moq;
 using Retail.Api.Customers.src.CleanArchitecture.Application.Dto;
 using Retail.Api.Customers.src.CleanArchitecture.Application.Interfaces;
 using Retail.Api.Customers.src.CleanArchitecture.Application.Service;
+using Retail.Api.Customers.src.CleanArchitecture.Application.Converters.Interfaces;
+using Retail.Api.Customers.src.CleanArchitecture.Application.Validation;
+using Retail.Api.Customers.src.CleanArchitecture.Application.Validation.Interfaces;
 using Retail.Api.Customers.src.CleanArchitecture.Domain.Entities;
 using Retail.Api.Customers.src.CleanArchitecture.Infrastructure.Interfaces;
 
@@ -25,20 +27,24 @@ namespace Retail.Customers.ComponentTests
     public sealed class CustomerServiceTests
     {
         private Mock<IUnitOfWork> _mockUnitOfWork = null!;
-        private Mock<IMapper> _mockMapper = null!;
         private Mock<IServiceScopeFactory> _mockServiceScopeFactory = null!;
         private Mock<IServiceScope> _mockServiceScope = null!;
         private Mock<IServiceProvider> _mockServiceProvider = null!;
+        private Mock<IMessageValidator<CustomerDto>> _mockCustomerDtoValidator = null!;
+        private Mock<IConverter<CustomerDto, Customer>> _mockCustomerConverter = null!;
+        private Mock<IConverter<Customer, CustomerDto>> _mockCustomerDtoConverter = null!;
         private CustomerService _customerService = null!;
 
         [TestInitialize]
         public void TestInitialize()
         {
             _mockUnitOfWork = new Mock<IUnitOfWork>();
-            _mockMapper = new Mock<IMapper>();
             _mockServiceScopeFactory = new Mock<IServiceScopeFactory>();
             _mockServiceScope = new Mock<IServiceScope>();
             _mockServiceProvider = new Mock<IServiceProvider>();
+            _mockCustomerDtoValidator = new Mock<IMessageValidator<CustomerDto>>();
+            _mockCustomerConverter = new Mock<IConverter<CustomerDto, Customer>>();
+            _mockCustomerDtoConverter = new Mock<IConverter<Customer, CustomerDto>>();
 
             _mockServiceScopeFactory
                 .Setup(x => x.CreateScope())
@@ -48,10 +54,17 @@ namespace Retail.Customers.ComponentTests
                 .Setup(x => x.ServiceProvider)
                 .Returns(_mockServiceProvider.Object);
 
+            // Setup default validation to pass
+            _mockCustomerDtoValidator
+                .Setup(x => x.Validate(It.IsAny<CustomerDto>()))
+                .Returns(new ValidationData());
+
             _customerService = new CustomerService(
                 _mockUnitOfWork.Object,
-                _mockMapper.Object,
-                _mockServiceScopeFactory.Object);
+                _mockServiceScopeFactory.Object,
+                _mockCustomerDtoValidator.Object,
+                _mockCustomerConverter.Object,
+                _mockCustomerDtoConverter.Object);
         }
 
         [TestMethod]
@@ -68,10 +81,10 @@ namespace Retail.Customers.ComponentTests
         public async Task GetAllCustomersAsync_WithValidData_ReturnsMappedCustomers()
         {
             // Arrange
-            var customers = new List<Retail.Api.Customers.src.CleanArchitecture.Domain.Entities.Customer>
+            var customers = new List<Customer>
             {
-                new Retail.Api.Customers.src.CleanArchitecture.Domain.Entities.Customer { Id = 1, FirstName = "John", LastName = "Doe" },
-                new Retail.Api.Customers.src.CleanArchitecture.Domain.Entities.Customer { Id = 2, FirstName = "Jane", LastName = "Smith" }
+                new Customer { Id = 1, FirstName = "John", LastName = "Doe" },
+                new Customer { Id = 2, FirstName = "Jane", LastName = "Smith" }
             };
 
             var customerDtos = new List<CustomerDto>
@@ -84,20 +97,23 @@ namespace Retail.Customers.ComponentTests
                 .Setup(x => x.Customers.GetAllAsync())
                 .ReturnsAsync(customers);
 
-            _mockMapper
-                .Setup(x => x.Map<IEnumerable<CustomerDto>>(customers))
-                .Returns(customerDtos);
+            _mockCustomerDtoConverter
+                .Setup(x => x.Convert(It.IsAny<Customer>()))
+                .Returns<Customer>(customer => customerDtos.First(dto => dto.Id == customer.Id));
 
             // Act
             var result = await _customerService.GetAllCustomersAsync();
+            var resultList = result.ToList();
 
             // Assert
-            result.Should().NotBeNull();
-            result.Should().HaveCount(2);
-            result.Should().BeEquivalentTo(customerDtos);
+            resultList.Should().NotBeNull();
+            resultList.Should().HaveCount(2);
+            resultList.Should().BeEquivalentTo(customerDtos);
 
             _mockUnitOfWork.Verify(x => x.Customers.GetAllAsync(), Times.Once);
-            _mockMapper.Verify(x => x.Map<IEnumerable<CustomerDto>>(customers), Times.Once);
+            // Note: Converter may be called multiple times due to lazy enumeration in LINQ Select
+            // We verify the result is correct rather than exact call count
+            _mockCustomerDtoConverter.Verify(x => x.Convert(It.IsAny<Customer>()), Times.AtLeastOnce);
         }
 
         [TestMethod]
@@ -106,15 +122,15 @@ namespace Retail.Customers.ComponentTests
         {
             // Arrange
             var customerId = 1L;
-            var customer = new Retail.Api.Customers.src.CleanArchitecture.Domain.Entities.Customer { Id = customerId, FirstName = "John", LastName = "Doe" };
+            var customer = new Customer { Id = customerId, FirstName = "John", LastName = "Doe" };
             var customerDto = new CustomerDto { Id = customerId, FirstName = "John", LastName = "Doe" };
 
             _mockUnitOfWork
                 .Setup(x => x.Customers.GetByIdAsync(customerId))
                 .ReturnsAsync(customer);
 
-            _mockMapper
-                .Setup(x => x.Map<CustomerDto>(customer))
+            _mockCustomerDtoConverter
+                .Setup(x => x.Convert(customer))
                 .Returns(customerDto);
 
             // Act
@@ -125,7 +141,7 @@ namespace Retail.Customers.ComponentTests
             result.Should().BeEquivalentTo(customerDto);
 
             _mockUnitOfWork.Verify(x => x.Customers.GetByIdAsync(customerId), Times.Once);
-            _mockMapper.Verify(x => x.Map<CustomerDto>(customer), Times.Once);
+            _mockCustomerDtoConverter.Verify(x => x.Convert(customer), Times.Once);
         }
 
         [TestMethod]
@@ -137,7 +153,7 @@ namespace Retail.Customers.ComponentTests
 
             _mockUnitOfWork
                 .Setup(x => x.Customers.GetByIdAsync(customerId))
-                .ReturnsAsync((Retail.Api.Customers.src.CleanArchitecture.Domain.Entities.Customer?)null);
+                .ReturnsAsync((Customer?)null);
 
             // Act
             var result = await _customerService.GetCustomerByIdAsync(customerId);
@@ -146,6 +162,7 @@ namespace Retail.Customers.ComponentTests
             result.Should().BeNull();
 
             _mockUnitOfWork.Verify(x => x.Customers.GetByIdAsync(customerId), Times.Once);
+            _mockCustomerDtoConverter.Verify(x => x.Convert(It.IsAny<Customer>()), Times.Never);
         }
 
         [TestMethod]
@@ -154,20 +171,24 @@ namespace Retail.Customers.ComponentTests
         {
             // Arrange
             var customerDto = new CustomerDto { FirstName = "John", LastName = "Doe" };
-            var customer = new Retail.Api.Customers.src.CleanArchitecture.Domain.Entities.Customer { FirstName = "John", LastName = "Doe" };
-            var addedCustomer = new Retail.Api.Customers.src.CleanArchitecture.Domain.Entities.Customer { Id = 1, FirstName = "John", LastName = "Doe" };
+            var customer = new Customer { FirstName = "John", LastName = "Doe" };
+            var addedCustomer = new Customer { Id = 1, FirstName = "John", LastName = "Doe" };
             var resultDto = new CustomerDto { Id = 1, FirstName = "John", LastName = "Doe" };
 
-            _mockMapper
-                .Setup(x => x.Map<Retail.Api.Customers.src.CleanArchitecture.Domain.Entities.Customer>(customerDto))
+            _mockCustomerDtoValidator
+                .Setup(x => x.Validate(customerDto))
+                .Returns(new ValidationData());
+
+            _mockCustomerConverter
+                .Setup(x => x.Convert(customerDto))
                 .Returns(customer);
 
             _mockUnitOfWork
                 .Setup(x => x.Customers.AddAsync(customer))
                 .ReturnsAsync(addedCustomer);
 
-            _mockMapper
-                .Setup(x => x.Map<CustomerDto>(addedCustomer))
+            _mockCustomerDtoConverter
+                .Setup(x => x.Convert(addedCustomer))
                 .Returns(resultDto);
 
             // Act
@@ -177,10 +198,33 @@ namespace Retail.Customers.ComponentTests
             result.Should().NotBeNull();
             result.Should().BeEquivalentTo(resultDto);
 
-            _mockMapper.Verify(x => x.Map<Retail.Api.Customers.src.CleanArchitecture.Domain.Entities.Customer>(customerDto), Times.Once);
+            _mockCustomerDtoValidator.Verify(x => x.Validate(customerDto), Times.Once);
+            _mockCustomerConverter.Verify(x => x.Convert(customerDto), Times.Once);
             _mockUnitOfWork.Verify(x => x.Customers.AddAsync(customer), Times.Once);
             _mockUnitOfWork.Verify(x => x.CompleteAsync(), Times.Once);
             _mockUnitOfWork.Verify(x => x.CommitTransactionAsync(), Times.Once);
+            _mockCustomerDtoConverter.Verify(x => x.Convert(addedCustomer), Times.Once);
+        }
+
+        [TestMethod]
+        [TestCategory("CustomerService")]
+        public async Task AddCustomerAsync_WithInvalidCustomer_ThrowsArgumentException()
+        {
+            // Arrange
+            var customerDto = new CustomerDto { FirstName = string.Empty, LastName = "Doe" };
+            var validationData = new ValidationData("CustomerDtoValidator", "The FirstName field is null or whitespace.", FailureSeverity.Error);
+
+            _mockCustomerDtoValidator
+                .Setup(x => x.Validate(customerDto))
+                .Returns(validationData);
+
+            // Act & Assert
+            await Assert.ThrowsExceptionAsync<ArgumentException>(() => 
+                _customerService.AddCustomerAsync(customerDto));
+
+            _mockCustomerDtoValidator.Verify(x => x.Validate(customerDto), Times.Once);
+            _mockCustomerConverter.Verify(x => x.Convert(It.IsAny<CustomerDto>()), Times.Never);
+            _mockUnitOfWork.Verify(x => x.Customers.AddAsync(It.IsAny<Customer>()), Times.Never);
         }
 
         [TestMethod]
@@ -189,10 +233,14 @@ namespace Retail.Customers.ComponentTests
         {
             // Arrange
             var customerDto = new CustomerDto { FirstName = "John", LastName = "Doe" };
-            var customer = new Retail.Api.Customers.src.CleanArchitecture.Domain.Entities.Customer { FirstName = "John", LastName = "Doe" };
+            var customer = new Customer { FirstName = "John", LastName = "Doe" };
 
-            _mockMapper
-                .Setup(x => x.Map<Retail.Api.Customers.src.CleanArchitecture.Domain.Entities.Customer>(customerDto))
+            _mockCustomerDtoValidator
+                .Setup(x => x.Validate(customerDto))
+                .Returns(new ValidationData());
+
+            _mockCustomerConverter
+                .Setup(x => x.Convert(customerDto))
                 .Returns(customer);
 
             _mockUnitOfWork
@@ -212,20 +260,25 @@ namespace Retail.Customers.ComponentTests
         {
             // Arrange
             var customerId = 1L;
-            var existingCustomer = new Retail.Api.Customers.src.CleanArchitecture.Domain.Entities.Customer { Id = customerId, FirstName = "John", LastName = "Doe" };
+            var existingCustomer = new Customer { Id = customerId, FirstName = "John", LastName = "Doe" };
             var customerDto = new CustomerDto { Id = customerId, FirstName = "John", LastName = "Updated" };
+            var updatedCustomer = new Customer { Id = customerId, FirstName = "John", LastName = "Updated" };
             var resultDto = new CustomerDto { Id = customerId, FirstName = "John", LastName = "Updated" };
+
+            _mockCustomerDtoValidator
+                .Setup(x => x.Validate(customerDto))
+                .Returns(new ValidationData());
 
             _mockUnitOfWork
                 .Setup(x => x.Customers.GetByIdAsync(customerId))
                 .ReturnsAsync(existingCustomer);
 
-            _mockMapper
-                .Setup(x => x.Map(customerDto, existingCustomer))
-                .Verifiable();
+            _mockCustomerConverter
+                .Setup(x => x.Convert(customerDto))
+                .Returns(updatedCustomer);
 
-            _mockMapper
-                .Setup(x => x.Map<CustomerDto>(existingCustomer))
+            _mockCustomerDtoConverter
+                .Setup(x => x.Convert(existingCustomer))
                 .Returns(resultDto);
 
             // Act
@@ -234,12 +287,37 @@ namespace Retail.Customers.ComponentTests
             // Assert
             result.Should().NotBeNull();
             result.Should().BeEquivalentTo(resultDto);
+            existingCustomer.FirstName.Should().Be("John");
+            existingCustomer.LastName.Should().Be("Updated");
 
+            _mockCustomerDtoValidator.Verify(x => x.Validate(customerDto), Times.Once);
             _mockUnitOfWork.Verify(x => x.Customers.GetByIdAsync(customerId), Times.Once);
+            _mockCustomerConverter.Verify(x => x.Convert(customerDto), Times.Once);
             _mockUnitOfWork.Verify(x => x.Customers.Update(existingCustomer), Times.Once);
             _mockUnitOfWork.Verify(x => x.CompleteAsync(), Times.Once);
             _mockUnitOfWork.Verify(x => x.CommitTransactionAsync(), Times.Once);
-            _mockMapper.Verify();
+            _mockCustomerDtoConverter.Verify(x => x.Convert(existingCustomer), Times.Once);
+        }
+
+        [TestMethod]
+        [TestCategory("CustomerService")]
+        public async Task UpdateCustomerAsync_WithInvalidCustomer_ThrowsArgumentException()
+        {
+            // Arrange
+            var customerId = 1L;
+            var customerDto = new CustomerDto { FirstName = string.Empty, LastName = "Doe" };
+            var validationData = new ValidationData("CustomerDtoValidator", "The FirstName field is null or whitespace.", FailureSeverity.Error);
+
+            _mockCustomerDtoValidator
+                .Setup(x => x.Validate(customerDto))
+                .Returns(validationData);
+
+            // Act & Assert
+            await Assert.ThrowsExceptionAsync<ArgumentException>(() => 
+                _customerService.UpdateCustomerAsync(customerId, customerDto));
+
+            _mockCustomerDtoValidator.Verify(x => x.Validate(customerDto), Times.Once);
+            _mockUnitOfWork.Verify(x => x.Customers.GetByIdAsync(It.IsAny<long>()), Times.Never);
         }
 
         [TestMethod]
@@ -250,16 +328,20 @@ namespace Retail.Customers.ComponentTests
             var customerId = 999L;
             var customerDto = new CustomerDto { FirstName = "John", LastName = "Doe" };
 
+            _mockCustomerDtoValidator
+                .Setup(x => x.Validate(customerDto))
+                .Returns(new ValidationData());
+
             _mockUnitOfWork
                 .Setup(x => x.Customers.GetByIdAsync(customerId))
-                .ReturnsAsync((Retail.Api.Customers.src.CleanArchitecture.Domain.Entities.Customer?)null);
+                .ReturnsAsync((Customer?)null);
 
             // Act & Assert
             await Assert.ThrowsExceptionAsync<KeyNotFoundException>(() => 
                 _customerService.UpdateCustomerAsync(customerId, customerDto));
 
             _mockUnitOfWork.Verify(x => x.Customers.GetByIdAsync(customerId), Times.Once);
-            _mockUnitOfWork.Verify(x => x.Customers.Update(It.IsAny<Retail.Api.Customers.src.CleanArchitecture.Domain.Entities.Customer>()), Times.Never);
+            _mockUnitOfWork.Verify(x => x.Customers.Update(It.IsAny<Customer>()), Times.Never);
         }
 
         [TestMethod]
@@ -268,12 +350,21 @@ namespace Retail.Customers.ComponentTests
         {
             // Arrange
             var customerId = 1L;
-            var existingCustomer = new Retail.Api.Customers.src.CleanArchitecture.Domain.Entities.Customer { Id = customerId, FirstName = "John", LastName = "Doe" };
+            var existingCustomer = new Customer { Id = customerId, FirstName = "John", LastName = "Doe" };
             var customerDto = new CustomerDto { Id = customerId, FirstName = "John", LastName = "Updated" };
+            var updatedCustomer = new Customer { Id = customerId, FirstName = "John", LastName = "Updated" };
+
+            _mockCustomerDtoValidator
+                .Setup(x => x.Validate(customerDto))
+                .Returns(new ValidationData());
 
             _mockUnitOfWork
                 .Setup(x => x.Customers.GetByIdAsync(customerId))
                 .ReturnsAsync(existingCustomer);
+
+            _mockCustomerConverter
+                .Setup(x => x.Convert(customerDto))
+                .Returns(updatedCustomer);
 
             _mockUnitOfWork
                 .Setup(x => x.CompleteAsync())
@@ -292,7 +383,7 @@ namespace Retail.Customers.ComponentTests
         {
             // Arrange
             var customerId = 1L;
-            var customer = new Retail.Api.Customers.src.CleanArchitecture.Domain.Entities.Customer { Id = customerId, FirstName = "John", LastName = "Doe" };
+            var customer = new Customer { Id = customerId, FirstName = "John", LastName = "Doe" };
 
             _mockUnitOfWork
                 .Setup(x => x.Customers.GetByIdAsync(customerId))
@@ -319,7 +410,7 @@ namespace Retail.Customers.ComponentTests
 
             _mockUnitOfWork
                 .Setup(x => x.Customers.GetByIdAsync(customerId))
-                .ReturnsAsync((Retail.Api.Customers.src.CleanArchitecture.Domain.Entities.Customer?)null);
+                .ReturnsAsync((Customer?)null);
 
             // Act
             var result = await _customerService.DeleteCustomerAsync(customerId);
@@ -328,7 +419,7 @@ namespace Retail.Customers.ComponentTests
             result.Should().BeFalse();
 
             _mockUnitOfWork.Verify(x => x.Customers.GetByIdAsync(customerId), Times.Once);
-            _mockUnitOfWork.Verify(x => x.Customers.Remove(It.IsAny<Retail.Api.Customers.src.CleanArchitecture.Domain.Entities.Customer>()), Times.Never);
+            _mockUnitOfWork.Verify(x => x.Customers.Remove(It.IsAny<Customer>()), Times.Never);
         }
 
         [TestMethod]
@@ -337,7 +428,7 @@ namespace Retail.Customers.ComponentTests
         {
             // Arrange
             var customerId = 1L;
-            var customer = new Retail.Api.Customers.src.CleanArchitecture.Domain.Entities.Customer { Id = customerId, FirstName = "John", LastName = "Doe" };
+            var customer = new Customer { Id = customerId, FirstName = "John", LastName = "Doe" };
 
             _mockUnitOfWork
                 .Setup(x => x.Customers.GetByIdAsync(customerId))

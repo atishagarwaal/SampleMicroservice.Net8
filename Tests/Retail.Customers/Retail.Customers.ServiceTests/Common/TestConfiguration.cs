@@ -3,10 +3,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Retail.Api.Customers.src.CleanArchitecture.Infrastructure.Data;
 using Retail.Api.Customers.src.CleanArchitecture.Application.Interfaces;
 using Retail.Api.Customers.src.CleanArchitecture.Application.Dto;
-using Retail.Api.Customers.src.CleanArchitecture.Application.Mappings;
 using Retail.Api.Customers.src.CleanArchitecture.Domain.Entities;
 using CommonLibrary.MessageContract;
-using AutoMapper;
 using InventoryUpdatedEventNameSpace;
 
 namespace Retail.Customers.ServiceTests.Common
@@ -31,15 +29,12 @@ namespace Retail.Customers.ServiceTests.Common
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseInMemoryDatabase(databaseName: $"TestDb_{Guid.NewGuid()}"));
 
-            // Add AutoMapper
-            services.AddScoped<IMapper>(provider =>
-            {
-                var config = new MapperConfiguration(cfg =>
-                {
-                    cfg.AddProfile<CustomerProfile>();
-                });
-                return config.CreateMapper();
-            });
+            // Register converters
+            services.AddScoped<Retail.Api.Customers.src.CleanArchitecture.Application.Converters.Interfaces.IConverter<CustomerDto, Customer>, Retail.Api.Customers.src.CleanArchitecture.Application.Converters.CustomerConverter>();
+            services.AddScoped<Retail.Api.Customers.src.CleanArchitecture.Application.Converters.Interfaces.IConverter<Customer, CustomerDto>, Retail.Api.Customers.src.CleanArchitecture.Application.Converters.CustomerDtoConverter>();
+
+            // Register validators
+            services.AddScoped<Retail.Api.Customers.src.CleanArchitecture.Application.Validation.Interfaces.IMessageValidator<CustomerDto>, Retail.Api.Customers.src.CleanArchitecture.Application.Validation.CustomerDtoValidator>();
 
             // Add HTTP client for external service calls
             services.AddHttpClient();

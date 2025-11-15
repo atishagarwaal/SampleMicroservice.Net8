@@ -5,6 +5,7 @@ using Newtonsoft.Json.Linq;
 using Retail.Api.Customers.src.CleanArchitecture.Application.Constants;
 using Retail.Api.Customers.src.CleanArchitecture.Application.Dto;
 using Retail.Api.Customers.src.CleanArchitecture.Application.Interfaces;
+using Retail.Api.Customers.src.CleanArchitecture.Application.Validation.Interfaces;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -21,15 +22,19 @@ namespace Retail.Api.Customers.src.CleanArchitecture.API.Controllers
     {
         private readonly IMessageSubscriber _messageSubscriber;
         private readonly ICustomerService _customerService;
+        private readonly IMessageValidator<CustomerDto> _customerDtoValidator;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CustomerController"/> class.
         /// </summary>
         /// <param name="customerService">Intance of customer service class.</param>
-        public CustomerController(ICustomerService customerService, IMessageSubscriber messageSubscriber)
+        /// <param name="messageSubscriber">Instance of message subscriber class.</param>
+        /// <param name="customerDtoValidator">Instance of customer DTO validator.</param>
+        public CustomerController(ICustomerService customerService, IMessageSubscriber messageSubscriber, IMessageValidator<CustomerDto> customerDtoValidator)
         {
             _customerService = customerService;
             _messageSubscriber = messageSubscriber;
+            _customerDtoValidator = customerDtoValidator;
         }
 
         /// <summary>
@@ -109,6 +114,13 @@ namespace Retail.Api.Customers.src.CleanArchitecture.API.Controllers
                     return BadRequest(MessageConstants.InvalidParameter);
                 }
 
+                // Validate using validator
+                var validationResult = _customerDtoValidator.Validate(value);
+                if (!validationResult.IsValid)
+                {
+                    return BadRequest(new { error = validationResult.FailureReason, validator = validationResult.ValidatorName });
+                }
+
                 // Call business service
                 var result = await _customerService.AddCustomerAsync(value);
 
@@ -142,6 +154,13 @@ namespace Retail.Api.Customers.src.CleanArchitecture.API.Controllers
                 if (id == 0 || value == null)
                 {
                     return BadRequest(MessageConstants.InvalidParameter);
+                }
+
+                // Validate using validator
+                var validationResult = _customerDtoValidator.Validate(value);
+                if (!validationResult.IsValid)
+                {
+                    return BadRequest(new { error = validationResult.FailureReason, validator = validationResult.ValidatorName });
                 }
 
                 // Call business service

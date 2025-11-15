@@ -2,8 +2,8 @@ using Microsoft.AspNetCore.Mvc;
 using Retail.Api.Customers.src.CleanArchitecture.Application.Dto;
 using Retail.Api.Customers.src.CleanArchitecture.Application.Interfaces;
 using Retail.Api.Customers.src.CleanArchitecture.Infrastructure.Interfaces;
-using Retail.Api.Customers.src.CleanArchitecture.Application.Mappings;
-using AutoMapper;
+using Retail.Api.Customers.src.CleanArchitecture.Application.Converters.Interfaces;
+using Retail.Api.Customers.src.CleanArchitecture.Domain.Entities;
 
 namespace Retail.Api.Customers.src.CleanArchitecture.API.Controllers
 {
@@ -16,17 +16,19 @@ namespace Retail.Api.Customers.src.CleanArchitecture.API.Controllers
     public class NotificationController : ControllerBase
     {
         private readonly INotificationRepository _notificationRepository;
-        private readonly IMapper _mapper;
+        private readonly IConverter<Notification, NotificationDto> _notificationDtoConverter;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NotificationController"/> class.
         /// </summary>
         /// <param name="notificationRepository">Instance of notification repository class.</param>
-        /// <param name="mapper">Instance of AutoMapper.</param>
-        public NotificationController(INotificationRepository notificationRepository, IMapper mapper)
+        /// <param name="notificationDtoConverter">Instance of notification DTO converter.</param>
+        public NotificationController(
+            INotificationRepository notificationRepository,
+            IConverter<Notification, NotificationDto> notificationDtoConverter)
         {
             _notificationRepository = notificationRepository;
-            _mapper = mapper;
+            _notificationDtoConverter = notificationDtoConverter;
         }
 
         /// <summary>
@@ -47,8 +49,11 @@ namespace Retail.Api.Customers.src.CleanArchitecture.API.Controllers
                     return NotFound();
                 }
 
-                // Map to DTOs using AutoMapper
-                var notificationDtos = _mapper.Map<IEnumerable<NotificationDto>>(notifications).ToList();
+                // Map to DTOs using converter
+                var notificationDtos = notifications
+                    .Where(notification => notification != null)
+                    .Select(notification => _notificationDtoConverter.Convert(notification))
+                    .ToList();
 
                 // Return list
                 return Ok(notificationDtos);
@@ -85,8 +90,8 @@ namespace Retail.Api.Customers.src.CleanArchitecture.API.Controllers
                     return NotFound();
                 }
 
-                // Map to DTO using AutoMapper
-                var notificationDto = _mapper.Map<NotificationDto>(notification);
+                // Map to DTO using converter
+                var notificationDto = _notificationDtoConverter.Convert(notification);
 
                 // Return object
                 return Ok(notificationDto);
