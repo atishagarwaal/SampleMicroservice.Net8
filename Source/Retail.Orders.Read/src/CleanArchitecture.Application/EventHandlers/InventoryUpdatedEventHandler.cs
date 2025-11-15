@@ -41,25 +41,33 @@
                     return;
                 }
 
+                // Ensure LineItems are properly included
+                var lineItems = inventoryUpdatedEvent.LineItems?
+                    .Where(li => li != null)
+                    .Select(dto => new Retail.Orders.Read.src.CleanArchitecture.Domain.Entities.LineItem
+                    {
+                        Id = dto.Id > 0 ? dto.Id : 0, // MongoDB will generate if needed
+                        OrderId = inventoryUpdatedEvent.OrderId, // Ensure OrderId is set correctly
+                        SkuId = dto.SkuId,
+                        Qty = (int)dto.Qty
+                    })
+                    .ToList() ?? new List<Retail.Orders.Read.src.CleanArchitecture.Domain.Entities.LineItem>();
+
                 var order = new Order
                 {
                     Id = inventoryUpdatedEvent.OrderId,
                     CustomerId = inventoryUpdatedEvent.CustomerId,
                     OrderDate = inventoryUpdatedEvent.OrderDate.DateTime,
-                    LineItems = inventoryUpdatedEvent.LineItems
-                                .Select(dto => new Retail.Orders.Read.src.CleanArchitecture.Domain.Entities.LineItem
-                                {
-                                    Id = dto.Id,
-                                    OrderId = dto.OrderId,
-                                    SkuId = dto.SkuId,
-                                    Qty = (int)dto.Qty
-                                })
-                                .ToList(),
+                    LineItems = lineItems,
                     TotalAmount = inventoryUpdatedEvent.TotalAmount,
                 };
 
+                _logger.LogInformation("Adding order {OrderId} to read model with {LineItemCount} line items", 
+                    inventoryUpdatedEvent.OrderId, lineItems.Count);
+
                 await unitOfWork.Orders.AddAsync(order);
-                _logger.LogInformation("Order {OrderId} successfully added to read model", inventoryUpdatedEvent.OrderId);
+                _logger.LogInformation("Order {OrderId} successfully added to read model with {LineItemCount} line items", 
+                    inventoryUpdatedEvent.OrderId, lineItems.Count);
             }
             catch (Exception ex)
             {

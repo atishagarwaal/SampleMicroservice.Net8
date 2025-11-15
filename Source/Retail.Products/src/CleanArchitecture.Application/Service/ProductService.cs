@@ -139,6 +139,20 @@ namespace Retail.Api.Products.src.CleanArchitecture.Application.Service
 
         public async Task HandleOrderCreatedEvent(OrderCreatedEvent orderCreatedEvent)
         {
+            Console.WriteLine($"Product Service: Received OrderCreatedEvent - OrderId: {orderCreatedEvent?.OrderId}, CustomerId: {orderCreatedEvent?.CustomerId}, LineItemsCount: {orderCreatedEvent?.LineItems?.Length ?? 0}");
+            
+            if (orderCreatedEvent == null)
+            {
+                Console.WriteLine("Product Service: OrderCreatedEvent is null");
+                throw new ArgumentNullException(nameof(orderCreatedEvent));
+            }
+
+            if (orderCreatedEvent.LineItems == null || orderCreatedEvent.LineItems.Length == 0)
+            {
+                Console.WriteLine($"Product Service: OrderCreatedEvent has no LineItems for OrderId: {orderCreatedEvent.OrderId}");
+                throw new InvalidOperationException($"OrderCreatedEvent for OrderId {orderCreatedEvent.OrderId} has no LineItems");
+            }
+
             using var scope = _serviceScopeFactory.CreateScope();
             var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
 
@@ -177,14 +191,16 @@ namespace Retail.Api.Products.src.CleanArchitecture.Application.Service
                     }).ToArray(),
                 };
 
-                Console.WriteLine($"Product Service: Sending InventoryUpdatedEvent - OrderId: {inventoryUpdatedMessage.OrderId}, CustomerId: {inventoryUpdatedMessage.CustomerId}");
+                Console.WriteLine($"Product Service: Sending InventoryUpdatedEvent - OrderId: {inventoryUpdatedMessage.OrderId}, CustomerId: {inventoryUpdatedMessage.CustomerId}, LineItemsCount: {inventoryUpdatedMessage.LineItems?.Length ?? 0}");
                 await _messagePublisher.PublishAsync<InventoryUpdatedEvent>(inventoryUpdatedMessage, RabbitmqConstants.InventoryUpdated).ConfigureAwait(false);
                 Console.WriteLine($"Product Service: InventoryUpdatedEvent sent successfully");
 
                 await unitOfWork.CommitTransactionAsync();
             }
-            catch
+            catch (Exception ex)
             {
+                Console.WriteLine($"Product Service: Error processing OrderCreatedEvent - {ex.Message}");
+                Console.WriteLine($"Product Service: Stack trace - {ex.StackTrace}");
                 await unitOfWork.RollbackTransactionAsync();
 
                 var inventoryErrorMessage = new InventoryErrorEvent

@@ -9,11 +9,12 @@
             Customer controller class.
             </summary>
         </member>
-        <member name="M:Retail.Orders.Write.src.CleanArchitecture.API.Controllers.OrderWriteController.#ctor(MediatR.IMediator)">
+        <member name="M:Retail.Orders.Write.src.CleanArchitecture.API.Controllers.OrderWriteController.#ctor(MediatR.IMediator,Microsoft.Extensions.Logging.ILogger{Retail.Orders.Write.src.CleanArchitecture.API.Controllers.OrderWriteController})">
             <summary>
             Initializes a new instance of the <see cref="T:Retail.Orders.Write.src.CleanArchitecture.API.Controllers.OrderWriteController"/> class.
             </summary>
-            <param name="orderService">Intance of customer service class.</param>
+            <param name="mediator">Instance of mediator class.</param>
+            <param name="logger">Instance of logger class.</param>
         </member>
         <member name="M:Retail.Orders.Write.src.CleanArchitecture.API.Controllers.OrderWriteController.Post(Retail.Orders.Write.src.CleanArchitecture.Application.Dto.OrderDto)">
             <summary>

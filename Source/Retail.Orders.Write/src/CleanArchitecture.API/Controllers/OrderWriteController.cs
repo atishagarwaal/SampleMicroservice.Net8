@@ -8,6 +8,7 @@ using Retail.Orders.Write.src.CleanArchitecture.Application.Constants;
 using Retail.Orders.Write.src.CleanArchitecture.Application.Dto;
 using Retail.Orders.Write.src.CleanArchitecture.Application.Interfaces;
 using System.Runtime.InteropServices;
+using Microsoft.Extensions.Logging;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -22,14 +23,17 @@ namespace Retail.Orders.Write.src.CleanArchitecture.API.Controllers
     public class OrderWriteController : ControllerBase
     {
         private readonly IMediator _mediator;
+        private readonly ILogger<OrderWriteController> _logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="OrderWriteController"/> class.
         /// </summary>
-        /// <param name="orderService">Intance of customer service class.</param>
-        public OrderWriteController(IMediator mediator)
+        /// <param name="mediator">Instance of mediator class.</param>
+        /// <param name="logger">Instance of logger class.</param>
+        public OrderWriteController(IMediator mediator, ILogger<OrderWriteController> logger)
         {
             _mediator = mediator;
+            _logger = logger;
         }
 
         /// <summary>
@@ -55,7 +59,8 @@ namespace Retail.Orders.Write.src.CleanArchitecture.API.Controllers
             }
             catch (Exception ex)
             {
-                // Throw exception
+                _logger.LogError(ex, "Error creating order. CustomerId: {CustomerId}, TotalAmount: {TotalAmount}", 
+                    value?.CustomerId, value?.TotalAmount);
                 return StatusCode(500, MessageConstants.InternalServerError);
             }
         }
@@ -85,7 +90,8 @@ namespace Retail.Orders.Write.src.CleanArchitecture.API.Controllers
             }
             catch (Exception ex)
             {
-                // Throw exception
+                _logger.LogError(ex, "Error updating order. OrderId: {OrderId}, CustomerId: {CustomerId}", 
+                    id, value?.CustomerId);
                 return StatusCode(500, MessageConstants.InternalServerError);
             }
         }
@@ -109,7 +115,7 @@ namespace Retail.Orders.Write.src.CleanArchitecture.API.Controllers
             }
             catch (Exception ex)
             {
-                // Throw exception
+                _logger.LogError(ex, "Error deleting order. OrderId: {OrderId}", id);
                 return StatusCode(500, MessageConstants.InternalServerError);
             }
         }

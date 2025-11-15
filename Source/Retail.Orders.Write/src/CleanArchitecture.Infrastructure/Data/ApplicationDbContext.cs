@@ -42,6 +42,13 @@ namespace Retail.Orders.Write.src.CleanArchitecture.Infrastructure.Data
                 throw new ArgumentNullException(nameof(modelBuilder));
             }
 
+            // Configure Order-LineItem relationship
+            modelBuilder.Entity<LineItem>()
+                .HasOne(li => li.Order)
+                .WithMany(o => o.LineItems)
+                .HasForeignKey(li => li.OrderId)
+                .OnDelete(DeleteBehavior.Cascade);
+
             // Initialize data
             modelBuilder.Entity<Order>().HasData(
                 new Order

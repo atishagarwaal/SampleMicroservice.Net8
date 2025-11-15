@@ -45,19 +45,26 @@ namespace MessagingLibrary.Service
                 throw new Exception("No subscription routes found in configuration.");
             }
 
-            // Extract event name by removing "Handler" at the end
-            string eventName = handler.Target.ToString()
-                                .Substring(handler.Target.ToString()
-                                .LastIndexOf('.') + 1)
-                                .Replace("EventHandler", "");
+            // Extract event name from the generic type parameter
+            string eventName = typeof(T).Name;
+            if (eventName.EndsWith("Event", StringComparison.OrdinalIgnoreCase))
+            {
+                eventName = eventName.Substring(0, eventName.Length - "Event".Length);
+            }
+
+            _logger?.LogInformation("Subscribing to event: {EventName} (from type {TypeName})", eventName, typeof(T).Name);
 
             if (!routes.TryGetValue(eventName, out var route))
             {
-                throw new Exception($"No route configured for event type: {eventName}");
+                var availableRoutes = string.Join(", ", routes.Keys);
+                throw new Exception($"No route configured for event type: {eventName}. Available routes: {availableRoutes}");
             }
 
-            // Clean up existing exchanges and queues before creating new ones
-            await CleanupExistingResources(route);
+            _logger?.LogInformation("Found route for {EventName}: Queue={QueueName}, Exchange={Exchange}, RoutingKey={RoutingKey}", 
+                eventName, route.QueueName, route.Exchange, route.RoutingKey);
+
+            // Clean up existing queue only (don't delete exchange as other services may be using it)
+            await CleanupExistingQueue(route);
 
             // Build queue arguments based on configuration
             var queueArguments = new Dictionary<string, object>();
@@ -87,23 +94,34 @@ namespace MessagingLibrary.Service
                 queueArguments["x-max-priority"] = route.MaxPriority.Value;
             }
 
-            // Ensure queue and exchange exist
+            // Ensure exchange exists first (idempotent - won't fail if already exists)
+            _logger?.LogInformation("Declaring exchange: {Exchange}", route.Exchange);
+            await _channel.ExchangeDeclareAsync(
+                exchange: route.Exchange,
+                type: ExchangeType.Topic,
+                durable: true,
+                autoDelete: false,
+                arguments: null);
+            _logger?.LogInformation("Exchange declared: {Exchange}", route.Exchange);
+
+            // Ensure queue exists (idempotent - won't fail if already exists)
+            _logger?.LogInformation("Declaring queue: {QueueName}", route.QueueName);
             await _channel.QueueDeclareAsync(
                 queue: route.QueueName,
                 durable: true,
                 exclusive: false,
                 autoDelete: false,
                 arguments: queueArguments);
+            _logger?.LogInformation("Queue declared: {QueueName}", route.QueueName);
 
-            await _channel.ExchangeDeclareAsync(
-                exchange: route.Exchange,
-                type: ExchangeType.Topic,
-                durable: true,
-                autoDelete: false);
-
+            // Bind queue to exchange with routing key
+            _logger?.LogInformation("Binding queue {QueueName} to exchange {Exchange} with routing key {RoutingKey}", 
+                route.QueueName, route.Exchange, route.RoutingKey);
             await _channel.QueueBindAsync(queue: route.QueueName,
                              exchange: route.Exchange,
                              routingKey: route.RoutingKey).ConfigureAwait(false);
+            _logger?.LogInformation("Queue bound successfully: {QueueName} -> {Exchange} ({RoutingKey})", 
+                route.QueueName, route.Exchange, route.RoutingKey);
 
             var consumer = new AsyncEventingBasicConsumer(_channel);
 
@@ -111,16 +129,22 @@ namespace MessagingLibrary.Service
             {
                 try
                 {
-                    _logger?.LogDebug("Processing message: {DeliveryTag} from {Exchange} with routing key {RoutingKey}", 
+                    _logger?.LogInformation("Received message: {DeliveryTag} from {Exchange} with routing key {RoutingKey}", 
                         ea.DeliveryTag, ea.Exchange, ea.RoutingKey);
 
                     var body = ea.Body.ToArray();
-                    var message = JsonSerializer.Deserialize<T>(Encoding.UTF8.GetString(body));
+                    var messageJson = Encoding.UTF8.GetString(body);
+                    _logger?.LogDebug("Message body: {MessageBody}", messageJson);
+                    
+                    var message = JsonSerializer.Deserialize<T>(messageJson);
 
                     if (message == null)
                     {
+                        _logger?.LogError("Failed to deserialize message. Body: {MessageBody}", messageJson);
                         throw new Exception("Failed to deserialize message");
                     }
+
+                    _logger?.LogInformation("Successfully deserialized message of type {MessageType}", typeof(T).Name);
 
                     // Log message headers for debugging
                     if (ea.BasicProperties.Headers != null)
@@ -131,9 +155,10 @@ namespace MessagingLibrary.Service
                         }
                     }
 
+                    _logger?.LogInformation("Calling handler for message type {MessageType}", typeof(T).Name);
                     await handler(message).ConfigureAwait(false);
 
-                    _logger?.LogDebug("Message processed successfully: {DeliveryTag}", ea.DeliveryTag);
+                    _logger?.LogInformation("Message processed successfully: {DeliveryTag}", ea.DeliveryTag);
                 }
                 catch (Exception ex)
                 {
@@ -233,13 +258,13 @@ namespace MessagingLibrary.Service
             _channel?.Dispose();
         }
 
-        private async Task CleanupExistingResources(SubscriptionRoutes route)
+        private async Task CleanupExistingQueue(SubscriptionRoutes route)
         {
             try
             {
-                _logger?.LogInformation("Cleaning up existing resources for queue: {QueueName}", route.QueueName);
+                _logger?.LogInformation("Cleaning up existing queue: {QueueName}", route.QueueName);
 
-                // Delete the queue if it exists
+                // Only delete the queue if it exists (don't delete exchange as other services may be using it)
                 try
                 {
                     await _channel.QueueDeleteAsync(route.QueueName, false, false);
@@ -252,40 +277,11 @@ namespace MessagingLibrary.Service
                         route.QueueName, ex.Message);
                 }
 
-                // Delete the exchange if it exists
-                try
-                {
-                    await _channel.ExchangeDeleteAsync(route.Exchange, false);
-                    _logger?.LogInformation("Deleted existing exchange: {Exchange}", route.Exchange);
-                }
-                catch (Exception ex)
-                {
-                    // Exchange might not exist, which is fine
-                    _logger?.LogDebug("Exchange {Exchange} does not exist or could not be deleted: {Message}", 
-                        route.Exchange, ex.Message);
-                }
-
-                // Also clean up dead letter exchange if specified
-                if (!string.IsNullOrEmpty(route.DeadLetterExchange))
-                {
-                    try
-                    {
-                        await _channel.ExchangeDeleteAsync(route.DeadLetterExchange, false);
-                        _logger?.LogInformation("Deleted existing dead letter exchange: {Exchange}", route.DeadLetterExchange);
-                    }
-                    catch (Exception ex)
-                    {
-                        // Exchange might not exist, which is fine
-                        _logger?.LogDebug("Dead letter exchange {Exchange} does not exist or could not be deleted: {Message}", 
-                            route.DeadLetterExchange, ex.Message);
-                    }
-                }
-
-                _logger?.LogInformation("Cleanup completed for queue: {QueueName}", route.QueueName);
+                _logger?.LogInformation("Queue cleanup completed for: {QueueName}", route.QueueName);
             }
             catch (Exception ex)
             {
-                _logger?.LogWarning(ex, "Error during cleanup of existing resources for queue: {QueueName}", route.QueueName);
+                _logger?.LogWarning(ex, "Error during cleanup of existing queue: {QueueName}", route.QueueName);
                 // Don't throw - cleanup failure shouldn't prevent service startup
             }
         }

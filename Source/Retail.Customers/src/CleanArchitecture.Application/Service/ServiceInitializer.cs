@@ -17,7 +17,18 @@
 
         public async Task Initialize()
         {
-            await _messageSubscriber.SubscribeAsync<InventoryUpdatedEvent>(_inventoryUpdatedHandler.HandleAsync);
+            Console.WriteLine("Customer Service: Initializing subscription to InventoryUpdatedEvent...");
+            try
+            {
+                await _messageSubscriber.SubscribeAsync<InventoryUpdatedEvent>(_inventoryUpdatedHandler.HandleAsync);
+                Console.WriteLine("Customer Service: Successfully subscribed to InventoryUpdatedEvent");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Customer Service: Error subscribing to InventoryUpdatedEvent - {ex.Message}");
+                Console.WriteLine($"Customer Service: Stack trace - {ex.StackTrace}");
+                throw;
+            }
         }
     }
 }
