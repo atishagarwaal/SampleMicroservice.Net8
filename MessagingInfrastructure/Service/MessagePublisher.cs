@@ -19,7 +19,6 @@ namespace MessagingLibrary.Service
         private const string MessageCreationDateProperty = "CreationDate";
 
         private readonly IConnection _connection;
-        private readonly IChannel _channel;
         private readonly IConfiguration _configuration;
         private readonly ILogger<MessagePublisher>? _logger;
 
@@ -28,36 +27,38 @@ namespace MessagingLibrary.Service
             _connection = connection ?? throw new ArgumentNullException(nameof(connection));
             _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
             _logger = logger;
-            
-            _channel = _connection.CreateChannelAsync(new CreateChannelOptions(
-                            publisherConfirmationsEnabled: true,
-                            publisherConfirmationTrackingEnabled: true)).GetAwaiter().GetResult();
         }
 
         public async Task PublishAsync<T>(T message, string eventType)
         {
+            if (message == null)
+            {
+                throw new ArgumentNullException(nameof(message));
+            }
+
+            var routes = _configuration.GetSection("MessagingConfiguration:PublishingRoutes")
+                                    .Get<Dictionary<string, PublishingRoutes>>();
+
+            if (routes == null || !routes.TryGetValue(eventType, out var route))
+            {
+                throw new InvalidOperationException($"No route configured for event type: {eventType}");
+            }
+
+            // Set CreationDate property on the message object if it exists (like other repos)
+            SetMessageMetadata(message);
+
+            var messageBody = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(message));
+            
+            // Channel-per-operation pattern: create a new channel for each publish operation
+            // This provides better thread safety and resource management
+            var channel = await _connection.CreateChannelAsync(new CreateChannelOptions(
+                publisherConfirmationsEnabled: true,
+                publisherConfirmationTrackingEnabled: true));
+            
             try
             {
-                if (message == null)
-                {
-                    throw new InvalidOperationException($"The message to publish is null. Expected event type: {eventType}");
-                }
-
-                var routes = _configuration.GetSection("MessagingConfiguration:PublishingRoutes")
-                                        .Get<Dictionary<string, PublishingRoutes>>();
-
-                if (routes == null || !routes.TryGetValue(eventType, out var route))
-                {
-                    throw new Exception($"No route configured for event type: {eventType}");
-                }
-
-                // Set CreationDate property on the message object if it exists (like other repos)
-                SetMessageMetadata(message);
-
-                var messageBody = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(message));
-                
                 // Ensure exchange exists
-                await _channel.ExchangeDeclareAsync(route.Exchange, ExchangeType.Topic, true, false, null);
+                await channel.ExchangeDeclareAsync(route.Exchange, ExchangeType.Topic, true, false, null);
                 
                 // Create properties with standard headers
                 var properties = new BasicProperties();
@@ -65,7 +66,7 @@ namespace MessagingLibrary.Service
                 properties.Headers = CreateMessageHeaders(eventType, route.RoutingKey);
                 
                 // Publish message
-                await _channel.BasicPublishAsync(
+                await channel.BasicPublishAsync(
                     exchange: route.Exchange, 
                     routingKey: route.RoutingKey, 
                     mandatory: true, // Enable mandatory flag for better error handling
@@ -79,6 +80,11 @@ namespace MessagingLibrary.Service
             {
                 _logger?.LogError(ex, "Failed to publish message for event type: {EventType}", eventType);
                 throw;
+            }
+            finally
+            {
+                // Dispose channel after operation completes
+                channel?.Dispose();
             }
         }
 
@@ -127,11 +133,6 @@ namespace MessagingLibrary.Service
             };
 
             return headers;
-        }
-
-        public void Dispose()
-        {
-            _channel?.Dispose();
         }
     }
 }
