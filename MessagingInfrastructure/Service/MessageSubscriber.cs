@@ -42,7 +42,8 @@ namespace MessagingLibrary.Service
 
             if (routes == null || routes.Count == 0)
             {
-                throw new Exception("No subscription routes found in configuration.");
+                _logger?.LogError("SubscriptionRoutes configuration section is null or empty");
+                throw new InvalidOperationException("SubscriptionRoutes configuration section is missing or empty");
             }
 
             // Extract event name from the generic type parameter
@@ -57,7 +58,10 @@ namespace MessagingLibrary.Service
             if (!routes.TryGetValue(eventName, out var route))
             {
                 var availableRoutes = string.Join(", ", routes.Keys);
-                throw new Exception($"No route configured for event type: {eventName}. Available routes: {availableRoutes}");
+                _logger?.LogError("No route configured for event type: {EventName}. Available routes: {AvailableRoutes}", 
+                    eventName, availableRoutes);
+                throw new InvalidOperationException(
+                    $"No route configured for event type: {eventName}. Available routes: {availableRoutes}");
             }
 
             _logger?.LogInformation("Found route for {EventName}: Queue={QueueName}, Exchange={Exchange}, RoutingKey={RoutingKey}", 

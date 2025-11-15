@@ -39,9 +39,19 @@ namespace MessagingLibrary.Service
             var routes = _configuration.GetSection("MessagingConfiguration:PublishingRoutes")
                                     .Get<Dictionary<string, PublishingRoutes>>();
 
-            if (routes == null || !routes.TryGetValue(eventType, out var route))
+            if (routes == null)
             {
-                throw new InvalidOperationException($"No route configured for event type: {eventType}");
+                _logger?.LogError("PublishingRoutes configuration section is null or empty");
+                throw new InvalidOperationException("PublishingRoutes configuration section is missing or empty");
+            }
+
+            if (!routes.TryGetValue(eventType, out var route))
+            {
+                var availableRoutes = string.Join(", ", routes.Keys);
+                _logger?.LogError("No route configured for event type: {EventType}. Available routes: {AvailableRoutes}", 
+                    eventType, availableRoutes);
+                throw new InvalidOperationException(
+                    $"No route configured for event type: {eventType}. Available routes: {availableRoutes}");
             }
 
             // Set CreationDate property on the message object if it exists (like other repos)
@@ -78,7 +88,9 @@ namespace MessagingLibrary.Service
             }
             catch (Exception ex)
             {
-                _logger?.LogError(ex, "Failed to publish message for event type: {EventType}", eventType);
+                _logger?.LogError(ex, 
+                    "Failed to publish message. EventType={EventType}, Exchange={Exchange}, RoutingKey={RoutingKey}, MessageType={MessageType}", 
+                    eventType, route?.Exchange ?? "unknown", route?.RoutingKey ?? "unknown", typeof(T).Name);
                 throw;
             }
             finally
