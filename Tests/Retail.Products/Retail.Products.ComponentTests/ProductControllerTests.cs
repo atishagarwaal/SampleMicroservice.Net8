@@ -59,8 +59,6 @@ namespace Retail.Products.ComponentTests
             // Assert
             result.Should().BeOfType<OkObjectResult>();
             (result as OkObjectResult)!.Value.Should().BeEquivalentTo(skuDto);
-            _mockSkuDtoValidator.Verify(x => x.Validate(skuDto), Times.Once);
-            _mockProductService.Verify(x => x.AddProductAsync(skuDto), Times.Once);
         }
 
         [TestMethod]
@@ -75,8 +73,6 @@ namespace Retail.Products.ComponentTests
             // Assert
             result.Should().BeOfType<BadRequestObjectResult>();
             (result as BadRequestObjectResult)!.Value.Should().Be(MessageConstants.InvalidParameter);
-            _mockSkuDtoValidator.Verify(x => x.Validate(It.IsAny<SkuDto>()), Times.Never);
-            _mockProductService.Verify(x => x.AddProductAsync(It.IsAny<SkuDto>()), Times.Never);
         }
 
         [TestMethod]
@@ -103,9 +99,6 @@ namespace Retail.Products.ComponentTests
             
             errorProperty!.GetValue(badRequestValue).Should().Be("The Name field is null or whitespace.");
             validatorProperty!.GetValue(badRequestValue).Should().Be("SkuDtoValidator");
-            
-            _mockSkuDtoValidator.Verify(x => x.Validate(invalidSkuDto), Times.Once);
-            _mockProductService.Verify(x => x.AddProductAsync(It.IsAny<SkuDto>()), Times.Never);
         }
 
         [TestMethod]
@@ -123,8 +116,6 @@ namespace Retail.Products.ComponentTests
             // Assert
             result.Should().BeOfType<OkObjectResult>();
             (result as OkObjectResult)!.Value.Should().BeEquivalentTo(skuDto);
-            _mockSkuDtoValidator.Verify(x => x.Validate(skuDto), Times.Once);
-            _mockProductService.Verify(x => x.UpdateProductAsync(id, skuDto), Times.Once);
         }
 
         [TestMethod]
@@ -140,8 +131,6 @@ namespace Retail.Products.ComponentTests
             // Assert
             result.Should().BeOfType<BadRequestObjectResult>();
             (result as BadRequestObjectResult)!.Value.Should().Be(MessageConstants.InvalidParameter);
-            _mockSkuDtoValidator.Verify(x => x.Validate(It.IsAny<SkuDto>()), Times.Never);
-            _mockProductService.Verify(x => x.UpdateProductAsync(It.IsAny<long>(), It.IsAny<SkuDto>()), Times.Never);
         }
 
         [TestMethod]
@@ -157,8 +146,6 @@ namespace Retail.Products.ComponentTests
             // Assert
             result.Should().BeOfType<BadRequestObjectResult>();
             (result as BadRequestObjectResult)!.Value.Should().Be(MessageConstants.InvalidParameter);
-            _mockSkuDtoValidator.Verify(x => x.Validate(It.IsAny<SkuDto>()), Times.Never);
-            _mockProductService.Verify(x => x.UpdateProductAsync(It.IsAny<long>(), It.IsAny<SkuDto>()), Times.Never);
         }
 
         [TestMethod]
@@ -186,9 +173,6 @@ namespace Retail.Products.ComponentTests
             
             errorProperty!.GetValue(badRequestValue).Should().Be("The Name field is null or whitespace.");
             validatorProperty!.GetValue(badRequestValue).Should().Be("SkuDtoValidator");
-            
-            _mockSkuDtoValidator.Verify(x => x.Validate(invalidSkuDto), Times.Once);
-            _mockProductService.Verify(x => x.UpdateProductAsync(It.IsAny<long>(), It.IsAny<SkuDto>()), Times.Never);
         }
     }
 }

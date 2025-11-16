@@ -1,5 +1,6 @@
 ﻿namespace Retail.Api.Customers.src.CleanArchitecture.Application.EventHandlers
 {
+    using System;
     using CommonLibrary.Handlers;
     using InventoryUpdatedEventNameSpace;
     using MessagingLibrary.Interface;
@@ -37,19 +38,25 @@
         /// <param name="inventoryUpdatedEvent">Inventory updated event.</param>
         public async Task HandleAsync(InventoryUpdatedEvent inventoryUpdatedEvent)
         {
+            if (inventoryUpdatedEvent == null)
+            {
+                _logger.LogError("InventoryUpdatedEvent is null");
+                throw new ArgumentNullException(nameof(inventoryUpdatedEvent));
+            }
+
             _logger.LogInformation("Received InventoryUpdatedEvent. OrderId: {OrderId}, CustomerId: {CustomerId}", 
-                inventoryUpdatedEvent?.OrderId, inventoryUpdatedEvent?.CustomerId);
+                inventoryUpdatedEvent.OrderId, inventoryUpdatedEvent.CustomerId);
             
             try
             {
                 await _customerService.HandleOrderCreatedEvent(inventoryUpdatedEvent);
                 _logger.LogInformation("Successfully processed InventoryUpdatedEvent for OrderId: {OrderId}", 
-                    inventoryUpdatedEvent?.OrderId);
+                    inventoryUpdatedEvent.OrderId);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error processing InventoryUpdatedEvent. OrderId: {OrderId}, CustomerId: {CustomerId}", 
-                    inventoryUpdatedEvent?.OrderId, inventoryUpdatedEvent?.CustomerId);
+                    inventoryUpdatedEvent.OrderId, inventoryUpdatedEvent.CustomerId);
                 throw;
             }
         }

@@ -22,6 +22,6 @@ namespace Retail.Orders.Read.src.CleanArchitecture.Infrastructure.Data
             _database = client.GetDatabase(databaseName);
         }
 
-        public IMongoCollection<T> GetCollection<T>(string name) => _database.GetCollection<T>(name);
+        public virtual IMongoCollection<T> GetCollection<T>(string name) => _database.GetCollection<T>(name);
     }
 }

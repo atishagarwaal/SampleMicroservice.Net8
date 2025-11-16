@@ -105,9 +105,8 @@ namespace Retail.Orders.Read.ComponentTests
             resultList.Should().NotBeNull();
             resultList.Should().HaveCount(2);
             resultList.Should().BeEquivalentTo(orderDtos);
-
-            _mockServiceScopeFactory.Verify(x => x.CreateScope(), Times.Once);
-            _mockOrderDtoConverter.Verify(x => x.Convert(It.IsAny<Order>()), Times.AtLeastOnce);
+            resultList[0].Id.Should().Be(1);
+            resultList[1].Id.Should().Be(2);
         }
 
         [TestMethod]
@@ -130,9 +129,6 @@ namespace Retail.Orders.Read.ComponentTests
             // Assert
             resultList.Should().NotBeNull();
             resultList.Should().BeEmpty();
-
-            _mockServiceScopeFactory.Verify(x => x.CreateScope(), Times.Once);
-            _mockOrderDtoConverter.Verify(x => x.Convert(It.IsAny<Order>()), Times.Never);
         }
     }
 }

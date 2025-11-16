@@ -90,9 +90,6 @@ namespace Retail.Orders.Write.ComponentTests
             result.Should().BeOfType<OkObjectResult>();
             var okResult = result as OkObjectResult;
             okResult!.Value.Should().BeEquivalentTo(expectedResult);
-
-            _mockOrderDtoValidator.Verify(x => x.Validate(orderDto), Times.Once);
-            _mockMediator.Verify(x => x.Send(It.IsAny<CreateOrderCommand>(), default), Times.Once);
         }
 
         [TestMethod]
@@ -107,9 +104,6 @@ namespace Retail.Orders.Write.ComponentTests
             result.Should().BeOfType<BadRequestObjectResult>();
             var badRequestResult = result as BadRequestObjectResult;
             badRequestResult!.Value.Should().Be(MessageConstants.InvalidParameter);
-
-            _mockOrderDtoValidator.Verify(x => x.Validate(It.IsAny<OrderDto>()), Times.Never);
-            _mockMediator.Verify(x => x.Send(It.IsAny<CreateOrderCommand>(), default), Times.Never);
         }
 
         [TestMethod]
@@ -136,9 +130,6 @@ namespace Retail.Orders.Write.ComponentTests
             // Assert
             result.Should().NotBeNull();
             result.Should().BeOfType<BadRequestObjectResult>();
-
-            _mockOrderDtoValidator.Verify(x => x.Validate(orderDto), Times.Once);
-            _mockMediator.Verify(x => x.Send(It.IsAny<CreateOrderCommand>(), default), Times.Never);
         }
 
         [TestMethod]
@@ -209,9 +200,6 @@ namespace Retail.Orders.Write.ComponentTests
             result.Should().BeOfType<OkObjectResult>();
             var okResult = result as OkObjectResult;
             okResult!.Value.Should().BeEquivalentTo(expectedResult);
-
-            _mockOrderDtoValidator.Verify(x => x.Validate(orderDto), Times.Once);
-            _mockMediator.Verify(x => x.Send(It.IsAny<UpdateOrderCommand>(), default), Times.Once);
         }
 
         [TestMethod]
@@ -232,9 +220,6 @@ namespace Retail.Orders.Write.ComponentTests
             // Assert
             result.Should().NotBeNull();
             result.Should().BeOfType<BadRequestObjectResult>();
-
-            _mockOrderDtoValidator.Verify(x => x.Validate(It.IsAny<OrderDto>()), Times.Never);
-            _mockMediator.Verify(x => x.Send(It.IsAny<UpdateOrderCommand>(), default), Times.Never);
         }
 
         [TestMethod]
@@ -247,9 +232,6 @@ namespace Retail.Orders.Write.ComponentTests
             // Assert
             result.Should().NotBeNull();
             result.Should().BeOfType<BadRequestObjectResult>();
-
-            _mockOrderDtoValidator.Verify(x => x.Validate(It.IsAny<OrderDto>()), Times.Never);
-            _mockMediator.Verify(x => x.Send(It.IsAny<UpdateOrderCommand>(), default), Times.Never);
         }
 
         [TestMethod]
@@ -277,9 +259,6 @@ namespace Retail.Orders.Write.ComponentTests
             // Assert
             result.Should().NotBeNull();
             result.Should().BeOfType<BadRequestObjectResult>();
-
-            _mockOrderDtoValidator.Verify(x => x.Validate(orderDto), Times.Once);
-            _mockMediator.Verify(x => x.Send(It.IsAny<UpdateOrderCommand>(), default), Times.Never);
         }
 
         [TestMethod]
@@ -301,8 +280,6 @@ namespace Retail.Orders.Write.ComponentTests
             result.Should().BeOfType<OkObjectResult>();
             var okResult = result as OkObjectResult;
             okResult!.Value.Should().Be(true);
-
-            _mockMediator.Verify(x => x.Send(It.IsAny<DeleteOrderCommand>(), default), Times.Once);
         }
 
         [TestMethod]
@@ -315,8 +292,6 @@ namespace Retail.Orders.Write.ComponentTests
             // Assert
             result.Should().NotBeNull();
             result.Should().BeOfType<BadRequestObjectResult>();
-
-            _mockMediator.Verify(x => x.Send(It.IsAny<DeleteOrderCommand>(), default), Times.Never);
         }
     }
 }

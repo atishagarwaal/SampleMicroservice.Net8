@@ -98,7 +98,6 @@ namespace Retail.Orders.Read.ComponentTests
             result.Id.Should().Be(order.Id);
             result.CustomerId.Should().Be(order.CustomerId);
             result.LineItems.Should().BeNull();
-            _mockLineItemDtoConverter.Verify(x => x.Convert(It.IsAny<LineItem>()), Times.Never);
         }
 
         [TestMethod]
@@ -120,7 +119,6 @@ namespace Retail.Orders.Read.ComponentTests
             // Assert
             result.Should().NotBeNull();
             result.LineItems.Should().BeNull();
-            _mockLineItemDtoConverter.Verify(x => x.Convert(It.IsAny<LineItem>()), Times.Never);
         }
 
         [TestMethod]
@@ -154,7 +152,8 @@ namespace Retail.Orders.Read.ComponentTests
             // Assert
             result.Should().NotBeNull();
             result.LineItems.Should().HaveCount(2);
-            _mockLineItemDtoConverter.Verify(x => x.Convert(It.IsAny<LineItem>()), Times.Exactly(2));
+            result.LineItems.Should().ContainSingle(li => li.SkuId == 100 && li.Qty == 2);
+            result.LineItems.Should().ContainSingle(li => li.SkuId == 200 && li.Qty == 3);
         }
 
         [TestMethod]

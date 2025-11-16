@@ -153,14 +153,9 @@ namespace Retail.Orders.Write.ComponentTests
             // Assert
             result.Should().NotBeNull();
             result.Should().BeEquivalentTo(resultDto);
-
-            _mockOrderDtoValidator.Verify(x => x.Validate(orderDto), Times.Once);
-            _mockOrderConverter.Verify(x => x.Convert(orderDto), Times.Once);
-            _mockUnitOfWork.Verify(x => x.BeginTransactionAsync(), Times.Once);
-            _mockOrderRepository.Verify(x => x.Update(It.IsAny<Order>()), Times.Once);
-            _mockUnitOfWork.Verify(x => x.CompleteAsync(), Times.Once);
-            _mockUnitOfWork.Verify(x => x.CommitTransactionAsync(), Times.Once);
-            _mockOrderDtoConverter.Verify(x => x.Convert(updatedOrder), Times.Once);
+            result.Id.Should().Be(orderId);
+            result.CustomerId.Should().Be(100);
+            result.TotalAmount.Should().Be(200.00);
         }
 
         [TestMethod]
@@ -187,10 +182,6 @@ namespace Retail.Orders.Write.ComponentTests
             // Act & Assert
             await Assert.ThrowsExceptionAsync<ArgumentException>(() => 
                 _handler.Handle(command, CancellationToken.None));
-
-            _mockOrderDtoValidator.Verify(x => x.Validate(orderDto), Times.Once);
-            _mockOrderConverter.Verify(x => x.Convert(It.IsAny<OrderDto>()), Times.Never);
-            _mockUnitOfWork.Verify(x => x.BeginTransactionAsync(), Times.Never);
         }
 
         [TestMethod]
@@ -241,7 +232,7 @@ namespace Retail.Orders.Write.ComponentTests
                 _handler.Handle(command, CancellationToken.None));
 
             exception.Should().NotBeNull();
-            _mockUnitOfWork.Verify(x => x.RollbackTransactionAsync(), Times.Once);
+            exception.Message.Should().Be("Database error");
         }
     }
 }

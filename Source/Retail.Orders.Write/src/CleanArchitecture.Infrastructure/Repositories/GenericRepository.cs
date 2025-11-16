@@ -1,5 +1,6 @@
 ﻿namespace Retail.Orders.Write.src.CleanArchitecture.Infrastructure.Repositories
 {
+    using System;
     using Microsoft.EntityFrameworkCore;
     using Retail.Orders.Write.src.CleanArchitecture.Infrastructure.Data;
     using Retail.Orders.Write.src.CleanArchitecture.Infrastructure.Interfaces;
@@ -93,6 +94,11 @@
         /// <param name="entity">An object type parameter T.</param>
         public virtual T Update(T entity)
         {
+            if (entity == null)
+            {
+                throw new ArgumentNullException(nameof(entity));
+            }
+
             var entry = _dbSet.Attach(entity);
             _context.Entry(entity).State = EntityState.Modified;
             return entry.Entity;

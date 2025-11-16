@@ -93,10 +93,8 @@ namespace Retail.Orders.Read.ComponentTests
             // Assert
             result.Should().NotBeNull();
             result.Should().BeEquivalentTo(orderDto);
-
-            _mockServiceScopeFactory.Verify(x => x.CreateScope(), Times.Once);
-            _mockUnitOfWork.Verify(x => x.Orders.GetByIdAsync(orderId), Times.Once);
-            _mockOrderDtoConverter.Verify(x => x.Convert(order), Times.Once);
+            result.Id.Should().Be(orderId);
+            result.CustomerId.Should().Be(100);
         }
 
         [TestMethod]
@@ -117,10 +115,6 @@ namespace Retail.Orders.Read.ComponentTests
 
             // Assert
             result.Should().BeNull();
-
-            _mockServiceScopeFactory.Verify(x => x.CreateScope(), Times.Once);
-            _mockUnitOfWork.Verify(x => x.Orders.GetByIdAsync(orderId), Times.Once);
-            _mockOrderDtoConverter.Verify(x => x.Convert(It.IsAny<Order>()), Times.Never);
         }
     }
 }

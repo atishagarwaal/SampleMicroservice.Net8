@@ -37,6 +37,12 @@
 
         public async Task HandleAsync(InventoryUpdatedEvent inventoryUpdatedEvent)
         {
+            if (inventoryUpdatedEvent == null)
+            {
+                _logger.LogError("InventoryUpdatedEvent is null");
+                throw new ArgumentNullException(nameof(inventoryUpdatedEvent));
+            }
+
             try
             {
                 using var scope = _serviceScopeFactory.CreateScope();

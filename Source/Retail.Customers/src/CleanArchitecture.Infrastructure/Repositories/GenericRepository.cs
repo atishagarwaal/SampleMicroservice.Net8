@@ -62,6 +62,11 @@ namespace Retail.Api.Customers.src.CleanArchitecture.Infrastructure.Repositories
         /// <param name="entity">An object type parameter T.</param>
         public T Update(T entity)
         {
+            if (entity == null)
+            {
+                throw new ArgumentNullException(nameof(entity));
+            }
+
             var entry = _dbSet.Attach(entity);
             _context.Entry(entity).State = EntityState.Modified;
             return entry.Entity;

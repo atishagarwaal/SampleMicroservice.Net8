@@ -1,5 +1,6 @@
 ﻿namespace Retail.Orders.Read.src.CleanArchitecture.Infrastructure.Repositories
 {
+    using System;
     using MongoDB.Driver;
     using Retail.Orders.Read.src.CleanArchitecture.Infrastructure.Data;
     using Retail.Orders.Read.src.CleanArchitecture.Infrastructure.Interfaces;
@@ -19,6 +20,11 @@
 
         public async Task<T> AddAsync(T entity)
         {
+            if (entity == null)
+            {
+                throw new ArgumentNullException(nameof(entity));
+            }
+
             await _collection.InsertOneAsync(entity);
             return entity;
         }
@@ -40,6 +46,11 @@
 
         public async Task UpdateAsync(long id, T entity)
         {
+            if (entity == null)
+            {
+                throw new ArgumentNullException(nameof(entity));
+            }
+
             await _collection.ReplaceOneAsync(Builders<T>.Filter.Eq("_id", id), entity);
         }
 
