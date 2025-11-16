@@ -3,30 +3,49 @@
     using CommonLibrary.Handlers;
     using InventoryUpdatedEventNameSpace;
     using MessagingLibrary.Interface;
+    using Microsoft.Extensions.Logging;
     using Retail.Api.Customers.src.CleanArchitecture.Application.Interfaces;
 
+    /// <summary>
+    /// Service initializer for setting up message subscriptions.
+    /// </summary>
     internal class ServiceInitializer : IServiceInitializer
     {
         private readonly IMessageSubscriber _messageSubscriber;
         private readonly IEventHandler<InventoryUpdatedEvent> _inventoryUpdatedHandler;
-        public ServiceInitializer(IMessageSubscriber messageSubscriber, IEventHandler<InventoryUpdatedEvent> orderCreatedHandler)
+        private readonly ILogger<ServiceInitializer> _logger;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ServiceInitializer"/> class.
+        /// </summary>
+        /// <param name="messageSubscriber">Instance of message subscriber.</param>
+        /// <param name="orderCreatedHandler">Instance of inventory updated event handler.</param>
+        /// <param name="logger">Instance of logger.</param>
+        public ServiceInitializer(
+            IMessageSubscriber messageSubscriber,
+            IEventHandler<InventoryUpdatedEvent> orderCreatedHandler,
+            ILogger<ServiceInitializer> logger)
         {
             _messageSubscriber = messageSubscriber;
             _inventoryUpdatedHandler = orderCreatedHandler;
+            _logger = logger;
         }
 
+        /// <summary>
+        /// Initializes the service by subscribing to events.
+        /// </summary>
+        /// <returns>Task representing the async operation.</returns>
         public async Task Initialize()
         {
-            Console.WriteLine("Customer Service: Initializing subscription to InventoryUpdatedEvent...");
+            _logger.LogInformation("Initializing Customer Service subscriptions");
             try
             {
                 await _messageSubscriber.SubscribeAsync<InventoryUpdatedEvent>(_inventoryUpdatedHandler.HandleAsync);
-                Console.WriteLine("Customer Service: Successfully subscribed to InventoryUpdatedEvent");
+                _logger.LogInformation("Successfully subscribed to InventoryUpdatedEvent");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Customer Service: Error subscribing to InventoryUpdatedEvent - {ex.Message}");
-                Console.WriteLine($"Customer Service: Stack trace - {ex.StackTrace}");
+                _logger.LogError(ex, "Error initializing Customer Service subscriptions");
                 throw;
             }
         }
