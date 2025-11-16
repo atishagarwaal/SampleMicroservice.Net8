@@ -186,6 +186,7 @@ namespace Retail.BFF.UnitTests
             result.Should().BeOfType<ObjectResult>();
             var objectResult = result as ObjectResult;
             objectResult!.StatusCode.Should().Be(500);
+            // Note: Controller now returns Problem() which returns ObjectResult with ProblemDetails
         }
 
         [TestMethod]
@@ -215,6 +216,7 @@ namespace Retail.BFF.UnitTests
             result.Should().BeOfType<ObjectResult>();
             var objectResult = result as ObjectResult;
             objectResult!.StatusCode.Should().Be(500);
+            // Note: Controller now returns Problem() which returns ObjectResult with ProblemDetails
         }
 
         [TestMethod]
@@ -253,6 +255,7 @@ namespace Retail.BFF.UnitTests
             result.Should().BeOfType<ObjectResult>();
             var objectResult = result as ObjectResult;
             objectResult!.StatusCode.Should().Be(500);
+            // Note: Controller now returns Problem() which returns ObjectResult with ProblemDetails
         }
     }
 }

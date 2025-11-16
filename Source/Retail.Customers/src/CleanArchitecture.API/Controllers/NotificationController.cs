@@ -54,7 +54,10 @@ namespace Retail.Api.Customers.src.CleanArchitecture.API.Controllers
                 if (notifications == null)
                 {
                     _logger.LogWarning("Notifications list is null");
-                    return NotFound();
+                    return Problem(
+                        detail: "No notifications found",
+                        statusCode: 404,
+                        title: "Not Found");
                 }
 
                 // Map to DTOs using converter
@@ -71,7 +74,10 @@ namespace Retail.Api.Customers.src.CleanArchitecture.API.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error retrieving notifications");
-                return StatusCode(500, "Internal server error");
+                return Problem(
+                    detail: "Internal server error",
+                    statusCode: 500,
+                    title: "Internal Server Error");
             }
         }
 
@@ -91,7 +97,10 @@ namespace Retail.Api.Customers.src.CleanArchitecture.API.Controllers
                 if (id == 0)
                 {
                     _logger.LogWarning("Invalid notification ID provided. NotificationId: {NotificationId}", id);
-                    return BadRequest("Invalid parameter");
+                    return Problem(
+                        detail: "Invalid parameter",
+                        statusCode: 400,
+                        title: "Bad Request");
                 }
 
                 // Get notification by ID
@@ -101,7 +110,10 @@ namespace Retail.Api.Customers.src.CleanArchitecture.API.Controllers
                 if (notification == null)
                 {
                     _logger.LogWarning("Notification not found. NotificationId: {NotificationId}", id);
-                    return NotFound();
+                    return Problem(
+                        detail: "Notification not found",
+                        statusCode: 404,
+                        title: "Not Found");
                 }
 
                 // Map to DTO using converter
@@ -116,7 +128,10 @@ namespace Retail.Api.Customers.src.CleanArchitecture.API.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error retrieving notification. NotificationId: {NotificationId}", id);
-                return StatusCode(500, "Internal server error");
+                return Problem(
+                    detail: "Internal server error",
+                    statusCode: 500,
+                    title: "Internal Server Error");
             }
         }
     }

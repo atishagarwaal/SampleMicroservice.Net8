@@ -117,7 +117,10 @@ namespace Retail.BFFWeb.Api.Controller
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error retrieving all order details");
-                return StatusCode(500, MessageConstants.InternalServerError);
+                return Problem(
+                    detail: MessageConstants.InternalServerError,
+                    statusCode: 500,
+                    title: "Internal Server Error");
             }
         }
        

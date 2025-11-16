@@ -56,7 +56,10 @@ namespace Retail.Orders.Write.src.CleanArchitecture.API.Controllers
             if (value == null)
             {
                 _logger.LogWarning("Received null order DTO in POST request");
-                return BadRequest(MessageConstants.InvalidParameter);
+                return Problem(
+                    detail: MessageConstants.InvalidParameter,
+                    statusCode: 400,
+                    title: "Bad Request");
             }
 
             _logger.LogInformation("Creating order. CustomerId: {CustomerId}, TotalAmount: {TotalAmount}, LineItemsCount: {LineItemsCount}",
@@ -70,7 +73,10 @@ namespace Retail.Orders.Write.src.CleanArchitecture.API.Controllers
                 {
                     _logger.LogWarning("Order validation failed. Validator: {ValidatorName}, Reason: {FailureReason}",
                         validationResult.ValidatorName, validationResult.FailureReason);
-                    return BadRequest(new { error = validationResult.FailureReason, validator = validationResult.ValidatorName });
+                    return Problem(
+                        detail: validationResult.FailureReason,
+                        statusCode: 400,
+                        title: "Bad Request");
                 }
 
                 var command = new CreateOrderCommand { Order = value };
@@ -79,7 +85,10 @@ namespace Retail.Orders.Write.src.CleanArchitecture.API.Controllers
                 if (result.IsFailure)
                 {
                     this._logger.LogWarning("Failed to create order: {Error}", result.Error);
-                    return BadRequest(new { error = result.Error });
+                    return Problem(
+                        detail: result.Error,
+                        statusCode: 400,
+                        title: "Bad Request");
                 }
 
                 this._logger.LogInformation("Order created successfully. OrderId: {OrderId}, CustomerId: {CustomerId}",
@@ -90,7 +99,10 @@ namespace Retail.Orders.Write.src.CleanArchitecture.API.Controllers
             {
                 this._logger.LogError(ex, "Error creating order. CustomerId: {CustomerId}, TotalAmount: {TotalAmount}",
                     value.CustomerId, value.TotalAmount);
-                return StatusCode(500, MessageConstants.InternalServerError);
+                return Problem(
+                    detail: MessageConstants.InternalServerError,
+                    statusCode: 500,
+                    title: "Internal Server Error");
             }
         }
 
@@ -107,7 +119,10 @@ namespace Retail.Orders.Write.src.CleanArchitecture.API.Controllers
             {
                 _logger.LogWarning("Invalid parameters for order update. OrderId: {OrderId}, ValueIsNull: {ValueIsNull}",
                     id, value == null);
-                return BadRequest(MessageConstants.InvalidParameter);
+                return Problem(
+                    detail: MessageConstants.InvalidParameter,
+                    statusCode: 400,
+                    title: "Bad Request");
             }
 
             _logger.LogInformation("Updating order. OrderId: {OrderId}, CustomerId: {CustomerId}, TotalAmount: {TotalAmount}",
@@ -121,7 +136,10 @@ namespace Retail.Orders.Write.src.CleanArchitecture.API.Controllers
                 {
                     _logger.LogWarning("Order validation failed. OrderId: {OrderId}, Validator: {ValidatorName}, Reason: {FailureReason}",
                         id, validationResult.ValidatorName, validationResult.FailureReason);
-                    return BadRequest(new { error = validationResult.FailureReason, validator = validationResult.ValidatorName });
+                    return Problem(
+                        detail: validationResult.FailureReason,
+                        statusCode: 400,
+                        title: "Bad Request");
                 }
 
                 value.Id = id; // Ensure the ID from the route is used
@@ -135,10 +153,16 @@ namespace Retail.Orders.Write.src.CleanArchitecture.API.Controllers
                     // Check if it's a not found error (404) or validation error (400)
                     if (result.Error != null && result.Error.Contains("not found", StringComparison.OrdinalIgnoreCase))
                     {
-                        return NotFound(new { error = result.Error });
+                        return Problem(
+                            detail: result.Error,
+                            statusCode: 404,
+                            title: "Not Found");
                     }
                     
-                    return BadRequest(new { error = result.Error });
+                    return Problem(
+                        detail: result.Error,
+                        statusCode: 400,
+                        title: "Bad Request");
                 }
 
                 this._logger.LogInformation("Order updated successfully. OrderId: {OrderId}, CustomerId: {CustomerId}",
@@ -149,7 +173,10 @@ namespace Retail.Orders.Write.src.CleanArchitecture.API.Controllers
             {
                 this._logger.LogError(ex, "Error updating order. OrderId: {OrderId}, CustomerId: {CustomerId}",
                     id, value.CustomerId);
-                return StatusCode(500, MessageConstants.InternalServerError);
+                return Problem(
+                    detail: MessageConstants.InternalServerError,
+                    statusCode: 500,
+                    title: "Internal Server Error");
             }
         }
 
@@ -168,7 +195,10 @@ namespace Retail.Orders.Write.src.CleanArchitecture.API.Controllers
                 if (id == 0)
                 {
                     _logger.LogWarning("Invalid order ID provided for deletion. OrderId: {OrderId}", id);
-                    return BadRequest(MessageConstants.InvalidParameter);
+                    return Problem(
+                        detail: MessageConstants.InvalidParameter,
+                        statusCode: 400,
+                        title: "Bad Request");
                 }
 
                 var command = new DeleteOrderCommand { Id = id };
@@ -188,7 +218,10 @@ namespace Retail.Orders.Write.src.CleanArchitecture.API.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error deleting order. OrderId: {OrderId}", id);
-                return StatusCode(500, MessageConstants.InternalServerError);
+                return Problem(
+                    detail: MessageConstants.InternalServerError,
+                    statusCode: 500,
+                    title: "Internal Server Error");
             }
         }
     }

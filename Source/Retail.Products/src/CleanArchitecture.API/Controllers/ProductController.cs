@@ -57,7 +57,10 @@ namespace Retail.Api.Products.src.CleanArchitecture.API.Controllers
                 if (list == null)
                 {
                     _logger.LogWarning("Product list is null");
-                    return NotFound();
+                    return Problem(
+                        detail: "No products found",
+                        statusCode: 404,
+                        title: "Not Found");
                 }
 
                 var count = list.Count();
@@ -67,7 +70,10 @@ namespace Retail.Api.Products.src.CleanArchitecture.API.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error retrieving all products");
-                return StatusCode(500, MessageConstants.InternalServerError);
+                return Problem(
+                    detail: MessageConstants.InternalServerError,
+                    statusCode: 500,
+                    title: "Internal Server Error");
             }
         }
 
@@ -85,7 +91,10 @@ namespace Retail.Api.Products.src.CleanArchitecture.API.Controllers
                 if (id == 0)
                 {
                     _logger.LogWarning("Invalid product ID provided. ProductId: {ProductId}", id);
-                    return BadRequest(MessageConstants.InvalidParameter);
+                    return Problem(
+                        detail: MessageConstants.InvalidParameter,
+                        statusCode: 400,
+                        title: "Bad Request");
                 }
 
                 // Call business service
@@ -94,7 +103,10 @@ namespace Retail.Api.Products.src.CleanArchitecture.API.Controllers
                 if (result.IsFailure)
                 {
                     this._logger.LogWarning("Failed to retrieve product with Id {ProductId}: {Error}", id, result.Error);
-                    return NotFound(new { error = result.Error });
+                    return Problem(
+                        detail: result.Error,
+                        statusCode: 404,
+                        title: "Not Found");
                 }
 
                 this._logger.LogInformation("Product retrieved successfully. ProductId: {ProductId}", id);
@@ -117,7 +129,10 @@ namespace Retail.Api.Products.src.CleanArchitecture.API.Controllers
             if (value == null)
             {
                 _logger.LogWarning("Received null product DTO in POST request");
-                return BadRequest(MessageConstants.InvalidParameter);
+                return Problem(
+                    detail: MessageConstants.InvalidParameter,
+                    statusCode: 400,
+                    title: "Bad Request");
             }
 
             _logger.LogInformation("Creating product. Name: {ProductName}", value.Name);
@@ -129,7 +144,10 @@ namespace Retail.Api.Products.src.CleanArchitecture.API.Controllers
                 {
                     _logger.LogWarning("Product validation failed. Validator: {ValidatorName}, Reason: {FailureReason}",
                         validationResult.ValidatorName, validationResult.FailureReason);
-                    return BadRequest(new { error = validationResult.FailureReason, validator = validationResult.ValidatorName });
+                    return Problem(
+                        detail: validationResult.FailureReason,
+                        statusCode: 400,
+                        title: "Bad Request");
                 }
 
                 // Call business service
@@ -138,7 +156,10 @@ namespace Retail.Api.Products.src.CleanArchitecture.API.Controllers
                 if (result.IsFailure)
                 {
                     this._logger.LogWarning("Failed to create product: {Error}", result.Error);
-                    return BadRequest(new { error = result.Error });
+                    return Problem(
+                        detail: result.Error,
+                        statusCode: 400,
+                        title: "Bad Request");
                 }
 
                 this._logger.LogInformation("Product created successfully. ProductId: {ProductId}, Name: {ProductName}",
@@ -148,7 +169,10 @@ namespace Retail.Api.Products.src.CleanArchitecture.API.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error creating product. Name: {ProductName}", value.Name);
-                return StatusCode(500, MessageConstants.InternalServerError);
+                return Problem(
+                    detail: MessageConstants.InternalServerError,
+                    statusCode: 500,
+                    title: "Internal Server Error");
             }
         }
 
@@ -164,7 +188,10 @@ namespace Retail.Api.Products.src.CleanArchitecture.API.Controllers
             {
                 _logger.LogWarning("Invalid parameters for product update. ProductId: {ProductId}, ValueIsNull: {ValueIsNull}",
                     id, value == null);
-                return BadRequest(MessageConstants.InvalidParameter);
+                return Problem(
+                    detail: MessageConstants.InvalidParameter,
+                    statusCode: 400,
+                    title: "Bad Request");
             }
 
             _logger.LogInformation("Updating product. ProductId: {ProductId}, Name: {ProductName}", id, value.Name);
@@ -176,7 +203,10 @@ namespace Retail.Api.Products.src.CleanArchitecture.API.Controllers
                 {
                     _logger.LogWarning("Product validation failed. ProductId: {ProductId}, Validator: {ValidatorName}, Reason: {FailureReason}",
                         id, validationResult.ValidatorName, validationResult.FailureReason);
-                    return BadRequest(new { error = validationResult.FailureReason, validator = validationResult.ValidatorName });
+                    return Problem(
+                        detail: validationResult.FailureReason,
+                        statusCode: 400,
+                        title: "Bad Request");
                 }
 
                 // Call business service
@@ -189,10 +219,16 @@ namespace Retail.Api.Products.src.CleanArchitecture.API.Controllers
                     // Check if it's a not found error (404) or validation error (400)
                     if (result.Error != null && result.Error.Contains("not found", StringComparison.OrdinalIgnoreCase))
                     {
-                        return NotFound(new { error = result.Error });
+                        return Problem(
+                            detail: result.Error,
+                            statusCode: 404,
+                            title: "Not Found");
                     }
                     
-                    return BadRequest(new { error = result.Error });
+                    return Problem(
+                        detail: result.Error,
+                        statusCode: 400,
+                        title: "Bad Request");
                 }
 
                 this._logger.LogInformation("Product updated successfully. ProductId: {ProductId}, Name: {ProductName}",
@@ -203,7 +239,10 @@ namespace Retail.Api.Products.src.CleanArchitecture.API.Controllers
             {
                 _logger.LogError(ex, "Error updating product. ProductId: {ProductId}, Name: {ProductName}",
                     id, value.Name);
-                return StatusCode(500, MessageConstants.InternalServerError);
+                return Problem(
+                    detail: MessageConstants.InternalServerError,
+                    statusCode: 500,
+                    title: "Internal Server Error");
             }
         }
 
@@ -221,7 +260,10 @@ namespace Retail.Api.Products.src.CleanArchitecture.API.Controllers
                 if (id == 0)
                 {
                     _logger.LogWarning("Invalid product ID provided for deletion. ProductId: {ProductId}", id);
-                    return BadRequest(MessageConstants.InvalidParameter);
+                    return Problem(
+                        detail: MessageConstants.InvalidParameter,
+                        statusCode: 400,
+                        title: "Bad Request");
                 }
 
                 // Call business service
@@ -241,7 +283,10 @@ namespace Retail.Api.Products.src.CleanArchitecture.API.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error deleting product. ProductId: {ProductId}", id);
-                return StatusCode(500, MessageConstants.InternalServerError);
+                return Problem(
+                    detail: MessageConstants.InternalServerError,
+                    statusCode: 500,
+                    title: "Internal Server Error");
             }
         }
     }

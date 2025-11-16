@@ -12,6 +12,7 @@ using Retail.Orders.Write.src.CleanArchitecture.Application.Validation;
 using Retail.Orders.Write.src.CleanArchitecture.Application.Validation.Interfaces;
 using Retail.Orders.Write.src.CleanArchitecture.API.Controllers;
 using MediatR;
+using CommonLibrary.Results;
 
 namespace Retail.Orders.Write.ComponentTests
 {
@@ -80,7 +81,7 @@ namespace Retail.Orders.Write.ComponentTests
 
             _mockMediator
                 .Setup(x => x.Send(It.IsAny<CreateOrderCommand>(), default))
-                .ReturnsAsync(expectedResult);
+                .ReturnsAsync(Result<OrderDto>.Success(expectedResult));
 
             // Act
             var result = await _controller.Post(orderDto);
@@ -101,9 +102,9 @@ namespace Retail.Orders.Write.ComponentTests
 
             // Assert
             result.Should().NotBeNull();
-            result.Should().BeOfType<BadRequestObjectResult>();
-            var badRequestResult = result as BadRequestObjectResult;
-            badRequestResult!.Value.Should().Be(MessageConstants.InvalidParameter);
+            result.Should().BeOfType<ObjectResult>();
+            var objectResult = result as ObjectResult;
+            objectResult!.StatusCode.Should().Be(400);
         }
 
         [TestMethod]
@@ -129,12 +130,14 @@ namespace Retail.Orders.Write.ComponentTests
 
             // Assert
             result.Should().NotBeNull();
-            result.Should().BeOfType<BadRequestObjectResult>();
+            result.Should().BeOfType<ObjectResult>();
+            var objectResult = result as ObjectResult;
+            objectResult!.StatusCode.Should().Be(400);
         }
 
         [TestMethod]
         [TestCategory("OrderWriteController")]
-        public async Task Post_WhenMediatorReturnsNull_ReturnsInternalServerError()
+        public async Task Post_WhenMediatorReturnsFailure_ReturnsBadRequest()
         {
             // Arrange
             var orderDto = new OrderDto
@@ -150,7 +153,7 @@ namespace Retail.Orders.Write.ComponentTests
 
             _mockMediator
                 .Setup(x => x.Send(It.IsAny<CreateOrderCommand>(), default))
-                .ReturnsAsync((OrderDto)null!);
+                .ReturnsAsync(Result<OrderDto>.Failure("Failed to create order"));
 
             // Act
             var result = await _controller.Post(orderDto);
@@ -159,8 +162,7 @@ namespace Retail.Orders.Write.ComponentTests
             result.Should().NotBeNull();
             result.Should().BeOfType<ObjectResult>();
             var objectResult = result as ObjectResult;
-            objectResult!.StatusCode.Should().Be(500);
-            objectResult.Value.Should().Be(MessageConstants.InternalServerError);
+            objectResult!.StatusCode.Should().Be(400);
         }
 
         [TestMethod]
@@ -190,7 +192,7 @@ namespace Retail.Orders.Write.ComponentTests
 
             _mockMediator
                 .Setup(x => x.Send(It.IsAny<UpdateOrderCommand>(), default))
-                .ReturnsAsync(expectedResult);
+                .ReturnsAsync(Result<OrderDto>.Success(expectedResult));
 
             // Act
             var result = await _controller.Put(orderId, orderDto);
@@ -219,7 +221,9 @@ namespace Retail.Orders.Write.ComponentTests
 
             // Assert
             result.Should().NotBeNull();
-            result.Should().BeOfType<BadRequestObjectResult>();
+            result.Should().BeOfType<ObjectResult>();
+            var objectResult = result as ObjectResult;
+            objectResult!.StatusCode.Should().Be(400);
         }
 
         [TestMethod]
@@ -231,7 +235,9 @@ namespace Retail.Orders.Write.ComponentTests
 
             // Assert
             result.Should().NotBeNull();
-            result.Should().BeOfType<BadRequestObjectResult>();
+            result.Should().BeOfType<ObjectResult>();
+            var objectResult = result as ObjectResult;
+            objectResult!.StatusCode.Should().Be(400);
         }
 
         [TestMethod]
@@ -258,7 +264,9 @@ namespace Retail.Orders.Write.ComponentTests
 
             // Assert
             result.Should().NotBeNull();
-            result.Should().BeOfType<BadRequestObjectResult>();
+            result.Should().BeOfType<ObjectResult>();
+            var objectResult = result as ObjectResult;
+            objectResult!.StatusCode.Should().Be(400);
         }
 
         [TestMethod]
@@ -291,7 +299,9 @@ namespace Retail.Orders.Write.ComponentTests
 
             // Assert
             result.Should().NotBeNull();
-            result.Should().BeOfType<BadRequestObjectResult>();
+            result.Should().BeOfType<ObjectResult>();
+            var objectResult = result as ObjectResult;
+            objectResult!.StatusCode.Should().Be(400);
         }
     }
 }

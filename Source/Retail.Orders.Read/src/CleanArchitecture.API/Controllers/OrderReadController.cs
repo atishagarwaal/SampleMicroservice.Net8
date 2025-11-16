@@ -55,7 +55,10 @@ namespace Retail.Orders.Read.src.CleanArchitecture.API.Controllers
                 if (result == null)
                 {
                     _logger.LogWarning("GetAllOrdersQuery returned null result");
-                    return NotFound();
+                    return Problem(
+                        detail: "No orders found",
+                        statusCode: 404,
+                        title: "Not Found");
                 }
                 
                 var orderCount = result.Count();
@@ -65,7 +68,10 @@ namespace Retail.Orders.Read.src.CleanArchitecture.API.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error retrieving all orders");
-                return StatusCode(500, MessageConstants.InternalServerError);
+                return Problem(
+                    detail: MessageConstants.InternalServerError,
+                    statusCode: 500,
+                    title: "Internal Server Error");
             }
         }
 
@@ -84,7 +90,10 @@ namespace Retail.Orders.Read.src.CleanArchitecture.API.Controllers
                 if (id == 0)
                 {
                     _logger.LogWarning("Invalid order Id provided: {OrderId}", id);
-                    return BadRequest(MessageConstants.InvalidParameter);
+                    return Problem(
+                        detail: MessageConstants.InvalidParameter,
+                        statusCode: 400,
+                        title: "Bad Request");
                 }
                 
                 var query = new GetOrderByIdQuery { Id = id };
@@ -93,7 +102,10 @@ namespace Retail.Orders.Read.src.CleanArchitecture.API.Controllers
                 if (result == null)
                 {
                     _logger.LogWarning("Order with Id {OrderId} not found", id);
-                    return NotFound();
+                    return Problem(
+                        detail: "Order not found",
+                        statusCode: 404,
+                        title: "Not Found");
                 }
                 
                 _logger.LogInformation("Successfully retrieved order with Id {OrderId}", id);
@@ -102,7 +114,10 @@ namespace Retail.Orders.Read.src.CleanArchitecture.API.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error retrieving order with Id {OrderId}", id);
-                return StatusCode(500, MessageConstants.InternalServerError);
+                return Problem(
+                    detail: MessageConstants.InternalServerError,
+                    statusCode: 500,
+                    title: "Internal Server Error");
             }
         }
     }

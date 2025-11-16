@@ -63,7 +63,10 @@ namespace Retail.Api.Customers.src.CleanArchitecture.API.Controllers
                 if (list == null)
                 {
                     _logger.LogWarning("GetAllCustomersAsync returned null result");
-                    return NotFound();
+                    return Problem(
+                        detail: "No customers found",
+                        statusCode: 404,
+                        title: "Not Found");
                 }
 
                 var customerCount = list.Count();
@@ -73,7 +76,10 @@ namespace Retail.Api.Customers.src.CleanArchitecture.API.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error retrieving all customers");
-                return StatusCode(500, MessageConstants.InternalServerError);
+                return Problem(
+                    detail: MessageConstants.InternalServerError,
+                    statusCode: 500,
+                    title: "Internal Server Error");
             }
         }
 
@@ -90,7 +96,10 @@ namespace Retail.Api.Customers.src.CleanArchitecture.API.Controllers
             if (id == 0)
             {
                 this._logger.LogWarning("Invalid customer Id provided: {CustomerId}", id);
-                return BadRequest(MessageConstants.InvalidParameter);
+                return Problem(
+                    detail: MessageConstants.InvalidParameter,
+                    statusCode: 400,
+                    title: "Bad Request");
             }
 
             var result = await this._customerService.GetCustomerByIdAsync(id);
@@ -98,7 +107,10 @@ namespace Retail.Api.Customers.src.CleanArchitecture.API.Controllers
             if (result.IsFailure)
             {
                 this._logger.LogWarning("Failed to retrieve customer with Id {CustomerId}: {Error}", id, result.Error);
-                return NotFound(new { error = result.Error });
+                return Problem(
+                    detail: result.Error,
+                    statusCode: 404,
+                    title: "Not Found");
             }
 
             this._logger.LogInformation("Successfully retrieved customer with Id {CustomerId}", id);
@@ -115,7 +127,10 @@ namespace Retail.Api.Customers.src.CleanArchitecture.API.Controllers
             if (value == null)
             {
                 this._logger.LogWarning("Received null customer DTO in POST request");
-                return BadRequest(MessageConstants.InvalidParameter);
+                return Problem(
+                    detail: MessageConstants.InvalidParameter,
+                    statusCode: 400,
+                    title: "Bad Request");
             }
 
             this._logger.LogInformation("Creating customer. FirstName: {FirstName}, LastName: {LastName}", value.FirstName, value.LastName);
@@ -125,7 +140,10 @@ namespace Retail.Api.Customers.src.CleanArchitecture.API.Controllers
             if (result.IsFailure)
             {
                 this._logger.LogWarning("Failed to create customer: {Error}", result.Error);
-                return BadRequest(new { error = result.Error });
+                return Problem(
+                    detail: result.Error,
+                    statusCode: 400,
+                    title: "Bad Request");
             }
 
             this._logger.LogInformation("Customer created successfully. CustomerId: {CustomerId}", result.Value.Id);
@@ -143,7 +161,10 @@ namespace Retail.Api.Customers.src.CleanArchitecture.API.Controllers
             if (id == 0 || value == null)
             {
                 this._logger.LogWarning("Invalid parameters for update. CustomerId: {CustomerId}, DTO is null: {IsNull}", id, value == null);
-                return BadRequest(MessageConstants.InvalidParameter);
+                return Problem(
+                    detail: MessageConstants.InvalidParameter,
+                    statusCode: 400,
+                    title: "Bad Request");
             }
 
             this._logger.LogInformation("Updating customer with Id {CustomerId}. FirstName: {FirstName}, LastName: {LastName}", 
@@ -158,10 +179,16 @@ namespace Retail.Api.Customers.src.CleanArchitecture.API.Controllers
                 // Check if it's a not found error (404) or validation error (400)
                 if (result.Error != null && result.Error.Contains("not found", StringComparison.OrdinalIgnoreCase))
                 {
-                    return NotFound(new { error = result.Error });
+                    return Problem(
+                        detail: result.Error,
+                        statusCode: 404,
+                        title: "Not Found");
                 }
                 
-                return BadRequest(new { error = result.Error });
+                return Problem(
+                    detail: result.Error,
+                    statusCode: 400,
+                    title: "Bad Request");
             }
 
             this._logger.LogInformation("Customer updated successfully. CustomerId: {CustomerId}", id);
@@ -182,7 +209,10 @@ namespace Retail.Api.Customers.src.CleanArchitecture.API.Controllers
                 if (id == 0)
                 {
                     _logger.LogWarning("Invalid customer Id provided for deletion: {CustomerId}", id);
-                    return BadRequest(MessageConstants.InvalidParameter);
+                    return Problem(
+                        detail: MessageConstants.InvalidParameter,
+                        statusCode: 400,
+                        title: "Bad Request");
                 }
 
                 var result = await _customerService.DeleteCustomerAsync(id);
@@ -201,7 +231,10 @@ namespace Retail.Api.Customers.src.CleanArchitecture.API.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error deleting customer with Id {CustomerId}", id);
-                return StatusCode(500, MessageConstants.InternalServerError);
+                return Problem(
+                    detail: MessageConstants.InternalServerError,
+                    statusCode: 500,
+                    title: "Internal Server Error");
             }
         }
     }
