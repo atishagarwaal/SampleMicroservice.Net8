@@ -46,6 +46,11 @@ namespace Retail.UI.Application
 
             serviceCollection.AddRazorPages();
 
+            // Register application lifecycle
+            serviceCollection.AddSingleton<UIApplication>();
+            serviceCollection.AddSingleton<CommonLibrary.Application.IApplication>(sp => sp.GetRequiredService<UIApplication>());
+            serviceCollection.AddSingleton<Microsoft.Extensions.Hosting.IHostedService>(sp => sp.GetRequiredService<UIApplication>());
+
             // Add health checks
             serviceCollection.AddHealthChecks();
         }

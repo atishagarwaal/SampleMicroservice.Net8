@@ -36,9 +36,14 @@ namespace Retail.BFFWeb.Api.Application
             serviceCollection.AddHttpClient();
 
             // Add services to the container.
-            serviceCollection.AddSingleton(typeof(ICustomerProvider), typeof(CustomerProvider));
-            serviceCollection.AddSingleton(typeof(IOrderProvider), typeof(OrderProvider));
-            serviceCollection.AddSingleton(typeof(IProductProvider), typeof(ProductProvider));
+            serviceCollection.AddSingleton<ICustomerProvider, CustomerProvider>();
+            serviceCollection.AddSingleton<IOrderProvider, OrderProvider>();
+            serviceCollection.AddSingleton<IProductProvider, ProductProvider>();
+
+            // Register application lifecycle
+            serviceCollection.AddSingleton<BFFApplication>();
+            serviceCollection.AddSingleton<CommonLibrary.Application.IApplication>(sp => sp.GetRequiredService<BFFApplication>());
+            serviceCollection.AddSingleton<Microsoft.Extensions.Hosting.IHostedService>(sp => sp.GetRequiredService<BFFApplication>());
 
             serviceCollection.Configure<CustomerServiceConfig>(context.Configuration.GetSection("CustomerServiceConfig"));
             serviceCollection.Configure<OrderServiceConfig>(context.Configuration.GetSection("OrderServiceConfig"));

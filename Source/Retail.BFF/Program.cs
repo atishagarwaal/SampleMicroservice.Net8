@@ -38,8 +38,9 @@ namespace Retail.BFFWeb.Api
 
             try
             {
-                logger.LogInformation("Starting BFF Service");
-                logger.LogInformation("BFF Service started successfully");
+                var application = host.Services.GetRequiredService<CommonLibrary.Application.IApplication>();
+                await application.StartAsync(System.Threading.CancellationToken.None);
+
                 await host.RunAsync();
             }
             catch (System.Exception ex)

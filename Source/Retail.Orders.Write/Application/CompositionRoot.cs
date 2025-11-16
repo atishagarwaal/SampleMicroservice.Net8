@@ -63,7 +63,7 @@ namespace Retail.Orders.Write.Application
             }, ServiceLifetime.Scoped);
 
             serviceCollection.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
-            serviceCollection.AddScoped(typeof(IUnitOfWork), typeof(UnitOfWork));
+            serviceCollection.AddScoped<IUnitOfWork, UnitOfWork>();
 
             // Register MediatR with all relevant assemblies
             serviceCollection.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(

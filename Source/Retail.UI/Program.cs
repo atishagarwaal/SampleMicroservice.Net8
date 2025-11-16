@@ -38,8 +38,9 @@ namespace Retail.UI
 
             try
             {
-                logger.LogInformation("Starting Retail UI application");
-                logger.LogInformation("Retail UI application started successfully");
+                var application = host.Services.GetRequiredService<CommonLibrary.Application.IApplication>();
+                await application.StartAsync(System.Threading.CancellationToken.None);
+
                 await host.RunAsync();
             }
             catch (System.Exception ex)
