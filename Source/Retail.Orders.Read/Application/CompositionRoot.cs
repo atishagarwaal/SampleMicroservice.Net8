@@ -25,6 +25,7 @@ namespace Retail.Orders.Read.Application
     using Retail.Orders.Read.src.CleanArchitecture.Infrastructure.Data;
     using Retail.Orders.Read.src.CleanArchitecture.Infrastructure.Interfaces;
     using Retail.Orders.Read.src.CleanArchitecture.Infrastructure.UnitOfWork;
+    using CommonLibrary.Configuration;
 
     /// <summary>
     /// Configuration for this service.
@@ -45,6 +46,12 @@ namespace Retail.Orders.Read.Application
         /// <param name="serviceCollection">Service collection to register services to.</param>
         public static void ConfigureServices(HostBuilderContext context, IServiceCollection serviceCollection)
         {
+            // Configure strongly-typed configuration classes
+            serviceCollection.Configure<DatabaseConnectionConfiguration>(
+                context.Configuration.GetSection("ConnectionStrings"));
+            serviceCollection.Configure<MongoDBSettings>(
+                context.Configuration.GetSection(nameof(MongoDBSettings)));
+
             // Configure MongoDB connection
             serviceCollection.AddScoped<ApplicationDbContext>();
             serviceCollection.AddScoped(typeof(IUnitOfWork), typeof(UnitOfWork));

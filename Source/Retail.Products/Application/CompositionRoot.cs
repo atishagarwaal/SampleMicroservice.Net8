@@ -28,6 +28,8 @@ namespace Retail.Api.Products.Application
     using Retail.Api.Products.src.CleanArchitecture.Infrastructure.Interfaces;
     using Retail.Api.Products.src.CleanArchitecture.Infrastructure.Repositories;
     using Retail.Api.Products.src.CleanArchitecture.Infrastructure.UnitOfWork;
+    using CommonLibrary.Configuration;
+    using Microsoft.Extensions.Options;
 
     /// <summary>
     /// Configuration for this service.
@@ -48,9 +50,16 @@ namespace Retail.Api.Products.Application
         /// <param name="serviceCollection">Service collection to register services to.</param>
         public static void ConfigureServices(HostBuilderContext context, IServiceCollection serviceCollection)
         {
+            // Configure strongly-typed configuration classes
+            serviceCollection.Configure<DatabaseConnectionConfiguration>(
+                context.Configuration.GetSection("ConnectionStrings"));
+
             // Configure database connection
-            serviceCollection.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(context.Configuration.GetConnectionString("DefaultConnection")), ServiceLifetime.Scoped);
+            serviceCollection.AddDbContext<ApplicationDbContext>((serviceProvider, options) =>
+            {
+                var dbConfig = serviceProvider.GetRequiredService<IOptions<DatabaseConnectionConfiguration>>().Value;
+                options.UseSqlServer(dbConfig.DefaultConnection);
+            }, ServiceLifetime.Scoped);
 
             // Configure services
             serviceCollection.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
