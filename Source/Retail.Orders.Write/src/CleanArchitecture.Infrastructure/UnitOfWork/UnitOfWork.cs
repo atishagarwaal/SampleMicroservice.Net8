@@ -15,6 +15,7 @@ namespace Retail.Orders.Write.src.CleanArchitecture.Infrastructure.UnitOfWork
     {
         private readonly ApplicationDbContext _context;
         private readonly ILogger<UnitOfWork> _logger;
+        private readonly ILoggerFactory _loggerFactory;
         private IDbContextTransaction _transaction;
         public IOrderRepository Orders { get; private set; }
         public ILineItemRepository LineItems { get; private set; }
@@ -24,11 +25,13 @@ namespace Retail.Orders.Write.src.CleanArchitecture.Infrastructure.UnitOfWork
         /// </summary>
         /// <param name="entityContext">Entity framework Db context.</param>
         /// <param name="logger">Instance of logger.</param>
-        public UnitOfWork(ApplicationDbContext entityContext, ILogger<UnitOfWork> logger)
+        /// <param name="loggerFactory">Instance of logger factory.</param>
+        public UnitOfWork(ApplicationDbContext entityContext, ILogger<UnitOfWork> logger, ILoggerFactory loggerFactory)
         {
             _context = entityContext;
             _logger = logger;
-            Orders = new OrderRepository(_context);
+            _loggerFactory = loggerFactory;
+            Orders = new OrderRepository(_context, _loggerFactory.CreateLogger<Repositories.OrderRepository>());
             LineItems = new LineItemRepository(_context);
         }
 

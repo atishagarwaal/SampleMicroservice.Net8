@@ -284,21 +284,28 @@ namespace Retail.UI.Components.Pages
         }
 
         public async Task RefreshCustomers()
-    {
-        try
         {
+            try
+            {
+                Logger.LogInformation("Refreshing customers from https://localhost:7001/api/v1.0/Customer");
                 var response = await Http.GetAsync("https://localhost:7001/api/v1.0/Customer");
+                Logger.LogInformation("Customers API response status: {StatusCode}", response.StatusCode);
+                
                 if (response.IsSuccessStatusCode)
                 {
                     var content = await response.Content.ReadAsStringAsync();
+                    Logger.LogDebug("Customers API response content: {Content}", content);
+                    
                     customers = JsonSerializer.Deserialize<List<CustomerDto>>(content, new JsonSerializerOptions
                     {
                         PropertyNameCaseInsensitive = true
                     });
+                    Logger.LogInformation("Deserialized {Count} customers", customers?.Count ?? 0);
                     AddEvent("Customers", $"Loaded {customers?.Count ?? 0} customers", "Success");
                 }
                 else
                 {
+                    Logger.LogWarning("Failed to load customers. Status: {StatusCode}", response.StatusCode);
                     AddEvent("Customers", "Failed to load customers", "Error");
                 }
             }
@@ -313,18 +320,25 @@ namespace Retail.UI.Components.Pages
         {
             try
             {
+                Logger.LogInformation("Refreshing notifications from https://localhost:7001/api/v1.0/Notification");
                 var response = await Http.GetAsync("https://localhost:7001/api/v1.0/Notification");
+                Logger.LogInformation("Notifications API response status: {StatusCode}", response.StatusCode);
+                
                 if (response.IsSuccessStatusCode)
                 {
                     var content = await response.Content.ReadAsStringAsync();
+                    Logger.LogDebug("Notifications API response content: {Content}", content);
+                    
                     notifications = JsonSerializer.Deserialize<List<NotificationDto>>(content, new JsonSerializerOptions
                     {
                         PropertyNameCaseInsensitive = true
                     });
+                    Logger.LogInformation("Deserialized {Count} notifications", notifications?.Count ?? 0);
                     AddEvent("Notifications", $"Loaded {notifications?.Count ?? 0} notifications", "Success");
                 }
                 else
                 {
+                    Logger.LogWarning("Failed to load notifications. Status: {StatusCode}", response.StatusCode);
                     AddEvent("Notifications", "Failed to load notifications", "Error");
                 }
             }
@@ -352,10 +366,17 @@ namespace Retail.UI.Components.Pages
 
         public async Task UpdateInventory()
         {
-            if (selectedProduct == null) return;
+            if (selectedProduct == null)
+            {
+                Logger.LogWarning("UpdateInventory called but selectedProduct is null");
+                return;
+            }
 
             try
             {
+                Logger.LogInformation("Updating inventory. ProductId: {ProductId}, ProductName: {ProductName}, OldInventory: {OldInventory}, NewInventory: {NewInventory}",
+                    selectedProduct.Id, selectedProduct.Name, selectedProduct.Inventory, newInventoryValue);
+                
                 AddEvent("Inventory", $"Updating inventory for {selectedProduct.Name} from {selectedProduct.Inventory} to {newInventoryValue}", "Info");
 
                 var updateData = new ProductDto
@@ -366,21 +387,33 @@ namespace Retail.UI.Components.Pages
                     Inventory = newInventoryValue
                 };
 
+                Logger.LogDebug("Sending PUT request to update product. ProductId: {ProductId}, URL: https://localhost:7003/api/v1.0/Product/{ProductId}",
+                    selectedProduct.Id, selectedProduct.Id);
+                
                 var response = await Http.PutAsJsonAsync($"https://localhost:7003/api/v1.0/Product/{selectedProduct.Id}", updateData);
-            if (response.IsSuccessStatusCode)
-            {
+                
+                Logger.LogInformation("Product update response status: {StatusCode}", response.StatusCode);
+                
+                if (response.IsSuccessStatusCode)
+                {
+                    Logger.LogInformation("Inventory updated successfully. ProductId: {ProductId}, NewInventory: {NewInventory}",
+                        selectedProduct.Id, newInventoryValue);
+                    
                     await RefreshProducts();
                     CloseInventoryModal();
                     AddEvent("Inventory", $"Successfully updated inventory for {selectedProduct.Name} to {newInventoryValue}", "Success");
                 }
                 else
                 {
+                    var errorContent = await response.Content.ReadAsStringAsync();
+                    Logger.LogWarning("Failed to update inventory. ProductId: {ProductId}, StatusCode: {StatusCode}, Error: {Error}",
+                        selectedProduct.Id, response.StatusCode, errorContent);
                     AddEvent("Inventory", $"Failed to update inventory for {selectedProduct.Name}", "Error");
+                }
             }
-        }
-        catch (Exception ex)
-        {
-                Logger.LogError(ex, "Error updating inventory");
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, "Error updating inventory. ProductId: {ProductId}", selectedProduct?.Id);
                 AddEvent("Inventory", "Error updating inventory: " + ex.Message, "Error");
             }
         }
@@ -409,9 +442,14 @@ namespace Retail.UI.Components.Pages
         {
             try
             {
+                Logger.LogInformation("CreateOrder method called. CustomerId: {CustomerId}, SkuId: {SkuId}, Qty: {Qty}",
+                    newOrder.CustomerId, newOrderLineItem.SkuId, newOrderLineItem.Qty);
+                
                 // Validate inputs
                 if (newOrder.CustomerId <= 0 || newOrderLineItem.SkuId <= 0 || newOrderLineItem.Qty <= 0)
                 {
+                    Logger.LogWarning("Invalid order data provided. CustomerId: {CustomerId}, SkuId: {SkuId}, Qty: {Qty}",
+                        newOrder.CustomerId, newOrderLineItem.SkuId, newOrderLineItem.Qty);
                     AddEvent("Orders", "Invalid order data provided", "Error");
                     return;
                 }
@@ -420,17 +458,23 @@ namespace Retail.UI.Components.Pages
                 var product = products?.FirstOrDefault(p => p.Id == newOrderLineItem.SkuId);
                 if (product == null)
                 {
+                    Logger.LogWarning("Product not found. SkuId: {SkuId}", newOrderLineItem.SkuId);
                     AddEvent("Orders", $"Product with ID {newOrderLineItem.SkuId} not found", "Error");
                     return;
                 }
 
                 if (product.Inventory < newOrderLineItem.Qty)
                 {
+                    Logger.LogWarning("Insufficient inventory. ProductId: {ProductId}, ProductName: {ProductName}, Available: {Available}, Requested: {Requested}",
+                        product.Id, product.Name, product.Inventory, newOrderLineItem.Qty);
                     AddEvent("Orders", $"Insufficient inventory for {product.Name}. Available: {product.Inventory}, Requested: {newOrderLineItem.Qty}", "Error");
                     return;
                 }
 
                 // Step 1: Order Creation
+                Logger.LogInformation("Creating order. CustomerId: {CustomerId}, ProductId: {ProductId}, ProductName: {ProductName}, Qty: {Qty}, TotalAmount: {TotalAmount}",
+                    newOrder.CustomerId, product.Id, product.Name, newOrderLineItem.Qty, product.UnitPrice * newOrderLineItem.Qty);
+                
                 AddEvent("Orders.Write", $"🚀 Creating order for customer {newOrder.CustomerId} with {newOrderLineItem.Qty} units of {product.Name}", "Info");
 
                 var orderData = new OrderDto
@@ -441,14 +485,23 @@ namespace Retail.UI.Components.Pages
                     LineItems = new List<LineItemDto> { newOrderLineItem }
                 };
 
+                Logger.LogDebug("Sending POST request to create order. URL: https://localhost:7002/api/v1/OrderWrite");
                 var response = await Http.PostAsJsonAsync("https://localhost:7002/api/v1/OrderWrite", orderData);
+                
+                Logger.LogInformation("Order creation response status: {StatusCode}", response.StatusCode);
+                
                 if (response.IsSuccessStatusCode)
                 {
                     var orderResponse = await response.Content.ReadAsStringAsync();
+                    Logger.LogDebug("Order creation response content: {Content}", orderResponse);
+                    
                     var createdOrder = JsonSerializer.Deserialize<OrderDto>(orderResponse, new JsonSerializerOptions
                     {
                         PropertyNameCaseInsensitive = true
                     });
+
+                    Logger.LogInformation("Order created successfully. OrderId: {OrderId}, CustomerId: {CustomerId}, TotalAmount: {TotalAmount}",
+                        createdOrder?.OrderId, createdOrder?.CustomerId, createdOrder?.TotalAmount);
 
                     // Step 2: Order Created Successfully in Retail.Order Database
                     AddEvent("Orders.Write", $"✅ Order {createdOrder?.OrderId} created successfully in Retail.Order database", "Success");
@@ -480,12 +533,15 @@ namespace Retail.UI.Components.Pages
                 else
                 {
                     var errorContent = await response.Content.ReadAsStringAsync();
+                    Logger.LogError("Failed to create order. StatusCode: {StatusCode}, Error: {Error}",
+                        response.StatusCode, errorContent);
                     AddEvent("Orders.Write", $"❌ Failed to create order. Status: {response.StatusCode}, Error: {errorContent}", "Error");
                 }
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex, "Error creating order");
+                Logger.LogError(ex, "Error creating order. CustomerId: {CustomerId}, SkuId: {SkuId}, Qty: {Qty}",
+                    newOrder.CustomerId, newOrderLineItem.SkuId, newOrderLineItem.Qty);
                 AddEvent("Orders", $"❌ Error creating order: {ex.Message}", "Error");
             }
         }

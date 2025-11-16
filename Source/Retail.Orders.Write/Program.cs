@@ -26,6 +26,7 @@ using Retail.Orders.Write.src.CleanArchitecture.Application.Dto;
 using Retail.Orders.Write.src.CleanArchitecture.Application.Validation;
 using Retail.Orders.Write.src.CleanArchitecture.Application.Validation.Interfaces;
 using InventoryErrorEventNameSpace;
+using Microsoft.Extensions.Logging;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -78,29 +79,46 @@ builder.Services.AddSwaggerGen(c =>
 
 var app = builder.Build();
 
-using (var scope = app.Services.CreateScope())
-{
-    var serviceInitializer = scope.ServiceProvider.GetRequiredService<IServiceInitializer>();
-    await serviceInitializer.Initialize();
+var logger = app.Services.GetRequiredService<ILogger<Program>>();
 
-    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-    db.Database.EnsureCreatedAsync();
-}
-
-if (app.Environment.IsDevelopment())
+try
 {
-    app.UseSwagger();
-    app.UseSwaggerUI(c =>
+    logger.LogInformation("Starting Order Write Service");
+
+    using (var scope = app.Services.CreateScope())
     {
-        c.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
-    });
+        logger.LogInformation("Initializing service subscriptions");
+        var serviceInitializer = scope.ServiceProvider.GetRequiredService<IServiceInitializer>();
+        await serviceInitializer.Initialize();
+
+        logger.LogInformation("Ensuring database is created");
+        var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        await db.Database.EnsureCreatedAsync();
+        logger.LogInformation("Database initialization completed");
+    }
+
+    if (app.Environment.IsDevelopment())
+    {
+        logger.LogInformation("Configuring Swagger for development environment");
+        app.UseSwagger();
+        app.UseSwaggerUI(c =>
+        {
+            c.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
+        });
+    }
+
+    // Configure the HTTP request pipeline.
+    app.UseHttpsRedirection();
+
+    app.UseAuthorization();
+
+    app.MapControllers();
+
+    logger.LogInformation("Order Write Service started successfully");
+    app.Run();
 }
-
-// Configure the HTTP request pipeline.
-app.UseHttpsRedirection();
-
-app.UseAuthorization();
-
-app.MapControllers();
-
-app.Run();
+catch (Exception ex)
+{
+    logger.LogError(ex, "Error starting Order Write Service");
+    throw;
+}

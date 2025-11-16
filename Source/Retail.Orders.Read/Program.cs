@@ -67,26 +67,42 @@ builder.Services.AddSwaggerGen(c =>
 
 var app = builder.Build();
 
-using (var scope = app.Services.CreateScope())
-{
-    var serviceInitializer = scope.ServiceProvider.GetRequiredService<IServiceInitializer>();
-    await serviceInitializer.Initialize();
-}
+var logger = app.Services.GetRequiredService<ILogger<Program>>();
 
-if (app.Environment.IsDevelopment())
+try
 {
-    app.UseSwagger();
-    app.UseSwaggerUI(c =>
+    logger.LogInformation("Starting Order Read Service");
+
+    using (var scope = app.Services.CreateScope())
     {
-        c.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
-    });
+        logger.LogInformation("Initializing service subscriptions");
+        var serviceInitializer = scope.ServiceProvider.GetRequiredService<IServiceInitializer>();
+        await serviceInitializer.Initialize();
+        logger.LogInformation("Service subscriptions initialized successfully");
+    }
+
+    if (app.Environment.IsDevelopment())
+    {
+        logger.LogInformation("Configuring Swagger for development environment");
+        app.UseSwagger();
+        app.UseSwaggerUI(c =>
+        {
+            c.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
+        });
+    }
+
+    // Configure the HTTP request pipeline.
+    app.UseHttpsRedirection();
+
+    app.UseAuthorization();
+
+    app.MapControllers();
+
+    logger.LogInformation("Order Read Service started successfully");
+    app.Run();
 }
-
-// Configure the HTTP request pipeline.
-app.UseHttpsRedirection();
-
-app.UseAuthorization();
-
-app.MapControllers();
-
-app.Run();
+catch (Exception ex)
+{
+    logger.LogError(ex, "Error starting Order Read Service");
+    throw;
+}

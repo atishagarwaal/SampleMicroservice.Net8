@@ -1,5 +1,6 @@
 ﻿using Retail.UI.Components;
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Logging;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,19 +22,38 @@ builder.Services.AddRazorPages();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (!app.Environment.IsDevelopment())
+var logger = app.Services.GetRequiredService<ILogger<Program>>();
+
+try
 {
-    app.UseExceptionHandler("/Error", createScopeForErrors: true);
-    app.UseHsts();
+    logger.LogInformation("Starting Retail UI application");
+
+    // Configure the HTTP request pipeline.
+    if (!app.Environment.IsDevelopment())
+    {
+        logger.LogInformation("Configuring production error handling");
+        app.UseExceptionHandler("/Error", createScopeForErrors: true);
+        app.UseHsts();
+    }
+    else
+    {
+        logger.LogInformation("Running in Development mode");
+    }
+
+    app.UseHttpsRedirection();
+    app.UseStaticFiles();
+    app.UseAntiforgery();
+
+    app.MapRazorPages();
+    app.MapBlazorHub();
+    app.MapFallbackToPage("/_Host");
+
+    logger.LogInformation("Retail UI application started successfully");
+
+    app.Run();
 }
-
-app.UseHttpsRedirection();
-app.UseStaticFiles();
-app.UseAntiforgery();
-
-app.MapRazorPages();
-app.MapBlazorHub();
-app.MapFallbackToPage("/_Host");
-
-app.Run();
+catch (Exception ex)
+{
+    logger.LogError(ex, "Error starting Retail UI application");
+    throw;
+}

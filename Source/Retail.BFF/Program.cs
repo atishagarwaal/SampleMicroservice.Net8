@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Retail.BFFWeb.Api.Configurations;
 using Retail.BFFWeb.Api.Interface;
 using Retail.BFFWeb.Api.Provider;
@@ -34,20 +35,34 @@ builder.Services.AddSwaggerGen(c =>
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
+var logger = app.Services.GetRequiredService<ILogger<Program>>();
+
+try
 {
-    app.UseSwagger();
-    app.UseSwaggerUI(c =>
+    logger.LogInformation("Starting BFF Service");
+
+    if (app.Environment.IsDevelopment())
     {
-        c.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
-    });
+        logger.LogInformation("Configuring Swagger for development environment");
+        app.UseSwagger();
+        app.UseSwaggerUI(c =>
+        {
+            c.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
+        });
+    }
+
+    // Configure the HTTP request pipeline.
+    app.UseHttpsRedirection();
+
+    app.UseAuthorization();
+
+    app.MapControllers();
+
+    logger.LogInformation("BFF Service started successfully");
+    app.Run();
 }
-
-// Configure the HTTP request pipeline.
-app.UseHttpsRedirection();
-
-app.UseAuthorization();
-
-app.MapControllers();
-
-app.Run();
+catch (Exception ex)
+{
+    logger.LogError(ex, "Error starting BFF Service");
+    throw;
+}

@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using CommonLibrary.Configuration;
 using MessagingInfrastructure.Service;
 using Microsoft.Extensions.Options;
@@ -22,10 +23,29 @@ public class Program
                 // Register RabbitMQ services
                 services.AddRabbitMQServices(context.Configuration);
             })
+            .ConfigureLogging(logging =>
+            {
+                logging.AddConsole();
+                logging.AddDebug();
+            })
             .Build();
 
-        // Setup RabbitMQ infrastructure
-        var topologyInitializer = host.Services.GetRequiredService<TopologyInitializer>();
-        await topologyInitializer.SetupInfrastructure();
+        var logger = host.Services.GetRequiredService<ILogger<Program>>();
+        
+        try
+        {
+            logger.LogInformation("Starting Messaging Infrastructure setup");
+            
+            // Setup RabbitMQ infrastructure
+            var topologyInitializer = host.Services.GetRequiredService<TopologyInitializer>();
+            await topologyInitializer.SetupInfrastructure();
+            
+            logger.LogInformation("Messaging Infrastructure setup completed successfully");
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error setting up Messaging Infrastructure");
+            throw;
+        }
     }
 }

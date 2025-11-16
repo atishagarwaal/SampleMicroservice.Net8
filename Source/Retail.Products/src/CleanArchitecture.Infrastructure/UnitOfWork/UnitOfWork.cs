@@ -15,6 +15,7 @@ namespace Retail.Api.Products.src.CleanArchitecture.Infrastructure.UnitOfWork
     {
         private readonly ApplicationDbContext _context;
         private readonly ILogger<UnitOfWork> _logger;
+        private readonly ILoggerFactory _loggerFactory;
         private IDbContextTransaction _transaction;
         public ISkuRepository Skus { get; private set; }
 
@@ -23,11 +24,13 @@ namespace Retail.Api.Products.src.CleanArchitecture.Infrastructure.UnitOfWork
         /// </summary>
         /// <param name="entityContext">Entity framework Db context.</param>
         /// <param name="logger">Instance of logger.</param>
-        public UnitOfWork(ApplicationDbContext entityContext, ILogger<UnitOfWork> logger)
+        /// <param name="loggerFactory">Instance of logger factory.</param>
+        public UnitOfWork(ApplicationDbContext entityContext, ILogger<UnitOfWork> logger, ILoggerFactory loggerFactory)
         {
             _context = entityContext;
             _logger = logger;
-            Skus = new SkuRepository(_context);
+            _loggerFactory = loggerFactory;
+            Skus = new SkuRepository(_context, _loggerFactory.CreateLogger<SkuRepository>());
         }
 
         /// <summary>

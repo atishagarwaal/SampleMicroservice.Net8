@@ -581,11 +581,12 @@
             Product repository class.
             </summary>
         </member>
-        <member name="M:Retail.Api.Products.src.CleanArchitecture.Infrastructure.Repositories.SkuRepository.#ctor(Retail.Api.Products.src.CleanArchitecture.Infrastructure.Data.ApplicationDbContext)">
+        <member name="M:Retail.Api.Products.src.CleanArchitecture.Infrastructure.Repositories.SkuRepository.#ctor(Retail.Api.Products.src.CleanArchitecture.Infrastructure.Data.ApplicationDbContext,Microsoft.Extensions.Logging.ILogger{Retail.Api.Products.src.CleanArchitecture.Infrastructure.Repositories.SkuRepository})">
             <summary>
             Initializes a new instance of the <see cref="T:Retail.Api.Products.src.CleanArchitecture.Infrastructure.Repositories.SkuRepository"/> class.
             </summary>
             <param name="context">Db context.</param>
+            <param name="logger">Instance of logger.</param>
         </member>
         <member name="M:Retail.Api.Products.src.CleanArchitecture.Infrastructure.Repositories.SkuRepository.GetAllSkuByIdsAsync(System.Collections.Generic.List{System.Int64})">
             <summary>
@@ -599,12 +600,13 @@
             Unit of work class.
             </summary>
         </member>
-        <member name="M:Retail.Api.Products.src.CleanArchitecture.Infrastructure.UnitOfWork.UnitOfWork.#ctor(Retail.Api.Products.src.CleanArchitecture.Infrastructure.Data.ApplicationDbContext,Microsoft.Extensions.Logging.ILogger{Retail.Api.Products.src.CleanArchitecture.Infrastructure.UnitOfWork.UnitOfWork})">
+        <member name="M:Retail.Api.Products.src.CleanArchitecture.Infrastructure.UnitOfWork.UnitOfWork.#ctor(Retail.Api.Products.src.CleanArchitecture.Infrastructure.Data.ApplicationDbContext,Microsoft.Extensions.Logging.ILogger{Retail.Api.Products.src.CleanArchitecture.Infrastructure.UnitOfWork.UnitOfWork},Microsoft.Extensions.Logging.ILoggerFactory)">
             <summary>
             Initializes a new instance of the <see cref="T:Retail.Api.Products.src.CleanArchitecture.Infrastructure.UnitOfWork.UnitOfWork"/> class.
             </summary>
             <param name="entityContext">Entity framework Db context.</param>
             <param name="logger">Instance of logger.</param>
+            <param name="loggerFactory">Instance of logger factory.</param>
         </member>
         <member name="M:Retail.Api.Products.src.CleanArchitecture.Infrastructure.UnitOfWork.UnitOfWork.BeginTransactionAsync">
             <summary>

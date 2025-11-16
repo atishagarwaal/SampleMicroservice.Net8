@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Retail.Api.Products.src.CleanArchitecture.Domain.Entities;
 using Retail.Api.Products.src.CleanArchitecture.Infrastructure.Data;
 
@@ -9,12 +10,16 @@ namespace Retail.Api.Products.src.CleanArchitecture.Infrastructure.Repositories
     /// </summary>
     public class SkuRepository : GenericRepository<Sku>, ISkuRepository
     {
+        private readonly ILogger<SkuRepository> _logger;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="SkuRepository"/> class.
         /// </summary>
         /// <param name="context">Db context.</param>
-        public SkuRepository(ApplicationDbContext context) : base(context)
+        /// <param name="logger">Instance of logger.</param>
+        public SkuRepository(ApplicationDbContext context, ILogger<SkuRepository> logger) : base(context)
         {
+            _logger = logger;
         }
 
         /// <summary>
@@ -26,12 +31,15 @@ namespace Retail.Api.Products.src.CleanArchitecture.Infrastructure.Repositories
         {
             try
             {
+                _logger.LogDebug("Querying SKUs by IDs. SkuIdCount: {SkuIdCount}", skuids?.Count ?? 0);
                 var list = await _context.Skus.Where(i => skuids.Contains(i.Id)).ToListAsync();
+                _logger.LogDebug("Retrieved {Count} SKUs from database", list.Count);
                 return list;
             }
             catch (Exception ex)
             {
-                throw ex;
+                _logger.LogError(ex, "Error retrieving SKUs by IDs. SkuIdCount: {SkuIdCount}", skuids?.Count ?? 0);
+                throw;
             }
         }
     }
