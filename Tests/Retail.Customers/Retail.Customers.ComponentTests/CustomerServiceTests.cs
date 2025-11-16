@@ -6,6 +6,7 @@ using CommonLibrary.MessageContract;
 using FluentAssertions;
 using InventoryUpdatedEventNameSpace;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Retail.Api.Customers.src.CleanArchitecture.Application.Dto;
@@ -33,6 +34,7 @@ namespace Retail.Customers.ComponentTests
         private Mock<IMessageValidator<CustomerDto>> _mockCustomerDtoValidator = null!;
         private Mock<IConverter<CustomerDto, Customer>> _mockCustomerConverter = null!;
         private Mock<IConverter<Customer, CustomerDto>> _mockCustomerDtoConverter = null!;
+        private Mock<ILogger<CustomerService>> _mockLogger = null!;
         private CustomerService _customerService = null!;
 
         [TestInitialize]
@@ -45,6 +47,7 @@ namespace Retail.Customers.ComponentTests
             _mockCustomerDtoValidator = new Mock<IMessageValidator<CustomerDto>>();
             _mockCustomerConverter = new Mock<IConverter<CustomerDto, Customer>>();
             _mockCustomerDtoConverter = new Mock<IConverter<Customer, CustomerDto>>();
+            _mockLogger = new Mock<ILogger<CustomerService>>();
 
             _mockServiceScopeFactory
                 .Setup(x => x.CreateScope())
@@ -64,7 +67,8 @@ namespace Retail.Customers.ComponentTests
                 _mockServiceScopeFactory.Object,
                 _mockCustomerDtoValidator.Object,
                 _mockCustomerConverter.Object,
-                _mockCustomerDtoConverter.Object);
+                _mockCustomerDtoConverter.Object,
+                _mockLogger.Object);
         }
 
         [TestMethod]
