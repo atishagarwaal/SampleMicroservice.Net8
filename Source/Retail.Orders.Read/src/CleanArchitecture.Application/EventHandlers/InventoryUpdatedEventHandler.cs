@@ -3,7 +3,6 @@
     using System;
     using System.Linq;
     using System.Threading.Tasks;
-    using AutoMapper;
     using CommonLibrary.Handlers;
     using Retail.Orders.Read.src.CleanArchitecture.Domain.Entities;
     using Retail.Orders.Read.src.CleanArchitecture.Infrastructure.Interfaces;
@@ -11,17 +10,27 @@
     using Microsoft.Extensions.DependencyInjection;
     using InventoryUpdatedEventNameSpace;
 
+    /// <summary>
+    /// Event handler for InventoryUpdatedEvent.
+    /// </summary>
     public class InventoryUpdatedEventHandler : IEventHandler<InventoryUpdatedEvent>
     {
         private readonly IServiceScopeFactory _serviceScopeFactory;
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IMapper _mapper;
         private readonly ILogger<InventoryUpdatedEventHandler> _logger;
 
-        public InventoryUpdatedEventHandler(IUnitOfWork unitOfWork, IMapper mapper, IServiceScopeFactory serviceScopeFactory, ILogger<InventoryUpdatedEventHandler> logger)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="InventoryUpdatedEventHandler"/> class.
+        /// </summary>
+        /// <param name="unitOfWork">Instance of unit of work class.</param>
+        /// <param name="serviceScopeFactory">Instance of service scope factory.</param>
+        /// <param name="logger">Instance of logger.</param>
+        public InventoryUpdatedEventHandler(
+            IUnitOfWork unitOfWork,
+            IServiceScopeFactory serviceScopeFactory,
+            ILogger<InventoryUpdatedEventHandler> logger)
         {
             _unitOfWork = unitOfWork;
-            _mapper = mapper;
             _serviceScopeFactory = serviceScopeFactory;
             _logger = logger;
         }
