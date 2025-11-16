@@ -4,17 +4,64 @@
         <name>Retail.Products</name>
     </assembly>
     <members>
-        <member name="T:Retail.Products.Migrations.Initial">
-            <inheritdoc />
+        <member name="T:Retail.Api.Products.Application.CompositionRoot">
+            <summary>
+            Configuration for this service.
+            </summary>
         </member>
-        <member name="M:Retail.Products.Migrations.Initial.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
-            <inheritdoc />
+        <member name="M:Retail.Api.Products.Application.CompositionRoot.#ctor">
+            <summary>
+            Prevents a default instance of the <see cref="T:Retail.Api.Products.Application.CompositionRoot"/> class from being created.
+            </summary>
         </member>
-        <member name="M:Retail.Products.Migrations.Initial.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
-            <inheritdoc />
+        <member name="M:Retail.Api.Products.Application.CompositionRoot.ConfigureServices(Microsoft.Extensions.Hosting.HostBuilderContext,Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            Configures application service with a dependency injection container.
+            </summary>
+            <param name="context">The application's builder context.</param>
+            <param name="serviceCollection">Service collection to register services to.</param>
         </member>
-        <member name="M:Retail.Products.Migrations.Initial.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
-            <inheritdoc />
+        <member name="M:Retail.Api.Products.Application.CompositionRoot.Configure(Microsoft.Extensions.Configuration.IConfigurationBuilder)">
+            <summary>
+            Configures the application.
+            </summary>
+            <param name="configurationBuilder">Configuration builder.</param>
+        </member>
+        <member name="T:Retail.Api.Products.Application.Startup">
+            <summary>
+            Configures web host.
+            </summary>
+        </member>
+        <member name="M:Retail.Api.Products.Application.Startup.#ctor(Microsoft.Extensions.Configuration.IConfiguration,Microsoft.AspNetCore.Hosting.IWebHostEnvironment)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Retail.Api.Products.Application.Startup"/> class.
+            </summary>
+            <param name="configuration">Configuration instance.</param>
+            <param name="environment">Web host environment.</param>
+        </member>
+        <member name="M:Retail.Api.Products.Application.Startup.ConfigureServices(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            Register services into the <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" />.
+            </summary>
+            <param name="services">The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/> to add the services to.</param>
+        </member>
+        <member name="M:Retail.Api.Products.Application.Startup.Configure(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
+            <summary>
+            Configures the application.
+            </summary>
+            <param name="app">An <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/> for the application to configure.</param>
+        </member>
+        <member name="T:Retail.Api.Products.Program">
+            <summary>
+            Contains the main entry point of the application.
+            </summary>
+        </member>
+        <member name="M:Retail.Api.Products.Program.Main(System.String[])">
+            <summary>
+            The main entry point of the application.
+            </summary>
+            <param name="args">Command line arguments which will be passed to the application host.</param>
+            <returns>A <see cref="T:System.Threading.Tasks.Task"/> representing the asynchronous operation.</returns>
         </member>
         <member name="T:Retail.Api.Products.src.CleanArchitecture.API.Controllers.ProductController">
             <summary>
@@ -652,6 +699,18 @@
             Initializes the service by subscribing to events.
             </summary>
             <returns>Task representing the async operation.</returns>
+        </member>
+        <member name="T:Retail.Products.Migrations.Initial">
+            <inheritdoc />
+        </member>
+        <member name="M:Retail.Products.Migrations.Initial.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Retail.Products.Migrations.Initial.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Retail.Products.Migrations.Initial.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
         </member>
         <member name="P:InventoryErrorEventNameSpace.InventoryErrorEvent.CustomerId">
             <summary>

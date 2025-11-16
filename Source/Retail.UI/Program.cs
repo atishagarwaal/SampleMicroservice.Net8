@@ -1,59 +1,52 @@
-﻿using Retail.UI.Components;
-using Microsoft.AspNetCore.Components;
-using Microsoft.Extensions.Logging;
+﻿//-----------------------------------------------------------------------
+// <copyright file="Program.cs" company="<Your Company>">
+// Copyright (c) <Your Company>. All rights reserved.
+// </copyright>
+//-----------------------------------------------------------------------
 
-var builder = WebApplication.CreateBuilder(args);
-
-// Add services to the container.
-builder.Services.AddRazorComponents()
-    .AddInteractiveServerComponents();
-
-// Optionally keep factory for named clients too
-builder.Services.AddHttpClient();
-
-// Register HttpClient (default for @inject HttpClient)
-builder.Services.AddScoped<HttpClient>(sp =>
+namespace Retail.UI
 {
-    var navigationManager = sp.GetRequiredService<NavigationManager>();
-    return new HttpClient { BaseAddress = new Uri(navigationManager.BaseUri) };
-});
+    using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Hosting;
+    using Microsoft.Extensions.Hosting;
+    using Microsoft.Extensions.Logging;
+    using Retail.UI.Application;
 
-builder.Services.AddRazorPages();
-
-var app = builder.Build();
-
-var logger = app.Services.GetRequiredService<ILogger<Program>>();
-
-try
-{
-    logger.LogInformation("Starting Retail UI application");
-
-    // Configure the HTTP request pipeline.
-    if (!app.Environment.IsDevelopment())
+    /// <summary>
+    /// Contains the main entry point of the application.
+    /// </summary>
+    public static class Program
     {
-        logger.LogInformation("Configuring production error handling");
-        app.UseExceptionHandler("/Error", createScopeForErrors: true);
-        app.UseHsts();
+        /// <summary>
+        /// The main entry point of the application.
+        /// </summary>
+        /// <param name="args">Command line arguments which will be passed to the application host.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        public static async Task Main(string[] args)
+        {
+            var host = Host.CreateDefaultBuilder(args)
+                .ConfigureHostConfiguration(CompositionRoot.Configure)
+                .ConfigureWebHostDefaults(webBuilder =>
+                {
+                    webBuilder.UseStartup<Startup>();
+                })
+                .ConfigureServices(CompositionRoot.ConfigureServices)
+                .Build();
+
+            var loggerFactory = host.Services.GetRequiredService<ILoggerFactory>();
+            var logger = loggerFactory.CreateLogger("Program");
+
+            try
+            {
+                logger.LogInformation("Starting Retail UI application");
+                logger.LogInformation("Retail UI application started successfully");
+                await host.RunAsync();
+            }
+            catch (System.Exception ex)
+            {
+                logger.LogError(ex, "Error starting Retail UI application");
+                throw;
+            }
+        }
     }
-    else
-    {
-        logger.LogInformation("Running in Development mode");
-    }
-
-    app.UseHttpsRedirection();
-    app.UseStaticFiles();
-    app.UseAntiforgery();
-
-    app.MapRazorPages();
-    app.MapBlazorHub();
-    app.MapFallbackToPage("/_Host");
-
-    logger.LogInformation("Retail UI application started successfully");
-
-    app.Run();
-}
-catch (Exception ex)
-{
-    logger.LogError(ex, "Error starting Retail UI application");
-    throw;
 }

@@ -1,68 +1,52 @@
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using Retail.BFFWeb.Api.Configurations;
-using Retail.BFFWeb.Api.Interface;
-using Retail.BFFWeb.Api.Provider;
-using System.Runtime;
+//-----------------------------------------------------------------------
+// <copyright file="Program.cs" company="<Your Company>">
+// Copyright (c) <Your Company>. All rights reserved.
+// </copyright>
+//-----------------------------------------------------------------------
 
-var builder = WebApplication.CreateBuilder(args);
-
-builder.Services.AddHttpClient();
-
-// Add services to the container.
-builder.Services.AddSingleton(typeof(ICustomerProvider), typeof(CustomerProvider));
-builder.Services.AddSingleton(typeof(IOrderProvider), typeof(OrderProvider));
-builder.Services.AddSingleton(typeof(IProductProvider), typeof(ProductProvider));
-
-builder.Services.Configure<CustomerServiceConfig>(builder.Configuration.GetSection("CustomerServiceConfig"));
-builder.Services.Configure<OrderServiceConfig>(builder.Configuration.GetSection("OrderServiceConfig"));
-builder.Services.Configure<ProductServiceConfig>(builder.Configuration.GetSection("ProductServiceConfig"));
-
-builder.Services.AddControllers();
-
-// Add API versioning
-builder.Services.AddApiVersioning(options =>
+namespace Retail.BFFWeb.Api
 {
-    options.AssumeDefaultVersionWhenUnspecified = true;
-    options.DefaultApiVersion = new ApiVersion(1, 0);
-    options.ReportApiVersions = true;
-});
+    using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Hosting;
+    using Microsoft.Extensions.Hosting;
+    using Microsoft.Extensions.Logging;
+    using Retail.BFFWeb.Api.Application;
 
-builder.Services.AddSwaggerGen(c =>
-{
-    c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "Aggregated Data", Version = "v1" });
-});
-
-var app = builder.Build();
-
-var logger = app.Services.GetRequiredService<ILogger<Program>>();
-
-try
-{
-    logger.LogInformation("Starting BFF Service");
-
-    if (app.Environment.IsDevelopment())
+    /// <summary>
+    /// Contains the main entry point of the application.
+    /// </summary>
+    public static class Program
     {
-        logger.LogInformation("Configuring Swagger for development environment");
-        app.UseSwagger();
-        app.UseSwaggerUI(c =>
+        /// <summary>
+        /// The main entry point of the application.
+        /// </summary>
+        /// <param name="args">Command line arguments which will be passed to the application host.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        public static async Task Main(string[] args)
         {
-            c.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
-        });
+            var host = Host.CreateDefaultBuilder(args)
+                .ConfigureHostConfiguration(CompositionRoot.Configure)
+                .ConfigureWebHostDefaults(webBuilder =>
+                {
+                    webBuilder.UseStartup<Startup>();
+                })
+                .ConfigureServices(CompositionRoot.ConfigureServices)
+                .Build();
+
+            var loggerFactory = host.Services.GetRequiredService<ILoggerFactory>();
+            var logger = loggerFactory.CreateLogger("Program");
+
+            try
+            {
+                logger.LogInformation("Starting BFF Service");
+                logger.LogInformation("BFF Service started successfully");
+                await host.RunAsync();
+            }
+            catch (System.Exception ex)
+            {
+                logger.LogError(ex, "Error starting BFF Service");
+                throw;
+            }
+        }
     }
-
-    // Configure the HTTP request pipeline.
-    app.UseHttpsRedirection();
-
-    app.UseAuthorization();
-
-    app.MapControllers();
-
-    logger.LogInformation("BFF Service started successfully");
-    app.Run();
-}
-catch (Exception ex)
-{
-    logger.LogError(ex, "Error starting BFF Service");
-    throw;
 }

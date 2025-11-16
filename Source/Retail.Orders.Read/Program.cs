@@ -4,105 +4,60 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-using MediatR;
-using CommonLibrary.Handlers;
-using CommonLibrary.MessageContract;
-using MessagingInfrastructure.Service;
-using MessagingLibrary.Interface;
-using MessagingLibrary.Service;
-using Microsoft.AspNetCore.Mvc;
-using Retail.Orders.Read.src.CleanArchitecture.Application.Interfaces;
-using Retail.Orders.Read.src.CleanArchitecture.Application.Service;
-using Retail.Orders.Read.src.CleanArchitecture.Infrastructure.Data;
-using Retail.Orders.Read.src.CleanArchitecture.Infrastructure.Interfaces;
-using Retail.Orders.Read.src.CleanArchitecture.Infrastructure.UnitOfWork;
-using Retail.Orders.Read.src.CleanArchitecture.Application.Queries;
-using Retail.Orders.Read.src.CleanArchitecture.Domain.Entities;
-using Retail.Orders.Read.src.CleanArchitecture.Application.EventHandlers;
-using Microsoft.Extensions.Logging;
-using InventoryUpdatedEventNameSpace;
-using Retail.Orders.Read.src.CleanArchitecture.Application.Converters;
-using Retail.Orders.Read.src.CleanArchitecture.Application.Converters.Interfaces;
-using Retail.Orders.Read.src.CleanArchitecture.Application.Dto;
-
-var builder = WebApplication.CreateBuilder(args);
-
-// Configure MongoDB connection
-builder.Services.AddScoped<ApplicationDbContext>();
-builder.Services.AddScoped(typeof(IUnitOfWork), typeof(UnitOfWork));
-
-// Register MediatR with all relevant assemblies
-builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(
-    typeof(GetAllOrdersQuery).Assembly,
-    typeof(GetOrderByIdQuery).Assembly
-));
-
-// Register event handlers with proper logging
-builder.Services.AddScoped<IEventHandler<InventoryUpdatedEvent>, InventoryUpdatedEventHandler>();
-builder.Services.AddScoped<IServiceInitializer, ServiceInitializer>();
-
-// Register converters
-builder.Services.AddScoped<IConverter<LineItemDto, Retail.Orders.Read.src.CleanArchitecture.Domain.Entities.LineItem>, LineItemConverter>();
-builder.Services.AddScoped<IConverter<Retail.Orders.Read.src.CleanArchitecture.Domain.Entities.LineItem, LineItemDto>, LineItemDtoConverter>();
-builder.Services.AddScoped<IConverter<OrderDto, Retail.Orders.Read.src.CleanArchitecture.Domain.Entities.Order>, OrderConverter>();
-builder.Services.AddScoped<IConverter<Retail.Orders.Read.src.CleanArchitecture.Domain.Entities.Order, OrderDto>, OrderDtoConverter>();
-
-// Add RabbitMQ from the common project
-builder.Services.AddRabbitMQServices(builder.Configuration);
-
-builder.Services.AddControllers();
-
-// Add API versioning
-builder.Services.AddApiVersioning(options =>
+namespace Retail.Orders.Read
 {
-    options.AssumeDefaultVersionWhenUnspecified = true;
-    options.DefaultApiVersion = new ApiVersion(1, 0);
-    options.ReportApiVersions = true;
-});
+    using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Hosting;
+    using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Hosting;
+    using Microsoft.Extensions.Logging;
+    using Retail.Orders.Read.Application;
+    using Retail.Orders.Read.src.CleanArchitecture.Application.Interfaces;
 
-builder.Services.AddSwaggerGen(c =>
-{
-    c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "Order Read Service", Version = "v1" });
-});
-
-var app = builder.Build();
-
-var logger = app.Services.GetRequiredService<ILogger<Program>>();
-
-try
-{
-    logger.LogInformation("Starting Order Read Service");
-
-    using (var scope = app.Services.CreateScope())
+    /// <summary>
+    /// Contains the main entry point of the application.
+    /// </summary>
+    public static class Program
     {
-        logger.LogInformation("Initializing service subscriptions");
-        var serviceInitializer = scope.ServiceProvider.GetRequiredService<IServiceInitializer>();
-        await serviceInitializer.Initialize();
-        logger.LogInformation("Service subscriptions initialized successfully");
-    }
-
-    if (app.Environment.IsDevelopment())
-    {
-        logger.LogInformation("Configuring Swagger for development environment");
-        app.UseSwagger();
-        app.UseSwaggerUI(c =>
+        /// <summary>
+        /// The main entry point of the application.
+        /// </summary>
+        /// <param name="args">Command line arguments which will be passed to the application host.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        public static async Task Main(string[] args)
         {
-            c.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
-        });
+            var host = Host.CreateDefaultBuilder(args)
+                .ConfigureHostConfiguration(CompositionRoot.Configure)
+                .ConfigureWebHostDefaults(webBuilder =>
+                {
+                    webBuilder.UseStartup<Startup>();
+                })
+                .ConfigureServices(CompositionRoot.ConfigureServices)
+                .Build();
+
+            var loggerFactory = host.Services.GetRequiredService<ILoggerFactory>();
+            var logger = loggerFactory.CreateLogger("Program");
+
+            try
+            {
+                logger.LogInformation("Starting Order Read Service");
+
+                using (var scope = host.Services.CreateScope())
+                {
+                    logger.LogInformation("Initializing service subscriptions");
+                    var serviceInitializer = scope.ServiceProvider.GetRequiredService<IServiceInitializer>();
+                    await serviceInitializer.Initialize();
+                    logger.LogInformation("Service subscriptions initialized successfully");
+                }
+
+                logger.LogInformation("Order Read Service started successfully");
+                await host.RunAsync();
+            }
+            catch (System.Exception ex)
+            {
+                logger.LogError(ex, "Error starting Order Read Service");
+                throw;
+            }
+        }
     }
-
-    // Configure the HTTP request pipeline.
-    app.UseHttpsRedirection();
-
-    app.UseAuthorization();
-
-    app.MapControllers();
-
-    logger.LogInformation("Order Read Service started successfully");
-    app.Run();
-}
-catch (Exception ex)
-{
-    logger.LogError(ex, "Error starting Order Read Service");
-    throw;
 }
