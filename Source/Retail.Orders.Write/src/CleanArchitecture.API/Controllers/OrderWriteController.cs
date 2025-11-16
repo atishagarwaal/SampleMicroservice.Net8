@@ -44,23 +44,30 @@ namespace Retail.Orders.Write.src.CleanArchitecture.API.Controllers
         }
 
         /// <summary>
-        /// Method to add a new customer record.
+        /// Method to add a new order record.
         /// </summary>
-        /// <param name="value">Customer record.</param>
+        /// <param name="value">Order record.</param>
+        /// <returns>Created order DTO.</returns>
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] OrderDto value)
         {
+            if (value == null)
+            {
+                _logger.LogWarning("Received null order DTO in POST request");
+                return BadRequest(MessageConstants.InvalidParameter);
+            }
+
+            _logger.LogInformation("Creating order. CustomerId: {CustomerId}, TotalAmount: {TotalAmount}, LineItemsCount: {LineItemsCount}",
+                value.CustomerId, value.TotalAmount, value.LineItems?.Count ?? 0);
+
             try
             {
-                if (value == null)
-                {
-                    return BadRequest(MessageConstants.InvalidParameter);
-                }
-
                 // Validate using validator
                 var validationResult = _orderDtoValidator.Validate(value);
                 if (!validationResult.IsValid)
                 {
+                    _logger.LogWarning("Order validation failed. Validator: {ValidatorName}, Reason: {FailureReason}",
+                        validationResult.ValidatorName, validationResult.FailureReason);
                     return BadRequest(new { error = validationResult.FailureReason, validator = validationResult.ValidatorName });
                 }
 
@@ -68,37 +75,49 @@ namespace Retail.Orders.Write.src.CleanArchitecture.API.Controllers
                 var result = await _mediator.Send(command);
                 if (result == null)
                 {
+                    _logger.LogError("Order service returned null result");
                     return StatusCode(500, MessageConstants.InternalServerError);
                 }
+
+                _logger.LogInformation("Order created successfully. OrderId: {OrderId}, CustomerId: {CustomerId}",
+                    result.Id, result.CustomerId);
                 return Ok(result);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error creating order. CustomerId: {CustomerId}, TotalAmount: {TotalAmount}", 
-                    value?.CustomerId, value?.TotalAmount);
+                _logger.LogError(ex, "Error creating order. CustomerId: {CustomerId}, TotalAmount: {TotalAmount}",
+                    value.CustomerId, value.TotalAmount);
                 return StatusCode(500, MessageConstants.InternalServerError);
             }
         }
 
         /// <summary>
-        /// Method to update a customer record.
+        /// Method to update an order record.
         /// </summary>
-        /// <param name="id">Customer Id.</param>
-        /// <param name="value">Customer record.</param>
+        /// <param name="id">Order Id.</param>
+        /// <param name="value">Order record.</param>
+        /// <returns>Updated order DTO.</returns>
         [HttpPut("{id}")]
         public async Task<IActionResult> Put(long id, [FromBody] OrderDto value)
         {
+            if (id == 0 || value == null)
+            {
+                _logger.LogWarning("Invalid parameters for order update. OrderId: {OrderId}, ValueIsNull: {ValueIsNull}",
+                    id, value == null);
+                return BadRequest(MessageConstants.InvalidParameter);
+            }
+
+            _logger.LogInformation("Updating order. OrderId: {OrderId}, CustomerId: {CustomerId}, TotalAmount: {TotalAmount}",
+                id, value.CustomerId, value.TotalAmount);
+
             try
             {
-                if (id == 0 || value == null)
-                {
-                    return BadRequest(MessageConstants.InvalidParameter);
-                }
-
                 // Validate using validator
                 var validationResult = _orderDtoValidator.Validate(value);
                 if (!validationResult.IsValid)
                 {
+                    _logger.LogWarning("Order validation failed. OrderId: {OrderId}, Validator: {ValidatorName}, Reason: {FailureReason}",
+                        id, validationResult.ValidatorName, validationResult.FailureReason);
                     return BadRequest(new { error = validationResult.FailureReason, validator = validationResult.ValidatorName });
                 }
 
@@ -107,33 +126,52 @@ namespace Retail.Orders.Write.src.CleanArchitecture.API.Controllers
                 var result = await _mediator.Send(command);
                 if (result == null)
                 {
+                    _logger.LogError("Order service returned null result. OrderId: {OrderId}", id);
                     return StatusCode(500, MessageConstants.InternalServerError);
                 }
+
+                _logger.LogInformation("Order updated successfully. OrderId: {OrderId}, CustomerId: {CustomerId}",
+                    id, result.CustomerId);
                 return Ok(result);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error updating order. OrderId: {OrderId}, CustomerId: {CustomerId}", 
-                    id, value?.CustomerId);
+                _logger.LogError(ex, "Error updating order. OrderId: {OrderId}, CustomerId: {CustomerId}",
+                    id, value.CustomerId);
                 return StatusCode(500, MessageConstants.InternalServerError);
             }
         }
 
         /// <summary>
-        /// Method to delete a customer record.
+        /// Method to delete an order record.
         /// </summary>
-        /// <param name="id">Customer Id.</param>
+        /// <param name="id">Order Id.</param>
+        /// <returns>True if deleted successfully, false otherwise.</returns>
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(long id)
         {
+            _logger.LogInformation("Deleting order. OrderId: {OrderId}", id);
+
             try
             {
                 if (id == 0)
                 {
+                    _logger.LogWarning("Invalid order ID provided for deletion. OrderId: {OrderId}", id);
                     return BadRequest(MessageConstants.InvalidParameter);
                 }
+
                 var command = new DeleteOrderCommand { Id = id };
                 var result = await _mediator.Send(command);
+
+                if (result)
+                {
+                    _logger.LogInformation("Order deleted successfully. OrderId: {OrderId}", id);
+                }
+                else
+                {
+                    _logger.LogWarning("Order not found for deletion. OrderId: {OrderId}", id);
+                }
+
                 return Ok(result);
             }
             catch (Exception ex)

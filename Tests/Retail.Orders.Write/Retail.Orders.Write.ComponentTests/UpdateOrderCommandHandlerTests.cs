@@ -31,6 +31,7 @@ namespace Retail.Orders.Write.ComponentTests
         private Mock<IConverter<OrderDto, Order>> _mockOrderConverter = null!;
         private Mock<IConverter<Order, OrderDto>> _mockOrderDtoConverter = null!;
         private Mock<IMessageValidator<OrderDto>> _mockOrderDtoValidator = null!;
+        private Mock<ILogger<UpdateOrderCommandHandler>> _mockLogger = null!;
         private UpdateOrderCommandHandler _handler = null!;
 
         [TestInitialize]
@@ -42,6 +43,7 @@ namespace Retail.Orders.Write.ComponentTests
             _mockOrderConverter = new Mock<IConverter<OrderDto, Order>>();
             _mockOrderDtoConverter = new Mock<IConverter<Order, OrderDto>>();
             _mockOrderDtoValidator = new Mock<IMessageValidator<OrderDto>>();
+            _mockLogger = new Mock<ILogger<UpdateOrderCommandHandler>>();
 
             _mockUnitOfWork
                 .Setup(x => x.Orders)
@@ -60,7 +62,8 @@ namespace Retail.Orders.Write.ComponentTests
                 _mockUnitOfWork.Object,
                 _mockOrderConverter.Object,
                 _mockOrderDtoConverter.Object,
-                _mockOrderDtoValidator.Object);
+                _mockOrderDtoValidator.Object,
+                _mockLogger.Object);
         }
 
         [TestMethod]

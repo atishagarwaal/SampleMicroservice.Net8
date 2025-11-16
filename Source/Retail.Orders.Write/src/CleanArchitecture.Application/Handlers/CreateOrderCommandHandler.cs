@@ -1,15 +1,21 @@
-﻿using CommonLibrary.MessageContract;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using CommonLibrary.MessageContract;
 using MediatR;
 using MessagingInfrastructure;
 using MessagingLibrary.Interface;
-using Retail.Orders.Write.src.CleanArchitecture.Application.Dto;
-using Retail.Orders.Write.src.CleanArchitecture.Domain.Entities;
-using Retail.Orders.Write.src.CleanArchitecture.Infrastructure.Interfaces;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using OrderCreatedEventNameSpace;
 using Retail.Orders.Write.src.CleanArchitecture.Application.Commands;
 using Retail.Orders.Write.src.CleanArchitecture.Application.Converters.Interfaces;
+using Retail.Orders.Write.src.CleanArchitecture.Application.Dto;
 using Retail.Orders.Write.src.CleanArchitecture.Application.Validation.Interfaces;
-using OrderCreatedEventNameSpace;
-using Microsoft.Extensions.Logging;
+using Retail.Orders.Write.src.CleanArchitecture.Domain.Entities;
+using Retail.Orders.Write.src.CleanArchitecture.Infrastructure.Interfaces;
 
 namespace Retail.Orders.Write.src.CleanArchitecture.Application.Handlers
 {
@@ -62,79 +68,109 @@ namespace Retail.Orders.Write.src.CleanArchitecture.Application.Handlers
         /// <returns>Created order DTO.</returns>
         public async Task<OrderDto> Handle(CreateOrderCommand request, CancellationToken cancellationToken)
         {
-            using var scope = _serviceScopeFactory.CreateScope();
-            var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
-
-            await unitOfWork.BeginTransactionAsync();
-            try
+            if (request?.Order == null)
             {
-                // Validate order DTO
-                var validationResult = _orderDtoValidator.Validate(request.Order);
-                if (!validationResult.IsValid)
-                {
-                    throw new ArgumentException(validationResult.FailureReason ?? "Validation failed", nameof(request.Order));
-                }
-
-                // Convert DTO to entity
-                var order = _orderConverter.Convert(request.Order);
-                
-                // Ensure LineItems are properly configured for new entities
-                // EF Core will automatically set OrderId when Order is saved due to navigation property
-                if (order.LineItems != null && order.LineItems.Any())
-                {
-                    foreach (var lineItem in order.LineItems)
-                    {
-                        // Reset Id to 0 for new LineItems (EF will generate it)
-                        lineItem.Id = 0;
-                        // OrderId will be set automatically by EF Core via navigation property when Order is saved
-                        // But we need to ensure the navigation property is set
-                        lineItem.Order = order;
-                    }
-                }
-                
-                var orderRecord = await unitOfWork.Orders.AddAsync(order);
-                
-                // Save changes to generate the Order ID and save both Order and LineItems
-                // EF Core will automatically set OrderId on LineItems via the navigation property
-                await unitOfWork.CompleteAsync();
-
-                // Get the complete order with line items
-                var savedOrder = await unitOfWork.Orders.GetByIdAsync(orderRecord.Id);
-                if (savedOrder == null)
-                {
-                    _logger.LogError("Failed to retrieve saved order with ID {OrderId}", orderRecord.Id);
-                    throw new InvalidOperationException($"Order with ID {orderRecord.Id} was not found after save");
-                }
-
-                // Create and publish the event
-                var newOrderMessage = new OrderCreatedEvent
-                {
-                    CustomerId = savedOrder.CustomerId,
-                    OrderDate = savedOrder.OrderDate,
-                    TotalAmount = savedOrder.TotalAmount,
-                    OrderId = savedOrder.Id,
-                    LineItems = savedOrder.LineItems?
-                        .Select(item => new OrderCreatedEventNameSpace.LineItem
-                        {
-                            Id = item.Id,
-                            OrderId = savedOrder.Id,
-                            SkuId = item.SkuId,
-                            Qty = item.Qty,
-                        })
-                        .ToArray() ?? Array.Empty<OrderCreatedEventNameSpace.LineItem>(),
-                };
-
-                await _messagePublisher.PublishAsync(newOrderMessage, RabbitmqConstants.OrderCreated);
-                await unitOfWork.CommitTransactionAsync();
-
-                return _orderDtoConverter.Convert(savedOrder);
+                _logger.LogError("CreateOrderCommand or Order is null");
+                throw new ArgumentNullException(nameof(request));
             }
-            catch (Exception ex)
+
+            using (_logger.BeginScope(new Dictionary<string, object>
             {
-                _logger.LogError(ex, "Error creating order. CustomerId: {CustomerId}, TotalAmount: {TotalAmount}, LineItemsCount: {LineItemsCount}", 
-                    request.Order?.CustomerId, request.Order?.TotalAmount, request.Order?.LineItems?.Count ?? 0);
-                await unitOfWork.RollbackTransactionAsync();
-                throw;
+                ["CustomerId"] = request.Order.CustomerId,
+                ["TotalAmount"] = request.Order.TotalAmount,
+                ["LineItemsCount"] = request.Order.LineItems?.Count ?? 0
+            }))
+            {
+                _logger.LogInformation("Handling CreateOrderCommand. LineItemsCount: {LineItemsCount}",
+                    request.Order.LineItems?.Count ?? 0);
+
+                using var scope = _serviceScopeFactory.CreateScope();
+                var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
+
+                await unitOfWork.BeginTransactionAsync();
+                try
+                {
+                    // Validate order DTO
+                    var validationResult = _orderDtoValidator.Validate(request.Order);
+                    if (!validationResult.IsValid)
+                    {
+                        _logger.LogWarning("Order validation failed. Validator: {ValidatorName}, Reason: {FailureReason}",
+                            validationResult.ValidatorName, validationResult.FailureReason);
+                        throw new ArgumentException(validationResult.FailureReason ?? "Validation failed", nameof(request.Order));
+                    }
+
+                    // Convert DTO to entity
+                    var order = _orderConverter.Convert(request.Order);
+
+                    _logger.LogDebug("Converting OrderDto to Order entity. LineItemsCount: {LineItemsCount}",
+                        order.LineItems?.Count ?? 0);
+
+                    // Ensure LineItems are properly configured for new entities
+                    // EF Core will automatically set OrderId when Order is saved due to navigation property
+                    if (order.LineItems != null && order.LineItems.Any())
+                    {
+                        foreach (var lineItem in order.LineItems)
+                        {
+                            // Reset Id to 0 for new LineItems (EF will generate it)
+                            lineItem.Id = 0;
+                            // OrderId will be set automatically by EF Core via navigation property when Order is saved
+                            // But we need to ensure the navigation property is set
+                            lineItem.Order = order;
+                        }
+                    }
+
+                    var orderRecord = await unitOfWork.Orders.AddAsync(order);
+
+                    // Save changes to generate the Order ID and save both Order and LineItems
+                    // EF Core will automatically set OrderId on LineItems via the navigation property
+                    await unitOfWork.CompleteAsync();
+
+                    _logger.LogDebug("Order saved to database. OrderId: {OrderId}", orderRecord.Id);
+
+                    // Get the complete order with line items
+                    var savedOrder = await unitOfWork.Orders.GetByIdAsync(orderRecord.Id);
+                    if (savedOrder == null)
+                    {
+                        _logger.LogError("Failed to retrieve saved order with ID {OrderId}", orderRecord.Id);
+                        throw new InvalidOperationException($"Order with ID {orderRecord.Id} was not found after save");
+                    }
+
+                    // Create and publish the event
+                    var newOrderMessage = new OrderCreatedEvent
+                    {
+                        CustomerId = savedOrder.CustomerId,
+                        OrderDate = savedOrder.OrderDate,
+                        TotalAmount = savedOrder.TotalAmount,
+                        OrderId = savedOrder.Id,
+                        LineItems = savedOrder.LineItems?
+                            .Select(item => new OrderCreatedEventNameSpace.LineItem
+                            {
+                                Id = item.Id,
+                                OrderId = savedOrder.Id,
+                                SkuId = item.SkuId,
+                                Qty = item.Qty,
+                            })
+                            .ToArray() ?? Array.Empty<OrderCreatedEventNameSpace.LineItem>(),
+                    };
+
+                    _logger.LogInformation("Publishing OrderCreatedEvent. OrderId: {OrderId}, LineItemsCount: {LineItemsCount}",
+                        newOrderMessage.OrderId, newOrderMessage.LineItems?.Length ?? 0);
+                    await _messagePublisher.PublishAsync(newOrderMessage, RabbitmqConstants.OrderCreated);
+                    _logger.LogInformation("OrderCreatedEvent published successfully");
+
+                    await unitOfWork.CommitTransactionAsync();
+
+                    _logger.LogInformation("Order created successfully. OrderId: {OrderId}, CustomerId: {CustomerId}",
+                        savedOrder.Id, savedOrder.CustomerId);
+
+                    return _orderDtoConverter.Convert(savedOrder);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Error creating order");
+                    await unitOfWork.RollbackTransactionAsync();
+                    throw;
+                }
             }
         }
     }

@@ -19,22 +19,25 @@
         </member>
         <member name="M:Retail.Orders.Write.src.CleanArchitecture.API.Controllers.OrderWriteController.Post(Retail.Orders.Write.src.CleanArchitecture.Application.Dto.OrderDto)">
             <summary>
-            Method to add a new customer record.
+            Method to add a new order record.
             </summary>
-            <param name="value">Customer record.</param>
+            <param name="value">Order record.</param>
+            <returns>Created order DTO.</returns>
         </member>
         <member name="M:Retail.Orders.Write.src.CleanArchitecture.API.Controllers.OrderWriteController.Put(System.Int64,Retail.Orders.Write.src.CleanArchitecture.Application.Dto.OrderDto)">
             <summary>
-            Method to update a customer record.
+            Method to update an order record.
             </summary>
-            <param name="id">Customer Id.</param>
-            <param name="value">Customer record.</param>
+            <param name="id">Order Id.</param>
+            <param name="value">Order record.</param>
+            <returns>Updated order DTO.</returns>
         </member>
         <member name="M:Retail.Orders.Write.src.CleanArchitecture.API.Controllers.OrderWriteController.Delete(System.Int64)">
             <summary>
-            Method to delete a customer record.
+            Method to delete an order record.
             </summary>
-            <param name="id">Customer Id.</param>
+            <param name="id">Order Id.</param>
+            <returns>True if deleted successfully, false otherwise.</returns>
         </member>
         <member name="T:Retail.Orders.Write.src.CleanArchitecture.Application.Constants.MessageConstants">
             <summary>
@@ -185,13 +188,14 @@
             Event handler for InventoryErrorEvent.
             </summary>
         </member>
-        <member name="M:Retail.Orders.Write.src.CleanArchitecture.Application.EventHandlers.InventoryErrorEventHandler.#ctor(Retail.Orders.Write.src.CleanArchitecture.Infrastructure.Interfaces.IUnitOfWork,MessagingLibrary.Interface.IMessagePublisher,Microsoft.Extensions.DependencyInjection.IServiceScopeFactory)">
+        <member name="M:Retail.Orders.Write.src.CleanArchitecture.Application.EventHandlers.InventoryErrorEventHandler.#ctor(Retail.Orders.Write.src.CleanArchitecture.Infrastructure.Interfaces.IUnitOfWork,MessagingLibrary.Interface.IMessagePublisher,Microsoft.Extensions.DependencyInjection.IServiceScopeFactory,Microsoft.Extensions.Logging.ILogger{Retail.Orders.Write.src.CleanArchitecture.Application.EventHandlers.InventoryErrorEventHandler})">
             <summary>
             Initializes a new instance of the <see cref="T:Retail.Orders.Write.src.CleanArchitecture.Application.EventHandlers.InventoryErrorEventHandler"/> class.
             </summary>
             <param name="unitOfWork">Instance of unit of work class.</param>
             <param name="messagePublisher">Instance of message publisher.</param>
             <param name="serviceScopeFactory">Instance of service scope factory.</param>
+            <param name="logger">Instance of logger.</param>
         </member>
         <member name="M:Retail.Orders.Write.src.CleanArchitecture.Application.EventHandlers.InventoryErrorEventHandler.HandleAsync(InventoryErrorEventNameSpace.InventoryErrorEvent)">
             <summary>
@@ -225,12 +229,33 @@
             <param name="cancellationToken">Cancellation token.</param>
             <returns>Created order DTO.</returns>
         </member>
+        <member name="T:Retail.Orders.Write.src.CleanArchitecture.Application.Handlers.DeleteOrderCommandHandler">
+            <summary>
+            Handler for DeleteOrderCommand.
+            </summary>
+        </member>
+        <member name="M:Retail.Orders.Write.src.CleanArchitecture.Application.Handlers.DeleteOrderCommandHandler.#ctor(Retail.Orders.Write.src.CleanArchitecture.Infrastructure.Interfaces.IUnitOfWork,Microsoft.Extensions.DependencyInjection.IServiceScopeFactory,Microsoft.Extensions.Logging.ILogger{Retail.Orders.Write.src.CleanArchitecture.Application.Handlers.DeleteOrderCommandHandler})">
+            <summary>
+            Initializes a new instance of the <see cref="T:Retail.Orders.Write.src.CleanArchitecture.Application.Handlers.DeleteOrderCommandHandler"/> class.
+            </summary>
+            <param name="unitOfWork">Instance of unit of work class.</param>
+            <param name="serviceScopeFactory">Instance of service scope factory.</param>
+            <param name="logger">Instance of logger.</param>
+        </member>
+        <member name="M:Retail.Orders.Write.src.CleanArchitecture.Application.Handlers.DeleteOrderCommandHandler.Handle(Retail.Orders.Write.src.CleanArchitecture.Application.Commands.DeleteOrderCommand,System.Threading.CancellationToken)">
+            <summary>
+            Handles the DeleteOrderCommand request.
+            </summary>
+            <param name="request">The command request.</param>
+            <param name="cancellationToken">Cancellation token.</param>
+            <returns>True if deleted successfully, false otherwise.</returns>
+        </member>
         <member name="T:Retail.Orders.Write.src.CleanArchitecture.Application.Handlers.UpdateOrderCommandHandler">
             <summary>
             Handler for UpdateOrderCommand.
             </summary>
         </member>
-        <member name="M:Retail.Orders.Write.src.CleanArchitecture.Application.Handlers.UpdateOrderCommandHandler.#ctor(Retail.Orders.Write.src.CleanArchitecture.Infrastructure.Interfaces.IUnitOfWork,Retail.Orders.Write.src.CleanArchitecture.Application.Converters.Interfaces.IConverter{Retail.Orders.Write.src.CleanArchitecture.Application.Dto.OrderDto,Retail.Orders.Write.src.CleanArchitecture.Domain.Entities.Order},Retail.Orders.Write.src.CleanArchitecture.Application.Converters.Interfaces.IConverter{Retail.Orders.Write.src.CleanArchitecture.Domain.Entities.Order,Retail.Orders.Write.src.CleanArchitecture.Application.Dto.OrderDto},Retail.Orders.Write.src.CleanArchitecture.Application.Validation.Interfaces.IMessageValidator{Retail.Orders.Write.src.CleanArchitecture.Application.Dto.OrderDto})">
+        <member name="M:Retail.Orders.Write.src.CleanArchitecture.Application.Handlers.UpdateOrderCommandHandler.#ctor(Retail.Orders.Write.src.CleanArchitecture.Infrastructure.Interfaces.IUnitOfWork,Retail.Orders.Write.src.CleanArchitecture.Application.Converters.Interfaces.IConverter{Retail.Orders.Write.src.CleanArchitecture.Application.Dto.OrderDto,Retail.Orders.Write.src.CleanArchitecture.Domain.Entities.Order},Retail.Orders.Write.src.CleanArchitecture.Application.Converters.Interfaces.IConverter{Retail.Orders.Write.src.CleanArchitecture.Domain.Entities.Order,Retail.Orders.Write.src.CleanArchitecture.Application.Dto.OrderDto},Retail.Orders.Write.src.CleanArchitecture.Application.Validation.Interfaces.IMessageValidator{Retail.Orders.Write.src.CleanArchitecture.Application.Dto.OrderDto},Microsoft.Extensions.Logging.ILogger{Retail.Orders.Write.src.CleanArchitecture.Application.Handlers.UpdateOrderCommandHandler})">
             <summary>
             Initializes a new instance of the <see cref="T:Retail.Orders.Write.src.CleanArchitecture.Application.Handlers.UpdateOrderCommandHandler"/> class.
             </summary>
@@ -238,6 +263,7 @@
             <param name="orderConverter">Instance of order converter.</param>
             <param name="orderDtoConverter">Instance of order DTO converter.</param>
             <param name="orderDtoValidator">Instance of order DTO validator.</param>
+            <param name="logger">Instance of logger.</param>
         </member>
         <member name="M:Retail.Orders.Write.src.CleanArchitecture.Application.Handlers.UpdateOrderCommandHandler.Handle(Retail.Orders.Write.src.CleanArchitecture.Application.Commands.UpdateOrderCommand,System.Threading.CancellationToken)">
             <summary>
@@ -246,6 +272,25 @@
             <param name="request">The command request.</param>
             <param name="cancellationToken">Cancellation token.</param>
             <returns>Updated order DTO.</returns>
+        </member>
+        <member name="T:Retail.Orders.Write.src.CleanArchitecture.Application.Service.ServiceInitializer">
+            <summary>
+            Service initializer for setting up message subscriptions.
+            </summary>
+        </member>
+        <member name="M:Retail.Orders.Write.src.CleanArchitecture.Application.Service.ServiceInitializer.#ctor(MessagingLibrary.Interface.IMessageSubscriber,CommonLibrary.Handlers.IEventHandler{InventoryErrorEventNameSpace.InventoryErrorEvent},Microsoft.Extensions.Logging.ILogger{Retail.Orders.Write.src.CleanArchitecture.Application.Service.ServiceInitializer})">
+            <summary>
+            Initializes a new instance of the <see cref="T:Retail.Orders.Write.src.CleanArchitecture.Application.Service.ServiceInitializer"/> class.
+            </summary>
+            <param name="messageSubscriber">Instance of message subscriber.</param>
+            <param name="inventoryErrorHandler">Instance of inventory error event handler.</param>
+            <param name="logger">Instance of logger.</param>
+        </member>
+        <member name="M:Retail.Orders.Write.src.CleanArchitecture.Application.Service.ServiceInitializer.Initialize">
+            <summary>
+            Initializes the service by subscribing to events.
+            </summary>
+            <returns>Task representing the async operation.</returns>
         </member>
         <member name="T:Retail.Orders.Write.src.CleanArchitecture.Application.Validation.FailureSeverity">
             <summary>
@@ -664,11 +709,12 @@
             Unit of work class.
             </summary>
         </member>
-        <member name="M:Retail.Orders.Write.src.CleanArchitecture.Infrastructure.UnitOfWork.UnitOfWork.#ctor(Retail.Orders.Write.src.CleanArchitecture.Infrastructure.Data.ApplicationDbContext)">
+        <member name="M:Retail.Orders.Write.src.CleanArchitecture.Infrastructure.UnitOfWork.UnitOfWork.#ctor(Retail.Orders.Write.src.CleanArchitecture.Infrastructure.Data.ApplicationDbContext,Microsoft.Extensions.Logging.ILogger{Retail.Orders.Write.src.CleanArchitecture.Infrastructure.UnitOfWork.UnitOfWork})">
             <summary>
             Initializes a new instance of the <see cref="T:Retail.Orders.Write.src.CleanArchitecture.Infrastructure.UnitOfWork.UnitOfWork"/> class.
             </summary>
             <param name="entityContext">Entity framework Db context.</param>
+            <param name="logger">Instance of logger.</param>
         </member>
         <member name="M:Retail.Orders.Write.src.CleanArchitecture.Infrastructure.UnitOfWork.UnitOfWork.BeginTransactionAsync">
             <summary>
@@ -683,6 +729,17 @@
         <member name="M:Retail.Orders.Write.src.CleanArchitecture.Infrastructure.UnitOfWork.UnitOfWork.RollbackTransactionAsync">
             <summary>
             Method to rollback changes.
+            </summary>
+        </member>
+        <member name="M:Retail.Orders.Write.src.CleanArchitecture.Infrastructure.UnitOfWork.UnitOfWork.CompleteAsync">
+            <summary>
+            Saves all changes made in this context to the database.
+            </summary>
+            <returns>The number of state entries written to the database.</returns>
+        </member>
+        <member name="M:Retail.Orders.Write.src.CleanArchitecture.Infrastructure.UnitOfWork.UnitOfWork.Dispose">
+            <summary>
+            Disposes the unit of work and any active transaction.
             </summary>
         </member>
         <member name="T:Retail.Api.Orders.Migrations._001">

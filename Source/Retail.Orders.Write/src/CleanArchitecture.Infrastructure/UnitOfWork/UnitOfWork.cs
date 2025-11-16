@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
+using Microsoft.Extensions.Logging;
 using Retail.Orders.Write.src.CleanArchitecture.Domain.Entities;
 using Retail.Orders.Write.src.CleanArchitecture.Infrastructure.Data;
 using Retail.Orders.Write.src.CleanArchitecture.Infrastructure.Interfaces;
@@ -13,6 +14,7 @@ namespace Retail.Orders.Write.src.CleanArchitecture.Infrastructure.UnitOfWork
     public class UnitOfWork : IUnitOfWork
     {
         private readonly ApplicationDbContext _context;
+        private readonly ILogger<UnitOfWork> _logger;
         private IDbContextTransaction _transaction;
         public IOrderRepository Orders { get; private set; }
         public ILineItemRepository LineItems { get; private set; }
@@ -21,9 +23,11 @@ namespace Retail.Orders.Write.src.CleanArchitecture.Infrastructure.UnitOfWork
         /// Initializes a new instance of the <see cref="UnitOfWork"/> class.
         /// </summary>
         /// <param name="entityContext">Entity framework Db context.</param>
-        public UnitOfWork(ApplicationDbContext entityContext)
+        /// <param name="logger">Instance of logger.</param>
+        public UnitOfWork(ApplicationDbContext entityContext, ILogger<UnitOfWork> logger)
         {
             _context = entityContext;
+            _logger = logger;
             Orders = new OrderRepository(_context);
             LineItems = new LineItemRepository(_context);
         }
@@ -35,7 +39,9 @@ namespace Retail.Orders.Write.src.CleanArchitecture.Infrastructure.UnitOfWork
         {
             if (_transaction == null)
             {
+                _logger.LogDebug("Beginning database transaction");
                 _transaction = await _context.Database.BeginTransactionAsync();
+                _logger.LogDebug("Database transaction started");
             }
         }
 
@@ -46,9 +52,11 @@ namespace Retail.Orders.Write.src.CleanArchitecture.Infrastructure.UnitOfWork
         {
             if (_transaction != null)
             {
+                _logger.LogDebug("Committing database transaction");
                 await _transaction.CommitAsync();
                 _transaction.Dispose();
                 _transaction = null;
+                _logger.LogDebug("Database transaction committed");
             }
         }
 
@@ -59,21 +67,34 @@ namespace Retail.Orders.Write.src.CleanArchitecture.Infrastructure.UnitOfWork
         {
             if (_transaction != null)
             {
+                _logger.LogWarning("Rolling back database transaction");
                 await _transaction.RollbackAsync();
                 _transaction.Dispose();
                 _transaction = null;
+                _logger.LogWarning("Database transaction rolled back");
             }
         }
 
+        /// <summary>
+        /// Saves all changes made in this context to the database.
+        /// </summary>
+        /// <returns>The number of state entries written to the database.</returns>
         public async Task<int> CompleteAsync()
         {
-            return await _context.SaveChangesAsync();
+            _logger.LogDebug("Saving changes to database");
+            var result = await _context.SaveChangesAsync();
+            _logger.LogDebug("Saved {ChangeCount} changes to database", result);
+            return result;
         }
 
+        /// <summary>
+        /// Disposes the unit of work and any active transaction.
+        /// </summary>
         public void Dispose()
         {
             if (_transaction != null)
             {
+                _logger.LogDebug("Disposing database transaction");
                 _transaction.Dispose();
                 _transaction = null;
             }
