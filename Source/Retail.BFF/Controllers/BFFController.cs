@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using Retail.BFFWeb.Api.Common;
 using Retail.BFFWeb.Api.Interface;
@@ -19,6 +20,7 @@ namespace Retail.BFFWeb.Api.Controller
         private readonly ICustomerProvider _customerProvider;
         private readonly IOrderProvider _orderProvider;
         private readonly IProductProvider _productProvider;
+        private readonly ILogger<BFFController> _logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BFFController"/> class.
@@ -26,11 +28,17 @@ namespace Retail.BFFWeb.Api.Controller
         /// <param name="customerProvider">Instance of customer service class.</param>
         /// <param name="orderProvider">Instance of order service class.</param>
         /// <param name="productProvider">Instance of product service class.</param>
-        public BFFController(ICustomerProvider customerProvider, IOrderProvider orderProvider, IProductProvider productProvider)
+        /// <param name="logger">Instance of logger.</param>
+        public BFFController(
+            ICustomerProvider customerProvider,
+            IOrderProvider orderProvider,
+            IProductProvider productProvider,
+            ILogger<BFFController> logger)
         {
             _customerProvider = customerProvider;
             _orderProvider = orderProvider;
             _productProvider = productProvider;
+            _logger = logger;
         }
 
         /// <summary>
@@ -40,10 +48,14 @@ namespace Retail.BFFWeb.Api.Controller
         [HttpGet]
         public async Task<IActionResult> GetAllOrdersDetails()
         {
+            _logger.LogInformation("Retrieving all order details with aggregated customer and product data");
+            
             try
             {
-                //  Get orders first (MongoDB)
                 var orders = await _orderProvider.GetAllOrdersAsync();
+                var orderCount = orders.Count();
+                _logger.LogDebug("Retrieved {OrderCount} orders from order service", orderCount);
+                
                 var customerIds = orders.Select(o => o.CustomerId).Distinct().ToList();
                 var skuIds = orders
                             .SelectMany(o => o.LineItems)
@@ -51,23 +63,35 @@ namespace Retail.BFFWeb.Api.Controller
                             .Distinct()
                             .ToList();
 
-                // Get only required customers (SQL Server)
+                _logger.LogDebug("Extracted {CustomerCount} unique customer IDs and {SkuCount} unique SKU IDs", 
+                    customerIds.Count, skuIds.Count);
+
                 var customerTasks = customerIds.Select(id => _customerProvider.GetCustomerByIdAsync(id));
                 var customers = await Task.WhenAll(customerTasks);
 
-                // Convert customers list into a dictionary for fast lookups
                 var customerDict = customers.Where(c => c != null).ToDictionary(c => c.Id);
+                var validCustomerCount = customerDict.Count;
+                if (validCustomerCount < customerIds.Count)
+                {
+                    _logger.LogWarning("Failed to retrieve {MissingCount} customers out of {TotalCount} requested", 
+                        customerIds.Count - validCustomerCount, customerIds.Count);
+                }
+                _logger.LogDebug("Retrieved {CustomerCount} customers from customer service", validCustomerCount);
 
-                // Get only required products (SQL Server)
                 var productTasks = skuIds.Select(id => _productProvider.GetProductByIdAsync(id));
                 var products = await Task.WhenAll(productTasks);
 
-                // Convert products to a dictionary for fast lookup
                 var productDict = products
                     .Where(p => p != null)
                     .ToDictionary(p => p.Id, p => p.Name);
+                var validProductCount = productDict.Count;
+                if (validProductCount < skuIds.Count)
+                {
+                    _logger.LogWarning("Failed to retrieve {MissingCount} products out of {TotalCount} requested", 
+                        skuIds.Count - validProductCount, skuIds.Count);
+                }
+                _logger.LogDebug("Retrieved {ProductCount} products from product service", validProductCount);
 
-                // Aggregrate data
                 var aggregatedData = orders.Select(o =>
                 {
                     customerDict.TryGetValue(o.CustomerId, out var customer);
@@ -85,14 +109,14 @@ namespace Retail.BFFWeb.Api.Controller
                             Qty = li.Qty
                         }).ToList()
                     };
-                });
+                }).ToList();
 
-                // Return list
+                _logger.LogInformation("Successfully aggregated order details. Returning {OrderCount} orders", aggregatedData.Count);
                 return Ok(aggregatedData);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                // Throw exception
+                _logger.LogError(ex, "Error retrieving all order details");
                 return StatusCode(500, MessageConstants.InternalServerError);
             }
         }

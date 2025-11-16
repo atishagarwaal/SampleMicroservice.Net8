@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Retail.BFFWeb.Api.Controller;
@@ -18,6 +19,7 @@ namespace Retail.BFF.UnitTests
         private Mock<ICustomerProvider> _mockCustomerProvider = null!;
         private Mock<IOrderProvider> _mockOrderProvider = null!;
         private Mock<IProductProvider> _mockProductProvider = null!;
+        private Mock<ILogger<BFFController>> _mockLogger = null!;
         private BFFController _bffController = null!;
 
         [TestInitialize]
@@ -26,11 +28,13 @@ namespace Retail.BFF.UnitTests
             _mockCustomerProvider = new Mock<ICustomerProvider>();
             _mockOrderProvider = new Mock<IOrderProvider>();
             _mockProductProvider = new Mock<IProductProvider>();
+            _mockLogger = new Mock<ILogger<BFFController>>();
 
             _bffController = new BFFController(
                 _mockCustomerProvider.Object,
                 _mockOrderProvider.Object,
-                _mockProductProvider.Object);
+                _mockProductProvider.Object,
+                _mockLogger.Object);
         }
 
         [TestMethod]
@@ -46,7 +50,7 @@ namespace Retail.BFF.UnitTests
         public void BFFController_Constructor_WithNullCustomerProvider_CreatesInstance()
         {
             // Act & Assert
-            Action act = () => new BFFController(null!, _mockOrderProvider.Object, _mockProductProvider.Object);
+            Action act = () => new BFFController(null!, _mockOrderProvider.Object, _mockProductProvider.Object, _mockLogger.Object);
             act.Should().NotThrow();
         }
 
@@ -55,7 +59,7 @@ namespace Retail.BFF.UnitTests
         public void BFFController_Constructor_WithNullOrderProvider_CreatesInstance()
         {
             // Act & Assert
-            Action act = () => new BFFController(_mockCustomerProvider.Object, null!, _mockProductProvider.Object);
+            Action act = () => new BFFController(_mockCustomerProvider.Object, null!, _mockProductProvider.Object, _mockLogger.Object);
             act.Should().NotThrow();
         }
 
@@ -64,7 +68,7 @@ namespace Retail.BFF.UnitTests
         public void BFFController_Constructor_WithNullProductProvider_CreatesInstance()
         {
             // Act & Assert
-            Action act = () => new BFFController(_mockCustomerProvider.Object, _mockOrderProvider.Object, null!);
+            Action act = () => new BFFController(_mockCustomerProvider.Object, _mockOrderProvider.Object, null!, _mockLogger.Object);
             act.Should().NotThrow();
         }
 

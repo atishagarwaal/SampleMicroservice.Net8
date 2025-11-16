@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Retail.BFFWeb.Api.Configurations;
 using Retail.BFFWeb.Api.Interface;
@@ -7,12 +8,25 @@ using System.Text.Json;
 
 namespace Retail.BFFWeb.Api.Provider
 {
+    /// <summary>
+    /// Customer provider class.
+    /// </summary>
     public class CustomerProvider : ICustomerProvider
     {
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly CustomerServiceConfig _serviceConfig;
+        private readonly ILogger<CustomerProvider> _logger;
 
-        public CustomerProvider(IHttpClientFactory httpClientFactory, IOptions<CustomerServiceConfig> serviceConfig)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CustomerProvider"/> class.
+        /// </summary>
+        /// <param name="httpClientFactory">Instance of HTTP client factory.</param>
+        /// <param name="serviceConfig">Instance of customer service configuration.</param>
+        /// <param name="logger">Instance of logger.</param>
+        public CustomerProvider(
+            IHttpClientFactory httpClientFactory,
+            IOptions<CustomerServiceConfig> serviceConfig,
+            ILogger<CustomerProvider> logger)
         {
             if (serviceConfig == null)
             {
@@ -21,6 +35,7 @@ namespace Retail.BFFWeb.Api.Provider
 
             _httpClientFactory = httpClientFactory;
             _serviceConfig = serviceConfig.Value;
+            _logger = logger;
         }
 
         /// <summary>
@@ -29,44 +44,78 @@ namespace Retail.BFFWeb.Api.Provider
         /// <returns>List of customers.</returns>
         public async Task<IEnumerable<CustomerDto>> GetAllCustomersAsync()
         {
-            using var client = _httpClientFactory.CreateClient();
+            _logger.LogInformation("Fetching all customers from customer service");
+            
+            try
+            {
+                using var client = _httpClientFactory.CreateClient();
 
-            var url = string.Concat(_serviceConfig.BaseUrl, _serviceConfig.Endpoints.GetAllCustomersV1);
-            var response = await client.GetAsync(url);
-            if (response.IsSuccessStatusCode)
-            {
-                var data = await response.Content.ReadFromJsonAsync<IEnumerable<CustomerDto>>();
-                return data ?? Enumerable.Empty<CustomerDto>();
+                var url = string.Concat(_serviceConfig.BaseUrl, _serviceConfig.Endpoints.GetAllCustomersV1);
+                _logger.LogDebug("Calling customer service endpoint: {Url}", url);
+                
+                var response = await client.GetAsync(url);
+                
+                if (response.IsSuccessStatusCode)
+                {
+                    var data = await response.Content.ReadFromJsonAsync<IEnumerable<CustomerDto>>();
+                    var customerCount = data?.Count() ?? 0;
+                    _logger.LogInformation("Successfully retrieved {CustomerCount} customers from customer service", customerCount);
+                    return data ?? Enumerable.Empty<CustomerDto>();
+                }
+                else
+                {
+                    _logger.LogWarning("Customer service returned non-success status code: {StatusCode}", response.StatusCode);
+                    return Enumerable.Empty<CustomerDto>();
+                }
             }
-            else
+            catch (Exception ex)
             {
-                return Enumerable.Empty<CustomerDto>();
+                _logger.LogError(ex, "Error fetching all customers from customer service");
+                throw;
             }
         }
 
         /// <summary>
         /// Method to fetch customer record based on Id.
         /// </summary>
+        /// <param name="id">Customer identifier.</param>
         /// <returns>Customer object.</returns>
         public async Task<CustomerDto> GetCustomerByIdAsync(long id)
         {
-            using var client = _httpClientFactory.CreateClient();
-
-            // Set the base address
-            client.BaseAddress = new Uri(_serviceConfig.BaseUrl);
-
-            // Construct the request URL
-            var url = _serviceConfig.Endpoints.GetCustomerByIdV1.Replace("{id}", id.ToString());
-
-            var jsonString = await client.GetStringAsync(url);
-
-            // Parse JSON responses
-            var serviceData = JsonSerializer.Deserialize<CustomerDto>(jsonString, new JsonSerializerOptions
+            _logger.LogInformation("Fetching customer with Id {CustomerId} from customer service", id);
+            
+            try
             {
-                PropertyNameCaseInsensitive = true
-            });
+                using var client = _httpClientFactory.CreateClient();
 
-            return serviceData;
+                client.BaseAddress = new Uri(_serviceConfig.BaseUrl);
+
+                var url = _serviceConfig.Endpoints.GetCustomerByIdV1.Replace("{id}", id.ToString());
+                _logger.LogDebug("Calling customer service endpoint: {Url}", url);
+
+                var jsonString = await client.GetStringAsync(url);
+
+                var serviceData = JsonSerializer.Deserialize<CustomerDto>(jsonString, new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                });
+
+                if (serviceData == null)
+                {
+                    _logger.LogWarning("Customer service returned null for CustomerId {CustomerId}", id);
+                }
+                else
+                {
+                    _logger.LogInformation("Successfully retrieved customer with Id {CustomerId}", id);
+                }
+
+                return serviceData;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error fetching customer with Id {CustomerId} from customer service", id);
+                throw;
+            }
         }
     }
 }

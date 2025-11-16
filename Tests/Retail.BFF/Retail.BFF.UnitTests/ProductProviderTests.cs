@@ -23,6 +23,7 @@ namespace Retail.BFF.UnitTests
     {
         private Mock<IHttpClientFactory> _mockHttpClientFactory = null!;
         private Mock<IOptions<ProductServiceConfig>> _mockServiceConfig = null!;
+        private Mock<ILogger<ProductProvider>> _mockLogger = null!;
         private ProductProvider _productProvider = null!;
 
         [TestInitialize]
@@ -30,6 +31,7 @@ namespace Retail.BFF.UnitTests
         {
             _mockHttpClientFactory = new Mock<IHttpClientFactory>();
             _mockServiceConfig = new Mock<IOptions<ProductServiceConfig>>();
+            _mockLogger = new Mock<ILogger<ProductProvider>>();
 
             var serviceConfig = new ProductServiceConfig
             {
@@ -43,7 +45,7 @@ namespace Retail.BFF.UnitTests
 
             _mockServiceConfig.Setup(x => x.Value).Returns(serviceConfig);
 
-            _productProvider = new ProductProvider(_mockHttpClientFactory.Object, _mockServiceConfig.Object);
+            _productProvider = new ProductProvider(_mockHttpClientFactory.Object, _mockServiceConfig.Object, _mockLogger.Object);
         }
 
         [TestMethod]
@@ -59,7 +61,7 @@ namespace Retail.BFF.UnitTests
         public void ProductProvider_Constructor_WithNullServiceConfig_ThrowsArgumentNullException()
         {
             // Act & Assert
-            Action act = () => new ProductProvider(_mockHttpClientFactory.Object, null!);
+            Action act = () => new ProductProvider(_mockHttpClientFactory.Object, null!, _mockLogger.Object);
             act.Should().Throw<ArgumentNullException>();
         }
 
@@ -68,7 +70,7 @@ namespace Retail.BFF.UnitTests
         public void ProductProvider_Constructor_WithNullHttpClientFactory_CreatesInstance()
         {
             // Act & Assert
-            Action act = () => new ProductProvider(null!, _mockServiceConfig.Object);
+            Action act = () => new ProductProvider(null!, _mockServiceConfig.Object, _mockLogger.Object);
             act.Should().NotThrow();
         }
 

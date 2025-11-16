@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
 using Retail.BFF.ServiceTests.Common;
@@ -22,17 +23,21 @@ namespace Retail.BFF.ServiceTests.StepDefinitions
         private List<OrderDto> _orders = null!;
         private IActionResult _response = null!;
         private Exception? _exception = null!;
+        private Mock<ILogger<BFFController>> _mockLogger = null!;
 
         [BeforeScenario]
         public void BeforeScenario()
         {
             SetupServices();
 
+            _mockLogger = new Mock<ILogger<BFFController>>();
+
             // Create BFFController with mocked dependencies
             _bffController = new BFFController(
                 MockCustomerProvider.Object,
                 MockOrderProvider.Object,
-                MockProductProvider.Object);
+                MockProductProvider.Object,
+                _mockLogger.Object);
         }
 
         [AfterScenario]
