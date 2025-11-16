@@ -6,14 +6,13 @@
 
 namespace Retail.Api.Customers
 {
+    using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
     using Retail.Api.Customers.Application;
-    using Retail.Api.Customers.src.CleanArchitecture.Application.Interfaces;
-    using Retail.Api.Customers.src.CleanArchitecture.Infrastructure.Data;
 
     /// <summary>
     /// Contains the main entry point of the application.
@@ -41,21 +40,9 @@ namespace Retail.Api.Customers
 
             try
             {
-                logger.LogInformation("Starting Customer Service");
+                var application = host.Services.GetRequiredService<CommonLibrary.Application.IApplication>();
+                await application.StartAsync(CancellationToken.None);
 
-                using (var scope = host.Services.CreateScope())
-                {
-                    logger.LogInformation("Initializing service subscriptions");
-                    var serviceInitializer = scope.ServiceProvider.GetRequiredService<IServiceInitializer>();
-                    await serviceInitializer.Initialize();
-
-                    logger.LogInformation("Ensuring database is created");
-                    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-                    await db.Database.EnsureCreatedAsync();
-                    logger.LogInformation("Database initialization completed");
-                }
-
-                logger.LogInformation("Customer Service started successfully");
                 await host.RunAsync();
             }
             catch (System.Exception ex)

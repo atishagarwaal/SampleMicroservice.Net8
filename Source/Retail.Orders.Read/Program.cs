@@ -6,13 +6,13 @@
 
 namespace Retail.Orders.Read
 {
+    using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
     using Retail.Orders.Read.Application;
-    using Retail.Orders.Read.src.CleanArchitecture.Application.Interfaces;
 
     /// <summary>
     /// Contains the main entry point of the application.
@@ -40,17 +40,9 @@ namespace Retail.Orders.Read
 
             try
             {
-                logger.LogInformation("Starting Order Read Service");
+                var application = host.Services.GetRequiredService<CommonLibrary.Application.IApplication>();
+                await application.StartAsync(CancellationToken.None);
 
-                using (var scope = host.Services.CreateScope())
-                {
-                    logger.LogInformation("Initializing service subscriptions");
-                    var serviceInitializer = scope.ServiceProvider.GetRequiredService<IServiceInitializer>();
-                    await serviceInitializer.Initialize();
-                    logger.LogInformation("Service subscriptions initialized successfully");
-                }
-
-                logger.LogInformation("Order Read Service started successfully");
                 await host.RunAsync();
             }
             catch (System.Exception ex)

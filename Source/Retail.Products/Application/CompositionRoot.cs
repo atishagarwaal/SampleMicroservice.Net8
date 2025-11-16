@@ -63,8 +63,8 @@ namespace Retail.Api.Products.Application
 
             // Configure services
             serviceCollection.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
-            serviceCollection.AddScoped(typeof(IUnitOfWork), typeof(UnitOfWork));
-            serviceCollection.AddScoped(typeof(IProductService), typeof(ProductService));
+            serviceCollection.AddScoped<IUnitOfWork, UnitOfWork>();
+            serviceCollection.AddScoped<IProductService, ProductService>();
 
             // Add RabbitMQ from the common project
             serviceCollection.AddRabbitMQServices(context.Configuration);
@@ -78,6 +78,11 @@ namespace Retail.Api.Products.Application
             // Register converters
             serviceCollection.AddScoped<IConverter<SkuDto, Retail.Api.Products.src.CleanArchitecture.Domain.Entities.Sku>, SkuConverter>();
             serviceCollection.AddScoped<IConverter<Retail.Api.Products.src.CleanArchitecture.Domain.Entities.Sku, SkuDto>, SkuDtoConverter>();
+
+            // Register application lifecycle
+            serviceCollection.AddSingleton<ProductApplication>();
+            serviceCollection.AddSingleton<CommonLibrary.Application.IApplication>(sp => sp.GetRequiredService<ProductApplication>());
+            serviceCollection.AddSingleton<Microsoft.Extensions.Hosting.IHostedService>(sp => sp.GetRequiredService<ProductApplication>());
 
             serviceCollection.AddControllers();
 

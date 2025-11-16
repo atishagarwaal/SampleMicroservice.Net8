@@ -63,9 +63,9 @@ namespace Retail.Api.Customers.Application
 
             // Configure services
             serviceCollection.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
-            serviceCollection.AddScoped(typeof(IUnitOfWork), typeof(UnitOfWork));
-            serviceCollection.AddScoped(typeof(ICustomerService), typeof(CustomerService));
-            serviceCollection.AddScoped(typeof(INotificationRepository), typeof(NotificationRepository));
+            serviceCollection.AddScoped<IUnitOfWork, UnitOfWork>();
+            serviceCollection.AddScoped<ICustomerService, CustomerService>();
+            serviceCollection.AddScoped<INotificationRepository, NotificationRepository>();
 
             // Add RabbitMQ from the common project
             serviceCollection.AddRabbitMQServices(context.Configuration);
@@ -81,6 +81,11 @@ namespace Retail.Api.Customers.Application
             serviceCollection.AddScoped<IConverter<Customer, CustomerDto>, CustomerDtoConverter>();
             serviceCollection.AddScoped<IConverter<NotificationDto, Notification>, NotificationConverter>();
             serviceCollection.AddScoped<IConverter<Notification, NotificationDto>, NotificationDtoConverter>();
+
+            // Register application lifecycle
+            serviceCollection.AddSingleton<CustomerApplication>();
+            serviceCollection.AddSingleton<CommonLibrary.Application.IApplication>(sp => sp.GetRequiredService<CustomerApplication>());
+            serviceCollection.AddSingleton<Microsoft.Extensions.Hosting.IHostedService>(sp => sp.GetRequiredService<CustomerApplication>());
 
             // Add API versioning
             serviceCollection.AddApiVersioning(options =>

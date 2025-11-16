@@ -54,7 +54,7 @@ namespace Retail.Orders.Read.Application
 
             // Configure MongoDB connection
             serviceCollection.AddScoped<ApplicationDbContext>();
-            serviceCollection.AddScoped(typeof(IUnitOfWork), typeof(UnitOfWork));
+            serviceCollection.AddScoped<IUnitOfWork, UnitOfWork>();
 
             // Register MediatR with all relevant assemblies
             serviceCollection.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(
@@ -71,6 +71,11 @@ namespace Retail.Orders.Read.Application
             serviceCollection.AddScoped<IConverter<Retail.Orders.Read.src.CleanArchitecture.Domain.Entities.LineItem, LineItemDto>, LineItemDtoConverter>();
             serviceCollection.AddScoped<IConverter<OrderDto, Retail.Orders.Read.src.CleanArchitecture.Domain.Entities.Order>, OrderConverter>();
             serviceCollection.AddScoped<IConverter<Retail.Orders.Read.src.CleanArchitecture.Domain.Entities.Order, OrderDto>, OrderDtoConverter>();
+
+            // Register application lifecycle
+            serviceCollection.AddSingleton<OrderReadApplication>();
+            serviceCollection.AddSingleton<CommonLibrary.Application.IApplication>(sp => sp.GetRequiredService<OrderReadApplication>());
+            serviceCollection.AddSingleton<Microsoft.Extensions.Hosting.IHostedService>(sp => sp.GetRequiredService<OrderReadApplication>());
 
             // Add RabbitMQ from the common project
             serviceCollection.AddRabbitMQServices(context.Configuration);
