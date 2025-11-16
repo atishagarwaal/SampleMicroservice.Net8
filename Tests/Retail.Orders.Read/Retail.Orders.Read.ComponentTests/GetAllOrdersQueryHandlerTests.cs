@@ -14,6 +14,7 @@ using Retail.Orders.Read.src.CleanArchitecture.Application.Queries;
 using Retail.Orders.Read.src.CleanArchitecture.Application.Converters.Interfaces;
 using Retail.Orders.Read.src.CleanArchitecture.Domain.Entities;
 using Retail.Orders.Read.src.CleanArchitecture.Infrastructure.Interfaces;
+using CommonLibrary.Results;
 
 namespace Retail.Orders.Read.ComponentTests
 {
@@ -99,10 +100,12 @@ namespace Retail.Orders.Read.ComponentTests
 
             // Act
             var result = await _handler.Handle(query, CancellationToken.None);
-            var resultList = result.ToList();
 
             // Assert
-            resultList.Should().NotBeNull();
+            result.Should().NotBeNull();
+            result.IsSuccess.Should().BeTrue();
+            result.Value.Should().NotBeNull();
+            var resultList = result.Value.ToList();
             resultList.Should().HaveCount(2);
             resultList.Should().BeEquivalentTo(orderDtos);
             resultList[0].Id.Should().Be(1);
@@ -124,10 +127,12 @@ namespace Retail.Orders.Read.ComponentTests
 
             // Act
             var result = await _handler.Handle(query, CancellationToken.None);
-            var resultList = result.ToList();
 
             // Assert
-            resultList.Should().NotBeNull();
+            result.Should().NotBeNull();
+            result.IsSuccess.Should().BeTrue();
+            result.Value.Should().NotBeNull();
+            var resultList = result.Value.ToList();
             resultList.Should().BeEmpty();
         }
     }

@@ -15,6 +15,7 @@ using Retail.Orders.Read.src.CleanArchitecture.Infrastructure.Repositories;
 using Retail.Orders.Read.src.CleanArchitecture.Infrastructure.UnitOfWork;
 using Retail.Orders.Read.ServiceTests.Common;
 using TechTalk.SpecFlow;
+using CommonLibrary.Results;
 
 namespace Retail.Orders.Read.ServiceTests.StepDefinitions
 {
@@ -211,7 +212,15 @@ namespace Retail.Orders.Read.ServiceTests.StepDefinitions
         public async Task WhenIRequestAllOrders()
         {
             var query = new GetAllOrdersQuery();
-            _orders = (await _mediator.Send(query)).ToList();
+            var result = await _mediator.Send(query);
+            if (result.IsSuccess)
+            {
+                _orders = result.Value.ToList();
+            }
+            else
+            {
+                _orders = new List<OrderDto>();
+            }
         }
 
         [When(@"I request the order with ID ""(.*)""")]
@@ -220,9 +229,14 @@ namespace Retail.Orders.Read.ServiceTests.StepDefinitions
             try
             {
                 var query = new GetOrderByIdQuery { Id = long.Parse(orderId) };
-                _order = await _mediator.Send(query);
-                if (_order == null)
+                var result = await _mediator.Send(query);
+                if (result.IsSuccess)
                 {
+                    _order = result.Value;
+                }
+                else
+                {
+                    _order = null;
                     _notFoundResponse = true;
                 }
             }
@@ -235,8 +249,15 @@ namespace Retail.Orders.Read.ServiceTests.StepDefinitions
         [When(@"I request orders for customer ""(.*)""")]
         public async Task WhenIRequestOrdersForCustomer(string customerId)
         {
-            var allOrders = await _mediator.Send(new GetAllOrdersQuery());
-            _orders = allOrders.Where(o => o.CustomerId == long.Parse(customerId)).ToList();
+            var result = await _mediator.Send(new GetAllOrdersQuery());
+            if (result.IsSuccess)
+            {
+                _orders = result.Value.Where(o => o.CustomerId == long.Parse(customerId)).ToList();
+            }
+            else
+            {
+                _orders = new List<OrderDto>();
+            }
         }
 
         [When(@"I request the order details")]
@@ -253,14 +274,29 @@ namespace Retail.Orders.Read.ServiceTests.StepDefinitions
         [When(@"I request orders with status ""(.*)""")]
         public async Task WhenIRequestOrdersWithStatus(string status)
         {
-            var allOrders = await _mediator.Send(new GetAllOrdersQuery());
-            _orders = allOrders.ToList();
+            var result = await _mediator.Send(new GetAllOrdersQuery());
+            if (result.IsSuccess)
+            {
+                _orders = result.Value.ToList();
+            }
+            else
+            {
+                _orders = new List<OrderDto>();
+            }
         }
 
         [When(@"I request orders between ""(.*)"" and ""(.*)""")]
         public async Task WhenIRequestOrdersBetweenAnd(string startDate, string endDate)
         {
-            var allOrders = await _mediator.Send(new GetAllOrdersQuery());
+            var result = await _mediator.Send(new GetAllOrdersQuery());
+            
+            if (!result.IsSuccess)
+            {
+                _orders = new List<OrderDto>();
+                return;
+            }
+
+            var allOrders = result.Value;
             
             // Parse dates and convert to UTC dates for comparison
             // MongoDB stores dates in UTC, so we need to compare UTC dates

@@ -12,6 +12,7 @@ using Retail.Orders.Read.src.CleanArchitecture.Application.Queries;
 using Retail.Orders.Read.src.CleanArchitecture.Application.Converters.Interfaces;
 using Retail.Orders.Read.src.CleanArchitecture.Domain.Entities;
 using Retail.Orders.Read.src.CleanArchitecture.Infrastructure.Interfaces;
+using CommonLibrary.Results;
 
 namespace Retail.Orders.Read.ComponentTests
 {
@@ -92,14 +93,16 @@ namespace Retail.Orders.Read.ComponentTests
 
             // Assert
             result.Should().NotBeNull();
-            result.Should().BeEquivalentTo(orderDto);
-            result.Id.Should().Be(orderId);
-            result.CustomerId.Should().Be(100);
+            result.IsSuccess.Should().BeTrue();
+            result.Value.Should().NotBeNull();
+            result.Value.Should().BeEquivalentTo(orderDto);
+            result.Value.Id.Should().Be(orderId);
+            result.Value.CustomerId.Should().Be(100);
         }
 
         [TestMethod]
         [TestCategory("GetOrderByIdQueryHandler")]
-        public async Task Handle_WithInvalidId_ReturnsNull()
+        public async Task Handle_WithInvalidId_ReturnsFailure()
         {
             // Arrange
             var orderId = 999L;
@@ -114,7 +117,10 @@ namespace Retail.Orders.Read.ComponentTests
             var result = await _handler.Handle(query, CancellationToken.None);
 
             // Assert
-            result.Should().BeNull();
+            result.Should().NotBeNull();
+            result.IsFailure.Should().BeTrue();
+            result.Error.Should().NotBeNullOrEmpty();
+            result.Error.Should().Contain("not found");
         }
     }
 }

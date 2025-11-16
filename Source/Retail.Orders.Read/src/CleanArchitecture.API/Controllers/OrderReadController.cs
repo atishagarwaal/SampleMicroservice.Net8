@@ -9,6 +9,7 @@ using Retail.Orders.Read.src.CleanArchitecture.Application.Dto;
 using Retail.Orders.Read.src.CleanArchitecture.Application.Interfaces;
 using Retail.Orders.Read.src.CleanArchitecture.Application.Queries;
 using System.Runtime.InteropServices;
+using CommonLibrary.Results;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -52,18 +53,18 @@ namespace Retail.Orders.Read.src.CleanArchitecture.API.Controllers
                 var query = new GetAllOrdersQuery();
                 var result = await _mediator.Send(query);
                 
-                if (result == null)
+                if (result.IsFailure)
                 {
-                    _logger.LogWarning("GetAllOrdersQuery returned null result");
+                    _logger.LogWarning("Failed to retrieve orders: {Error}", result.Error);
                     return Problem(
-                        detail: "No orders found",
+                        detail: result.Error,
                         statusCode: 404,
                         title: "Not Found");
                 }
                 
-                var orderCount = result.Count();
+                var orderCount = result.Value.Count();
                 _logger.LogInformation("Successfully retrieved {OrderCount} orders", orderCount);
-                return Ok(result);
+                return Ok(result.Value);
             }
             catch (Exception ex)
             {
@@ -99,17 +100,27 @@ namespace Retail.Orders.Read.src.CleanArchitecture.API.Controllers
                 var query = new GetOrderByIdQuery { Id = id };
                 var result = await _mediator.Send(query);
                 
-                if (result == null)
+                if (result.IsFailure)
                 {
-                    _logger.LogWarning("Order with Id {OrderId} not found", id);
+                    _logger.LogWarning("Failed to retrieve order with Id {OrderId}: {Error}", id, result.Error);
+                    
+                    // Check if it's a not found error (404) or other error (500)
+                    if (result.Error != null && result.Error.Contains("not found", StringComparison.OrdinalIgnoreCase))
+                    {
+                        return Problem(
+                            detail: result.Error,
+                            statusCode: 404,
+                            title: "Not Found");
+                    }
+                    
                     return Problem(
-                        detail: "Order not found",
-                        statusCode: 404,
-                        title: "Not Found");
+                        detail: result.Error,
+                        statusCode: 500,
+                        title: "Internal Server Error");
                 }
                 
                 _logger.LogInformation("Successfully retrieved order with Id {OrderId}", id);
-                return Ok(result);
+                return Ok(result.Value);
             }
             catch (Exception ex)
             {
