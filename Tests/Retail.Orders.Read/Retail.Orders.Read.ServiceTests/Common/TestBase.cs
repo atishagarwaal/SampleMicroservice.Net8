@@ -1,4 +1,6 @@
+using System.Collections.Generic;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration.Json;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NUnit.Framework;
@@ -21,10 +23,32 @@ namespace Retail.Orders.Read.ServiceTests.Common
         protected virtual void Initialize()
         {
             var services = new ServiceCollection();
-            var configuration = new ConfigurationBuilder()
-                .AddJsonFile("appsettings.test.json", optional: true)
-                .AddEnvironmentVariables()
-                .Build();
+            var configurationBuilder = new ConfigurationBuilder();
+            
+            // Get the directory where the test project is located
+            var testProjectDirectory = Path.GetDirectoryName(typeof(TestBase).Assembly.Location) ?? 
+                Directory.GetCurrentDirectory();
+            var appsettingsPath = Path.Combine(testProjectDirectory, "appsettings.test.json");
+            
+            if (File.Exists(appsettingsPath))
+            {
+                configurationBuilder.AddJsonFile(appsettingsPath, optional: false);
+            }
+            else
+            {
+                // Fallback: try relative path from current directory
+                configurationBuilder.AddJsonFile("appsettings.test.json", optional: true);
+            }
+            
+            // Add in-memory configuration as fallback
+            configurationBuilder.AddInMemoryCollection(new Dictionary<string, string?>
+            {
+                { "ConnectionStrings:DefaultConnection", "mongodb://localhost:27017" },
+                { "MongoDBSettings:DatabaseName", "OrdersDb_Test" }
+            });
+            
+            configurationBuilder.AddEnvironmentVariables();
+            var configuration = configurationBuilder.Build();
 
             Configuration = configuration;
             ConfigureServices(services, configuration);
