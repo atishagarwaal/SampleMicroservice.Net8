@@ -1,3 +1,4 @@
+using CommonLibrary.Results;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Retail.Api.Customers.src.CleanArchitecture.Infrastructure.Data;
@@ -58,12 +59,12 @@ namespace Retail.Customers.ServiceTests.Common
     /// </summary>
     public class MockCustomerService : ICustomerService
     {
-        public Task<CustomerDto> AddCustomerAsync(CustomerDto custDto)
+        public Task<Result<CustomerDto>> AddCustomerAsync(CustomerDto custDto)
         {
             // Validate input
             if (string.IsNullOrWhiteSpace(custDto.FirstName) || string.IsNullOrWhiteSpace(custDto.LastName))
             {
-                throw new ArgumentException("First name and last name are required");
+                return Task.FromResult(Result<CustomerDto>.Failure("First name and last name are required"));
             }
 
             // Return a mock customer with generated ID
@@ -73,7 +74,7 @@ namespace Retail.Customers.ServiceTests.Common
                 FirstName = custDto.FirstName,
                 LastName = custDto.LastName
             };
-            return Task.FromResult(mockCustomer);
+            return Task.FromResult(Result<CustomerDto>.Success(mockCustomer));
         }
 
         public Task<bool> DeleteCustomerAsync(long id)
@@ -123,7 +124,7 @@ namespace Retail.Customers.ServiceTests.Common
             return Task.FromResult<IEnumerable<CustomerDto>>(customers);
         }
 
-        public Task<CustomerDto> GetCustomerByIdAsync(long id)
+        public Task<Result<CustomerDto>> GetCustomerByIdAsync(long id)
         {
             // Check if customer exists in database context if available
             try
@@ -134,18 +135,14 @@ namespace Retail.Customers.ServiceTests.Common
                     var existingCustomer = dbContext.Customers.FirstOrDefault(c => c.Id == id);
                     if (existingCustomer == null)
                     {
-                        // Customer doesn't exist - throw exception
-                        throw new InvalidOperationException($"Customer with ID {id} not found");
+                        // Customer doesn't exist - return failure
+                        return Task.FromResult(Result<CustomerDto>.Failure($"Customer with ID {id} not found"));
                     }
                 }
             }
-            catch (InvalidOperationException)
-            {
-                throw; // Re-throw the not found exception
-            }
             catch
             {
-                // Ignore other database errors in mock service
+                // Ignore database errors in mock service
             }
             
             // Return a mock customer for the given ID
@@ -155,10 +152,10 @@ namespace Retail.Customers.ServiceTests.Common
                 FirstName = "Test",
                 LastName = "Customer"
             };
-            return Task.FromResult(customer);
+            return Task.FromResult(Result<CustomerDto>.Success(customer));
         }
 
-        public Task<CustomerDto> UpdateCustomerAsync(long id, CustomerDto custDto)
+        public Task<Result<CustomerDto>> UpdateCustomerAsync(long id, CustomerDto custDto)
         {
             // Check if customer exists in database context if available
             try
@@ -169,8 +166,8 @@ namespace Retail.Customers.ServiceTests.Common
                     var existingCustomer = dbContext.Customers.FirstOrDefault(c => c.Id == id);
                     if (existingCustomer == null)
                     {
-                        // Customer doesn't exist - throw exception
-                        throw new InvalidOperationException($"Customer with ID {id} not found");
+                        // Customer doesn't exist - return failure
+                        return Task.FromResult(Result<CustomerDto>.Failure($"Customer with ID {id} not found"));
                     }
                     
                     // Update the customer in the database
@@ -179,13 +176,9 @@ namespace Retail.Customers.ServiceTests.Common
                     dbContext.SaveChanges();
                 }
             }
-            catch (InvalidOperationException)
-            {
-                throw; // Re-throw the not found exception
-            }
             catch
             {
-                // Ignore other database errors in mock service
+                // Ignore database errors in mock service
             }
             
             // Return the updated customer data
@@ -195,7 +188,7 @@ namespace Retail.Customers.ServiceTests.Common
                 FirstName = custDto.FirstName,
                 LastName = custDto.LastName
             };
-            return Task.FromResult(updatedCustomer);
+            return Task.FromResult(Result<CustomerDto>.Success(updatedCustomer));
         }
 
         public Task HandleOrderCreatedEvent(InventoryUpdatedEvent inventoryUpdatedEvent)

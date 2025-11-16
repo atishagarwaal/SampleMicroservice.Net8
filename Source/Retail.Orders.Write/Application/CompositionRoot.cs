@@ -75,6 +75,11 @@ namespace Retail.Orders.Write.Application
             serviceCollection.AddScoped<IEventHandler<InventoryErrorEvent>, InventoryErrorEventHandler>();
             serviceCollection.AddScoped<IServiceInitializer, ServiceInitializer>();
 
+            // Register application lifecycle
+            serviceCollection.AddSingleton<OrderWriteApplication>();
+            serviceCollection.AddSingleton<CommonLibrary.Application.IApplication>(sp => sp.GetRequiredService<OrderWriteApplication>());
+            serviceCollection.AddSingleton<Microsoft.Extensions.Hosting.IHostedService>(sp => sp.GetRequiredService<OrderWriteApplication>());
+
             // Register validators
             serviceCollection.AddScoped<IMessageValidator<OrderDto>, OrderDtoValidator>();
             serviceCollection.AddScoped<IMessageValidator<LineItemDto>, LineItemDtoValidator>();

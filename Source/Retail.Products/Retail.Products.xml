@@ -246,14 +246,14 @@
             Method to fetch product record based on Id asynchronously.
             </summary>
             <param name="id">Product Id.</param>
-            <returns>Product object.</returns>
+            <returns>Result containing the product object if found, or an error message if not found.</returns>
         </member>
         <member name="M:Retail.Api.Products.src.CleanArchitecture.Application.Interfaces.IProductService.AddProductAsync(Retail.Api.Products.src.CleanArchitecture.Application.Dto.SkuDto)">
             <summary>
             Method to add a new product record asynchronously.
             </summary>
             <param name="skuDto">Product record.</param>
-            <returns>Product object.</returns>
+            <returns>Result containing the created product object if successful, or an error message if validation fails.</returns>
         </member>
         <member name="M:Retail.Api.Products.src.CleanArchitecture.Application.Interfaces.IProductService.UpdateProductAsync(System.Int64,Retail.Api.Products.src.CleanArchitecture.Application.Dto.SkuDto)">
             <summary>
@@ -261,14 +261,14 @@
             </summary>
             <param name="id">Product Id.</param>
             <param name="skuDto">Product record.</param>
-            <returns>Product object.</returns>
+            <returns>Result containing the updated product object if successful, or an error message if validation fails or product not found.</returns>
         </member>
         <member name="M:Retail.Api.Products.src.CleanArchitecture.Application.Interfaces.IProductService.DeleteProductAsync(System.Int64)">
             <summary>
             Method to delete product record asynchronously.
             </summary>
             <param name="id">Product Id.</param>
-            <returns>Product object.</returns>
+            <returns>True if product was deleted, false if not found.</returns>
         </member>
         <member name="T:Retail.Api.Products.src.CleanArchitecture.Application.Service.ProductService">
             <summary>
@@ -298,14 +298,14 @@
             Method to fetch product record based on Id asynchronously.
             </summary>
             <param name="id">Product Id.</param>
-            <returns>Product object.</returns>
+            <returns>Result containing the product object if found, or an error message if not found.</returns>
         </member>
         <member name="M:Retail.Api.Products.src.CleanArchitecture.Application.Service.ProductService.AddProductAsync(Retail.Api.Products.src.CleanArchitecture.Application.Dto.SkuDto)">
             <summary>
             Method to add a new product record asynchronously.
             </summary>
             <param name="skuDto">Product record.</param>
-            <returns>Product object.</returns>
+            <returns>Result containing the created product object if successful, or an error message if validation fails.</returns>
         </member>
         <member name="M:Retail.Api.Products.src.CleanArchitecture.Application.Service.ProductService.UpdateProductAsync(System.Int64,Retail.Api.Products.src.CleanArchitecture.Application.Dto.SkuDto)">
             <summary>
@@ -313,7 +313,7 @@
             </summary>
             <param name="id">Product Id.</param>
             <param name="skuDto">Product record.</param>
-            <returns>Product object.</returns>
+            <returns>Result containing the updated product object if successful, or an error message if validation fails or product not found.</returns>
         </member>
         <member name="M:Retail.Api.Products.src.CleanArchitecture.Application.Service.ProductService.DeleteProductAsync(System.Int64)">
             <summary>

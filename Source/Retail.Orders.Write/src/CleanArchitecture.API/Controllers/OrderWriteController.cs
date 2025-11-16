@@ -1,4 +1,6 @@
-﻿using MediatR;
+﻿using System;
+using CommonLibrary.Results;
+using MediatR;
 using MessagingLibrary.Interface;
 using MessagingLibrary.Service;
 using Microsoft.AspNetCore.Components.Forms;
@@ -72,20 +74,21 @@ namespace Retail.Orders.Write.src.CleanArchitecture.API.Controllers
                 }
 
                 var command = new CreateOrderCommand { Order = value };
-                var result = await _mediator.Send(command);
-                if (result == null)
+                var result = await this._mediator.Send(command);
+
+                if (result.IsFailure)
                 {
-                    _logger.LogError("Order service returned null result");
-                    return StatusCode(500, MessageConstants.InternalServerError);
+                    this._logger.LogWarning("Failed to create order: {Error}", result.Error);
+                    return BadRequest(new { error = result.Error });
                 }
 
-                _logger.LogInformation("Order created successfully. OrderId: {OrderId}, CustomerId: {CustomerId}",
-                    result.Id, result.CustomerId);
-                return Ok(result);
+                this._logger.LogInformation("Order created successfully. OrderId: {OrderId}, CustomerId: {CustomerId}",
+                    result.Value.Id, result.Value.CustomerId);
+                return Ok(result.Value);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error creating order. CustomerId: {CustomerId}, TotalAmount: {TotalAmount}",
+                this._logger.LogError(ex, "Error creating order. CustomerId: {CustomerId}, TotalAmount: {TotalAmount}",
                     value.CustomerId, value.TotalAmount);
                 return StatusCode(500, MessageConstants.InternalServerError);
             }
@@ -123,20 +126,28 @@ namespace Retail.Orders.Write.src.CleanArchitecture.API.Controllers
 
                 value.Id = id; // Ensure the ID from the route is used
                 var command = new UpdateOrderCommand { Order = value };
-                var result = await _mediator.Send(command);
-                if (result == null)
+                var result = await this._mediator.Send(command);
+
+                if (result.IsFailure)
                 {
-                    _logger.LogError("Order service returned null result. OrderId: {OrderId}", id);
-                    return StatusCode(500, MessageConstants.InternalServerError);
+                    this._logger.LogWarning("Failed to update order with Id {OrderId}: {Error}", id, result.Error);
+                    
+                    // Check if it's a not found error (404) or validation error (400)
+                    if (result.Error != null && result.Error.Contains("not found", StringComparison.OrdinalIgnoreCase))
+                    {
+                        return NotFound(new { error = result.Error });
+                    }
+                    
+                    return BadRequest(new { error = result.Error });
                 }
 
-                _logger.LogInformation("Order updated successfully. OrderId: {OrderId}, CustomerId: {CustomerId}",
-                    id, result.CustomerId);
-                return Ok(result);
+                this._logger.LogInformation("Order updated successfully. OrderId: {OrderId}, CustomerId: {CustomerId}",
+                    id, result.Value.CustomerId);
+                return Ok(result.Value);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error updating order. OrderId: {OrderId}, CustomerId: {CustomerId}",
+                this._logger.LogError(ex, "Error updating order. OrderId: {OrderId}, CustomerId: {CustomerId}",
                     id, value.CustomerId);
                 return StatusCode(500, MessageConstants.InternalServerError);
             }

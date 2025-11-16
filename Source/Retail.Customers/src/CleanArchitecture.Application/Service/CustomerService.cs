@@ -1,4 +1,5 @@
 ﻿using CommonLibrary.MessageContract;
+using CommonLibrary.Results;
 using InventoryUpdatedEventNameSpace;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -89,31 +90,31 @@ namespace Retail.Api.Customers.src.CleanArchitecture.Application.Service
         /// Method to fetch customer record based on Id asynchronously.
         /// </summary>
         /// <param name="id">Customer Id.</param>
-        /// <returns>Customer object.</returns>
-        public async Task<CustomerDto> GetCustomerByIdAsync(long id)
+        /// <returns>Result containing the customer object if found, or an error message if not found.</returns>
+        public async Task<Result<CustomerDto>> GetCustomerByIdAsync(long id)
         {
-            _logger.LogInformation("Fetching customer with Id {CustomerId}", id);
+            this._logger.LogInformation("Fetching customer with Id {CustomerId}", id);
             
             try
             {
-                var customer = await _unitOfWork.Customers.GetByIdAsync(id);
+                var customer = await this._unitOfWork.Customers.GetByIdAsync(id);
                 
                 if (customer == null)
                 {
-                    _logger.LogWarning("Customer with Id {CustomerId} not found in repository", id);
-                    return null!;
+                    this._logger.LogWarning("Customer with Id {CustomerId} not found in repository", id);
+                    return Result<CustomerDto>.Failure($"Customer with ID {id} not found.");
                 }
 
-                _logger.LogDebug("Customer with Id {CustomerId} found. Converting to DTO", id);
-                var result = _customerDtoConverter.Convert(customer);
+                this._logger.LogDebug("Customer with Id {CustomerId} found. Converting to DTO", id);
+                var result = this._customerDtoConverter.Convert(customer);
                 
-                _logger.LogInformation("Successfully fetched customer with Id {CustomerId}", id);
-                return result;
+                this._logger.LogInformation("Successfully fetched customer with Id {CustomerId}", id);
+                return Result<CustomerDto>.Success(result);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error fetching customer with Id {CustomerId}", id);
-                throw;
+                this._logger.LogError(ex, "Error fetching customer with Id {CustomerId}", id);
+                return Result<CustomerDto>.Failure($"An error occurred while fetching customer with ID {id}: {ex.Message}");
             }
         }
 
@@ -121,38 +122,39 @@ namespace Retail.Api.Customers.src.CleanArchitecture.Application.Service
         /// Method to add a new customer record asynchronously.
         /// </summary>
         /// <param name="custDto">Customer record.</param>
-        /// <returns>Customer object.</returns>
-        public async Task<CustomerDto> AddCustomerAsync(CustomerDto custDto)
+        /// <returns>Result containing the created customer object if successful, or an error message if validation fails.</returns>
+        public async Task<Result<CustomerDto>> AddCustomerAsync(CustomerDto custDto)
         {
-            _logger.LogInformation("Adding new customer. FirstName: {FirstName}, LastName: {LastName}", 
+            this._logger.LogInformation("Adding new customer. FirstName: {FirstName}, LastName: {LastName}", 
                 custDto.FirstName, custDto.LastName);
             
-            var validationResult = _customerDtoValidator.Validate(custDto);
+            var validationResult = this._customerDtoValidator.Validate(custDto);
             if (!validationResult.IsValid)
             {
-                _logger.LogWarning("Customer validation failed. Validator: {ValidatorName}, Reason: {Reason}",
+                this._logger.LogWarning("Customer validation failed. Validator: {ValidatorName}, Reason: {Reason}",
                     validationResult.ValidatorName, validationResult.FailureReason);
-                throw new ArgumentException(validationResult.FailureReason ?? "Validation failed", nameof(custDto));
+                return Result<CustomerDto>.Failure(validationResult.FailureReason ?? "Validation failed");
             }
 
-            var custObj = _customerConverter.Convert(custDto);
-            _logger.LogDebug("Customer DTO converted to entity");
+            var custObj = this._customerConverter.Convert(custDto);
+            this._logger.LogDebug("Customer DTO converted to entity");
 
             try
             {
-                var result = await _unitOfWork.Customers.AddAsync(custObj);
-                await _unitOfWork.CompleteAsync();
-                await _unitOfWork.CommitTransactionAsync();
+                await this._unitOfWork.BeginTransactionAsync();
+                var result = await this._unitOfWork.Customers.AddAsync(custObj);
+                await this._unitOfWork.CompleteAsync();
+                await this._unitOfWork.CommitTransactionAsync();
 
-                _logger.LogInformation("Customer added successfully. CustomerId: {CustomerId}", result.Id);
-                return _customerDtoConverter.Convert(result);
+                this._logger.LogInformation("Customer added successfully. CustomerId: {CustomerId}", result.Id);
+                return Result<CustomerDto>.Success(this._customerDtoConverter.Convert(result));
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error adding customer. FirstName: {FirstName}, LastName: {LastName}", 
+                this._logger.LogError(ex, "Error adding customer. FirstName: {FirstName}, LastName: {LastName}", 
                     custDto.FirstName, custDto.LastName);
-                await _unitOfWork.RollbackTransactionAsync();
-                throw;
+                await this._unitOfWork.RollbackTransactionAsync();
+                return Result<CustomerDto>.Failure($"An error occurred while adding customer: {ex.Message}");
             }
         }
 
@@ -161,47 +163,47 @@ namespace Retail.Api.Customers.src.CleanArchitecture.Application.Service
         /// </summary>
         /// <param name="id">Customer Id.</param>
         /// <param name="custDto">Customer record.</param>
-        /// <returns>Customer object.</returns>
-        public async Task<CustomerDto> UpdateCustomerAsync(long id, CustomerDto custDto)
+        /// <returns>Result containing the updated customer object if successful, or an error message if validation fails or customer not found.</returns>
+        public async Task<Result<CustomerDto>> UpdateCustomerAsync(long id, CustomerDto custDto)
         {
-            _logger.LogInformation("Updating customer with Id {CustomerId}. FirstName: {FirstName}, LastName: {LastName}", 
+            this._logger.LogInformation("Updating customer with Id {CustomerId}. FirstName: {FirstName}, LastName: {LastName}", 
                 id, custDto.FirstName, custDto.LastName);
             
-            var validationResult = _customerDtoValidator.Validate(custDto);
+            var validationResult = this._customerDtoValidator.Validate(custDto);
             if (!validationResult.IsValid)
             {
-                _logger.LogWarning("Customer validation failed for update. CustomerId: {CustomerId}, Validator: {ValidatorName}, Reason: {Reason}",
+                this._logger.LogWarning("Customer validation failed for update. CustomerId: {CustomerId}, Validator: {ValidatorName}, Reason: {Reason}",
                     id, validationResult.ValidatorName, validationResult.FailureReason);
-                throw new ArgumentException(validationResult.FailureReason ?? "Validation failed", nameof(custDto));
+                return Result<CustomerDto>.Failure(validationResult.FailureReason ?? "Validation failed");
             }
 
-            var existingCustomer = await _unitOfWork.Customers.GetByIdAsync(id);
+            var existingCustomer = await this._unitOfWork.Customers.GetByIdAsync(id);
             if (existingCustomer == null)
             {
-                _logger.LogWarning("Customer with Id {CustomerId} not found for update", id);
-                throw new KeyNotFoundException($"Customer with ID {id} not found.");
+                this._logger.LogWarning("Customer with Id {CustomerId} not found for update", id);
+                return Result<CustomerDto>.Failure($"Customer with ID {id} not found.");
             }
 
-            var updatedCustomer = _customerConverter.Convert(custDto);
+            var updatedCustomer = this._customerConverter.Convert(custDto);
             existingCustomer.FirstName = updatedCustomer.FirstName;
             existingCustomer.LastName = updatedCustomer.LastName;
-            _logger.LogDebug("Customer entity updated with new values");
+            this._logger.LogDebug("Customer entity updated with new values");
 
-            await _unitOfWork.BeginTransactionAsync();
             try
             {
-                _unitOfWork.Customers.Update(existingCustomer);
-                await _unitOfWork.CompleteAsync();
-                await _unitOfWork.CommitTransactionAsync();
+                await this._unitOfWork.BeginTransactionAsync();
+                this._unitOfWork.Customers.Update(existingCustomer);
+                await this._unitOfWork.CompleteAsync();
+                await this._unitOfWork.CommitTransactionAsync();
 
-                _logger.LogInformation("Customer updated successfully. CustomerId: {CustomerId}", id);
-                return _customerDtoConverter.Convert(existingCustomer);
+                this._logger.LogInformation("Customer updated successfully. CustomerId: {CustomerId}", id);
+                return Result<CustomerDto>.Success(this._customerDtoConverter.Convert(existingCustomer));
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error updating customer with Id {CustomerId}", id);
-                await _unitOfWork.RollbackTransactionAsync();
-                throw;
+                this._logger.LogError(ex, "Error updating customer with Id {CustomerId}", id);
+                await this._unitOfWork.RollbackTransactionAsync();
+                return Result<CustomerDto>.Failure($"An error occurred while updating customer: {ex.Message}");
             }
         }
 

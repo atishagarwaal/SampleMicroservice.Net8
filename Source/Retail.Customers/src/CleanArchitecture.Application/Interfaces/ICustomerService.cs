@@ -1,5 +1,6 @@
 ﻿namespace Retail.Api.Customers.src.CleanArchitecture.Application.Interfaces
 {
+    using CommonLibrary.Results;
     using InventoryUpdatedEventNameSpace;
     using Retail.Api.Customers.src.CleanArchitecture.Application.Dto;
 
@@ -18,29 +19,29 @@
         /// Method to fetch customer record based on Id asynchronously.
         /// </summary>
         /// <param name="id">Customer Id.</param>
-        /// <returns>Customer object.</returns>
-        Task<CustomerDto> GetCustomerByIdAsync(long id);
+        /// <returns>Result containing the customer object if found, or an error message if not found.</returns>
+        Task<Result<CustomerDto>> GetCustomerByIdAsync(long id);
 
         /// <summary>
         /// Method to add a new customer record asynchronously.
         /// </summary>
         /// <param name="custDto">Customer record.</param>
-        /// <returns>Customer object.</returns>
-        Task<CustomerDto> AddCustomerAsync(CustomerDto custDto);
+        /// <returns>Result containing the created customer object if successful, or an error message if validation fails.</returns>
+        Task<Result<CustomerDto>> AddCustomerAsync(CustomerDto custDto);
 
         /// <summary>
         /// Method to update customer record asynchronously.
         /// </summary>
         /// <param name="id">Customer Id.</param>
         /// <param name="custDto">Customer record.</param>
-        /// <returns>Customer object.</returns>
-        Task<CustomerDto> UpdateCustomerAsync(long id, CustomerDto custDto);
+        /// <returns>Result containing the updated customer object if successful, or an error message if validation fails or customer not found.</returns>
+        Task<Result<CustomerDto>> UpdateCustomerAsync(long id, CustomerDto custDto);
 
         /// <summary>
         /// Method to delete customer record asynchronously.
         /// </summary>
         /// <param name="id">Customer Id.</param>
-        /// <returns>Customer object.</returns>
+        /// <returns>True if customer was deleted, false if not found.</returns>
         Task<bool> DeleteCustomerAsync(long id);
 
         Task HandleOrderCreatedEvent(InventoryUpdatedEvent inventoryUpdatedEvent);

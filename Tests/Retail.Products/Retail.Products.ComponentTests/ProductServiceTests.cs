@@ -158,7 +158,9 @@ namespace Retail.Products.ComponentTests
 
             // Assert
             result.Should().NotBeNull();
-            result.Should().BeEquivalentTo(skuDto);
+            result.IsSuccess.Should().BeTrue();
+            result.Value.Should().NotBeNull();
+            result.Value.Should().BeEquivalentTo(skuDto);
         }
 
         [TestMethod]
@@ -176,7 +178,9 @@ namespace Retail.Products.ComponentTests
             var result = await _productService.GetProductByIdAsync(id);
 
             // Assert
-            result.Should().BeNull();
+            result.Should().NotBeNull();
+            result.IsFailure.Should().BeTrue();
+            result.Error.Should().Contain("not found");
         }
 
         [TestMethod]
@@ -210,7 +214,9 @@ namespace Retail.Products.ComponentTests
 
             // Assert
             result.Should().NotBeNull();
-            result.Should().BeEquivalentTo(resultSkuDto);
+            result.IsSuccess.Should().BeTrue();
+            result.Value.Should().NotBeNull();
+            result.Value.Should().BeEquivalentTo(resultSkuDto);
         }
 
         [TestMethod]
@@ -233,9 +239,13 @@ namespace Retail.Products.ComponentTests
                 .Setup(x => x.AddAsync(sku))
                 .ThrowsAsync(new Exception("Database error"));
 
-            // Act & Assert
-            await _productService.Invoking(x => x.AddProductAsync(skuDto))
-                .Should().ThrowAsync<Exception>();
+            // Act
+            var result = await _productService.AddProductAsync(skuDto);
+
+            // Assert
+            result.Should().NotBeNull();
+            result.IsFailure.Should().BeTrue();
+            result.Error.Should().Contain("Database error");
         }
 
         [TestMethod]
@@ -250,9 +260,13 @@ namespace Retail.Products.ComponentTests
                 .Setup(x => x.Validate(skuDto))
                 .Returns(validationData);
 
-            // Act & Assert
-            await _productService.Invoking(x => x.AddProductAsync(skuDto))
-                .Should().ThrowAsync<ArgumentException>();
+            // Act
+            var result = await _productService.AddProductAsync(skuDto);
+
+            // Assert
+            result.Should().NotBeNull();
+            result.IsFailure.Should().BeTrue();
+            result.Error.Should().Contain("The Name field is null or whitespace");
         }
 
         [TestMethod]
@@ -270,13 +284,16 @@ namespace Retail.Products.ComponentTests
                 .Setup(x => x.Validate(skuDto))
                 .Returns(new ValidationData());
 
+            // Mock GetByIdAsync for existence check and retrieving updated product
+            var existingSku = new Sku { Id = id, Name = "Original Product", UnitPrice = 29.99, Inventory = 100 };
+            _mockSkuRepository
+                .SetupSequence(x => x.GetByIdAsync(id))
+                .ReturnsAsync(existingSku)  // First call - existence check
+                .ReturnsAsync(updatedSku);    // Second call - after update
+
             _mockSkuConverter
                 .Setup(x => x.Convert(skuDto))
                 .Returns(sku);
-
-            _mockSkuRepository
-                .Setup(x => x.GetByIdAsync(id))
-                .ReturnsAsync(updatedSku);
 
             _mockSkuDtoConverter
                 .Setup(x => x.Convert(updatedSku))
@@ -287,7 +304,9 @@ namespace Retail.Products.ComponentTests
 
             // Assert
             result.Should().NotBeNull();
-            result.Should().BeEquivalentTo(resultSkuDto);
+            result.IsSuccess.Should().BeTrue();
+            result.Value.Should().NotBeNull();
+            result.Value.Should().BeEquivalentTo(resultSkuDto);
         }
 
         [TestMethod]
@@ -303,6 +322,12 @@ namespace Retail.Products.ComponentTests
                 .Setup(x => x.Validate(skuDto))
                 .Returns(new ValidationData());
 
+            // Mock GetByIdAsync for existence check
+            var existingSku = new Sku { Id = id, Name = "Original Product", UnitPrice = 29.99, Inventory = 100 };
+            _mockSkuRepository
+                .Setup(x => x.GetByIdAsync(id))
+                .ReturnsAsync(existingSku);
+
             _mockSkuConverter
                 .Setup(x => x.Convert(skuDto))
                 .Returns(sku);
@@ -311,9 +336,13 @@ namespace Retail.Products.ComponentTests
                 .Setup(x => x.Update(It.IsAny<Sku>()))
                 .Throws(new Exception("Database error"));
 
-            // Act & Assert
-            await _productService.Invoking(x => x.UpdateProductAsync(id, skuDto))
-                .Should().ThrowAsync<Exception>();
+            // Act
+            var result = await _productService.UpdateProductAsync(id, skuDto);
+
+            // Assert
+            result.Should().NotBeNull();
+            result.IsFailure.Should().BeTrue();
+            result.Error.Should().Contain("Database error");
         }
 
         [TestMethod]
@@ -329,9 +358,13 @@ namespace Retail.Products.ComponentTests
                 .Setup(x => x.Validate(skuDto))
                 .Returns(validationData);
 
-            // Act & Assert
-            await _productService.Invoking(x => x.UpdateProductAsync(id, skuDto))
-                .Should().ThrowAsync<ArgumentException>();
+            // Act
+            var result = await _productService.UpdateProductAsync(id, skuDto);
+
+            // Assert
+            result.Should().NotBeNull();
+            result.IsFailure.Should().BeTrue();
+            result.Error.Should().Contain("The Name field is null or whitespace");
         }
 
         [TestMethod]

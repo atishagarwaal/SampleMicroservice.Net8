@@ -27,6 +27,32 @@
             </summary>
             <param name="configurationBuilder">Configuration builder.</param>
         </member>
+        <member name="T:Retail.Orders.Write.Application.OrderWriteApplication">
+            <summary>
+            Represents the Order Write microservice application lifecycle.
+            </summary>
+        </member>
+        <member name="M:Retail.Orders.Write.Application.OrderWriteApplication.#ctor(System.IServiceProvider,Microsoft.Extensions.Logging.ILogger{Retail.Orders.Write.Application.OrderWriteApplication})">
+            <summary>
+            Initializes a new instance of the <see cref="T:Retail.Orders.Write.Application.OrderWriteApplication"/> class.
+            </summary>
+            <param name="serviceProvider">The service provider.</param>
+            <param name="logger">The logger.</param>
+        </member>
+        <member name="M:Retail.Orders.Write.Application.OrderWriteApplication.StartAsync(System.Threading.CancellationToken)">
+            <summary>
+            Starts the application asynchronously.
+            </summary>
+            <param name="cancellationToken">Cancellation token to cancel the operation.</param>
+            <returns>A <see cref="T:System.Threading.Tasks.Task"/> representing the asynchronous operation.</returns>
+        </member>
+        <member name="M:Retail.Orders.Write.Application.OrderWriteApplication.StopAsync(System.Threading.CancellationToken)">
+            <summary>
+            Stops the application asynchronously.
+            </summary>
+            <param name="cancellationToken">Cancellation token to cancel the operation.</param>
+            <returns>A <see cref="T:System.Threading.Tasks.Task"/> representing the asynchronous operation.</returns>
+        </member>
         <member name="T:Retail.Orders.Write.Application.Startup">
             <summary>
             Configures web host.
@@ -97,6 +123,26 @@
             </summary>
             <param name="id">Order Id.</param>
             <returns>True if deleted successfully, false otherwise.</returns>
+        </member>
+        <member name="T:Retail.Orders.Write.src.CleanArchitecture.Application.Commands.CreateOrderCommand">
+            <summary>
+            Command to create a new order.
+            </summary>
+        </member>
+        <member name="P:Retail.Orders.Write.src.CleanArchitecture.Application.Commands.CreateOrderCommand.Order">
+            <summary>
+            Gets or sets the order DTO to create.
+            </summary>
+        </member>
+        <member name="T:Retail.Orders.Write.src.CleanArchitecture.Application.Commands.UpdateOrderCommand">
+            <summary>
+            Command to update an existing order.
+            </summary>
+        </member>
+        <member name="P:Retail.Orders.Write.src.CleanArchitecture.Application.Commands.UpdateOrderCommand.Order">
+            <summary>
+            Gets or sets the order DTO to update.
+            </summary>
         </member>
         <member name="T:Retail.Orders.Write.src.CleanArchitecture.Application.Constants.MessageConstants">
             <summary>
@@ -286,7 +332,7 @@
             </summary>
             <param name="request">The command request.</param>
             <param name="cancellationToken">Cancellation token.</param>
-            <returns>Created order DTO.</returns>
+            <returns>Result containing the created order DTO if successful, or an error message if validation fails.</returns>
         </member>
         <member name="T:Retail.Orders.Write.src.CleanArchitecture.Application.Handlers.DeleteOrderCommandHandler">
             <summary>
@@ -330,7 +376,7 @@
             </summary>
             <param name="request">The command request.</param>
             <param name="cancellationToken">Cancellation token.</param>
-            <returns>Updated order DTO.</returns>
+            <returns>Result containing the updated order DTO if successful, or an error message if validation fails or order not found.</returns>
         </member>
         <member name="T:Retail.Orders.Write.src.CleanArchitecture.Application.Service.ServiceInitializer">
             <summary>

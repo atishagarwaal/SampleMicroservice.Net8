@@ -178,9 +178,11 @@ namespace Retail.Orders.Write.ComponentTests
 
             // Assert
             result.Should().NotBeNull();
-            result.Should().BeEquivalentTo(resultDto);
-            result.Id.Should().Be(1);
-            result.CustomerId.Should().Be(100);
+            result.IsSuccess.Should().BeTrue();
+            result.Value.Should().NotBeNull();
+            result.Value.Should().BeEquivalentTo(resultDto);
+            result.Value.Id.Should().Be(1);
+            result.Value.CustomerId.Should().Be(100);
         }
 
         [TestMethod]
@@ -203,9 +205,13 @@ namespace Retail.Orders.Write.ComponentTests
 
             var command = new CreateOrderCommand { Order = orderDto };
 
-            // Act & Assert
-            await Assert.ThrowsExceptionAsync<ArgumentException>(() => 
-                _handler.Handle(command, CancellationToken.None));
+            // Act
+            var result = await _handler.Handle(command, CancellationToken.None);
+
+            // Assert
+            result.Should().NotBeNull();
+            result.IsFailure.Should().BeTrue();
+            result.Error.Should().Contain("The given identifier does not have a valid value");
         }
 
         [TestMethod]

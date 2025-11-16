@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using CommonLibrary.Results;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using Retail.Orders.Write.src.CleanArchitecture.Application.Commands;
@@ -16,7 +17,7 @@ namespace Retail.Orders.Write.src.CleanArchitecture.Application.Handlers
     /// <summary>
     /// Handler for UpdateOrderCommand.
     /// </summary>
-    public class UpdateOrderCommandHandler : IRequestHandler<UpdateOrderCommand, OrderDto>
+    public class UpdateOrderCommandHandler : IRequestHandler<UpdateOrderCommand, Result<OrderDto>>
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IConverter<OrderDto, Order> _orderConverter;
@@ -51,43 +52,51 @@ namespace Retail.Orders.Write.src.CleanArchitecture.Application.Handlers
         /// </summary>
         /// <param name="request">The command request.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
-        /// <returns>Updated order DTO.</returns>
-        public async Task<OrderDto> Handle(UpdateOrderCommand request, CancellationToken cancellationToken)
+        /// <returns>Result containing the updated order DTO if successful, or an error message if validation fails or order not found.</returns>
+        public async Task<Result<OrderDto>> Handle(UpdateOrderCommand request, CancellationToken cancellationToken)
         {
             if (request?.Order == null)
             {
-                _logger.LogError("UpdateOrderCommand or Order is null");
-                throw new ArgumentNullException(nameof(request));
+                this._logger.LogError("UpdateOrderCommand or Order is null");
+                return Result<OrderDto>.Failure("Order data is required.");
             }
 
-            using (_logger.BeginScope(new Dictionary<string, object>
+            using (this._logger.BeginScope(new Dictionary<string, object>
             {
                 ["OrderId"] = request.Order.Id,
                 ["CustomerId"] = request.Order.CustomerId,
                 ["LineItemsCount"] = request.Order.LineItems?.Count ?? 0
             }))
             {
-                _logger.LogInformation("Handling UpdateOrderCommand. OrderId: {OrderId}, LineItemsCount: {LineItemsCount}",
+                this._logger.LogInformation("Handling UpdateOrderCommand. OrderId: {OrderId}, LineItemsCount: {LineItemsCount}",
                     request.Order.Id, request.Order.LineItems?.Count ?? 0);
 
                 try
                 {
                     // Validate order DTO
-                    var validationResult = _orderDtoValidator.Validate(request.Order);
+                    var validationResult = this._orderDtoValidator.Validate(request.Order);
                     if (!validationResult.IsValid)
                     {
-                        _logger.LogWarning("Order validation failed. OrderId: {OrderId}, Validator: {ValidatorName}, Reason: {FailureReason}",
+                        this._logger.LogWarning("Order validation failed. OrderId: {OrderId}, Validator: {ValidatorName}, Reason: {FailureReason}",
                             request.Order.Id, validationResult.ValidatorName, validationResult.FailureReason);
-                        throw new ArgumentException(validationResult.FailureReason ?? "Validation failed", nameof(request.Order));
+                        return Result<OrderDto>.Failure(validationResult.FailureReason ?? "Validation failed");
                     }
 
-                    await _unitOfWork.BeginTransactionAsync();
-                    var order = _orderConverter.Convert(request.Order);
-                    _unitOfWork.Orders.Update(order);
+                    // Check if order exists
+                    var existingOrder = await this._unitOfWork.Orders.GetByIdAsync(request.Order.Id);
+                    if (existingOrder == null)
+                    {
+                        this._logger.LogWarning("Order with Id {OrderId} not found for update", request.Order.Id);
+                        return Result<OrderDto>.Failure($"Order with ID {request.Order.Id} not found.");
+                    }
+
+                    await this._unitOfWork.BeginTransactionAsync();
+                    var order = this._orderConverter.Convert(request.Order);
+                    this._unitOfWork.Orders.Update(order);
 
                     if (request.Order.LineItems != null)
                     {
-                        _logger.LogDebug("Updating {LineItemsCount} line items for order", request.Order.LineItems.Count);
+                        this._logger.LogDebug("Updating {LineItemsCount} line items for order", request.Order.LineItems.Count);
                         foreach (var lineItemDto in request.Order.LineItems)
                         {
                             var lineRecord = new LineItem
@@ -97,30 +106,30 @@ namespace Retail.Orders.Write.src.CleanArchitecture.Application.Handlers
                                 SkuId = lineItemDto.SkuId,
                                 Qty = lineItemDto.Qty,
                             };
-                            _unitOfWork.LineItems.Update(lineRecord);
+                            this._unitOfWork.LineItems.Update(lineRecord);
                         }
                     }
 
-                    await _unitOfWork.CompleteAsync();
-                    await _unitOfWork.CommitTransactionAsync();
+                    await this._unitOfWork.CompleteAsync();
+                    await this._unitOfWork.CommitTransactionAsync();
 
-                    var updatedOrder = await _unitOfWork.Orders.GetByIdAsync(order.Id);
+                    var updatedOrder = await this._unitOfWork.Orders.GetByIdAsync(order.Id);
                     if (updatedOrder == null)
                     {
-                        _logger.LogError("Order not found after update. OrderId: {OrderId}", order.Id);
-                        throw new InvalidOperationException($"Order with ID {order.Id} was not found after update");
+                        this._logger.LogError("Order not found after update. OrderId: {OrderId}", order.Id);
+                        return Result<OrderDto>.Failure($"Order with ID {order.Id} was not found after update");
                     }
 
-                    _logger.LogInformation("Order updated successfully. OrderId: {OrderId}, CustomerId: {CustomerId}",
+                    this._logger.LogInformation("Order updated successfully. OrderId: {OrderId}, CustomerId: {CustomerId}",
                         updatedOrder.Id, updatedOrder.CustomerId);
 
-                    return _orderDtoConverter.Convert(updatedOrder);
+                    return Result<OrderDto>.Success(this._orderDtoConverter.Convert(updatedOrder));
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, "Error updating order. OrderId: {OrderId}", request.Order.Id);
-                    await _unitOfWork.RollbackTransactionAsync();
-                    throw;
+                    this._logger.LogError(ex, "Error updating order. OrderId: {OrderId}", request.Order.Id);
+                    await this._unitOfWork.RollbackTransactionAsync();
+                    return Result<OrderDto>.Failure($"An error occurred while updating order: {ex.Message}");
                 }
             }
         }

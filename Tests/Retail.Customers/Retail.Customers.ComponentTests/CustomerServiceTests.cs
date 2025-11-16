@@ -137,7 +137,9 @@ namespace Retail.Customers.ComponentTests
 
             // Assert
             result.Should().NotBeNull();
-            result.Should().BeEquivalentTo(customerDto);
+            result.IsSuccess.Should().BeTrue();
+            result.Value.Should().NotBeNull();
+            result.Value.Should().BeEquivalentTo(customerDto);
         }
 
         [TestMethod]
@@ -155,7 +157,9 @@ namespace Retail.Customers.ComponentTests
             var result = await _customerService.GetCustomerByIdAsync(customerId);
 
             // Assert
-            result.Should().BeNull();
+            result.Should().NotBeNull();
+            result.IsFailure.Should().BeTrue();
+            result.Error.Should().Contain("not found");
         }
 
         [TestMethod]
@@ -189,7 +193,9 @@ namespace Retail.Customers.ComponentTests
 
             // Assert
             result.Should().NotBeNull();
-            result.Should().BeEquivalentTo(resultDto);
+            result.IsSuccess.Should().BeTrue();
+            result.Value.Should().NotBeNull();
+            result.Value.Should().BeEquivalentTo(resultDto);
         }
 
         [TestMethod]
@@ -204,9 +210,13 @@ namespace Retail.Customers.ComponentTests
                 .Setup(x => x.Validate(customerDto))
                 .Returns(validationData);
 
-            // Act & Assert
-            await Assert.ThrowsExceptionAsync<ArgumentException>(() => 
-                _customerService.AddCustomerAsync(customerDto));
+            // Act
+            var result = await _customerService.AddCustomerAsync(customerDto);
+
+            // Assert
+            result.Should().NotBeNull();
+            result.IsFailure.Should().BeTrue();
+            result.Error.Should().Contain("The FirstName field is null or whitespace");
         }
 
         [TestMethod]
@@ -229,9 +239,13 @@ namespace Retail.Customers.ComponentTests
                 .Setup(x => x.Customers.AddAsync(customer))
                 .ThrowsAsync(new Exception("Database error"));
 
-            // Act & Assert
-            await Assert.ThrowsExceptionAsync<Exception>(() => 
-                _customerService.AddCustomerAsync(customerDto));
+            // Act
+            var result = await _customerService.AddCustomerAsync(customerDto);
+
+            // Assert
+            result.Should().NotBeNull();
+            result.IsFailure.Should().BeTrue();
+            result.Error.Should().Contain("Database error");
         }
 
         [TestMethod]
@@ -266,7 +280,9 @@ namespace Retail.Customers.ComponentTests
 
             // Assert
             result.Should().NotBeNull();
-            result.Should().BeEquivalentTo(resultDto);
+            result.IsSuccess.Should().BeTrue();
+            result.Value.Should().NotBeNull();
+            result.Value.Should().BeEquivalentTo(resultDto);
             existingCustomer.FirstName.Should().Be("John");
             existingCustomer.LastName.Should().Be("Updated");
         }
@@ -284,14 +300,18 @@ namespace Retail.Customers.ComponentTests
                 .Setup(x => x.Validate(customerDto))
                 .Returns(validationData);
 
-            // Act & Assert
-            await Assert.ThrowsExceptionAsync<ArgumentException>(() => 
-                _customerService.UpdateCustomerAsync(customerId, customerDto));
+            // Act
+            var result = await _customerService.UpdateCustomerAsync(customerId, customerDto);
+
+            // Assert
+            result.Should().NotBeNull();
+            result.IsFailure.Should().BeTrue();
+            result.Error.Should().Contain("The FirstName field is null or whitespace");
         }
 
         [TestMethod]
         [TestCategory("CustomerService")]
-        public async Task UpdateCustomerAsync_WithInvalidId_ThrowsKeyNotFoundException()
+        public async Task UpdateCustomerAsync_WithInvalidId_ReturnsFailure()
         {
             // Arrange
             var customerId = 999L;
@@ -305,9 +325,13 @@ namespace Retail.Customers.ComponentTests
                 .Setup(x => x.Customers.GetByIdAsync(customerId))
                 .ReturnsAsync((Customer?)null);
 
-            // Act & Assert
-            await Assert.ThrowsExceptionAsync<KeyNotFoundException>(() => 
-                _customerService.UpdateCustomerAsync(customerId, customerDto));
+            // Act
+            var result = await _customerService.UpdateCustomerAsync(customerId, customerDto);
+
+            // Assert
+            result.Should().NotBeNull();
+            result.IsFailure.Should().BeTrue();
+            result.Error.Should().Contain("not found");
         }
 
         [TestMethod]
@@ -336,9 +360,13 @@ namespace Retail.Customers.ComponentTests
                 .Setup(x => x.CompleteAsync())
                 .ThrowsAsync(new Exception("Database error"));
 
-            // Act & Assert
-            await Assert.ThrowsExceptionAsync<Exception>(() => 
-                _customerService.UpdateCustomerAsync(customerId, customerDto));
+            // Act
+            var result = await _customerService.UpdateCustomerAsync(customerId, customerDto);
+
+            // Assert
+            result.Should().NotBeNull();
+            result.IsFailure.Should().BeTrue();
+            result.Error.Should().Contain("Database error");
         }
 
         [TestMethod]

@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System;
+using CommonLibrary.Results;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using Retail.Api.Products.src.CleanArchitecture.Application.Constants;
@@ -87,17 +89,16 @@ namespace Retail.Api.Products.src.CleanArchitecture.API.Controllers
                 }
 
                 // Call business service
-                var productObj = await _productService.GetProductByIdAsync(id);
+                var result = await this._productService.GetProductByIdAsync(id);
 
-                // Check if object is null
-                if (productObj == null)
+                if (result.IsFailure)
                 {
-                    _logger.LogWarning("Product not found. ProductId: {ProductId}", id);
-                    return NotFound();
+                    this._logger.LogWarning("Failed to retrieve product with Id {ProductId}: {Error}", id, result.Error);
+                    return NotFound(new { error = result.Error });
                 }
 
-                _logger.LogInformation("Product retrieved successfully. ProductId: {ProductId}", id);
-                return Ok(productObj);
+                this._logger.LogInformation("Product retrieved successfully. ProductId: {ProductId}", id);
+                return Ok(result.Value);
             }
             catch (Exception ex)
             {
@@ -132,18 +133,17 @@ namespace Retail.Api.Products.src.CleanArchitecture.API.Controllers
                 }
 
                 // Call business service
-                var result = await _productService.AddProductAsync(value);
+                var result = await this._productService.AddProductAsync(value);
 
-                // Check if result is null
-                if (result == null)
+                if (result.IsFailure)
                 {
-                    _logger.LogError("Product service returned null result");
-                    return StatusCode(500, MessageConstants.InternalServerError);
+                    this._logger.LogWarning("Failed to create product: {Error}", result.Error);
+                    return BadRequest(new { error = result.Error });
                 }
 
-                _logger.LogInformation("Product created successfully. ProductId: {ProductId}, Name: {ProductName}",
-                    result.Id, result.Name);
-                return Ok(result);
+                this._logger.LogInformation("Product created successfully. ProductId: {ProductId}, Name: {ProductName}",
+                    result.Value.Id, result.Value.Name);
+                return Ok(result.Value);
             }
             catch (Exception ex)
             {
@@ -180,18 +180,24 @@ namespace Retail.Api.Products.src.CleanArchitecture.API.Controllers
                 }
 
                 // Call business service
-                var result = await _productService.UpdateProductAsync(id, value);
+                var result = await this._productService.UpdateProductAsync(id, value);
 
-                // Check if result is null
-                if (result == null)
+                if (result.IsFailure)
                 {
-                    _logger.LogError("Product service returned null result. ProductId: {ProductId}", id);
-                    return StatusCode(500, MessageConstants.InternalServerError);
+                    this._logger.LogWarning("Failed to update product with Id {ProductId}: {Error}", id, result.Error);
+                    
+                    // Check if it's a not found error (404) or validation error (400)
+                    if (result.Error != null && result.Error.Contains("not found", StringComparison.OrdinalIgnoreCase))
+                    {
+                        return NotFound(new { error = result.Error });
+                    }
+                    
+                    return BadRequest(new { error = result.Error });
                 }
 
-                _logger.LogInformation("Product updated successfully. ProductId: {ProductId}, Name: {ProductName}",
-                    id, result.Name);
-                return Ok(result);
+                this._logger.LogInformation("Product updated successfully. ProductId: {ProductId}, Name: {ProductName}",
+                    id, result.Value.Name);
+                return Ok(result.Value);
             }
             catch (Exception ex)
             {

@@ -1,4 +1,6 @@
-﻿using MessagingLibrary.Interface;
+﻿using System;
+using CommonLibrary.Results;
+using MessagingLibrary.Interface;
 using MessagingLibrary.Service;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -83,32 +85,24 @@ namespace Retail.Api.Customers.src.CleanArchitecture.API.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(long id)
         {
-            _logger.LogInformation("Retrieving customer with Id {CustomerId}", id);
+            this._logger.LogInformation("Retrieving customer with Id {CustomerId}", id);
             
-            try
+            if (id == 0)
             {
-                if (id == 0)
-                {
-                    _logger.LogWarning("Invalid customer Id provided: {CustomerId}", id);
-                    return BadRequest(MessageConstants.InvalidParameter);
-                }
-
-                var custObj = await _customerService.GetCustomerByIdAsync(id);
-
-                if (custObj == null)
-                {
-                    _logger.LogWarning("Customer with Id {CustomerId} not found", id);
-                    return NotFound();
-                }
-
-                _logger.LogInformation("Successfully retrieved customer with Id {CustomerId}", id);
-                return Ok(custObj);
+                this._logger.LogWarning("Invalid customer Id provided: {CustomerId}", id);
+                return BadRequest(MessageConstants.InvalidParameter);
             }
-            catch (Exception ex)
+
+            var result = await this._customerService.GetCustomerByIdAsync(id);
+
+            if (result.IsFailure)
             {
-                _logger.LogError(ex, "Error retrieving customer with Id {CustomerId}", id);
-                return StatusCode(500, MessageConstants.InternalServerError);
+                this._logger.LogWarning("Failed to retrieve customer with Id {CustomerId}: {Error}", id, result.Error);
+                return NotFound(new { error = result.Error });
             }
+
+            this._logger.LogInformation("Successfully retrieved customer with Id {CustomerId}", id);
+            return Ok(result.Value);
         }
 
         /// <summary>
@@ -120,38 +114,22 @@ namespace Retail.Api.Customers.src.CleanArchitecture.API.Controllers
         {
             if (value == null)
             {
-                _logger.LogWarning("Received null customer DTO in POST request");
+                this._logger.LogWarning("Received null customer DTO in POST request");
                 return BadRequest(MessageConstants.InvalidParameter);
             }
 
-            _logger.LogInformation("Creating customer. FirstName: {FirstName}, LastName: {LastName}", value.FirstName, value.LastName);
+            this._logger.LogInformation("Creating customer. FirstName: {FirstName}, LastName: {LastName}", value.FirstName, value.LastName);
             
-            try
+            var result = await this._customerService.AddCustomerAsync(value);
+
+            if (result.IsFailure)
             {
-                var validationResult = _customerDtoValidator.Validate(value);
-                if (!validationResult.IsValid)
-                {
-                    _logger.LogWarning("Customer validation failed. Validator: {ValidatorName}, Reason: {Reason}",
-                        validationResult.ValidatorName, validationResult.FailureReason);
-                    return BadRequest(new { error = validationResult.FailureReason, validator = validationResult.ValidatorName });
-                }
-
-                var result = await _customerService.AddCustomerAsync(value);
-
-                if (result == null)
-                {
-                    _logger.LogWarning("AddCustomerAsync returned null result");
-                    return StatusCode(500, MessageConstants.InternalServerError);
-                }
-
-                _logger.LogInformation("Customer created successfully. CustomerId: {CustomerId}", result.Id);
-                return Ok(result);
+                this._logger.LogWarning("Failed to create customer: {Error}", result.Error);
+                return BadRequest(new { error = result.Error });
             }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error creating customer. FirstName: {FirstName}, LastName: {LastName}", value.FirstName, value.LastName);
-                return StatusCode(500, MessageConstants.InternalServerError);
-            }
+
+            this._logger.LogInformation("Customer created successfully. CustomerId: {CustomerId}", result.Value.Id);
+            return Ok(result.Value);
         }
 
         /// <summary>
@@ -164,39 +142,30 @@ namespace Retail.Api.Customers.src.CleanArchitecture.API.Controllers
         {
             if (id == 0 || value == null)
             {
-                _logger.LogWarning("Invalid parameters for update. CustomerId: {CustomerId}, DTO is null: {IsNull}", id, value == null);
+                this._logger.LogWarning("Invalid parameters for update. CustomerId: {CustomerId}, DTO is null: {IsNull}", id, value == null);
                 return BadRequest(MessageConstants.InvalidParameter);
             }
 
-            _logger.LogInformation("Updating customer with Id {CustomerId}. FirstName: {FirstName}, LastName: {LastName}", 
+            this._logger.LogInformation("Updating customer with Id {CustomerId}. FirstName: {FirstName}, LastName: {LastName}", 
                 id, value.FirstName, value.LastName);
             
-            try
+            var result = await this._customerService.UpdateCustomerAsync(id, value);
+
+            if (result.IsFailure)
             {
-                var validationResult = _customerDtoValidator.Validate(value);
-                if (!validationResult.IsValid)
+                this._logger.LogWarning("Failed to update customer with Id {CustomerId}: {Error}", id, result.Error);
+                
+                // Check if it's a not found error (404) or validation error (400)
+                if (result.Error != null && result.Error.Contains("not found", StringComparison.OrdinalIgnoreCase))
                 {
-                    _logger.LogWarning("Customer validation failed for update. CustomerId: {CustomerId}, Validator: {ValidatorName}, Reason: {Reason}",
-                        id, validationResult.ValidatorName, validationResult.FailureReason);
-                    return BadRequest(new { error = validationResult.FailureReason, validator = validationResult.ValidatorName });
+                    return NotFound(new { error = result.Error });
                 }
-
-                var result = await _customerService.UpdateCustomerAsync(id, value);
-
-                if (result == null)
-                {
-                    _logger.LogWarning("UpdateCustomerAsync returned null result for CustomerId {CustomerId}", id);
-                    return StatusCode(500, MessageConstants.InternalServerError);
-                }
-
-                _logger.LogInformation("Customer updated successfully. CustomerId: {CustomerId}", id);
-                return Ok(result);
+                
+                return BadRequest(new { error = result.Error });
             }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error updating customer with Id {CustomerId}", id);
-                return StatusCode(500, MessageConstants.InternalServerError);
-            }
+
+            this._logger.LogInformation("Customer updated successfully. CustomerId: {CustomerId}", id);
+            return Ok(result.Value);
         }
 
         /// <summary>

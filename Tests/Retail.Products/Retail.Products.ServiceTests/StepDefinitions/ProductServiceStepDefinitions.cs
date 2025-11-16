@@ -235,7 +235,15 @@ namespace Retail.Products.ServiceTests.StepDefinitions
             try
             {
                 var productId = long.Parse(id);
-                _productById = await _productService.GetProductByIdAsync(productId);
+                var result = await _productService.GetProductByIdAsync(productId);
+                if (result.IsSuccess)
+                {
+                    _productById = result.Value;
+                }
+                else
+                {
+                    _exception = new InvalidOperationException(result.Error ?? "Product not found");
+                }
             }
             catch (Exception ex)
             {
@@ -270,7 +278,15 @@ namespace Retail.Products.ServiceTests.StepDefinitions
                 MockUnitOfWork.Setup(x => x.CompleteAsync()).ReturnsAsync(1);
                 MockUnitOfWork.Setup(x => x.CommitTransactionAsync()).Returns(Task.CompletedTask);
 
-                _addedProduct = await _productService.AddProductAsync(newProduct);
+                var result = await _productService.AddProductAsync(newProduct);
+                if (result.IsSuccess)
+                {
+                    _addedProduct = result.Value;
+                }
+                else
+                {
+                    _exception = new InvalidOperationException(result.Error ?? "Failed to add product");
+                }
             }
             catch (Exception ex)
             {
@@ -307,7 +323,15 @@ namespace Retail.Products.ServiceTests.StepDefinitions
                 MockUnitOfWork.Setup(x => x.CompleteAsync()).ReturnsAsync(1);
                 MockUnitOfWork.Setup(x => x.CommitTransactionAsync()).Returns(Task.CompletedTask);
 
-                _updatedProduct = await _productService.UpdateProductAsync(productId, updatedProduct);
+                var result = await _productService.UpdateProductAsync(productId, updatedProduct);
+                if (result.IsSuccess)
+                {
+                    _updatedProduct = result.Value;
+                }
+                else
+                {
+                    _exception = new InvalidOperationException(result.Error ?? "Failed to update product");
+                }
             }
             catch (Exception ex)
             {
@@ -352,7 +376,15 @@ namespace Retail.Products.ServiceTests.StepDefinitions
                 _mockSkuDtoValidator.Setup(x => x.Validate(invalidProduct))
                     .Returns(new ValidationData("SkuDtoValidator", "The Name field is null or whitespace.", FailureSeverity.Error));
 
-                _addedProduct = await _productService.AddProductAsync(invalidProduct);
+                var result = await _productService.AddProductAsync(invalidProduct);
+                if (result.IsFailure)
+                {
+                    _exception = new InvalidOperationException(result.Error ?? "Validation failed");
+                }
+                else
+                {
+                    _addedProduct = result.Value;
+                }
             }
             catch (Exception ex)
             {

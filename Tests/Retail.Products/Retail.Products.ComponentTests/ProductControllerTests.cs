@@ -1,6 +1,7 @@
 using System;
 using System.Reflection;
 using System.Threading.Tasks;
+using CommonLibrary.Results;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -51,7 +52,7 @@ namespace Retail.Products.ComponentTests
             // Arrange
             var skuDto = new SkuDto { Name = "Test Product", UnitPrice = 29.99, Inventory = 100 };
             _mockProductService.Setup(x => x.AddProductAsync(skuDto))
-                .ReturnsAsync(skuDto);
+                .ReturnsAsync(Result<SkuDto>.Success(skuDto));
 
             // Act
             var result = await _controller.Post(skuDto);
@@ -108,7 +109,7 @@ namespace Retail.Products.ComponentTests
             long id = 1;
             var skuDto = new SkuDto { Id = id, Name = "Test Product", UnitPrice = 29.99, Inventory = 100 };
             _mockProductService.Setup(x => x.UpdateProductAsync(id, skuDto))
-                .ReturnsAsync(skuDto);
+                .ReturnsAsync(Result<SkuDto>.Success(skuDto));
 
             // Act
             var result = await _controller.Put(id, skuDto);

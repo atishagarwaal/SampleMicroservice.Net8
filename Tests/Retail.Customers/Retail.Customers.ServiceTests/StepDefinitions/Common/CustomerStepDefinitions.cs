@@ -9,6 +9,7 @@ using Retail.Api.Customers.src.CleanArchitecture.Domain.Entities;
 using Retail.Api.Customers.src.CleanArchitecture.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Retail.Customers.ServiceTests.Common;
+using CommonLibrary.Results;
 
 namespace Retail.Customers.ServiceTests.StepDefinitions.Common
 {
@@ -235,11 +236,21 @@ namespace Retail.Customers.ServiceTests.StepDefinitions.Common
             try
             {
                 var result = await _customerService.AddCustomerAsync(customerData);
-                _scenarioContext.Set(result.Id, "CreatedCustomerId");
-                _scenarioContext.Set(result, Constants.CustomerServiceResponse);
-                _scenarioContext.Set(true, "OperationResult");
                 
-                _logger.LogInformation("Customer created successfully with ID: {CustomerId}", result.Id);
+                if (result.IsSuccess)
+                {
+                    _scenarioContext.Set(result.Value.Id, "CreatedCustomerId");
+                    _scenarioContext.Set(result.Value, Constants.CustomerServiceResponse);
+                    _scenarioContext.Set(true, "OperationResult");
+                    
+                    _logger.LogInformation("Customer created successfully with ID: {CustomerId}", result.Value.Id);
+                }
+                else
+                {
+                    _scenarioContext.Set(result.Error, "OperationError");
+                    _scenarioContext.Set(false, "OperationResult");
+                    _logger.LogWarning("Failed to create customer: {Error}", result.Error);
+                }
             }
             catch (Exception ex)
             {
@@ -258,10 +269,20 @@ namespace Retail.Customers.ServiceTests.StepDefinitions.Common
             try
             {
                 var result = await _customerService.GetCustomerByIdAsync(customerId);
-                _scenarioContext.Set(result, Constants.CustomerServiceResponse);
-                _scenarioContext.Set(true, "OperationResult");
                 
-                _logger.LogInformation("Customer retrieved successfully");
+                if (result.IsSuccess)
+                {
+                    _scenarioContext.Set(result.Value, Constants.CustomerServiceResponse);
+                    _scenarioContext.Set(true, "OperationResult");
+                    
+                    _logger.LogInformation("Customer retrieved successfully");
+                }
+                else
+                {
+                    _scenarioContext.Set(result.Error, "OperationError");
+                    _scenarioContext.Set(false, "OperationResult");
+                    _logger.LogWarning("Failed to retrieve customer: {Error}", result.Error);
+                }
             }
             catch (Exception ex)
             {
@@ -322,10 +343,20 @@ namespace Retail.Customers.ServiceTests.StepDefinitions.Common
             try
             {
                 var result = await _customerService.UpdateCustomerAsync(customerId, updateData);
-                _scenarioContext.Set(result, Constants.CustomerServiceResponse);
-                _scenarioContext.Set(true, "OperationResult");
                 
-                _logger.LogInformation("Customer updated successfully");
+                if (result.IsSuccess)
+                {
+                    _scenarioContext.Set(result.Value, Constants.CustomerServiceResponse);
+                    _scenarioContext.Set(true, "OperationResult");
+                    
+                    _logger.LogInformation("Customer updated successfully");
+                }
+                else
+                {
+                    _scenarioContext.Set(result.Error, "OperationError");
+                    _scenarioContext.Set(false, "OperationResult");
+                    _logger.LogWarning("Failed to update customer: {Error}", result.Error);
+                }
             }
             catch (Exception ex)
             {

@@ -1,4 +1,5 @@
 ﻿using CommonLibrary.MessageContract;
+using CommonLibrary.Results;
 using InventoryErrorEventNameSpace;
 using InventoryUpdatedEventNameSpace;
 using MessagingInfrastructure;
@@ -76,61 +77,70 @@ namespace Retail.Api.Products.src.CleanArchitecture.Application.Service
         /// Method to fetch product record based on Id asynchronously.
         /// </summary>
         /// <param name="id">Product Id.</param>
-        /// <returns>Product object.</returns>
-        public async Task<SkuDto> GetProductByIdAsync(long id)
+        /// <returns>Result containing the product object if found, or an error message if not found.</returns>
+        public async Task<Result<SkuDto>> GetProductByIdAsync(long id)
         {
-            _logger.LogInformation("Fetching product by ID. ProductId: {ProductId}", id);
-            var record = await _unitOfWork.Skus.GetByIdAsync(id);
-            if (record == null)
+            this._logger.LogInformation("Fetching product by ID. ProductId: {ProductId}", id);
+            
+            try
             {
-                _logger.LogWarning("Product not found. ProductId: {ProductId}", id);
-                return null!;
-            }
+                var record = await this._unitOfWork.Skus.GetByIdAsync(id);
+                if (record == null)
+                {
+                    this._logger.LogWarning("Product not found. ProductId: {ProductId}", id);
+                    return Result<SkuDto>.Failure($"Product with ID {id} not found.");
+                }
 
-            _logger.LogInformation("Product retrieved successfully. ProductId: {ProductId}, Name: {ProductName}", 
-                id, record.Name);
-            return _skuDtoConverter.Convert(record);
+                this._logger.LogInformation("Product retrieved successfully. ProductId: {ProductId}, Name: {ProductName}", 
+                    id, record.Name);
+                return Result<SkuDto>.Success(this._skuDtoConverter.Convert(record));
+            }
+            catch (Exception ex)
+            {
+                this._logger.LogError(ex, "Error fetching product with Id {ProductId}", id);
+                return Result<SkuDto>.Failure($"An error occurred while fetching product with ID {id}: {ex.Message}");
+            }
         }
 
         /// <summary>
         /// Method to add a new product record asynchronously.
         /// </summary>
         /// <param name="skuDto">Product record.</param>
-        /// <returns>Product object.</returns>
-        public async Task<SkuDto> AddProductAsync(SkuDto skuDto)
+        /// <returns>Result containing the created product object if successful, or an error message if validation fails.</returns>
+        public async Task<Result<SkuDto>> AddProductAsync(SkuDto skuDto)
         {
-            _logger.LogInformation("Adding new product. Name: {ProductName}, UnitPrice: {UnitPrice}, Inventory: {Inventory}",
+            this._logger.LogInformation("Adding new product. Name: {ProductName}, UnitPrice: {UnitPrice}, Inventory: {Inventory}",
                 skuDto.Name, skuDto.UnitPrice, skuDto.Inventory);
 
             // Validate using validator
-            var validationResult = _skuDtoValidator.Validate(skuDto);
+            var validationResult = this._skuDtoValidator.Validate(skuDto);
             if (!validationResult.IsValid)
             {
-                _logger.LogWarning("Product validation failed. Validator: {ValidatorName}, Reason: {FailureReason}",
+                this._logger.LogWarning("Product validation failed. Validator: {ValidatorName}, Reason: {FailureReason}",
                     validationResult.ValidatorName, validationResult.FailureReason);
-                throw new ArgumentException(validationResult.FailureReason ?? "Validation failed", nameof(skuDto));
+                return Result<SkuDto>.Failure(validationResult.FailureReason ?? "Validation failed");
             }
 
             // Convert DTO to entity
-            var sku = _skuConverter.Convert(skuDto);
+            var sku = this._skuConverter.Convert(skuDto);
 
-            await _unitOfWork.BeginTransactionAsync();
             try
             {
-                var result = await _unitOfWork.Skus.AddAsync(sku);
-                await _unitOfWork.CompleteAsync();
-                await _unitOfWork.CommitTransactionAsync();
+                await this._unitOfWork.BeginTransactionAsync();
+                var result = await this._unitOfWork.Skus.AddAsync(sku);
+                await this._unitOfWork.CompleteAsync();
+                await this._unitOfWork.CommitTransactionAsync();
 
-                _logger.LogInformation("Product added successfully. ProductId: {ProductId}, Name: {ProductName}",
+                this._logger.LogInformation("Product added successfully. ProductId: {ProductId}, Name: {ProductName}",
                     result.Id, result.Name);
 
-                return _skuDtoConverter.Convert(result);
+                return Result<SkuDto>.Success(this._skuDtoConverter.Convert(result));
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error adding product. Name: {ProductName}", skuDto.Name);
-                await _unitOfWork.RollbackTransactionAsync();
-                throw;
+                this._logger.LogError(ex, "Error adding product. Name: {ProductName}", skuDto.Name);
+                await this._unitOfWork.RollbackTransactionAsync();
+                return Result<SkuDto>.Failure($"An error occurred while adding product: {ex.Message}");
             }
         }
 
@@ -139,50 +149,58 @@ namespace Retail.Api.Products.src.CleanArchitecture.Application.Service
         /// </summary>
         /// <param name="id">Product Id.</param>
         /// <param name="skuDto">Product record.</param>
-        /// <returns>Product object.</returns>
-        public async Task<SkuDto> UpdateProductAsync(long id, SkuDto skuDto)
+        /// <returns>Result containing the updated product object if successful, or an error message if validation fails or product not found.</returns>
+        public async Task<Result<SkuDto>> UpdateProductAsync(long id, SkuDto skuDto)
         {
-            _logger.LogInformation("Updating product. ProductId: {ProductId}, Name: {ProductName}",
+            this._logger.LogInformation("Updating product. ProductId: {ProductId}, Name: {ProductName}",
                 id, skuDto.Name);
 
             // Validate using validator
-            var validationResult = _skuDtoValidator.Validate(skuDto);
+            var validationResult = this._skuDtoValidator.Validate(skuDto);
             if (!validationResult.IsValid)
             {
-                _logger.LogWarning("Product validation failed. ProductId: {ProductId}, Validator: {ValidatorName}, Reason: {FailureReason}",
+                this._logger.LogWarning("Product validation failed. ProductId: {ProductId}, Validator: {ValidatorName}, Reason: {FailureReason}",
                     id, validationResult.ValidatorName, validationResult.FailureReason);
-                throw new ArgumentException(validationResult.FailureReason ?? "Validation failed", nameof(skuDto));
+                return Result<SkuDto>.Failure(validationResult.FailureReason ?? "Validation failed");
+            }
+
+            // Check if product exists
+            var existingProduct = await this._unitOfWork.Skus.GetByIdAsync(id);
+            if (existingProduct == null)
+            {
+                this._logger.LogWarning("Product with Id {ProductId} not found for update", id);
+                return Result<SkuDto>.Failure($"Product with ID {id} not found.");
             }
 
             // Convert DTO to entity
-            var record = _skuConverter.Convert(skuDto);
+            var record = this._skuConverter.Convert(skuDto);
             record.Id = id; // Ensure the ID from the parameter is used
 
-            await _unitOfWork.BeginTransactionAsync();
             try
             {
-                _unitOfWork.Skus.Update(record);
-                await _unitOfWork.CompleteAsync();
-                await _unitOfWork.CommitTransactionAsync();
+                await this._unitOfWork.BeginTransactionAsync();
+                this._unitOfWork.Skus.Update(record);
+                await this._unitOfWork.CompleteAsync();
+                await this._unitOfWork.CommitTransactionAsync();
 
-                var updatedRecord = await _unitOfWork.Skus.GetByIdAsync(id);
+                var updatedRecord = await this._unitOfWork.Skus.GetByIdAsync(id);
                 if (updatedRecord == null)
                 {
-                    _logger.LogError("Product not found after update. ProductId: {ProductId}", id);
-                    throw new InvalidOperationException($"Product with ID {id} was not found after update");
+                    this._logger.LogError("Product not found after update. ProductId: {ProductId}", id);
+                    return Result<SkuDto>.Failure($"Product with ID {id} was not found after update");
                 }
 
-                _logger.LogInformation("Product updated successfully. ProductId: {ProductId}, Name: {ProductName}",
+                this._logger.LogInformation("Product updated successfully. ProductId: {ProductId}, Name: {ProductName}",
                     id, updatedRecord.Name);
 
-                return _skuDtoConverter.Convert(updatedRecord);
+                return Result<SkuDto>.Success(this._skuDtoConverter.Convert(updatedRecord));
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error updating product. ProductId: {ProductId}, Name: {ProductName}",
+                this._logger.LogError(ex, "Error updating product. ProductId: {ProductId}, Name: {ProductName}",
                     id, skuDto.Name);
-                await _unitOfWork.RollbackTransactionAsync();
-                throw;
+                await this._unitOfWork.RollbackTransactionAsync();
+                return Result<SkuDto>.Failure($"An error occurred while updating product: {ex.Message}");
             }
         }
 
