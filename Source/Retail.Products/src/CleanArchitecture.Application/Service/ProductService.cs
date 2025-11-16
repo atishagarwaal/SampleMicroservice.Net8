@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using CommonLibrary.MessageContract;
+﻿using CommonLibrary.MessageContract;
 using InventoryErrorEventNameSpace;
 using InventoryUpdatedEventNameSpace;
 using MessagingInfrastructure;
@@ -7,6 +6,8 @@ using MessagingLibrary.Interface;
 using OrderCreatedEventNameSpace;
 using Retail.Api.Products.src.CleanArchitecture.Application.Dto;
 using Retail.Api.Products.src.CleanArchitecture.Application.Interfaces;
+using Retail.Api.Products.src.CleanArchitecture.Application.Converters.Interfaces;
+using Retail.Api.Products.src.CleanArchitecture.Application.Validation.Interfaces;
 using Retail.Api.Products.src.CleanArchitecture.Domain.Entities;
 using Retail.Api.Products.src.CleanArchitecture.Infrastructure.Interfaces;
 using Retail.Api.Products.src.CleanArchitecture.Infrastructure.UnitOfWork;
@@ -21,17 +22,31 @@ namespace Retail.Api.Products.src.CleanArchitecture.Application.Service
         private readonly IServiceScopeFactory _serviceScopeFactory;
         private readonly IMessagePublisher _messagePublisher;
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IMapper _mapper;
+        private readonly IConverter<SkuDto, Sku> _skuConverter;
+        private readonly IConverter<Sku, SkuDto> _skuDtoConverter;
+        private readonly IMessageValidator<SkuDto> _skuDtoValidator;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ProductService"/> class.
         /// </summary>
-        /// <param name="unitOfWork">Intance of unit of work class.</param>
-        /// <param name="mapper">Intance of mapper class.</param>
-        public ProductService(IUnitOfWork unitOfWork, IMapper mapper, IMessagePublisher messagePublisher, IServiceScopeFactory serviceScopeFactory)
+        /// <param name="unitOfWork">Instance of unit of work class.</param>
+        /// <param name="skuConverter">Instance of SKU converter.</param>
+        /// <param name="skuDtoConverter">Instance of SKU DTO converter.</param>
+        /// <param name="skuDtoValidator">Instance of SKU DTO validator.</param>
+        /// <param name="messagePublisher">Instance of message publisher.</param>
+        /// <param name="serviceScopeFactory">Instance of service scope factory.</param>
+        public ProductService(
+            IUnitOfWork unitOfWork,
+            IConverter<SkuDto, Sku> skuConverter,
+            IConverter<Sku, SkuDto> skuDtoConverter,
+            IMessageValidator<SkuDto> skuDtoValidator,
+            IMessagePublisher messagePublisher,
+            IServiceScopeFactory serviceScopeFactory)
         {
             _unitOfWork = unitOfWork;
-            _mapper = mapper;
+            _skuConverter = skuConverter;
+            _skuDtoConverter = skuDtoConverter;
+            _skuDtoValidator = skuDtoValidator;
             _messagePublisher = messagePublisher;
             _serviceScopeFactory = serviceScopeFactory;
         }
@@ -43,7 +58,9 @@ namespace Retail.Api.Products.src.CleanArchitecture.Application.Service
         public async Task<IEnumerable<SkuDto>> GetAllProductsAsync()
         {
             var list = await _unitOfWork.Skus.GetAllAsync();
-            return _mapper.Map<IEnumerable<SkuDto>>(list);
+            return list
+                .Where(sku => sku != null)
+                .Select(sku => _skuDtoConverter.Convert(sku));
         }
 
         /// <summary>
@@ -54,7 +71,12 @@ namespace Retail.Api.Products.src.CleanArchitecture.Application.Service
         public async Task<SkuDto> GetProductByIdAsync(long id)
         {
             var record = await _unitOfWork.Skus.GetByIdAsync(id);
-            return _mapper.Map<SkuDto>(record);
+            if (record == null)
+            {
+                return null!;
+            }
+
+            return _skuDtoConverter.Convert(record);
         }
 
         /// <summary>
@@ -64,7 +86,15 @@ namespace Retail.Api.Products.src.CleanArchitecture.Application.Service
         /// <returns>Product object.</returns>
         public async Task<SkuDto> AddProductAsync(SkuDto skuDto)
         {
-            var sku = _mapper.Map<Sku>(skuDto);
+            // Validate using validator
+            var validationResult = _skuDtoValidator.Validate(skuDto);
+            if (!validationResult.IsValid)
+            {
+                throw new ArgumentException(validationResult.FailureReason ?? "Validation failed", nameof(skuDto));
+            }
+
+            // Convert DTO to entity
+            var sku = _skuConverter.Convert(skuDto);
 
             await _unitOfWork.BeginTransactionAsync();
             try
@@ -73,7 +103,7 @@ namespace Retail.Api.Products.src.CleanArchitecture.Application.Service
                 await _unitOfWork.CompleteAsync();
                 await _unitOfWork.CommitTransactionAsync();
 
-                return _mapper.Map<SkuDto>(result);
+                return _skuDtoConverter.Convert(result);
             }
             catch
             {
@@ -90,7 +120,16 @@ namespace Retail.Api.Products.src.CleanArchitecture.Application.Service
         /// <returns>Product object.</returns>
         public async Task<SkuDto> UpdateProductAsync(long id, SkuDto skuDto)
         {
-            var record = _mapper.Map<Sku>(skuDto);
+            // Validate using validator
+            var validationResult = _skuDtoValidator.Validate(skuDto);
+            if (!validationResult.IsValid)
+            {
+                throw new ArgumentException(validationResult.FailureReason ?? "Validation failed", nameof(skuDto));
+            }
+
+            // Convert DTO to entity
+            var record = _skuConverter.Convert(skuDto);
+            record.Id = id; // Ensure the ID from the parameter is used
 
             await _unitOfWork.BeginTransactionAsync();
             try
@@ -100,7 +139,12 @@ namespace Retail.Api.Products.src.CleanArchitecture.Application.Service
                 await _unitOfWork.CommitTransactionAsync();
 
                 var updatedRecord = await _unitOfWork.Skus.GetByIdAsync(id);
-                return _mapper.Map<SkuDto>(updatedRecord);
+                if (updatedRecord == null)
+                {
+                    throw new InvalidOperationException($"Product with ID {id} was not found after update");
+                }
+
+                return _skuDtoConverter.Convert(updatedRecord);
             }
             catch
             {

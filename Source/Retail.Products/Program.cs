@@ -15,6 +15,11 @@ using Retail.Api.Customers.src.CleanArchitecture.Application.Service;
 using Retail.Api.Products.src.CleanArchitecture.Application.EventHandlers;
 using Retail.Api.Products.src.CleanArchitecture.Application.Interfaces;
 using Retail.Api.Products.src.CleanArchitecture.Application.Service;
+using Retail.Api.Products.src.CleanArchitecture.Application.Converters;
+using Retail.Api.Products.src.CleanArchitecture.Application.Converters.Interfaces;
+using Retail.Api.Products.src.CleanArchitecture.Application.Dto;
+using Retail.Api.Products.src.CleanArchitecture.Application.Validation;
+using Retail.Api.Products.src.CleanArchitecture.Application.Validation.Interfaces;
 using Retail.Api.Products.src.CleanArchitecture.Infrastructure.Data;
 using Retail.Api.Products.src.CleanArchitecture.Infrastructure.Interfaces;
 using Retail.Api.Products.src.CleanArchitecture.Infrastructure.Repositories;
@@ -39,7 +44,12 @@ builder.Services.AddRabbitMQServices(builder.Configuration);
 builder.Services.AddScoped<IEventHandler<OrderCreatedEvent>, OrderCreatedEventHandler>();
 builder.Services.AddScoped<IServiceInitializer, ServiceInitializer>();
 
-builder.Services.AddAutoMapper(typeof(Program));
+// Register validators
+builder.Services.AddScoped<IMessageValidator<SkuDto>, SkuDtoValidator>();
+
+// Register converters
+builder.Services.AddScoped<IConverter<SkuDto, Retail.Api.Products.src.CleanArchitecture.Domain.Entities.Sku>, SkuConverter>();
+builder.Services.AddScoped<IConverter<Retail.Api.Products.src.CleanArchitecture.Domain.Entities.Sku, SkuDto>, SkuDtoConverter>();
 
 builder.Services.AddControllers();
 

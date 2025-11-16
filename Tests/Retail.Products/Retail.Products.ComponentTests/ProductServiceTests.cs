@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using AutoMapper;
 using CommonLibrary.MessageContract;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
@@ -11,9 +10,13 @@ using Moq;
 using Retail.Api.Products.src.CleanArchitecture.Application.Dto;
 using Retail.Api.Products.src.CleanArchitecture.Application.Interfaces;
 using Retail.Api.Products.src.CleanArchitecture.Application.Service;
+using Retail.Api.Products.src.CleanArchitecture.Application.Converters.Interfaces;
+using Retail.Api.Products.src.CleanArchitecture.Application.Validation;
+using Retail.Api.Products.src.CleanArchitecture.Application.Validation.Interfaces;
 using Retail.Api.Products.src.CleanArchitecture.Domain.Entities;
 using Retail.Api.Products.src.CleanArchitecture.Infrastructure.Interfaces;
 using MessagingLibrary.Interface;
+using Retail.Api.Products.src.CleanArchitecture.Infrastructure.Repositories;
 
 namespace Retail.Products.ComponentTests
 {
@@ -25,7 +28,10 @@ namespace Retail.Products.ComponentTests
     public sealed class ProductServiceTests
     {
         private Mock<IUnitOfWork> _mockUnitOfWork = null!;
-        private Mock<IMapper> _mockMapper = null!;
+        private Mock<ISkuRepository> _mockSkuRepository = null!;
+        private Mock<IConverter<SkuDto, Sku>> _mockSkuConverter = null!;
+        private Mock<IConverter<Sku, SkuDto>> _mockSkuDtoConverter = null!;
+        private Mock<IMessageValidator<SkuDto>> _mockSkuDtoValidator = null!;
         private Mock<IServiceScopeFactory> _mockServiceScopeFactory = null!;
         private Mock<IServiceScope> _mockServiceScope = null!;
         private Mock<IServiceProvider> _mockServiceProvider = null!;
@@ -36,18 +42,29 @@ namespace Retail.Products.ComponentTests
         public void TestInitialize()
         {
             _mockUnitOfWork = new Mock<IUnitOfWork>();
-            _mockMapper = new Mock<IMapper>();
+            _mockSkuRepository = new Mock<ISkuRepository>();
+            _mockSkuConverter = new Mock<IConverter<SkuDto, Sku>>();
+            _mockSkuDtoConverter = new Mock<IConverter<Sku, SkuDto>>();
+            _mockSkuDtoValidator = new Mock<IMessageValidator<SkuDto>>();
             _mockServiceScopeFactory = new Mock<IServiceScopeFactory>();
             _mockServiceScope = new Mock<IServiceScope>();
             _mockServiceProvider = new Mock<IServiceProvider>();
             _mockMessagePublisher = new Mock<IMessagePublisher>();
 
-            // Note: We're not setting up the service scope mocks to avoid Moq extension method issues
-            // These would be set up in individual tests that need them
+            _mockUnitOfWork
+                .Setup(x => x.Skus)
+                .Returns(_mockSkuRepository.Object);
+
+            // Setup default validation to pass
+            _mockSkuDtoValidator
+                .Setup(x => x.Validate(It.IsAny<SkuDto>()))
+                .Returns(new ValidationData());
 
             _productService = new ProductService(
                 _mockUnitOfWork.Object,
-                _mockMapper.Object,
+                _mockSkuConverter.Object,
+                _mockSkuDtoConverter.Object,
+                _mockSkuDtoValidator.Object,
                 _mockMessagePublisher.Object,
                 _mockServiceScopeFactory.Object);
         }
@@ -78,24 +95,25 @@ namespace Retail.Products.ComponentTests
                 new SkuDto { Id = 2, Name = "Product 2", UnitPrice = 39.99, Inventory = 200 }
             };
 
-            _mockUnitOfWork
-                .Setup(x => x.Skus.GetAllAsync())
+            _mockSkuRepository
+                .Setup(x => x.GetAllAsync())
                 .ReturnsAsync(skus);
 
-            _mockMapper
-                .Setup(x => x.Map<IEnumerable<SkuDto>>(skus))
-                .Returns(skuDtos);
+            _mockSkuDtoConverter
+                .Setup(x => x.Convert(It.IsAny<Sku>()))
+                .Returns<Sku>(sku => skuDtos.First(dto => dto.Id == sku.Id));
 
             // Act
             var result = await _productService.GetAllProductsAsync();
+            var resultList = result.ToList(); // Materialize the result
 
             // Assert
-            result.Should().NotBeNull();
-            result.Should().HaveCount(2);
-            result.Should().BeEquivalentTo(skuDtos);
+            resultList.Should().NotBeNull();
+            resultList.Should().HaveCount(2);
+            resultList.Should().BeEquivalentTo(skuDtos);
 
-            _mockUnitOfWork.Verify(x => x.Skus.GetAllAsync(), Times.Once);
-            _mockMapper.Verify(x => x.Map<IEnumerable<SkuDto>>(skus), Times.Once);
+            _mockSkuRepository.Verify(x => x.GetAllAsync(), Times.Once);
+            _mockSkuDtoConverter.Verify(x => x.Convert(It.IsAny<Sku>()), Times.AtLeastOnce);
         }
 
         [TestMethod]
@@ -104,15 +122,10 @@ namespace Retail.Products.ComponentTests
         {
             // Arrange
             var emptySkus = new List<Sku>();
-            var emptySkuDtos = new List<SkuDto>();
 
-            _mockUnitOfWork
-                .Setup(x => x.Skus.GetAllAsync())
+            _mockSkuRepository
+                .Setup(x => x.GetAllAsync())
                 .ReturnsAsync(emptySkus);
-
-            _mockMapper
-                .Setup(x => x.Map<IEnumerable<SkuDto>>(emptySkus))
-                .Returns(emptySkuDtos);
 
             // Act
             var result = await _productService.GetAllProductsAsync();
@@ -121,8 +134,8 @@ namespace Retail.Products.ComponentTests
             result.Should().NotBeNull();
             result.Should().BeEmpty();
 
-            _mockUnitOfWork.Verify(x => x.Skus.GetAllAsync(), Times.Once);
-            _mockMapper.Verify(x => x.Map<IEnumerable<SkuDto>>(emptySkus), Times.Once);
+            _mockSkuRepository.Verify(x => x.GetAllAsync(), Times.Once);
+            _mockSkuDtoConverter.Verify(x => x.Convert(It.IsAny<Sku>()), Times.Never);
         }
 
         [TestMethod]
@@ -134,12 +147,12 @@ namespace Retail.Products.ComponentTests
             var sku = new Sku { Id = id, Name = "Test Product", UnitPrice = 29.99, Inventory = 100 };
             var skuDto = new SkuDto { Id = id, Name = "Test Product", UnitPrice = 29.99, Inventory = 100 };
 
-            _mockUnitOfWork
-                .Setup(x => x.Skus.GetByIdAsync(id))
+            _mockSkuRepository
+                .Setup(x => x.GetByIdAsync(id))
                 .ReturnsAsync(sku);
 
-            _mockMapper
-                .Setup(x => x.Map<SkuDto>(sku))
+            _mockSkuDtoConverter
+                .Setup(x => x.Convert(sku))
                 .Returns(skuDto);
 
             // Act
@@ -149,8 +162,8 @@ namespace Retail.Products.ComponentTests
             result.Should().NotBeNull();
             result.Should().BeEquivalentTo(skuDto);
 
-            _mockUnitOfWork.Verify(x => x.Skus.GetByIdAsync(id), Times.Once);
-            _mockMapper.Verify(x => x.Map<SkuDto>(sku), Times.Once);
+            _mockSkuRepository.Verify(x => x.GetByIdAsync(id), Times.Once);
+            _mockSkuDtoConverter.Verify(x => x.Convert(sku), Times.Once);
         }
 
         [TestMethod]
@@ -160,8 +173,8 @@ namespace Retail.Products.ComponentTests
             // Arrange
             var id = 999L;
 
-            _mockUnitOfWork
-                .Setup(x => x.Skus.GetByIdAsync(id))
+            _mockSkuRepository
+                .Setup(x => x.GetByIdAsync(id))
                 .ReturnsAsync((Sku?)null);
 
             // Act
@@ -170,7 +183,8 @@ namespace Retail.Products.ComponentTests
             // Assert
             result.Should().BeNull();
 
-            _mockUnitOfWork.Verify(x => x.Skus.GetByIdAsync(id), Times.Once);
+            _mockSkuRepository.Verify(x => x.GetByIdAsync(id), Times.Once);
+            _mockSkuDtoConverter.Verify(x => x.Convert(It.IsAny<Sku>()), Times.Never);
         }
 
         [TestMethod]
@@ -183,16 +197,20 @@ namespace Retail.Products.ComponentTests
             var addedSku = new Sku { Id = 1, Name = "New Product", UnitPrice = 49.99, Inventory = 150 };
             var resultSkuDto = new SkuDto { Id = 1, Name = "New Product", UnitPrice = 49.99, Inventory = 150 };
 
-            _mockMapper
-                .Setup(x => x.Map<Sku>(skuDto))
+            _mockSkuDtoValidator
+                .Setup(x => x.Validate(skuDto))
+                .Returns(new ValidationData());
+
+            _mockSkuConverter
+                .Setup(x => x.Convert(skuDto))
                 .Returns(sku);
 
-            _mockUnitOfWork
-                .Setup(x => x.Skus.AddAsync(sku))
+            _mockSkuRepository
+                .Setup(x => x.AddAsync(sku))
                 .ReturnsAsync(addedSku);
 
-            _mockMapper
-                .Setup(x => x.Map<SkuDto>(addedSku))
+            _mockSkuDtoConverter
+                .Setup(x => x.Convert(addedSku))
                 .Returns(resultSkuDto);
 
             // Act
@@ -202,12 +220,13 @@ namespace Retail.Products.ComponentTests
             result.Should().NotBeNull();
             result.Should().BeEquivalentTo(resultSkuDto);
 
+            _mockSkuDtoValidator.Verify(x => x.Validate(skuDto), Times.Once);
+            _mockSkuConverter.Verify(x => x.Convert(skuDto), Times.Once);
             _mockUnitOfWork.Verify(x => x.BeginTransactionAsync(), Times.Once);
-            _mockUnitOfWork.Verify(x => x.Skus.AddAsync(sku), Times.Once);
+            _mockSkuRepository.Verify(x => x.AddAsync(sku), Times.Once);
             _mockUnitOfWork.Verify(x => x.CompleteAsync(), Times.Once);
             _mockUnitOfWork.Verify(x => x.CommitTransactionAsync(), Times.Once);
-            _mockMapper.Verify(x => x.Map<Sku>(skuDto), Times.Once);
-            _mockMapper.Verify(x => x.Map<SkuDto>(addedSku), Times.Once);
+            _mockSkuDtoConverter.Verify(x => x.Convert(addedSku), Times.Once);
         }
 
         [TestMethod]
@@ -218,12 +237,16 @@ namespace Retail.Products.ComponentTests
             var skuDto = new SkuDto { Name = "New Product", UnitPrice = 49.99, Inventory = 150 };
             var sku = new Sku { Name = "New Product", UnitPrice = 49.99, Inventory = 150 };
 
-            _mockMapper
-                .Setup(x => x.Map<Sku>(skuDto))
+            _mockSkuDtoValidator
+                .Setup(x => x.Validate(skuDto))
+                .Returns(new ValidationData());
+
+            _mockSkuConverter
+                .Setup(x => x.Convert(skuDto))
                 .Returns(sku);
 
-            _mockUnitOfWork
-                .Setup(x => x.Skus.AddAsync(sku))
+            _mockSkuRepository
+                .Setup(x => x.AddAsync(sku))
                 .ThrowsAsync(new Exception("Database error"));
 
             // Act & Assert
@@ -232,6 +255,27 @@ namespace Retail.Products.ComponentTests
 
             _mockUnitOfWork.Verify(x => x.BeginTransactionAsync(), Times.Once);
             _mockUnitOfWork.Verify(x => x.RollbackTransactionAsync(), Times.Once);
+        }
+
+        [TestMethod]
+        [TestCategory("ProductService")]
+        public async Task AddProductAsync_WithInvalidData_ThrowsArgumentException()
+        {
+            // Arrange
+            var skuDto = new SkuDto { Name = null, UnitPrice = 49.99, Inventory = 150 };
+            var validationData = new ValidationData("SkuDtoValidator", "The Name field is null or whitespace.", FailureSeverity.Error);
+
+            _mockSkuDtoValidator
+                .Setup(x => x.Validate(skuDto))
+                .Returns(validationData);
+
+            // Act & Assert
+            await _productService.Invoking(x => x.AddProductAsync(skuDto))
+                .Should().ThrowAsync<ArgumentException>();
+
+            _mockSkuDtoValidator.Verify(x => x.Validate(skuDto), Times.Once);
+            _mockSkuConverter.Verify(x => x.Convert(It.IsAny<SkuDto>()), Times.Never);
+            _mockUnitOfWork.Verify(x => x.BeginTransactionAsync(), Times.Never);
         }
 
         [TestMethod]
@@ -245,16 +289,20 @@ namespace Retail.Products.ComponentTests
             var updatedSku = new Sku { Id = id, Name = "Updated Product", UnitPrice = 59.99, Inventory = 200 };
             var resultSkuDto = new SkuDto { Id = id, Name = "Updated Product", UnitPrice = 59.99, Inventory = 200 };
 
-            _mockMapper
-                .Setup(x => x.Map<Sku>(skuDto))
+            _mockSkuDtoValidator
+                .Setup(x => x.Validate(skuDto))
+                .Returns(new ValidationData());
+
+            _mockSkuConverter
+                .Setup(x => x.Convert(skuDto))
                 .Returns(sku);
 
-            _mockUnitOfWork
-                .Setup(x => x.Skus.GetByIdAsync(id))
+            _mockSkuRepository
+                .Setup(x => x.GetByIdAsync(id))
                 .ReturnsAsync(updatedSku);
 
-            _mockMapper
-                .Setup(x => x.Map<SkuDto>(updatedSku))
+            _mockSkuDtoConverter
+                .Setup(x => x.Convert(updatedSku))
                 .Returns(resultSkuDto);
 
             // Act
@@ -264,13 +312,14 @@ namespace Retail.Products.ComponentTests
             result.Should().NotBeNull();
             result.Should().BeEquivalentTo(resultSkuDto);
 
+            _mockSkuDtoValidator.Verify(x => x.Validate(skuDto), Times.Once);
+            _mockSkuConverter.Verify(x => x.Convert(skuDto), Times.Once);
             _mockUnitOfWork.Verify(x => x.BeginTransactionAsync(), Times.Once);
-            _mockUnitOfWork.Verify(x => x.Skus.Update(sku), Times.Once);
+            _mockSkuRepository.Verify(x => x.Update(It.Is<Sku>(s => s.Id == id)), Times.Once);
             _mockUnitOfWork.Verify(x => x.CompleteAsync(), Times.Once);
             _mockUnitOfWork.Verify(x => x.CommitTransactionAsync(), Times.Once);
-            _mockUnitOfWork.Verify(x => x.Skus.GetByIdAsync(id), Times.Once);
-            _mockMapper.Verify(x => x.Map<Sku>(skuDto), Times.Once);
-            _mockMapper.Verify(x => x.Map<SkuDto>(updatedSku), Times.Once);
+            _mockSkuRepository.Verify(x => x.GetByIdAsync(id), Times.Once);
+            _mockSkuDtoConverter.Verify(x => x.Convert(updatedSku), Times.Once);
         }
 
         [TestMethod]
@@ -282,12 +331,16 @@ namespace Retail.Products.ComponentTests
             var skuDto = new SkuDto { Id = id, Name = "Updated Product", UnitPrice = 59.99, Inventory = 200 };
             var sku = new Sku { Id = id, Name = "Updated Product", UnitPrice = 59.99, Inventory = 200 };
 
-            _mockMapper
-                .Setup(x => x.Map<Sku>(skuDto))
+            _mockSkuDtoValidator
+                .Setup(x => x.Validate(skuDto))
+                .Returns(new ValidationData());
+
+            _mockSkuConverter
+                .Setup(x => x.Convert(skuDto))
                 .Returns(sku);
 
-            _mockUnitOfWork
-                .Setup(x => x.Skus.Update(sku))
+            _mockSkuRepository
+                .Setup(x => x.Update(It.IsAny<Sku>()))
                 .Throws(new Exception("Database error"));
 
             // Act & Assert
@@ -300,14 +353,36 @@ namespace Retail.Products.ComponentTests
 
         [TestMethod]
         [TestCategory("ProductService")]
+        public async Task UpdateProductAsync_WithInvalidData_ThrowsArgumentException()
+        {
+            // Arrange
+            var id = 1L;
+            var skuDto = new SkuDto { Id = id, Name = null, UnitPrice = 59.99, Inventory = 200 };
+            var validationData = new ValidationData("SkuDtoValidator", "The Name field is null or whitespace.", FailureSeverity.Error);
+
+            _mockSkuDtoValidator
+                .Setup(x => x.Validate(skuDto))
+                .Returns(validationData);
+
+            // Act & Assert
+            await _productService.Invoking(x => x.UpdateProductAsync(id, skuDto))
+                .Should().ThrowAsync<ArgumentException>();
+
+            _mockSkuDtoValidator.Verify(x => x.Validate(skuDto), Times.Once);
+            _mockSkuConverter.Verify(x => x.Convert(It.IsAny<SkuDto>()), Times.Never);
+            _mockUnitOfWork.Verify(x => x.BeginTransactionAsync(), Times.Never);
+        }
+
+        [TestMethod]
+        [TestCategory("ProductService")]
         public async Task DeleteProductAsync_WithValidId_ReturnsTrue()
         {
             // Arrange
             var id = 1L;
             var sku = new Sku { Id = id, Name = "Product to Delete", UnitPrice = 29.99, Inventory = 100 };
 
-            _mockUnitOfWork
-                .Setup(x => x.Skus.GetByIdAsync(id))
+            _mockSkuRepository
+                .Setup(x => x.GetByIdAsync(id))
                 .ReturnsAsync(sku);
 
             // Act
@@ -316,8 +391,9 @@ namespace Retail.Products.ComponentTests
             // Assert
             result.Should().BeTrue();
 
+            _mockSkuRepository.Verify(x => x.GetByIdAsync(id), Times.Once);
             _mockUnitOfWork.Verify(x => x.BeginTransactionAsync(), Times.Once);
-            _mockUnitOfWork.Verify(x => x.Skus.Remove(sku), Times.Once);
+            _mockSkuRepository.Verify(x => x.Remove(sku), Times.Once);
             _mockUnitOfWork.Verify(x => x.CompleteAsync(), Times.Once);
             _mockUnitOfWork.Verify(x => x.CommitTransactionAsync(), Times.Once);
         }
@@ -329,8 +405,8 @@ namespace Retail.Products.ComponentTests
             // Arrange
             var id = 999L;
 
-            _mockUnitOfWork
-                .Setup(x => x.Skus.GetByIdAsync(id))
+            _mockSkuRepository
+                .Setup(x => x.GetByIdAsync(id))
                 .ReturnsAsync((Sku?)null);
 
             // Act
@@ -339,7 +415,7 @@ namespace Retail.Products.ComponentTests
             // Assert
             result.Should().BeFalse();
 
-            _mockUnitOfWork.Verify(x => x.Skus.GetByIdAsync(id), Times.Once);
+            _mockSkuRepository.Verify(x => x.GetByIdAsync(id), Times.Once);
             _mockUnitOfWork.Verify(x => x.BeginTransactionAsync(), Times.Never);
         }
 
@@ -351,12 +427,12 @@ namespace Retail.Products.ComponentTests
             var id = 1L;
             var sku = new Sku { Id = id, Name = "Product to Delete", UnitPrice = 29.99, Inventory = 100 };
 
-            _mockUnitOfWork
-                .Setup(x => x.Skus.GetByIdAsync(id))
+            _mockSkuRepository
+                .Setup(x => x.GetByIdAsync(id))
                 .ReturnsAsync(sku);
 
-            _mockUnitOfWork
-                .Setup(x => x.Skus.Remove(sku))
+            _mockSkuRepository
+                .Setup(x => x.Remove(sku))
                 .Throws(new Exception("Database error"));
 
             // Act & Assert

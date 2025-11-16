@@ -3,6 +3,7 @@ using Newtonsoft.Json.Linq;
 using Retail.Api.Products.src.CleanArchitecture.Application.Constants;
 using Retail.Api.Products.src.CleanArchitecture.Application.Dto;
 using Retail.Api.Products.src.CleanArchitecture.Application.Interfaces;
+using Retail.Api.Products.src.CleanArchitecture.Application.Validation.Interfaces;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -17,14 +18,17 @@ namespace Retail.Api.Products.src.CleanArchitecture.API.Controllers
     public class ProductController : ControllerBase
     {
         private readonly IProductService _productService;
+        private readonly IMessageValidator<SkuDto> _skuDtoValidator;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ProductController"/> class.
         /// </summary>
-        /// <param name="productService">Intance of product service class.</param>
-        public ProductController(IProductService productService)
+        /// <param name="productService">Instance of product service class.</param>
+        /// <param name="skuDtoValidator">Instance of SKU DTO validator.</param>
+        public ProductController(IProductService productService, IMessageValidator<SkuDto> skuDtoValidator)
         {
             _productService = productService;
+            _skuDtoValidator = skuDtoValidator;
         }
 
         /// <summary>
@@ -104,6 +108,13 @@ namespace Retail.Api.Products.src.CleanArchitecture.API.Controllers
                     return BadRequest(MessageConstants.InvalidParameter);
                 }
 
+                // Validate using validator
+                var validationResult = _skuDtoValidator.Validate(value);
+                if (!validationResult.IsValid)
+                {
+                    return BadRequest(new { error = validationResult.FailureReason, validator = validationResult.ValidatorName });
+                }
+
                 // Call business service
                 var result = await _productService.AddProductAsync(value);
 
@@ -137,6 +148,13 @@ namespace Retail.Api.Products.src.CleanArchitecture.API.Controllers
                 if (id == 0 || value == null)
                 {
                     return BadRequest(MessageConstants.InvalidParameter);
+                }
+
+                // Validate using validator
+                var validationResult = _skuDtoValidator.Validate(value);
+                if (!validationResult.IsValid)
+                {
+                    return BadRequest(new { error = validationResult.FailureReason, validator = validationResult.ValidatorName });
                 }
 
                 // Call business service

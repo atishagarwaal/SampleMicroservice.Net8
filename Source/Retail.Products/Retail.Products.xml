@@ -21,11 +21,12 @@
             Product controller class.
             </summary>
         </member>
-        <member name="M:Retail.Api.Products.src.CleanArchitecture.API.Controllers.ProductController.#ctor(Retail.Api.Products.src.CleanArchitecture.Application.Interfaces.IProductService)">
+        <member name="M:Retail.Api.Products.src.CleanArchitecture.API.Controllers.ProductController.#ctor(Retail.Api.Products.src.CleanArchitecture.Application.Interfaces.IProductService,Retail.Api.Products.src.CleanArchitecture.Application.Validation.Interfaces.IMessageValidator{Retail.Api.Products.src.CleanArchitecture.Application.Dto.SkuDto})">
             <summary>
             Initializes a new instance of the <see cref="T:Retail.Api.Products.src.CleanArchitecture.API.Controllers.ProductController"/> class.
             </summary>
-            <param name="productService">Intance of product service class.</param>
+            <param name="productService">Instance of product service class.</param>
+            <param name="skuDtoValidator">Instance of SKU DTO validator.</param>
         </member>
         <member name="M:Retail.Api.Products.src.CleanArchitecture.API.Controllers.ProductController.Get">
             <summary>
@@ -72,6 +73,44 @@
             <summary>
             Get or sets InternalServerError.
             </summary>
+        </member>
+        <member name="T:Retail.Api.Products.src.CleanArchitecture.Application.Converters.Interfaces.IConverter`2">
+            <summary>
+            General purpose contract to convert from 'source' to 'target' type.
+            </summary>
+            <typeparam name="TSourceType">The source type to be converted.</typeparam>
+            <typeparam name="TTargetType">The target type to convert the source type to.</typeparam>
+        </member>
+        <member name="M:Retail.Api.Products.src.CleanArchitecture.Application.Converters.Interfaces.IConverter`2.Convert(`0)">
+            <summary>
+            Converts the source type to a specific target type object.
+            </summary>
+            <param name="sourceType">The source type to convert.</param>
+            <returns>The converted target type object.</returns>
+        </member>
+        <member name="T:Retail.Api.Products.src.CleanArchitecture.Application.Converters.SkuConverter">
+            <summary>
+            Converts <see cref="T:Retail.Api.Products.src.CleanArchitecture.Application.Dto.SkuDto"/> message to <see cref="T:Retail.Api.Products.src.CleanArchitecture.Domain.Entities.Sku"/> entity.
+            </summary>
+        </member>
+        <member name="M:Retail.Api.Products.src.CleanArchitecture.Application.Converters.SkuConverter.Convert(Retail.Api.Products.src.CleanArchitecture.Application.Dto.SkuDto)">
+            <summary>
+            Convert from <see cref="T:Retail.Api.Products.src.CleanArchitecture.Application.Dto.SkuDto"/> to <see cref="T:Retail.Api.Products.src.CleanArchitecture.Domain.Entities.Sku"/>.
+            </summary>
+            <param name="sourceType">The contract type message for <see cref="T:Retail.Api.Products.src.CleanArchitecture.Application.Dto.SkuDto"/>.</param>
+            <returns><see cref="T:Retail.Api.Products.src.CleanArchitecture.Domain.Entities.Sku"/> entity.</returns>
+        </member>
+        <member name="T:Retail.Api.Products.src.CleanArchitecture.Application.Converters.SkuDtoConverter">
+            <summary>
+            Converts <see cref="T:Retail.Api.Products.src.CleanArchitecture.Domain.Entities.Sku"/> entity to <see cref="T:Retail.Api.Products.src.CleanArchitecture.Application.Dto.SkuDto"/> message.
+            </summary>
+        </member>
+        <member name="M:Retail.Api.Products.src.CleanArchitecture.Application.Converters.SkuDtoConverter.Convert(Retail.Api.Products.src.CleanArchitecture.Domain.Entities.Sku)">
+            <summary>
+            Convert from <see cref="T:Retail.Api.Products.src.CleanArchitecture.Domain.Entities.Sku"/> to <see cref="T:Retail.Api.Products.src.CleanArchitecture.Application.Dto.SkuDto"/>.
+            </summary>
+            <param name="sourceType">The entity type for <see cref="T:Retail.Api.Products.src.CleanArchitecture.Domain.Entities.Sku"/>.</param>
+            <returns><see cref="T:Retail.Api.Products.src.CleanArchitecture.Application.Dto.SkuDto"/> message.</returns>
         </member>
         <member name="T:Retail.Api.Products.src.CleanArchitecture.Application.Dto.SkuDto">
             <summary>
@@ -138,27 +177,21 @@
             <param name="id">Product Id.</param>
             <returns>Product object.</returns>
         </member>
-        <member name="T:Retail.Api.Products.src.CleanArchitecture.Application.Profiles.ProductProfile">
-            <summary>
-            Defines Product profile for AutoMapper.
-            </summary>
-        </member>
-        <member name="M:Retail.Api.Products.src.CleanArchitecture.Application.Profiles.ProductProfile.#ctor">
-            <summary>
-            Initializes a new instance of the <see cref="T:Retail.Api.Products.src.CleanArchitecture.Application.Profiles.ProductProfile"/> class.
-            </summary>
-        </member>
         <member name="T:Retail.Api.Products.src.CleanArchitecture.Application.Service.ProductService">
             <summary>
             Product service class.
             </summary>
         </member>
-        <member name="M:Retail.Api.Products.src.CleanArchitecture.Application.Service.ProductService.#ctor(Retail.Api.Products.src.CleanArchitecture.Infrastructure.Interfaces.IUnitOfWork,AutoMapper.IMapper,MessagingLibrary.Interface.IMessagePublisher,Microsoft.Extensions.DependencyInjection.IServiceScopeFactory)">
+        <member name="M:Retail.Api.Products.src.CleanArchitecture.Application.Service.ProductService.#ctor(Retail.Api.Products.src.CleanArchitecture.Infrastructure.Interfaces.IUnitOfWork,Retail.Api.Products.src.CleanArchitecture.Application.Converters.Interfaces.IConverter{Retail.Api.Products.src.CleanArchitecture.Application.Dto.SkuDto,Retail.Api.Products.src.CleanArchitecture.Domain.Entities.Sku},Retail.Api.Products.src.CleanArchitecture.Application.Converters.Interfaces.IConverter{Retail.Api.Products.src.CleanArchitecture.Domain.Entities.Sku,Retail.Api.Products.src.CleanArchitecture.Application.Dto.SkuDto},Retail.Api.Products.src.CleanArchitecture.Application.Validation.Interfaces.IMessageValidator{Retail.Api.Products.src.CleanArchitecture.Application.Dto.SkuDto},MessagingLibrary.Interface.IMessagePublisher,Microsoft.Extensions.DependencyInjection.IServiceScopeFactory)">
             <summary>
             Initializes a new instance of the <see cref="T:Retail.Api.Products.src.CleanArchitecture.Application.Service.ProductService"/> class.
             </summary>
-            <param name="unitOfWork">Intance of unit of work class.</param>
-            <param name="mapper">Intance of mapper class.</param>
+            <param name="unitOfWork">Instance of unit of work class.</param>
+            <param name="skuConverter">Instance of SKU converter.</param>
+            <param name="skuDtoConverter">Instance of SKU DTO converter.</param>
+            <param name="skuDtoValidator">Instance of SKU DTO validator.</param>
+            <param name="messagePublisher">Instance of message publisher.</param>
+            <param name="serviceScopeFactory">Instance of service scope factory.</param>
         </member>
         <member name="M:Retail.Api.Products.src.CleanArchitecture.Application.Service.ProductService.GetAllProductsAsync">
             <summary>
@@ -194,6 +227,183 @@
             </summary>
             <param name="id">Product Id.</param>
             <returns>Product object.</returns>
+        </member>
+        <member name="T:Retail.Api.Products.src.CleanArchitecture.Application.Validation.FailureSeverity">
+            <summary>
+            Severity levels for errors raised during validation.
+            </summary>
+        </member>
+        <member name="F:Retail.Api.Products.src.CleanArchitecture.Application.Validation.FailureSeverity.Error">
+            <summary>
+            High severity. Exception raised, Error logged.
+            </summary>
+        </member>
+        <member name="F:Retail.Api.Products.src.CleanArchitecture.Application.Validation.FailureSeverity.Warn">
+            <summary>
+            Medium severity. No Exception raised, Warning logged.
+            </summary>
+        </member>
+        <member name="F:Retail.Api.Products.src.CleanArchitecture.Application.Validation.FailureSeverity.Info">
+            <summary>
+            Low severity. No Exception raised, Information logging not required.
+            </summary>
+        </member>
+        <member name="T:Retail.Api.Products.src.CleanArchitecture.Application.Validation.GenericValidator">
+            <summary>
+            Helper methods to validate the response from other services.
+            </summary>
+        </member>
+        <member name="M:Retail.Api.Products.src.CleanArchitecture.Application.Validation.GenericValidator.IsResponseNull``1(``0,System.String,Retail.Api.Products.src.CleanArchitecture.Application.Validation.ValidationData@,Retail.Api.Products.src.CleanArchitecture.Application.Validation.FailureSeverity)">
+            <summary>
+            Validates that the entity is not null.
+            </summary>
+            <typeparam name="T">The type of the resources.</typeparam>
+            <param name="response">The data to be validated.</param>
+            <param name="validatorName">Name of Validator.</param>
+            <param name="validationData">The validation data to return.</param>
+            <param name="failureSeverity">The severity level of the validation if it fails.</param>
+            <returns>True if the response is null, false otherwise.</returns>
+        </member>
+        <member name="M:Retail.Api.Products.src.CleanArchitecture.Application.Validation.GenericValidator.HasInvalidIdentifier``1(``0,System.String,Retail.Api.Products.src.CleanArchitecture.Application.Validation.ValidationData@)">
+            <summary>
+            Validates if the identifier value is valid.
+            </summary>
+            <typeparam name="T">Type of the identifier.</typeparam>
+            <param name="identifier">The identifier value to validate.</param>
+            <param name="validatorName">Name of Validator.</param>
+            <param name="validationData">The result of the validation.</param>
+            <returns>True, if the identifier has valid value. False otherwise.</returns>
+        </member>
+        <member name="M:Retail.Api.Products.src.CleanArchitecture.Application.Validation.GenericValidator.HasInvalidRequiredIdentifier``1(``0,System.String,System.String,Retail.Api.Products.src.CleanArchitecture.Application.Validation.ValidationData@)">
+            <summary>
+            Validates if a required identifier value is valid (must be greater than zero, cannot be zero for new entities).
+            </summary>
+            <typeparam name="T">Type of the identifier.</typeparam>
+            <param name="identifier">The identifier value to validate.</param>
+            <param name="validatorName">Name of Validator.</param>
+            <param name="fieldName">The name of the field being validated.</param>
+            <param name="validationData">The result of the validation.</param>
+            <returns>True, if the identifier is invalid (zero or negative). False otherwise.</returns>
+        </member>
+        <member name="M:Retail.Api.Products.src.CleanArchitecture.Application.Validation.GenericValidator.AreResourcesNullOrEmpty``1(System.Collections.Generic.IList{``0},System.String,System.String,Retail.Api.Products.src.CleanArchitecture.Application.Validation.ValidationData@,Retail.Api.Products.src.CleanArchitecture.Application.Validation.FailureSeverity)">
+            <summary>
+            Checks that a collection of resources is null or empty.
+            </summary>
+            <typeparam name="T">The type of the resources.</typeparam>
+            <param name="resources">The resources provided.</param>
+            <param name="validatorName">Name of Validator.</param>
+            <param name="nameOfResources">The string representation of the resources.</param>
+            <param name="validationData">The validation data that needs to be populated if validation fails.</param>
+            <param name="failureSeverity">The severity of the validation error.</param>
+            <returns>True if resources list is null or empty with lesser validation failure severity 'Warn', false otherwise.</returns>
+        </member>
+        <member name="M:Retail.Api.Products.src.CleanArchitecture.Application.Validation.GenericValidator.IsStringNullOrWhitespace(System.String,System.String,System.String,Retail.Api.Products.src.CleanArchitecture.Application.Validation.ValidationData@,Retail.Api.Products.src.CleanArchitecture.Application.Validation.FailureSeverity)">
+            <summary>
+            Validates if a string is null or whitespace.
+            </summary>
+            <param name="value">The string value to validate.</param>
+            <param name="validatorName">Name of Validator.</param>
+            <param name="fieldName">The name of the field being validated.</param>
+            <param name="validationData">The result of the validation.</param>
+            <param name="failureSeverity">The severity level of the validation if it fails.</param>
+            <returns>True if the string is null or whitespace, false otherwise.</returns>
+        </member>
+        <member name="M:Retail.Api.Products.src.CleanArchitecture.Application.Validation.GenericValidator.ExceedsMaxLength(System.String,System.Int32,System.String,System.String,Retail.Api.Products.src.CleanArchitecture.Application.Validation.ValidationData@,Retail.Api.Products.src.CleanArchitecture.Application.Validation.FailureSeverity)">
+            <summary>
+            Validates if a string exceeds a maximum length.
+            </summary>
+            <param name="value">The string value to validate.</param>
+            <param name="maxLength">The maximum allowed length.</param>
+            <param name="validatorName">Name of Validator.</param>
+            <param name="fieldName">The name of the field being validated.</param>
+            <param name="validationData">The validation data to return.</param>
+            <param name="failureSeverity">The severity level of the validation if it fails.</param>
+            <returns>True if the string exceeds the max length, false otherwise.</returns>
+        </member>
+        <member name="M:Retail.Api.Products.src.CleanArchitecture.Application.Validation.GenericValidator.IsLessThanZero(System.Double,System.String,System.String,Retail.Api.Products.src.CleanArchitecture.Application.Validation.ValidationData@,Retail.Api.Products.src.CleanArchitecture.Application.Validation.FailureSeverity)">
+            <summary>
+            Validates if a numeric value is less than zero.
+            </summary>
+            <param name="value">The value to validate.</param>
+            <param name="validatorName">Name of Validator.</param>
+            <param name="fieldName">The name of the field being validated.</param>
+            <param name="validationData">The result of the validation.</param>
+            <param name="failureSeverity">The severity level of the validation if it fails.</param>
+            <returns>True if the value is less than zero, false otherwise.</returns>
+        </member>
+        <member name="M:Retail.Api.Products.src.CleanArchitecture.Application.Validation.GenericValidator.IsLessThanZero(System.Int32,System.String,System.String,Retail.Api.Products.src.CleanArchitecture.Application.Validation.ValidationData@,Retail.Api.Products.src.CleanArchitecture.Application.Validation.FailureSeverity)">
+            <summary>
+            Validates if an integer value is less than zero.
+            </summary>
+            <param name="value">The value to validate.</param>
+            <param name="validatorName">Name of Validator.</param>
+            <param name="fieldName">The name of the field being validated.</param>
+            <param name="validationData">The result of the validation.</param>
+            <param name="failureSeverity">The severity level of the validation if it fails.</param>
+            <returns>True if the value is less than zero, false otherwise.</returns>
+        </member>
+        <member name="T:Retail.Api.Products.src.CleanArchitecture.Application.Validation.Interfaces.IMessageValidator`1">
+            <summary>
+            The interface for validating if a message is valid.
+            </summary>
+            <typeparam name="TMessage">The message to be validated.</typeparam>
+        </member>
+        <member name="M:Retail.Api.Products.src.CleanArchitecture.Application.Validation.Interfaces.IMessageValidator`1.Validate(`0)">
+            <summary>
+            Validates the given message and returns validation information.
+            </summary>
+            <param name="message">The message.</param>
+            <returns>The validation data.</returns>
+        </member>
+        <member name="T:Retail.Api.Products.src.CleanArchitecture.Application.Validation.SkuDtoValidator">
+            <summary>
+            Validates incoming <see cref="T:Retail.Api.Products.src.CleanArchitecture.Application.Dto.SkuDto"/> message.
+            </summary>
+        </member>
+        <member name="M:Retail.Api.Products.src.CleanArchitecture.Application.Validation.SkuDtoValidator.Validate(Retail.Api.Products.src.CleanArchitecture.Application.Dto.SkuDto)">
+            <summary>
+            Validates <see cref="T:Retail.Api.Products.src.CleanArchitecture.Application.Dto.SkuDto"/> message.
+            </summary>
+            <param name="message">The message to validate.</param>
+            <returns>The <see cref="T:Retail.Api.Products.src.CleanArchitecture.Application.Validation.ValidationData"/> to signify if the validation is successful or not.</returns>
+        </member>
+        <member name="T:Retail.Api.Products.src.CleanArchitecture.Application.Validation.ValidationData">
+            <summary>
+            Validation data returned by message validators.
+            </summary>
+        </member>
+        <member name="M:Retail.Api.Products.src.CleanArchitecture.Application.Validation.ValidationData.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Retail.Api.Products.src.CleanArchitecture.Application.Validation.ValidationData" /> class for validation success.
+            </summary>
+        </member>
+        <member name="M:Retail.Api.Products.src.CleanArchitecture.Application.Validation.ValidationData.#ctor(System.String,System.String,Retail.Api.Products.src.CleanArchitecture.Application.Validation.FailureSeverity)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Retail.Api.Products.src.CleanArchitecture.Application.Validation.ValidationData" /> class for validation failure.
+            </summary>
+            <param name="validatorName">The name of the validator.</param>
+            <param name="failureReason">The reason the validator failed.</param>
+            <param name="failureSeverity">The severity of the validator failure.</param>
+        </member>
+        <member name="P:Retail.Api.Products.src.CleanArchitecture.Application.Validation.ValidationData.IsValid">
+            <summary>
+            Gets a value indicating whether validation was successful.
+            </summary>
+        </member>
+        <member name="P:Retail.Api.Products.src.CleanArchitecture.Application.Validation.ValidationData.ValidatorName">
+            <summary>
+            Gets name of the validator that was unsuccessful.
+            </summary>
+        </member>
+        <member name="P:Retail.Api.Products.src.CleanArchitecture.Application.Validation.ValidationData.FailureReason">
+            <summary>
+            Gets reason validation failed.
+            </summary>
+        </member>
+        <member name="P:Retail.Api.Products.src.CleanArchitecture.Application.Validation.ValidationData.FailureSeverity">
+            <summary>
+            Gets severity of the validation error.
+            </summary>
         </member>
         <member name="T:Retail.Api.Products.src.CleanArchitecture.Domain.Entities.Sku">
             <summary>

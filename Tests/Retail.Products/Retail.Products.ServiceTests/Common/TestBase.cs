@@ -44,8 +44,6 @@ namespace Retail.Products.ServiceTests.Common
             services.AddSingleton(MockMessagePublisher.Object);
 
             // Add AutoMapper with a mock implementation
-            var mockMapper = new Mock<AutoMapper.IMapper>();
-            services.AddSingleton(mockMapper.Object);
 
             // Add mock IServiceScopeFactory
             var mockServiceScopeFactory = new Mock<Microsoft.Extensions.DependencyInjection.IServiceScopeFactory>();

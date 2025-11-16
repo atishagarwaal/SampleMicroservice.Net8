@@ -2,6 +2,10 @@ using FluentAssertions;
 using NUnit.Framework;
 using Retail.Api.Products.src.CleanArchitecture.Application.Dto;
 using Retail.Api.Products.src.CleanArchitecture.Application.Interfaces;
+using Retail.Api.Products.src.CleanArchitecture.Application.Converters.Interfaces;
+using Retail.Api.Products.src.CleanArchitecture.Application.Validation;
+using Retail.Api.Products.src.CleanArchitecture.Application.Validation.Interfaces;
+using Retail.Api.Products.src.CleanArchitecture.Domain.Entities;
 using Retail.Products.ServiceTests.Common;
 using TechTalk.SpecFlow;
 using Microsoft.Extensions.DependencyInjection;
@@ -21,6 +25,9 @@ namespace Retail.Products.ServiceTests.StepDefinitions
         private SkuDto? _updatedProduct;
         private bool _deleteResult;
         private Exception? _exception;
+        private Mock<IConverter<SkuDto, Sku>> _mockSkuConverter = null!;
+        private Mock<IConverter<Sku, SkuDto>> _mockSkuDtoConverter = null!;
+        private Mock<IMessageValidator<SkuDto>> _mockSkuDtoValidator = null!;
 
         [BeforeScenario]
         public void BeforeScenario()
@@ -28,25 +35,31 @@ namespace Retail.Products.ServiceTests.StepDefinitions
             SetupServices();
             
             // Create ProductService manually with mocked dependencies
-            var mockMapper = new Mock<AutoMapper.IMapper>();
             var mockServiceScopeFactory = new Mock<Microsoft.Extensions.DependencyInjection.IServiceScopeFactory>();
             
-            // Set up AutoMapper mock to return mapped objects
-            mockMapper.Setup(x => x.Map<IEnumerable<SkuDto>>(It.IsAny<IEnumerable<Retail.Api.Products.src.CleanArchitecture.Domain.Entities.Sku>>()))
-                .Returns<IEnumerable<Retail.Api.Products.src.CleanArchitecture.Domain.Entities.Sku>>(skus => 
-                    skus.Select(s => new SkuDto { Id = s.Id, Name = s.Name, UnitPrice = s.UnitPrice, Inventory = s.Inventory }).ToList());
+            // Set up converter mocks
+            _mockSkuConverter = new Mock<IConverter<SkuDto, Sku>>();
+            _mockSkuDtoConverter = new Mock<IConverter<Sku, SkuDto>>();
+            _mockSkuDtoValidator = new Mock<IMessageValidator<SkuDto>>();
             
-            mockMapper.Setup(x => x.Map<SkuDto>(It.IsAny<Retail.Api.Products.src.CleanArchitecture.Domain.Entities.Sku>()))
-                .Returns<Retail.Api.Products.src.CleanArchitecture.Domain.Entities.Sku>(sku => 
+            // Set up converter mocks to return mapped objects
+            _mockSkuDtoConverter.Setup(x => x.Convert(It.IsAny<Sku>()))
+                .Returns<Sku>(sku => 
                     new SkuDto { Id = sku.Id, Name = sku.Name, UnitPrice = sku.UnitPrice, Inventory = sku.Inventory });
             
-            mockMapper.Setup(x => x.Map<Retail.Api.Products.src.CleanArchitecture.Domain.Entities.Sku>(It.IsAny<SkuDto>()))
+            _mockSkuConverter.Setup(x => x.Convert(It.IsAny<SkuDto>()))
                 .Returns<SkuDto>(dto => 
-                    new Retail.Api.Products.src.CleanArchitecture.Domain.Entities.Sku { Id = dto.Id, Name = dto.Name, UnitPrice = dto.UnitPrice, Inventory = dto.Inventory });
+                    new Sku { Id = dto.Id, Name = dto.Name, UnitPrice = dto.UnitPrice, Inventory = dto.Inventory });
+            
+            // Set up validator mock to pass by default
+            _mockSkuDtoValidator.Setup(x => x.Validate(It.IsAny<SkuDto>()))
+                .Returns(new ValidationData());
             
             _productService = new Retail.Api.Products.src.CleanArchitecture.Application.Service.ProductService(
                 MockUnitOfWork.Object,
-                mockMapper.Object,
+                _mockSkuConverter.Object,
+                _mockSkuDtoConverter.Object,
+                _mockSkuDtoValidator.Object,
                 MockMessagePublisher.Object,
                 mockServiceScopeFactory.Object);
         }
@@ -314,6 +327,10 @@ namespace Retail.Products.ServiceTests.StepDefinitions
                     UnitPrice = -10.0, // Invalid: negative price
                     Inventory = -5 // Invalid: negative inventory
                 };
+
+                // Set up validator mock to fail validation
+                _mockSkuDtoValidator.Setup(x => x.Validate(invalidProduct))
+                    .Returns(new ValidationData("SkuDtoValidator", "The Name field is null or whitespace.", FailureSeverity.Error));
 
                 _addedProduct = await _productService.AddProductAsync(invalidProduct);
             }
