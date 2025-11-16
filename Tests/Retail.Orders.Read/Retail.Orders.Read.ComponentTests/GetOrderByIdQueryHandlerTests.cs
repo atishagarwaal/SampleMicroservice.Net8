@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Retail.Orders.Read.src.CleanArchitecture.Application.Dto;
@@ -26,6 +27,7 @@ namespace Retail.Orders.Read.ComponentTests
         private Mock<IServiceScope> _mockServiceScope = null!;
         private Mock<IServiceProvider> _mockServiceProvider = null!;
         private Mock<IConverter<Order, OrderDto>> _mockOrderDtoConverter = null!;
+        private Mock<ILogger<GetOrderByIdQueryHandler>> _mockLogger = null!;
         private GetOrderByIdQueryHandler _handler = null!;
 
         [TestInitialize]
@@ -36,6 +38,7 @@ namespace Retail.Orders.Read.ComponentTests
             _mockServiceScope = new Mock<IServiceScope>();
             _mockServiceProvider = new Mock<IServiceProvider>();
             _mockOrderDtoConverter = new Mock<IConverter<Order, OrderDto>>();
+            _mockLogger = new Mock<ILogger<GetOrderByIdQueryHandler>>();
 
             _mockServiceScopeFactory
                 .Setup(x => x.CreateScope())
@@ -52,7 +55,8 @@ namespace Retail.Orders.Read.ComponentTests
             _handler = new GetOrderByIdQueryHandler(
                 _mockUnitOfWork.Object,
                 _mockOrderDtoConverter.Object,
-                _mockServiceScopeFactory.Object);
+                _mockServiceScopeFactory.Object,
+                _mockLogger.Object);
         }
 
         [TestMethod]
