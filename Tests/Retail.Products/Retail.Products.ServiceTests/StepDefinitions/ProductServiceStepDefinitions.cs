@@ -1,4 +1,5 @@
 using FluentAssertions;
+using Microsoft.Extensions.Logging;
 using NUnit.Framework;
 using Retail.Api.Products.src.CleanArchitecture.Application.Dto;
 using Retail.Api.Products.src.CleanArchitecture.Application.Interfaces;
@@ -36,6 +37,7 @@ namespace Retail.Products.ServiceTests.StepDefinitions
             
             // Create ProductService manually with mocked dependencies
             var mockServiceScopeFactory = new Mock<Microsoft.Extensions.DependencyInjection.IServiceScopeFactory>();
+            var mockLogger = new Mock<ILogger<Retail.Api.Products.src.CleanArchitecture.Application.Service.ProductService>>();
             
             // Set up converter mocks
             _mockSkuConverter = new Mock<IConverter<SkuDto, Sku>>();
@@ -61,7 +63,8 @@ namespace Retail.Products.ServiceTests.StepDefinitions
                 _mockSkuDtoConverter.Object,
                 _mockSkuDtoValidator.Object,
                 MockMessagePublisher.Object,
-                mockServiceScopeFactory.Object);
+                mockServiceScopeFactory.Object,
+                mockLogger.Object);
         }
 
         [AfterScenario]

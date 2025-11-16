@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Retail.Api.Products.src.CleanArchitecture.API.Controllers;
@@ -19,6 +20,7 @@ namespace Retail.Products.ComponentTests
     {
         private Mock<IProductService> _mockProductService = null!;
         private Mock<IMessageValidator<SkuDto>> _mockSkuDtoValidator = null!;
+        private Mock<ILogger<ProductController>> _mockLogger = null!;
         private ProductController _controller = null!;
 
         [TestInitialize]
@@ -26,7 +28,8 @@ namespace Retail.Products.ComponentTests
         {
             _mockProductService = new Mock<IProductService>();
             _mockSkuDtoValidator = new Mock<IMessageValidator<SkuDto>>();
-            _controller = new ProductController(_mockProductService.Object, _mockSkuDtoValidator.Object);
+            _mockLogger = new Mock<ILogger<ProductController>>();
+            _controller = new ProductController(_mockProductService.Object, _mockSkuDtoValidator.Object, _mockLogger.Object);
 
             // Default setup for validator to pass
             _mockSkuDtoValidator.Setup(x => x.Validate(It.IsAny<SkuDto>()))

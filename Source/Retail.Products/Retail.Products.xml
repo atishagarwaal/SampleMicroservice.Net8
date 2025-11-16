@@ -21,12 +21,13 @@
             Product controller class.
             </summary>
         </member>
-        <member name="M:Retail.Api.Products.src.CleanArchitecture.API.Controllers.ProductController.#ctor(Retail.Api.Products.src.CleanArchitecture.Application.Interfaces.IProductService,Retail.Api.Products.src.CleanArchitecture.Application.Validation.Interfaces.IMessageValidator{Retail.Api.Products.src.CleanArchitecture.Application.Dto.SkuDto})">
+        <member name="M:Retail.Api.Products.src.CleanArchitecture.API.Controllers.ProductController.#ctor(Retail.Api.Products.src.CleanArchitecture.Application.Interfaces.IProductService,Retail.Api.Products.src.CleanArchitecture.Application.Validation.Interfaces.IMessageValidator{Retail.Api.Products.src.CleanArchitecture.Application.Dto.SkuDto},Microsoft.Extensions.Logging.ILogger{Retail.Api.Products.src.CleanArchitecture.API.Controllers.ProductController})">
             <summary>
             Initializes a new instance of the <see cref="T:Retail.Api.Products.src.CleanArchitecture.API.Controllers.ProductController"/> class.
             </summary>
             <param name="productService">Instance of product service class.</param>
             <param name="skuDtoValidator">Instance of SKU DTO validator.</param>
+            <param name="logger">Instance of logger.</param>
         </member>
         <member name="M:Retail.Api.Products.src.CleanArchitecture.API.Controllers.ProductController.Get">
             <summary>
@@ -137,6 +138,25 @@
             Gets or sets the inventory quantity.
             </summary>
         </member>
+        <member name="T:Retail.Api.Products.src.CleanArchitecture.Application.EventHandlers.OrderCreatedEventHandler">
+            <summary>
+            Event handler for OrderCreatedEvent.
+            </summary>
+        </member>
+        <member name="M:Retail.Api.Products.src.CleanArchitecture.Application.EventHandlers.OrderCreatedEventHandler.#ctor(Retail.Api.Products.src.CleanArchitecture.Application.Interfaces.IProductService,Microsoft.Extensions.Logging.ILogger{Retail.Api.Products.src.CleanArchitecture.Application.EventHandlers.OrderCreatedEventHandler})">
+            <summary>
+            Initializes a new instance of the <see cref="T:Retail.Api.Products.src.CleanArchitecture.Application.EventHandlers.OrderCreatedEventHandler"/> class.
+            </summary>
+            <param name="productService">Instance of product service.</param>
+            <param name="logger">Instance of logger.</param>
+        </member>
+        <member name="M:Retail.Api.Products.src.CleanArchitecture.Application.EventHandlers.OrderCreatedEventHandler.HandleAsync(OrderCreatedEventNameSpace.OrderCreatedEvent)">
+            <summary>
+            Handles the OrderCreatedEvent.
+            </summary>
+            <param name="orderCreatedEvent">The order created event.</param>
+            <returns>Task representing the async operation.</returns>
+        </member>
         <member name="T:Retail.Api.Products.src.CleanArchitecture.Application.Interfaces.IProductService">
             <summary>
             Interface definition for product service.
@@ -182,7 +202,7 @@
             Product service class.
             </summary>
         </member>
-        <member name="M:Retail.Api.Products.src.CleanArchitecture.Application.Service.ProductService.#ctor(Retail.Api.Products.src.CleanArchitecture.Infrastructure.Interfaces.IUnitOfWork,Retail.Api.Products.src.CleanArchitecture.Application.Converters.Interfaces.IConverter{Retail.Api.Products.src.CleanArchitecture.Application.Dto.SkuDto,Retail.Api.Products.src.CleanArchitecture.Domain.Entities.Sku},Retail.Api.Products.src.CleanArchitecture.Application.Converters.Interfaces.IConverter{Retail.Api.Products.src.CleanArchitecture.Domain.Entities.Sku,Retail.Api.Products.src.CleanArchitecture.Application.Dto.SkuDto},Retail.Api.Products.src.CleanArchitecture.Application.Validation.Interfaces.IMessageValidator{Retail.Api.Products.src.CleanArchitecture.Application.Dto.SkuDto},MessagingLibrary.Interface.IMessagePublisher,Microsoft.Extensions.DependencyInjection.IServiceScopeFactory)">
+        <member name="M:Retail.Api.Products.src.CleanArchitecture.Application.Service.ProductService.#ctor(Retail.Api.Products.src.CleanArchitecture.Infrastructure.Interfaces.IUnitOfWork,Retail.Api.Products.src.CleanArchitecture.Application.Converters.Interfaces.IConverter{Retail.Api.Products.src.CleanArchitecture.Application.Dto.SkuDto,Retail.Api.Products.src.CleanArchitecture.Domain.Entities.Sku},Retail.Api.Products.src.CleanArchitecture.Application.Converters.Interfaces.IConverter{Retail.Api.Products.src.CleanArchitecture.Domain.Entities.Sku,Retail.Api.Products.src.CleanArchitecture.Application.Dto.SkuDto},Retail.Api.Products.src.CleanArchitecture.Application.Validation.Interfaces.IMessageValidator{Retail.Api.Products.src.CleanArchitecture.Application.Dto.SkuDto},MessagingLibrary.Interface.IMessagePublisher,Microsoft.Extensions.DependencyInjection.IServiceScopeFactory,Microsoft.Extensions.Logging.ILogger{Retail.Api.Products.src.CleanArchitecture.Application.Service.ProductService})">
             <summary>
             Initializes a new instance of the <see cref="T:Retail.Api.Products.src.CleanArchitecture.Application.Service.ProductService"/> class.
             </summary>
@@ -192,6 +212,7 @@
             <param name="skuDtoValidator">Instance of SKU DTO validator.</param>
             <param name="messagePublisher">Instance of message publisher.</param>
             <param name="serviceScopeFactory">Instance of service scope factory.</param>
+            <param name="logger">Instance of logger.</param>
         </member>
         <member name="M:Retail.Api.Products.src.CleanArchitecture.Application.Service.ProductService.GetAllProductsAsync">
             <summary>
@@ -210,7 +231,7 @@
             <summary>
             Method to add a new product record asynchronously.
             </summary>
-            <param name="custDto">Product record.</param>
+            <param name="skuDto">Product record.</param>
             <returns>Product object.</returns>
         </member>
         <member name="M:Retail.Api.Products.src.CleanArchitecture.Application.Service.ProductService.UpdateProductAsync(System.Int64,Retail.Api.Products.src.CleanArchitecture.Application.Dto.SkuDto)">
@@ -218,7 +239,7 @@
             Method to update product record asynchronously.
             </summary>
             <param name="id">Product Id.</param>
-            <param name="custDto">Product record.</param>
+            <param name="skuDto">Product record.</param>
             <returns>Product object.</returns>
         </member>
         <member name="M:Retail.Api.Products.src.CleanArchitecture.Application.Service.ProductService.DeleteProductAsync(System.Int64)">
@@ -226,7 +247,14 @@
             Method to delete product record asynchronously.
             </summary>
             <param name="id">Product Id.</param>
-            <returns>Product object.</returns>
+            <returns>True if deleted successfully, false otherwise.</returns>
+        </member>
+        <member name="M:Retail.Api.Products.src.CleanArchitecture.Application.Service.ProductService.HandleOrderCreatedEvent(OrderCreatedEventNameSpace.OrderCreatedEvent)">
+            <summary>
+            Handles the OrderCreatedEvent to update inventory.
+            </summary>
+            <param name="orderCreatedEvent">The order created event.</param>
+            <returns>Task representing the async operation.</returns>
         </member>
         <member name="T:Retail.Api.Products.src.CleanArchitecture.Application.Validation.FailureSeverity">
             <summary>
@@ -571,11 +599,12 @@
             Unit of work class.
             </summary>
         </member>
-        <member name="M:Retail.Api.Products.src.CleanArchitecture.Infrastructure.UnitOfWork.UnitOfWork.#ctor(Retail.Api.Products.src.CleanArchitecture.Infrastructure.Data.ApplicationDbContext)">
+        <member name="M:Retail.Api.Products.src.CleanArchitecture.Infrastructure.UnitOfWork.UnitOfWork.#ctor(Retail.Api.Products.src.CleanArchitecture.Infrastructure.Data.ApplicationDbContext,Microsoft.Extensions.Logging.ILogger{Retail.Api.Products.src.CleanArchitecture.Infrastructure.UnitOfWork.UnitOfWork})">
             <summary>
             Initializes a new instance of the <see cref="T:Retail.Api.Products.src.CleanArchitecture.Infrastructure.UnitOfWork.UnitOfWork"/> class.
             </summary>
             <param name="entityContext">Entity framework Db context.</param>
+            <param name="logger">Instance of logger.</param>
         </member>
         <member name="M:Retail.Api.Products.src.CleanArchitecture.Infrastructure.UnitOfWork.UnitOfWork.BeginTransactionAsync">
             <summary>
@@ -591,6 +620,36 @@
             <summary>
             Method to rollback changes.
             </summary>
+        </member>
+        <member name="M:Retail.Api.Products.src.CleanArchitecture.Infrastructure.UnitOfWork.UnitOfWork.CompleteAsync">
+            <summary>
+            Saves all changes made in this context to the database.
+            </summary>
+            <returns>The number of state entries written to the database.</returns>
+        </member>
+        <member name="M:Retail.Api.Products.src.CleanArchitecture.Infrastructure.UnitOfWork.UnitOfWork.Dispose">
+            <summary>
+            Disposes the unit of work and any active transaction.
+            </summary>
+        </member>
+        <member name="T:Retail.Api.Customers.src.CleanArchitecture.Application.Service.ServiceInitializer">
+            <summary>
+            Service initializer for setting up message subscriptions.
+            </summary>
+        </member>
+        <member name="M:Retail.Api.Customers.src.CleanArchitecture.Application.Service.ServiceInitializer.#ctor(MessagingLibrary.Interface.IMessageSubscriber,CommonLibrary.Handlers.IEventHandler{OrderCreatedEventNameSpace.OrderCreatedEvent},Microsoft.Extensions.Logging.ILogger{Retail.Api.Customers.src.CleanArchitecture.Application.Service.ServiceInitializer})">
+            <summary>
+            Initializes a new instance of the <see cref="T:Retail.Api.Customers.src.CleanArchitecture.Application.Service.ServiceInitializer"/> class.
+            </summary>
+            <param name="messageSubscriber">Instance of message subscriber.</param>
+            <param name="orderCreatedHandler">Instance of order created event handler.</param>
+            <param name="logger">Instance of logger.</param>
+        </member>
+        <member name="M:Retail.Api.Customers.src.CleanArchitecture.Application.Service.ServiceInitializer.Initialize">
+            <summary>
+            Initializes the service by subscribing to events.
+            </summary>
+            <returns>Task representing the async operation.</returns>
         </member>
         <member name="P:InventoryErrorEventNameSpace.InventoryErrorEvent.CustomerId">
             <summary>

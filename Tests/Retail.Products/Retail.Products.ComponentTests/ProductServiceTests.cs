@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using CommonLibrary.MessageContract;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Retail.Api.Products.src.CleanArchitecture.Application.Dto;
@@ -36,6 +37,7 @@ namespace Retail.Products.ComponentTests
         private Mock<IServiceScope> _mockServiceScope = null!;
         private Mock<IServiceProvider> _mockServiceProvider = null!;
         private Mock<IMessagePublisher> _mockMessagePublisher = null!;
+        private Mock<ILogger<ProductService>> _mockLogger = null!;
         private ProductService _productService = null!;
 
         [TestInitialize]
@@ -50,6 +52,7 @@ namespace Retail.Products.ComponentTests
             _mockServiceScope = new Mock<IServiceScope>();
             _mockServiceProvider = new Mock<IServiceProvider>();
             _mockMessagePublisher = new Mock<IMessagePublisher>();
+            _mockLogger = new Mock<ILogger<ProductService>>();
 
             _mockUnitOfWork
                 .Setup(x => x.Skus)
@@ -66,7 +69,8 @@ namespace Retail.Products.ComponentTests
                 _mockSkuDtoConverter.Object,
                 _mockSkuDtoValidator.Object,
                 _mockMessagePublisher.Object,
-                _mockServiceScopeFactory.Object);
+                _mockServiceScopeFactory.Object,
+                _mockLogger.Object);
         }
 
         [TestMethod]
