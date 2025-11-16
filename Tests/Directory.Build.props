@@ -1,0 +1,9 @@
+<Project>
+  <!--
+    Directory.Build.props for test projects.
+    This imports Tests.Common.props which contains test-specific properties.
+    The root Directory.Build.props will also be processed first, so Common.props properties are inherited.
+  -->
+  <Import Project="$(MSBuildThisFileDirectory)..\Build\Tests.Common.props" Condition="Exists('$(MSBuildThisFileDirectory)..\Build\Tests.Common.props')" />
+</Project>
+
