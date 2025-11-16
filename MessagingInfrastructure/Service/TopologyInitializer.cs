@@ -10,48 +10,64 @@ using CommonLibrary.Configuration;
 
 namespace MessagingInfrastructure.Service
 {
+    /// <summary>
+    /// Topology initializer class for setting up RabbitMQ exchanges and queues.
+    /// </summary>
     public class TopologyInitializer
     {
         private readonly TopologyConfiguration _config;
         private readonly IConnection _connection;
-        private readonly ILogger<TopologyInitializer>? _logger;
+        private readonly ILogger<TopologyInitializer> _logger;
         private const string X_Message_TTL = "x-message-ttl";
         private const string X_Dead_Letter_Exchange = "x-dead-letter-exchange";
         private const string X_Dead_Letter_Routing_Key = "x-dead-letter-routing-key";
         private const string X_Max_Priority = "x-max-priority";
 
-        public TopologyInitializer(IOptions<TopologyConfiguration> options, IConnection connection, ILogger<TopologyInitializer>? logger = null)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TopologyInitializer"/> class.
+        /// </summary>
+        /// <param name="options">Topology configuration options.</param>
+        /// <param name="connection">RabbitMQ connection.</param>
+        /// <param name="logger">Instance of logger.</param>
+        public TopologyInitializer(
+            IOptions<TopologyConfiguration> options,
+            IConnection connection,
+            ILogger<TopologyInitializer> logger)
         {
             _config = options.Value ?? throw new ArgumentNullException(nameof(options));
             _connection = connection ?? throw new ArgumentNullException(nameof(connection));
-            _logger = logger;
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
+        /// <summary>
+        /// Sets up RabbitMQ infrastructure (exchanges and queues).
+        /// </summary>
         public async Task SetupInfrastructure()
         {
+            _logger.LogInformation("Starting RabbitMQ topology initialization");
+
             try
             {
-                _logger?.LogInformation("Starting RabbitMQ topology initialization...");
-
-                // Establish a connection
                 using (var channel = await _connection.CreateChannelAsync())
                 {
-                    // Create dead letter exchange first
+                    _logger.LogDebug("Channel created for topology initialization");
+
                     await CreateDeadLetterExchange(channel);
 
-                    // Create exchanges idempotently
+                    var exchangeCount = _config.Exchanges?.Count ?? 0;
+                    _logger.LogInformation("Creating {ExchangeCount} exchanges", exchangeCount);
+
                     foreach (var exchange in _config.Exchanges)
                     {
-                        // First, try to delete the existing exchange if it exists to avoid PRECONDITION_FAILED errors
                         try
                         {
                             await channel.ExchangeDeleteAsync(exchange.Name, false);
-                            _logger?.LogInformation("Deleted existing exchange: {ExchangeName}", exchange.Name);
+                            _logger.LogInformation("Deleted existing exchange: {ExchangeName}", exchange.Name);
                         }
                         catch (Exception ex)
                         {
-                            // Exchange might not exist, which is fine
-                            _logger?.LogDebug("Exchange {ExchangeName} does not exist or could not be deleted: {Message}", exchange.Name, ex.Message);
+                            _logger.LogDebug("Exchange {ExchangeName} does not exist or could not be deleted: {Message}", 
+                                exchange.Name, ex.Message);
                         }
 
                         await channel.ExchangeDeclareAsync(
@@ -61,53 +77,59 @@ namespace MessagingInfrastructure.Service
                             exchange.AutoDelete,
                             exchange.Arguments);
 
-                        _logger?.LogInformation("Exchange created successfully: {ExchangeName}", exchange.Name);
+                        _logger.LogInformation("Exchange created successfully: {ExchangeName}", exchange.Name);
                     }
 
-                    // Create queues idempotently
+                    var queueCount = _config.Queues?.Count ?? 0;
+                    _logger.LogInformation("Creating {QueueCount} queues", queueCount);
+
                     foreach (var queue in _config.Queues)
                     {
                         await CreateQueueWithEnhancedConfiguration(channel, queue);
                     }
 
-                    _logger?.LogInformation("RabbitMQ topology initialization completed successfully");
+                    _logger.LogInformation("RabbitMQ topology initialization completed successfully. Created {ExchangeCount} exchanges and {QueueCount} queues", 
+                        exchangeCount, queueCount);
                 }
             }
             catch (Exception ex)
             {
-                _logger?.LogError(ex, "Failed to initialize RabbitMQ topology");
+                _logger.LogError(ex, "Failed to initialize RabbitMQ topology");
                 throw;
             }
         }
 
+        /// <summary>
+        /// Creates the dead letter exchange and queue.
+        /// </summary>
+        /// <param name="channel">RabbitMQ channel.</param>
         private async Task CreateDeadLetterExchange(IChannel channel)
         {
+            _logger.LogInformation("Creating dead letter exchange and queue");
+
             try
             {
-                // First, try to delete existing dead letter queue and exchange to avoid PRECONDITION_FAILED errors
                 try
                 {
                     await channel.QueueDeleteAsync("dlq.failure", false, false);
-                    _logger?.LogInformation("Deleted existing dead letter queue: dlq.failure");
+                    _logger.LogInformation("Deleted existing dead letter queue: dlq.failure");
                 }
                 catch (Exception ex)
                 {
-                    // Queue might not exist, which is fine
-                    _logger?.LogDebug("Dead letter queue does not exist or could not be deleted: {Message}", ex.Message);
+                    _logger.LogDebug("Dead letter queue does not exist or could not be deleted: {Message}", ex.Message);
                 }
 
                 try
                 {
                     await channel.ExchangeDeleteAsync("dlx.topic.exchange", false);
-                    _logger?.LogInformation("Deleted existing dead letter exchange: dlx.topic.exchange");
+                    _logger.LogInformation("Deleted existing dead letter exchange: dlx.topic.exchange");
                 }
                 catch (Exception ex)
                 {
-                    // Exchange might not exist, which is fine
-                    _logger?.LogDebug("Dead letter exchange does not exist or could not be deleted: {Message}", ex.Message);
+                    _logger.LogDebug("Dead letter exchange does not exist or could not be deleted: {Message}", ex.Message);
                 }
 
-                // Create dead letter exchange for failed messages
+                _logger.LogDebug("Declaring dead letter exchange: dlx.topic.exchange");
                 await channel.ExchangeDeclareAsync(
                     exchange: "dlx.topic.exchange",
                     type: ExchangeType.Topic,
@@ -115,7 +137,7 @@ namespace MessagingInfrastructure.Service
                     autoDelete: false,
                     arguments: null);
 
-                // Create dead letter queue
+                _logger.LogDebug("Declaring dead letter queue: dlq.failure");
                 await channel.QueueDeclareAsync(
                     queue: "dlq.failure",
                     durable: true,
@@ -127,35 +149,40 @@ namespace MessagingInfrastructure.Service
                         ["x-max-length"] = 10000 // Maximum number of messages in DLQ
                     });
 
-                // Bind DLQ to DLX
+                _logger.LogDebug("Binding dead letter queue to exchange");
                 await channel.QueueBindAsync(
                     queue: "dlq.failure",
                     exchange: "dlx.topic.exchange",
                     routingKey: "failure");
 
-                _logger?.LogInformation("Dead letter exchange and queue created successfully");
+                _logger.LogInformation("Dead letter exchange and queue created successfully");
             }
             catch (Exception ex)
             {
-                _logger?.LogError(ex, "Failed to create dead letter exchange");
+                _logger.LogError(ex, "Failed to create dead letter exchange");
                 throw;
             }
         }
 
+        /// <summary>
+        /// Creates a queue with enhanced configuration options.
+        /// </summary>
+        /// <param name="channel">RabbitMQ channel.</param>
+        /// <param name="queue">Queue configuration.</param>
         private async Task CreateQueueWithEnhancedConfiguration(IChannel channel, QueueConfig queue)
         {
+            _logger.LogInformation("Creating queue with enhanced configuration: {QueueName}", queue.Name);
+
             try
             {
-                // First, try to delete the existing queue if it exists to avoid PRECONDITION_FAILED errors
                 try
                 {
                     await channel.QueueDeleteAsync(queue.Name, false, false);
-                    _logger?.LogInformation("Deleted existing queue: {QueueName}", queue.Name);
+                    _logger.LogInformation("Deleted existing queue: {QueueName}", queue.Name);
                 }
                 catch (Exception ex)
                 {
-                    // Queue might not exist, which is fine
-                    _logger?.LogDebug("Queue {QueueName} does not exist or could not be deleted: {Message}", queue.Name, ex.Message);
+                    _logger.LogDebug("Queue {QueueName} does not exist or could not be deleted: {Message}", queue.Name, ex.Message);
                 }
 
                 var arguments = new Dictionary<string, object>();
@@ -214,6 +241,7 @@ namespace MessagingInfrastructure.Service
                     }
                 }
 
+                _logger.LogDebug("Declaring queue: {QueueName} with {ArgumentCount} arguments", queue.Name, arguments.Count);
                 await channel.QueueDeclareAsync(
                     queue.Name,
                     queue.Durable,
@@ -221,9 +249,11 @@ namespace MessagingInfrastructure.Service
                     queue.AutoDelete,
                     arguments);
 
-                _logger?.LogInformation("Queue created successfully: {QueueName}", queue.Name);
+                _logger.LogInformation("Queue created successfully: {QueueName}", queue.Name);
 
-                // Bind queues to exchanges
+                var bindingCount = queue.Bindings?.Count ?? 0;
+                _logger.LogDebug("Creating {BindingCount} bindings for queue: {QueueName}", bindingCount, queue.Name);
+
                 foreach (var binding in queue.Bindings)
                 {
                     await channel.QueueBindAsync(
@@ -232,13 +262,13 @@ namespace MessagingInfrastructure.Service
                         binding.RoutingKey,
                         binding.Arguments?.ToDictionary(kvp => kvp.Key, kvp => (object?)kvp.Value));
 
-                    _logger?.LogInformation("Binding created: {QueueName} -> {ExchangeName} ({RoutingKey})", 
+                    _logger.LogInformation("Binding created: {QueueName} -> {ExchangeName} ({RoutingKey})", 
                         queue.Name, binding.ExchangeName, binding.RoutingKey);
                 }
             }
             catch (Exception ex)
             {
-                _logger?.LogError(ex, "Failed to create queue: {QueueName}", queue.Name);
+                _logger.LogError(ex, "Failed to create queue: {QueueName}", queue.Name);
                 throw;
             }
         }

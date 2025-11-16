@@ -13,58 +13,78 @@ using System.Threading.Tasks;
 
 namespace MessagingLibrary.Service
 {
+    /// <summary>
+    /// Message subscriber class for subscribing to messages from RabbitMQ.
+    /// </summary>
     public class MessageSubscriber : IMessageSubscriber
     {
         private readonly IConnection _connection;
         private readonly IChannel _channel;
         private readonly IConfiguration _configuration;
-        private readonly ILogger<MessageSubscriber>? _logger;
+        private readonly ILogger<MessageSubscriber> _logger;
 
-        public MessageSubscriber(IConnection connection, IConfiguration configuration, ILogger<MessageSubscriber>? logger = null)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MessageSubscriber"/> class.
+        /// </summary>
+        /// <param name="connection">RabbitMQ connection.</param>
+        /// <param name="configuration">Application configuration.</param>
+        /// <param name="logger">Instance of logger.</param>
+        public MessageSubscriber(
+            IConnection connection,
+            IConfiguration configuration,
+            ILogger<MessageSubscriber> logger)
         {
             _connection = connection ?? throw new ArgumentNullException(nameof(connection));
             _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
-            _logger = logger;
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             
+            _logger.LogDebug("Creating channel for message subscriber");
             _channel = _connection.CreateChannelAsync().GetAwaiter().GetResult();
+            _logger.LogDebug("Channel created successfully");
         }
 
+        /// <summary>
+        /// Subscribes to messages of type T from RabbitMQ.
+        /// </summary>
+        /// <typeparam name="T">Message type.</typeparam>
+        /// <param name="handler">Handler function to process messages.</param>
         public async Task SubscribeAsync<T>(Func<T, Task> handler)
         {
-            // Validate handler is not null
             if (handler == null)
             {
+                _logger.LogWarning("Attempted to subscribe with null handler for message type {MessageType}", typeof(T).Name);
                 throw new ArgumentNullException(nameof(handler), "Handler cannot be null.");
             }
+
+            _logger.LogInformation("Setting up subscription for message type {MessageType}", typeof(T).Name);
 
             var routes = _configuration.GetSection("MessagingConfiguration:SubscriptionRoutes")
                                    .Get<Dictionary<string, SubscriptionRoutes>>();
 
             if (routes == null || routes.Count == 0)
             {
-                _logger?.LogError("SubscriptionRoutes configuration section is null or empty");
+                _logger.LogError("SubscriptionRoutes configuration section is null or empty");
                 throw new InvalidOperationException("SubscriptionRoutes configuration section is missing or empty");
             }
 
-            // Extract event name from the generic type parameter
             string eventName = typeof(T).Name;
             if (eventName.EndsWith("Event", StringComparison.OrdinalIgnoreCase))
             {
                 eventName = eventName.Substring(0, eventName.Length - "Event".Length);
             }
 
-            _logger?.LogInformation("Subscribing to event: {EventName} (from type {TypeName})", eventName, typeof(T).Name);
+            _logger.LogInformation("Subscribing to event: {EventName} (from type {TypeName})", eventName, typeof(T).Name);
 
             if (!routes.TryGetValue(eventName, out var route))
             {
                 var availableRoutes = string.Join(", ", routes.Keys);
-                _logger?.LogError("No route configured for event type: {EventName}. Available routes: {AvailableRoutes}", 
+                _logger.LogError("No route configured for event type: {EventName}. Available routes: {AvailableRoutes}", 
                     eventName, availableRoutes);
                 throw new InvalidOperationException(
                     $"No route configured for event type: {eventName}. Available routes: {availableRoutes}");
             }
 
-            _logger?.LogInformation("Found route for {EventName}: Queue={QueueName}, Exchange={Exchange}, RoutingKey={RoutingKey}", 
+            _logger.LogInformation("Found route for {EventName}: Queue={QueueName}, Exchange={Exchange}, RoutingKey={RoutingKey}", 
                 eventName, route.QueueName, route.Exchange, route.RoutingKey);
 
             // Clean up existing queue only (don't delete exchange as other services may be using it)
@@ -98,33 +118,30 @@ namespace MessagingLibrary.Service
                 queueArguments["x-max-priority"] = route.MaxPriority.Value;
             }
 
-            // Ensure exchange exists first (idempotent - won't fail if already exists)
-            _logger?.LogInformation("Declaring exchange: {Exchange}", route.Exchange);
+            _logger.LogInformation("Declaring exchange: {Exchange}", route.Exchange);
             await _channel.ExchangeDeclareAsync(
                 exchange: route.Exchange,
                 type: ExchangeType.Topic,
                 durable: true,
                 autoDelete: false,
                 arguments: null);
-            _logger?.LogInformation("Exchange declared: {Exchange}", route.Exchange);
+            _logger.LogInformation("Exchange declared: {Exchange}", route.Exchange);
 
-            // Ensure queue exists (idempotent - won't fail if already exists)
-            _logger?.LogInformation("Declaring queue: {QueueName}", route.QueueName);
+            _logger.LogInformation("Declaring queue: {QueueName}", route.QueueName);
             await _channel.QueueDeclareAsync(
                 queue: route.QueueName,
                 durable: true,
                 exclusive: false,
                 autoDelete: false,
                 arguments: queueArguments);
-            _logger?.LogInformation("Queue declared: {QueueName}", route.QueueName);
+            _logger.LogInformation("Queue declared: {QueueName}", route.QueueName);
 
-            // Bind queue to exchange with routing key
-            _logger?.LogInformation("Binding queue {QueueName} to exchange {Exchange} with routing key {RoutingKey}", 
+            _logger.LogInformation("Binding queue {QueueName} to exchange {Exchange} with routing key {RoutingKey}", 
                 route.QueueName, route.Exchange, route.RoutingKey);
             await _channel.QueueBindAsync(queue: route.QueueName,
                              exchange: route.Exchange,
                              routingKey: route.RoutingKey).ConfigureAwait(false);
-            _logger?.LogInformation("Queue bound successfully: {QueueName} -> {Exchange} ({RoutingKey})", 
+            _logger.LogInformation("Queue bound successfully: {QueueName} -> {Exchange} ({RoutingKey})", 
                 route.QueueName, route.Exchange, route.RoutingKey);
 
             var consumer = new AsyncEventingBasicConsumer(_channel);
@@ -133,43 +150,46 @@ namespace MessagingLibrary.Service
             {
                 try
                 {
-                    _logger?.LogInformation("Received message: {DeliveryTag} from {Exchange} with routing key {RoutingKey}", 
+                    _logger.LogInformation("Received message. DeliveryTag={DeliveryTag}, Exchange={Exchange}, RoutingKey={RoutingKey}", 
                         ea.DeliveryTag, ea.Exchange, ea.RoutingKey);
 
                     var body = ea.Body.ToArray();
                     var messageJson = Encoding.UTF8.GetString(body);
-                    _logger?.LogDebug("Message body: {MessageBody}", messageJson);
+                    _logger.LogDebug("Message body received. Size: {Size} bytes, DeliveryTag: {DeliveryTag}", 
+                        body.Length, ea.DeliveryTag);
                     
                     var message = JsonSerializer.Deserialize<T>(messageJson);
 
                     if (message == null)
                     {
-                        _logger?.LogError("Failed to deserialize message. Body: {MessageBody}", messageJson);
+                        _logger.LogError("Failed to deserialize message. DeliveryTag: {DeliveryTag}, Body: {MessageBody}", 
+                            ea.DeliveryTag, messageJson);
                         throw new Exception("Failed to deserialize message");
                     }
 
-                    _logger?.LogInformation("Successfully deserialized message of type {MessageType}", typeof(T).Name);
+                    _logger.LogInformation("Successfully deserialized message. MessageType={MessageType}, DeliveryTag={DeliveryTag}", 
+                        typeof(T).Name, ea.DeliveryTag);
 
-                    // Log message headers for debugging
                     if (ea.BasicProperties.Headers != null)
                     {
                         foreach (var header in ea.BasicProperties.Headers)
                         {
-                            _logger?.LogDebug("Message header: {Key} = {Value}", header.Key, header.Value);
+                            _logger.LogDebug("Message header. Key={Key}, Value={Value}, DeliveryTag={DeliveryTag}", 
+                                header.Key, header.Value, ea.DeliveryTag);
                         }
                     }
 
-                    _logger?.LogInformation("Calling handler for message type {MessageType}", typeof(T).Name);
+                    _logger.LogInformation("Calling handler for message. MessageType={MessageType}, DeliveryTag={DeliveryTag}", 
+                        typeof(T).Name, ea.DeliveryTag);
                     await handler(message).ConfigureAwait(false);
 
-                    _logger?.LogInformation("Message processed successfully: {DeliveryTag}", ea.DeliveryTag);
+                    _logger.LogInformation("Message processed successfully. DeliveryTag={DeliveryTag}", ea.DeliveryTag);
                 }
                 catch (Exception ex)
                 {
-                    _logger?.LogError(ex, "Error processing message: {DeliveryTag}. Error: {ErrorMessage}", 
-                        ea.DeliveryTag, ex.Message);
+                    _logger.LogError(ex, "Error processing message. DeliveryTag={DeliveryTag}, Exchange={Exchange}, RoutingKey={RoutingKey}", 
+                        ea.DeliveryTag, ea.Exchange, ea.RoutingKey);
 
-                    // Send to DLX queue with enhanced error information
                     var errorHeaders = new Dictionary<string, object>
                     {
                         ["X-Error-Message"] = ex.Message,
@@ -179,51 +199,53 @@ namespace MessagingLibrary.Service
                         ["X-Original-Routing-Key"] = ea.RoutingKey
                     };
 
-                    // Publish to dead letter exchange
                     await PublishToDeadLetterExchange(ea, errorHeaders);
                     
-                    // Reject the message
                     await _channel.BasicNackAsync(ea.DeliveryTag, false, false).ConfigureAwait(false);
                     return;
                 }
                 finally
                 {
-                    // Acknowledge message only if processing was successful
                     try
                     {
                         await _channel.BasicAckAsync(ea.DeliveryTag, false).ConfigureAwait(false);
                     }
                     catch (Exception ackEx)
                     {
-                        _logger?.LogError(ackEx, "Failed to acknowledge message: {DeliveryTag}", ea.DeliveryTag);
+                        _logger.LogError(ackEx, "Failed to acknowledge message. DeliveryTag={DeliveryTag}", ea.DeliveryTag);
                     }
                 }
             };
 
-            // Disable auto acknowledgment
             await _channel.BasicConsumeAsync(queue: route.QueueName,
                                             autoAck: false,
                                             consumer: consumer).ConfigureAwait(false);
 
-            _logger?.LogInformation("Subscribed to queue: {QueueName} on exchange: {Exchange} with routing key: {RoutingKey}", 
+            _logger.LogInformation("Subscribed to queue. QueueName={QueueName}, Exchange={Exchange}, RoutingKey={RoutingKey}", 
                 route.QueueName, route.Exchange, route.RoutingKey);
         }
 
+        /// <summary>
+        /// Publishes a failed message to the dead letter exchange.
+        /// </summary>
+        /// <param name="ea">Basic deliver event arguments.</param>
+        /// <param name="errorHeaders">Error headers to include.</param>
         private async Task PublishToDeadLetterExchange(BasicDeliverEventArgs ea, Dictionary<string, object> errorHeaders)
         {
+            _logger.LogInformation("Publishing failed message to dead letter exchange. DeliveryTag={DeliveryTag}", ea.DeliveryTag);
+            
             try
             {
                 var deadLetterExchange = "dlx.topic.exchange";
                 var deadLetterRoutingKey = "failure";
 
-                // Ensure DLX exists
+                _logger.LogDebug("Declaring dead letter exchange: {DeadLetterExchange}", deadLetterExchange);
                 await _channel.ExchangeDeclareAsync(
                     exchange: deadLetterExchange,
                     type: ExchangeType.Topic,
                     durable: true,
                     autoDelete: false);
 
-                // Create error message with original content and error details
                 var errorMessage = new
                 {
                     OriginalMessage = Encoding.UTF8.GetString(ea.Body.ToArray()),
@@ -242,6 +264,9 @@ namespace MessagingLibrary.Service
                 properties.Persistent = true;
                 properties.Headers = errorHeaders;
 
+                _logger.LogDebug("Publishing to dead letter exchange. Exchange={DeadLetterExchange}, RoutingKey={DeadLetterRoutingKey}, DeliveryTag={DeliveryTag}", 
+                    deadLetterExchange, deadLetterRoutingKey, ea.DeliveryTag);
+
                 await _channel.BasicPublishAsync(
                     exchange: deadLetterExchange,
                     routingKey: deadLetterRoutingKey,
@@ -249,44 +274,49 @@ namespace MessagingLibrary.Service
                     basicProperties: properties,
                     body: errorBody);
 
-                _logger?.LogInformation("Message sent to dead letter exchange: {DeliveryTag}", ea.DeliveryTag);
+                _logger.LogInformation("Message sent to dead letter exchange successfully. DeliveryTag={DeliveryTag}", ea.DeliveryTag);
             }
             catch (Exception ex)
             {
-                _logger?.LogError(ex, "Failed to publish message to dead letter exchange: {DeliveryTag}", ea.DeliveryTag);
+                _logger.LogError(ex, "Failed to publish message to dead letter exchange. DeliveryTag={DeliveryTag}", ea.DeliveryTag);
             }
         }
 
+        /// <summary>
+        /// Disposes the message subscriber and closes the channel.
+        /// </summary>
         public void Dispose()
         {
+            _logger.LogInformation("Disposing message subscriber and closing channel");
             _channel?.Dispose();
         }
 
+        /// <summary>
+        /// Cleans up existing queue before creating a new subscription.
+        /// </summary>
+        /// <param name="route">Subscription route configuration.</param>
         private async Task CleanupExistingQueue(SubscriptionRoutes route)
         {
+            _logger.LogInformation("Cleaning up existing queue: {QueueName}", route.QueueName);
+
             try
             {
-                _logger?.LogInformation("Cleaning up existing queue: {QueueName}", route.QueueName);
-
-                // Only delete the queue if it exists (don't delete exchange as other services may be using it)
                 try
                 {
                     await _channel.QueueDeleteAsync(route.QueueName, false, false);
-                    _logger?.LogInformation("Deleted existing queue: {QueueName}", route.QueueName);
+                    _logger.LogInformation("Deleted existing queue: {QueueName}", route.QueueName);
                 }
                 catch (Exception ex)
                 {
-                    // Queue might not exist, which is fine
-                    _logger?.LogDebug("Queue {QueueName} does not exist or could not be deleted: {Message}", 
+                    _logger.LogDebug("Queue {QueueName} does not exist or could not be deleted: {Message}", 
                         route.QueueName, ex.Message);
                 }
 
-                _logger?.LogInformation("Queue cleanup completed for: {QueueName}", route.QueueName);
+                _logger.LogInformation("Queue cleanup completed for: {QueueName}", route.QueueName);
             }
             catch (Exception ex)
             {
-                _logger?.LogWarning(ex, "Error during cleanup of existing queue: {QueueName}", route.QueueName);
-                // Don't throw - cleanup failure shouldn't prevent service startup
+                _logger.LogWarning(ex, "Error during cleanup of existing queue: {QueueName}", route.QueueName);
             }
         }
     }
