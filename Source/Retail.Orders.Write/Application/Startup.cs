@@ -6,6 +6,7 @@
 
 namespace Retail.Orders.Write.Application
 {
+    using CommonLibrary.Middleware;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Diagnostics.HealthChecks;
     using Microsoft.AspNetCore.Hosting;
@@ -51,6 +52,9 @@ namespace Retail.Orders.Write.Application
         public void Configure(IApplicationBuilder app)
         {
             this.environment.ApplicationName = "Retail.Orders.Write";
+
+            // Register global exception handling middleware early in the pipeline
+            app.UseMiddleware<GlobalExceptionHandlerMiddleware>();
 
             if (this.environment.IsDevelopment())
             {

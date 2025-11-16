@@ -6,6 +6,7 @@
 
 namespace Retail.Api.Products.Application
 {
+    using CommonLibrary.Middleware;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Diagnostics.HealthChecks;
     using Microsoft.AspNetCore.Hosting;
@@ -51,6 +52,9 @@ namespace Retail.Api.Products.Application
         public void Configure(IApplicationBuilder app)
         {
             this.environment.ApplicationName = "Retail.Products";
+
+            // Register global exception handling middleware early in the pipeline
+            app.UseMiddleware<GlobalExceptionHandlerMiddleware>();
 
             if (this.environment.IsDevelopment())
             {

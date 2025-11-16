@@ -6,6 +6,7 @@
 
 namespace Retail.BFFWeb.Api.Application
 {
+    using CommonLibrary.Middleware;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Diagnostics.HealthChecks;
     using Microsoft.AspNetCore.Hosting;
@@ -49,6 +50,9 @@ namespace Retail.BFFWeb.Api.Application
         public void Configure(IApplicationBuilder app)
         {
             this.environment.ApplicationName = "Retail.BFF";
+
+            // Register global exception handling middleware early in the pipeline
+            app.UseMiddleware<GlobalExceptionHandlerMiddleware>();
 
             if (this.environment.IsDevelopment())
             {
