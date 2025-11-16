@@ -4,18 +4,19 @@ using System.Linq;
 using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using Retail.Orders.Write.src.CleanArchitecture.Application.Converters;
-using Retail.Orders.Write.src.CleanArchitecture.Application.Converters.Interfaces;
-using Retail.Orders.Write.src.CleanArchitecture.Application.Dto;
-using Retail.Orders.Write.src.CleanArchitecture.Domain.Entities;
+using Retail.Orders.Read.src.CleanArchitecture.Application.Converters;
+using Retail.Orders.Read.src.CleanArchitecture.Application.Converters.Interfaces;
+using Retail.Orders.Read.src.CleanArchitecture.Application.Dto;
+using Retail.Orders.Read.src.CleanArchitecture.Domain.Entities;
 
-namespace Retail.Orders.Write.ComponentTests
+namespace Retail.Orders.Read.ComponentTests
 {
     /// <summary>
     /// Unit tests for OrderDtoConverter class.
     /// </summary>
     [TestClass]
     [TestCategory("UnitTests")]
+    [TestCategory("OrderDtoConverter")]
     public sealed class OrderDtoConverterTests
     {
         private Mock<IConverter<LineItem, LineItemDto>> _mockLineItemDtoConverter = null!;
@@ -29,7 +30,6 @@ namespace Retail.Orders.Write.ComponentTests
         }
 
         [TestMethod]
-        [TestCategory("OrderDtoConverter")]
         public void Convert_WithValidOrder_ReturnsOrderDto()
         {
             // Arrange
@@ -71,7 +71,6 @@ namespace Retail.Orders.Write.ComponentTests
         }
 
         [TestMethod]
-        [TestCategory("OrderDtoConverter")]
         public void Convert_WithNullOrder_ThrowsArgumentNullException()
         {
             // Act & Assert
@@ -79,7 +78,6 @@ namespace Retail.Orders.Write.ComponentTests
         }
 
         [TestMethod]
-        [TestCategory("OrderDtoConverter")]
         public void Convert_WithNullLineItems_ReturnsOrderDtoWithoutLineItems()
         {
             // Arrange
@@ -104,7 +102,6 @@ namespace Retail.Orders.Write.ComponentTests
         }
 
         [TestMethod]
-        [TestCategory("OrderDtoConverter")]
         public void Convert_WithEmptyLineItems_ReturnsOrderDtoWithoutLineItems()
         {
             // Arrange
@@ -127,7 +124,6 @@ namespace Retail.Orders.Write.ComponentTests
         }
 
         [TestMethod]
-        [TestCategory("OrderDtoConverter")]
         public void Convert_WithMultipleLineItems_ConvertsAllLineItems()
         {
             // Arrange
@@ -162,7 +158,6 @@ namespace Retail.Orders.Write.ComponentTests
         }
 
         [TestMethod]
-        [TestCategory("OrderDtoConverter")]
         public void Constructor_WithNullLineItemDtoConverter_ThrowsArgumentNullException()
         {
             // Act & Assert

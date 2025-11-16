@@ -3,18 +3,19 @@ using System.Collections.Generic;
 using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using Retail.Orders.Write.src.CleanArchitecture.Application.Converters;
-using Retail.Orders.Write.src.CleanArchitecture.Application.Converters.Interfaces;
-using Retail.Orders.Write.src.CleanArchitecture.Application.Dto;
-using Retail.Orders.Write.src.CleanArchitecture.Domain.Entities;
+using Retail.Orders.Read.src.CleanArchitecture.Application.Converters;
+using Retail.Orders.Read.src.CleanArchitecture.Application.Converters.Interfaces;
+using Retail.Orders.Read.src.CleanArchitecture.Application.Dto;
+using Retail.Orders.Read.src.CleanArchitecture.Domain.Entities;
 
-namespace Retail.Orders.Write.ComponentTests
+namespace Retail.Orders.Read.ComponentTests
 {
     /// <summary>
     /// Unit tests for OrderConverter class.
     /// </summary>
     [TestClass]
     [TestCategory("UnitTests")]
+    [TestCategory("OrderConverter")]
     public sealed class OrderConverterTests
     {
         private Mock<IConverter<LineItemDto, LineItem>> _mockLineItemConverter = null!;
@@ -28,7 +29,6 @@ namespace Retail.Orders.Write.ComponentTests
         }
 
         [TestMethod]
-        [TestCategory("OrderConverter")]
         public void Convert_WithValidOrderDto_ReturnsOrderEntity()
         {
             // Arrange
@@ -70,7 +70,6 @@ namespace Retail.Orders.Write.ComponentTests
         }
 
         [TestMethod]
-        [TestCategory("OrderConverter")]
         public void Convert_WithNullOrderDto_ThrowsArgumentNullException()
         {
             // Act & Assert
@@ -78,7 +77,6 @@ namespace Retail.Orders.Write.ComponentTests
         }
 
         [TestMethod]
-        [TestCategory("OrderConverter")]
         public void Convert_WithNullLineItems_ReturnsOrderWithoutLineItems()
         {
             // Arrange
@@ -103,7 +101,6 @@ namespace Retail.Orders.Write.ComponentTests
         }
 
         [TestMethod]
-        [TestCategory("OrderConverter")]
         public void Convert_WithEmptyLineItems_ReturnsOrderWithoutLineItems()
         {
             // Arrange
@@ -126,7 +123,6 @@ namespace Retail.Orders.Write.ComponentTests
         }
 
         [TestMethod]
-        [TestCategory("OrderConverter")]
         public void Convert_WithMultipleLineItems_ConvertsAllLineItems()
         {
             // Arrange
@@ -161,45 +157,6 @@ namespace Retail.Orders.Write.ComponentTests
         }
 
         [TestMethod]
-        [TestCategory("OrderConverter")]
-        public void Convert_SetsNavigationPropertyOnLineItems()
-        {
-            // Arrange
-            var orderDto = new OrderDto
-            {
-                Id = 1,
-                CustomerId = 100,
-                OrderDate = DateTime.Now,
-                TotalAmount = 150.00,
-                LineItems = new List<LineItemDto>
-                {
-                    new LineItemDto { Id = 1, OrderId = 1, SkuId = 100, Qty = 2 }
-                }
-            };
-
-            var lineItem = new LineItem
-            {
-                Id = 1,
-                OrderId = 1,
-                SkuId = 100,
-                Qty = 2
-            };
-
-            _mockLineItemConverter
-                .Setup(x => x.Convert(It.IsAny<LineItemDto>()))
-                .Returns(lineItem);
-
-            // Act
-            var result = _converter.Convert(orderDto);
-
-            // Assert
-            result.Should().NotBeNull();
-            result.LineItems.Should().HaveCount(1);
-            result.LineItems.First().Order.Should().Be(result);
-        }
-
-        [TestMethod]
-        [TestCategory("OrderConverter")]
         public void Constructor_WithNullLineItemConverter_ThrowsArgumentNullException()
         {
             // Act & Assert

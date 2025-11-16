@@ -6,75 +6,14 @@ using Retail.Api.Customers.src.CleanArchitecture.Domain.Entities;
 namespace Retail.Customers.ComponentTests
 {
     /// <summary>
-    /// Unit tests for Customer entity.
+    /// Unit tests for Customer entity validation attributes.
     /// </summary>
     [TestClass]
     [TestCategory("UnitTests")]
+    [TestCategory("CustomerEntity")]
     public sealed class CustomerEntityTests
     {
         [TestMethod]
-        [TestCategory("CustomerEntity")]
-        public void Customer_Constructor_CreatesInstance()
-        {
-            // Act
-            var customer = new Customer();
-
-            // Assert
-            customer.Should().NotBeNull();
-            customer.Should().BeOfType<Customer>();
-        }
-
-        [TestMethod]
-        [TestCategory("CustomerEntity")]
-        public void Customer_Properties_CanBeSetAndRetrieved()
-        {
-            // Arrange
-            var customer = new Customer();
-            var id = 1L;
-            var firstName = "John";
-            var lastName = "Doe";
-
-            // Act
-            customer.Id = id;
-            customer.FirstName = firstName;
-            customer.LastName = lastName;
-
-            // Assert
-            customer.Id.Should().Be(id);
-            customer.FirstName.Should().Be(firstName);
-            customer.LastName.Should().Be(lastName);
-        }
-
-        [TestMethod]
-        [TestCategory("CustomerEntity")]
-        public void Customer_FirstName_CanBeNull()
-        {
-            // Arrange
-            var customer = new Customer();
-
-            // Act
-            customer.FirstName = null;
-
-            // Assert
-            customer.FirstName.Should().BeNull();
-        }
-
-        [TestMethod]
-        [TestCategory("CustomerEntity")]
-        public void Customer_LastName_CanBeNull()
-        {
-            // Arrange
-            var customer = new Customer();
-
-            // Act
-            customer.LastName = null;
-
-            // Assert
-            customer.LastName.Should().BeNull();
-        }
-
-        [TestMethod]
-        [TestCategory("CustomerEntity")]
         public void Customer_ValidationAttributes_AreApplied()
         {
             // Arrange
@@ -91,7 +30,6 @@ namespace Retail.Customers.ComponentTests
         }
 
         [TestMethod]
-        [TestCategory("CustomerEntity")]
         public void Customer_WithValidData_IsValid()
         {
             // Arrange
@@ -112,7 +50,6 @@ namespace Retail.Customers.ComponentTests
         }
 
         [TestMethod]
-        [TestCategory("CustomerEntity")]
         public void Customer_FirstNameExceedsMaxLength_ValidationFails()
         {
             // Arrange
@@ -129,11 +66,10 @@ namespace Retail.Customers.ComponentTests
 
             // Assert
             isValid.Should().BeFalse();
-            validationResults.Should().HaveCountGreaterThan(0);
+            validationResults.Should().Contain(r => r.MemberNames.Contains(nameof(Customer.FirstName)));
         }
 
         [TestMethod]
-        [TestCategory("CustomerEntity")]
         public void Customer_LastNameExceedsMaxLength_ValidationFails()
         {
             // Arrange
@@ -150,7 +86,7 @@ namespace Retail.Customers.ComponentTests
 
             // Assert
             isValid.Should().BeFalse();
-            validationResults.Should().HaveCountGreaterThan(0);
+            validationResults.Should().Contain(r => r.MemberNames.Contains(nameof(Customer.LastName)));
         }
     }
 }

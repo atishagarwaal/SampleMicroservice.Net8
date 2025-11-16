@@ -95,6 +95,68 @@ namespace Retail.Products.ComponentTests
             result.Should().NotBeNull();
             result.Name.Should().BeNull();
         }
+
+        [TestMethod]
+        public void Convert_WithEmptyName_ReturnsSkuDtoWithEmptyName()
+        {
+            // Arrange
+            var sku = new Sku
+            {
+                Id = 1,
+                Name = string.Empty,
+                UnitPrice = 29.99,
+                Inventory = 100
+            };
+
+            // Act
+            var result = _converter.Convert(sku);
+
+            // Assert
+            result.Should().NotBeNull();
+            result.Name.Should().Be(string.Empty);
+        }
+
+        [TestMethod]
+        public void Convert_WithMaxValues_ReturnsSkuDtoWithMaxValues()
+        {
+            // Arrange
+            var sku = new Sku
+            {
+                Id = long.MaxValue,
+                Name = "Test Product",
+                UnitPrice = double.MaxValue,
+                Inventory = int.MaxValue
+            };
+
+            // Act
+            var result = _converter.Convert(sku);
+
+            // Assert
+            result.Should().NotBeNull();
+            result.Id.Should().Be(long.MaxValue);
+            result.UnitPrice.Should().Be(double.MaxValue);
+            result.Inventory.Should().Be(int.MaxValue);
+        }
+
+        [TestMethod]
+        public void Convert_WithNegativeInventory_ReturnsSkuDtoWithNegativeInventory()
+        {
+            // Arrange
+            var sku = new Sku
+            {
+                Id = 1,
+                Name = "Test Product",
+                UnitPrice = 29.99,
+                Inventory = -10
+            };
+
+            // Act
+            var result = _converter.Convert(sku);
+
+            // Assert
+            result.Should().NotBeNull();
+            result.Inventory.Should().Be(-10);
+        }
     }
 }
 
