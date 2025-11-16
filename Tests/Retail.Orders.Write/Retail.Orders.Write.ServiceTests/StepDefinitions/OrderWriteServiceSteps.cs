@@ -13,7 +13,6 @@ using Retail.Orders.Write.src.CleanArchitecture.Infrastructure.UnitOfWork;
 using Retail.Orders.Write.ServiceTests.Common;
 using TechTalk.SpecFlow;
 using Microsoft.EntityFrameworkCore;
-using AutoMapper;
 using MediatR;
 using MessagingLibrary.Interface;
 using MessagingLibrary.Service;
@@ -62,9 +61,6 @@ namespace Retail.Orders.Write.ServiceTests.StepDefinitions
             services.AddScoped<CreateOrderCommandHandler>();
             services.AddScoped<UpdateOrderCommandHandler>();
             services.AddScoped<DeleteOrderCommandHandler>();
-
-            // Add AutoMapper
-            services.AddAutoMapper(typeof(Retail.Orders.Write.src.CleanArchitecture.Application.Mappings.OrderProfile));
 
             // Add messaging services
             services.AddScoped<IMessagePublisher, MockMessagePublisher>();

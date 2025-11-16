@@ -5,26 +5,40 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
 using System.Text.Json;
 using Retail.Orders.Write.src.CleanArchitecture.Application.Interfaces;
 using Retail.Orders.Write.src.CleanArchitecture.Infrastructure.Interfaces;
-using AutoMapper;
 using InventoryErrorEventNameSpace;
 
 namespace Retail.Orders.Write.src.CleanArchitecture.Application.EventHandlers
 {
+    /// <summary>
+    /// Event handler for InventoryErrorEvent.
+    /// </summary>
     public class InventoryErrorEventHandler : IEventHandler<InventoryErrorEvent>
     {
         private readonly IServiceScopeFactory _serviceScopeFactory;
         private readonly IMessagePublisher _messagePublisher;
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IMapper _mapper;
 
-        public InventoryErrorEventHandler(IUnitOfWork unitOfWork, IMapper mapper, IMessagePublisher messagePublisher, IServiceScopeFactory serviceScopeFactory)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="InventoryErrorEventHandler"/> class.
+        /// </summary>
+        /// <param name="unitOfWork">Instance of unit of work class.</param>
+        /// <param name="messagePublisher">Instance of message publisher.</param>
+        /// <param name="serviceScopeFactory">Instance of service scope factory.</param>
+        public InventoryErrorEventHandler(
+            IUnitOfWork unitOfWork,
+            IMessagePublisher messagePublisher,
+            IServiceScopeFactory serviceScopeFactory)
         {
             _unitOfWork = unitOfWork;
-            _mapper = mapper;
             _messagePublisher = messagePublisher;
             _serviceScopeFactory = serviceScopeFactory;
         }
 
+        /// <summary>
+        /// Handles the InventoryErrorEvent.
+        /// </summary>
+        /// <param name="inventoryUpdateFailedEvent">The inventory error event.</param>
+        /// <returns>Task representing the async operation.</returns>
         public async Task HandleAsync(InventoryErrorEvent inventoryUpdateFailedEvent)
         {
             try

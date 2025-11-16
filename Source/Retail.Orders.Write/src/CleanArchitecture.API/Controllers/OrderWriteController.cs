@@ -7,6 +7,7 @@ using Retail.Orders.Write.src.CleanArchitecture.Application.Commands;
 using Retail.Orders.Write.src.CleanArchitecture.Application.Constants;
 using Retail.Orders.Write.src.CleanArchitecture.Application.Dto;
 using Retail.Orders.Write.src.CleanArchitecture.Application.Interfaces;
+using Retail.Orders.Write.src.CleanArchitecture.Application.Validation.Interfaces;
 using System.Runtime.InteropServices;
 using Microsoft.Extensions.Logging;
 
@@ -23,16 +24,22 @@ namespace Retail.Orders.Write.src.CleanArchitecture.API.Controllers
     public class OrderWriteController : ControllerBase
     {
         private readonly IMediator _mediator;
+        private readonly IMessageValidator<OrderDto> _orderDtoValidator;
         private readonly ILogger<OrderWriteController> _logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="OrderWriteController"/> class.
         /// </summary>
         /// <param name="mediator">Instance of mediator class.</param>
+        /// <param name="orderDtoValidator">Instance of order DTO validator.</param>
         /// <param name="logger">Instance of logger class.</param>
-        public OrderWriteController(IMediator mediator, ILogger<OrderWriteController> logger)
+        public OrderWriteController(
+            IMediator mediator,
+            IMessageValidator<OrderDto> orderDtoValidator,
+            ILogger<OrderWriteController> logger)
         {
             _mediator = mediator;
+            _orderDtoValidator = orderDtoValidator;
             _logger = logger;
         }
 
@@ -49,6 +56,14 @@ namespace Retail.Orders.Write.src.CleanArchitecture.API.Controllers
                 {
                     return BadRequest(MessageConstants.InvalidParameter);
                 }
+
+                // Validate using validator
+                var validationResult = _orderDtoValidator.Validate(value);
+                if (!validationResult.IsValid)
+                {
+                    return BadRequest(new { error = validationResult.FailureReason, validator = validationResult.ValidatorName });
+                }
+
                 var command = new CreateOrderCommand { Order = value };
                 var result = await _mediator.Send(command);
                 if (result == null)
@@ -79,6 +94,14 @@ namespace Retail.Orders.Write.src.CleanArchitecture.API.Controllers
                 {
                     return BadRequest(MessageConstants.InvalidParameter);
                 }
+
+                // Validate using validator
+                var validationResult = _orderDtoValidator.Validate(value);
+                if (!validationResult.IsValid)
+                {
+                    return BadRequest(new { error = validationResult.FailureReason, validator = validationResult.ValidatorName });
+                }
+
                 value.Id = id; // Ensure the ID from the route is used
                 var command = new UpdateOrderCommand { Order = value };
                 var result = await _mediator.Send(command);

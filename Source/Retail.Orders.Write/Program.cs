@@ -20,6 +20,11 @@ using Retail.Orders.Write.src.CleanArchitecture.Infrastructure.Repositories;
 using Retail.Orders.Write.src.CleanArchitecture.Infrastructure.UnitOfWork;
 using Retail.Orders.Write.src.CleanArchitecture.Application.Commands;
 using Retail.Orders.Write.src.CleanArchitecture.Application.EventHandlers;
+using Retail.Orders.Write.src.CleanArchitecture.Application.Converters;
+using Retail.Orders.Write.src.CleanArchitecture.Application.Converters.Interfaces;
+using Retail.Orders.Write.src.CleanArchitecture.Application.Dto;
+using Retail.Orders.Write.src.CleanArchitecture.Application.Validation;
+using Retail.Orders.Write.src.CleanArchitecture.Application.Validation.Interfaces;
 using InventoryErrorEventNameSpace;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -43,10 +48,18 @@ builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(
 builder.Services.AddScoped<IEventHandler<InventoryErrorEvent>, InventoryErrorEventHandler>();
 builder.Services.AddScoped<IServiceInitializer, ServiceInitializer>();
 
+// Register validators
+builder.Services.AddScoped<IMessageValidator<OrderDto>, OrderDtoValidator>();
+builder.Services.AddScoped<IMessageValidator<LineItemDto>, LineItemDtoValidator>();
+
+// Register converters
+builder.Services.AddScoped<IConverter<LineItemDto, Retail.Orders.Write.src.CleanArchitecture.Domain.Entities.LineItem>, LineItemConverter>();
+builder.Services.AddScoped<IConverter<Retail.Orders.Write.src.CleanArchitecture.Domain.Entities.LineItem, LineItemDto>, LineItemDtoConverter>();
+builder.Services.AddScoped<IConverter<OrderDto, Retail.Orders.Write.src.CleanArchitecture.Domain.Entities.Order>, OrderConverter>();
+builder.Services.AddScoped<IConverter<Retail.Orders.Write.src.CleanArchitecture.Domain.Entities.Order, OrderDto>, OrderDtoConverter>();
+
 // Add RabbitMQ from the common project
 builder.Services.AddRabbitMQServices(builder.Configuration);
-
-builder.Services.AddAutoMapper(typeof(Program));
 
 builder.Services.AddControllers();
 
