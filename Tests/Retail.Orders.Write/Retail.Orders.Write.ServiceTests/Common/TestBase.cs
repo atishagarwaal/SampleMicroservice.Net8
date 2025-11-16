@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NUnit.Framework;
 using FluentAssertions;
+using System;
 
 namespace Retail.Orders.Write.ServiceTests.Common
 {
@@ -27,8 +28,19 @@ namespace Retail.Orders.Write.ServiceTests.Common
                 .Build();
 
             Configuration = configuration;
+            
+            // Register IServiceScopeFactory before building - it will use the service provider after build
+            IServiceProvider? builtProvider = null;
+            services.AddSingleton<IServiceScopeFactory>(sp =>
+            {
+                // When this factory is called, the service provider is already built
+                builtProvider = sp;
+                return new ServiceScopeFactoryWrapper(sp);
+            });
+            
             ConfigureServices(services, configuration);
             ServiceProvider = services.BuildServiceProvider();
+            
             Logger = ServiceProvider.GetRequiredService<ILogger<TestBase>>();
         }
 
@@ -78,6 +90,24 @@ namespace Retail.Orders.Write.ServiceTests.Common
             var service1 = ServiceProvider.GetService<T>();
             var service2 = ServiceProvider.GetService<T>();
             service1.Should().BeSameAs(service2);
+        }
+    }
+
+    /// <summary>
+    /// Wrapper for IServiceScopeFactory that uses a service provider.
+    /// </summary>
+    internal class ServiceScopeFactoryWrapper : IServiceScopeFactory
+    {
+        private readonly IServiceProvider _serviceProvider;
+
+        public ServiceScopeFactoryWrapper(IServiceProvider serviceProvider)
+        {
+            _serviceProvider = serviceProvider;
+        }
+
+        public IServiceScope CreateScope()
+        {
+            return _serviceProvider.CreateScope();
         }
     }
 }

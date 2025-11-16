@@ -47,33 +47,6 @@ namespace Retail.BFF.UnitTests
 
         [TestMethod]
         [TestCategory("BFFController")]
-        public void BFFController_Constructor_WithNullCustomerProvider_CreatesInstance()
-        {
-            // Act & Assert
-            Action act = () => new BFFController(null!, _mockOrderProvider.Object, _mockProductProvider.Object, _mockLogger.Object);
-            act.Should().NotThrow();
-        }
-
-        [TestMethod]
-        [TestCategory("BFFController")]
-        public void BFFController_Constructor_WithNullOrderProvider_CreatesInstance()
-        {
-            // Act & Assert
-            Action act = () => new BFFController(_mockCustomerProvider.Object, null!, _mockProductProvider.Object, _mockLogger.Object);
-            act.Should().NotThrow();
-        }
-
-        [TestMethod]
-        [TestCategory("BFFController")]
-        public void BFFController_Constructor_WithNullProductProvider_CreatesInstance()
-        {
-            // Act & Assert
-            Action act = () => new BFFController(_mockCustomerProvider.Object, _mockOrderProvider.Object, null!, _mockLogger.Object);
-            act.Should().NotThrow();
-        }
-
-        [TestMethod]
-        [TestCategory("BFFController")]
         public async Task GetAllOrdersDetails_WithValidData_ReturnsOkResult()
         {
             // Arrange

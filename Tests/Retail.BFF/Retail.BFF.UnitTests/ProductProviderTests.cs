@@ -65,33 +65,5 @@ namespace Retail.BFF.UnitTests
             act.Should().Throw<ArgumentNullException>();
         }
 
-        [TestMethod]
-        [TestCategory("ProductProvider")]
-        public void ProductProvider_Constructor_WithNullHttpClientFactory_CreatesInstance()
-        {
-            // Act & Assert
-            Action act = () => new ProductProvider(null!, _mockServiceConfig.Object, _mockLogger.Object);
-            act.Should().NotThrow();
-        }
-
-        [TestMethod]
-        [TestCategory("ProductProvider")]
-        public void ProductProvider_ServiceConfig_IsCorrectlySet()
-        {
-            // Act & Assert
-            _productProvider.Should().NotBeNull();
-            // Note: ServiceConfig is private, so we can't directly test it
-            // This test verifies the constructor completed successfully
-        }
-
-        [TestMethod]
-        [TestCategory("ProductProvider")]
-        public void ProductProvider_HttpClientFactory_IsCorrectlySet()
-        {
-            // Act & Assert
-            _productProvider.Should().NotBeNull();
-            // Note: HttpClientFactory is private, so we can't directly test it
-            // This test verifies the constructor completed successfully
-        }
     }
 }

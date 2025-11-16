@@ -1,0 +1,45 @@
+<Project>
+
+  <PropertyGroup Label="Test Project Properties">
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+    <LangVersion>latest</LangVersion>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+  </PropertyGroup>
+
+  <PropertyGroup Label="Code Analysis Properties">
+    <CodeAnalysisRuleSet>$(SolutionDir)\Build\Code Analysis\Code Analysis Rules.ruleset</CodeAnalysisRuleSet>
+    <Features>IOperation</Features>
+  </PropertyGroup>
+
+  <ItemGroup Label="Code Analysis Files">
+    <AdditionalFiles Include="$(SolutionDir)\Build\Code Analysis\StyleCop.json" Link="StyleCop.json" />
+    <CodeAnalysisDictionary Include="$(SolutionDir)\Build\Code Analysis\CustomDictionary.xml">
+      <Link>Properties\CustomDictionary.xml</Link>
+    </CodeAnalysisDictionary>
+  </ItemGroup>
+
+  <ItemGroup Label="Code Analysis Packages">
+    <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="9.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.556">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <PropertyGroup Label="Code Analysis Warning Suppressions">
+    <NoWarn Label="Underscores">$(NoWarn);CA1707</NoWarn>
+    <NoWarn Label="Missing Documentation">$(NoWarn);CS1591;SA1600;SA1636;SA1633</NoWarn>
+    <NoWarn Label="Missing AttributeUsageAttribute">$(NoWarn);CA1018</NoWarn>
+    <NoWarn Label="Tuple Parenthesis Spacing">$(NoWarn);SA1008;SA1009</NoWarn>
+    <NoWarn Label="Closing Parenthesis should be on same line">$(NoWarn);SA1111</NoWarn>
+    <NoWarn Label="Repeated statement">$(NoWarn);S3358</NoWarn>
+    <NoWarn Label="NuGet restore with HTTP">$(NoWarn);NU1803</NoWarn>
+    <NoWarn Label="Possible null reference">$(NoWarn);CS8602;CS8603;CS8604;CS8620;CS8625;CS8632</NoWarn>
+  </PropertyGroup>
+
+</Project>
+

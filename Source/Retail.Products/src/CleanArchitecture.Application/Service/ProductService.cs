@@ -3,6 +3,7 @@ using InventoryErrorEventNameSpace;
 using InventoryUpdatedEventNameSpace;
 using MessagingInfrastructure;
 using MessagingLibrary.Interface;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OrderCreatedEventNameSpace;
 using Retail.Api.Products.src.CleanArchitecture.Application.Dto;

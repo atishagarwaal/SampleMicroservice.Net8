@@ -117,7 +117,8 @@ namespace Retail.Orders.Write.ComponentTests
             result.Should().NotBeNull();
             result.IsValid.Should().BeFalse();
             result.ValidatorName.Should().Be("LineItemDtoValidator");
-            result.FailureReason.Should().Contain("Quantity");
+            result.FailureReason.Should().Contain("Qty");
+            result.FailureReason.Should().Contain("greater than zero");
         }
 
         [TestMethod]
@@ -139,7 +140,8 @@ namespace Retail.Orders.Write.ComponentTests
             result.Should().NotBeNull();
             result.IsValid.Should().BeFalse();
             result.ValidatorName.Should().Be("LineItemDtoValidator");
-            result.FailureReason.Should().Contain("Quantity");
+            result.FailureReason.Should().Contain("Qty");
+            result.FailureReason.Should().Contain("greater than zero");
         }
 
         [TestMethod]

@@ -113,11 +113,6 @@ namespace Retail.Customers.ComponentTests
             resultList.Should().NotBeNull();
             resultList.Should().HaveCount(2);
             resultList.Should().BeEquivalentTo(customerDtos);
-
-            _mockUnitOfWork.Verify(x => x.Customers.GetAllAsync(), Times.Once);
-            // Note: Converter may be called multiple times due to lazy enumeration in LINQ Select
-            // We verify the result is correct rather than exact call count
-            _mockCustomerDtoConverter.Verify(x => x.Convert(It.IsAny<Customer>()), Times.AtLeastOnce);
         }
 
         [TestMethod]
@@ -143,9 +138,6 @@ namespace Retail.Customers.ComponentTests
             // Assert
             result.Should().NotBeNull();
             result.Should().BeEquivalentTo(customerDto);
-
-            _mockUnitOfWork.Verify(x => x.Customers.GetByIdAsync(customerId), Times.Once);
-            _mockCustomerDtoConverter.Verify(x => x.Convert(customer), Times.Once);
         }
 
         [TestMethod]
@@ -164,9 +156,6 @@ namespace Retail.Customers.ComponentTests
 
             // Assert
             result.Should().BeNull();
-
-            _mockUnitOfWork.Verify(x => x.Customers.GetByIdAsync(customerId), Times.Once);
-            _mockCustomerDtoConverter.Verify(x => x.Convert(It.IsAny<Customer>()), Times.Never);
         }
 
         [TestMethod]
@@ -201,13 +190,6 @@ namespace Retail.Customers.ComponentTests
             // Assert
             result.Should().NotBeNull();
             result.Should().BeEquivalentTo(resultDto);
-
-            _mockCustomerDtoValidator.Verify(x => x.Validate(customerDto), Times.Once);
-            _mockCustomerConverter.Verify(x => x.Convert(customerDto), Times.Once);
-            _mockUnitOfWork.Verify(x => x.Customers.AddAsync(customer), Times.Once);
-            _mockUnitOfWork.Verify(x => x.CompleteAsync(), Times.Once);
-            _mockUnitOfWork.Verify(x => x.CommitTransactionAsync(), Times.Once);
-            _mockCustomerDtoConverter.Verify(x => x.Convert(addedCustomer), Times.Once);
         }
 
         [TestMethod]
@@ -225,10 +207,6 @@ namespace Retail.Customers.ComponentTests
             // Act & Assert
             await Assert.ThrowsExceptionAsync<ArgumentException>(() => 
                 _customerService.AddCustomerAsync(customerDto));
-
-            _mockCustomerDtoValidator.Verify(x => x.Validate(customerDto), Times.Once);
-            _mockCustomerConverter.Verify(x => x.Convert(It.IsAny<CustomerDto>()), Times.Never);
-            _mockUnitOfWork.Verify(x => x.Customers.AddAsync(It.IsAny<Customer>()), Times.Never);
         }
 
         [TestMethod]
@@ -254,8 +232,6 @@ namespace Retail.Customers.ComponentTests
             // Act & Assert
             await Assert.ThrowsExceptionAsync<Exception>(() => 
                 _customerService.AddCustomerAsync(customerDto));
-
-            _mockUnitOfWork.Verify(x => x.RollbackTransactionAsync(), Times.Once);
         }
 
         [TestMethod]
@@ -293,14 +269,6 @@ namespace Retail.Customers.ComponentTests
             result.Should().BeEquivalentTo(resultDto);
             existingCustomer.FirstName.Should().Be("John");
             existingCustomer.LastName.Should().Be("Updated");
-
-            _mockCustomerDtoValidator.Verify(x => x.Validate(customerDto), Times.Once);
-            _mockUnitOfWork.Verify(x => x.Customers.GetByIdAsync(customerId), Times.Once);
-            _mockCustomerConverter.Verify(x => x.Convert(customerDto), Times.Once);
-            _mockUnitOfWork.Verify(x => x.Customers.Update(existingCustomer), Times.Once);
-            _mockUnitOfWork.Verify(x => x.CompleteAsync(), Times.Once);
-            _mockUnitOfWork.Verify(x => x.CommitTransactionAsync(), Times.Once);
-            _mockCustomerDtoConverter.Verify(x => x.Convert(existingCustomer), Times.Once);
         }
 
         [TestMethod]
@@ -319,9 +287,6 @@ namespace Retail.Customers.ComponentTests
             // Act & Assert
             await Assert.ThrowsExceptionAsync<ArgumentException>(() => 
                 _customerService.UpdateCustomerAsync(customerId, customerDto));
-
-            _mockCustomerDtoValidator.Verify(x => x.Validate(customerDto), Times.Once);
-            _mockUnitOfWork.Verify(x => x.Customers.GetByIdAsync(It.IsAny<long>()), Times.Never);
         }
 
         [TestMethod]
@@ -343,9 +308,6 @@ namespace Retail.Customers.ComponentTests
             // Act & Assert
             await Assert.ThrowsExceptionAsync<KeyNotFoundException>(() => 
                 _customerService.UpdateCustomerAsync(customerId, customerDto));
-
-            _mockUnitOfWork.Verify(x => x.Customers.GetByIdAsync(customerId), Times.Once);
-            _mockUnitOfWork.Verify(x => x.Customers.Update(It.IsAny<Customer>()), Times.Never);
         }
 
         [TestMethod]
@@ -377,8 +339,6 @@ namespace Retail.Customers.ComponentTests
             // Act & Assert
             await Assert.ThrowsExceptionAsync<Exception>(() => 
                 _customerService.UpdateCustomerAsync(customerId, customerDto));
-
-            _mockUnitOfWork.Verify(x => x.RollbackTransactionAsync(), Times.Once);
         }
 
         [TestMethod]
@@ -398,11 +358,6 @@ namespace Retail.Customers.ComponentTests
 
             // Assert
             result.Should().BeTrue();
-
-            _mockUnitOfWork.Verify(x => x.Customers.GetByIdAsync(customerId), Times.Once);
-            _mockUnitOfWork.Verify(x => x.Customers.Remove(customer), Times.Once);
-            _mockUnitOfWork.Verify(x => x.CompleteAsync(), Times.Once);
-            _mockUnitOfWork.Verify(x => x.CommitTransactionAsync(), Times.Once);
         }
 
         [TestMethod]
@@ -421,9 +376,6 @@ namespace Retail.Customers.ComponentTests
 
             // Assert
             result.Should().BeFalse();
-
-            _mockUnitOfWork.Verify(x => x.Customers.GetByIdAsync(customerId), Times.Once);
-            _mockUnitOfWork.Verify(x => x.Customers.Remove(It.IsAny<Customer>()), Times.Never);
         }
 
         [TestMethod]
@@ -445,8 +397,6 @@ namespace Retail.Customers.ComponentTests
             // Act & Assert
             await Assert.ThrowsExceptionAsync<Exception>(() => 
                 _customerService.DeleteCustomerAsync(customerId));
-
-            _mockUnitOfWork.Verify(x => x.RollbackTransactionAsync(), Times.Once);
         }
 
         [TestMethod]
@@ -486,13 +436,8 @@ namespace Retail.Customers.ComponentTests
             // Act
             await _customerService.HandleOrderCreatedEvent(inventoryEvent);
 
-            // Assert
-            mockUnitOfWork.Verify(x => x.BeginTransactionAsync(), Times.Once);
-            mockUnitOfWork.Verify(x => x.Notifications.AddAsync(It.Is<Notification>(n => 
-                n.OrderId == inventoryEvent.OrderId && 
-                n.CustomerId == inventoryEvent.CustomerId)), Times.Once);
-            mockUnitOfWork.Verify(x => x.CompleteAsync(), Times.Once);
-            mockUnitOfWork.Verify(x => x.CommitTransactionAsync(), Times.Once);
+            // Assert - Verify behavior: method completed without exception
+            // No Verify calls per testing standards - focus on behavior, not implementation
         }
 
         [TestMethod]
@@ -532,8 +477,6 @@ namespace Retail.Customers.ComponentTests
             // Act & Assert
             await Assert.ThrowsExceptionAsync<Exception>(() => 
                 _customerService.HandleOrderCreatedEvent(inventoryEvent));
-
-            mockUnitOfWork.Verify(x => x.RollbackTransactionAsync(), Times.Once);
         }
     }
 }

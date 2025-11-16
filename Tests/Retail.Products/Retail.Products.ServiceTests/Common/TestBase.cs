@@ -40,8 +40,8 @@ namespace Retail.Products.ServiceTests.Common
             MockUnitOfWork = new Mock<IUnitOfWork>();
             MockMessagePublisher = new Mock<IMessagePublisher>();
 
-            services.AddSingleton(MockUnitOfWork.Object);
-            services.AddSingleton(MockMessagePublisher.Object);
+            services.AddSingleton<IUnitOfWork>(MockUnitOfWork.Object);
+            services.AddSingleton<IMessagePublisher>(MockMessagePublisher.Object);
 
             // Add AutoMapper with a mock implementation
 

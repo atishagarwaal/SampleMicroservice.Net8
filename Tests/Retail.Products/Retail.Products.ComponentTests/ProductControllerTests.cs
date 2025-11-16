@@ -1,4 +1,5 @@
 using System;
+using System.Reflection;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
@@ -91,9 +92,18 @@ namespace Retail.Products.ComponentTests
 
             // Assert
             result.Should().BeOfType<BadRequestObjectResult>();
-            var badRequestValue = (result as BadRequestObjectResult)!.Value as dynamic;
-            ((string)badRequestValue.error).Should().Be("The Name field is null or whitespace.");
-            ((string)badRequestValue.validator).Should().Be("SkuDtoValidator");
+            var badRequestValue = (result as BadRequestObjectResult)!.Value;
+            
+            // Use reflection to check properties of anonymous object
+            var errorProperty = badRequestValue.GetType().GetProperty("error");
+            var validatorProperty = badRequestValue.GetType().GetProperty("validator");
+            
+            errorProperty.Should().NotBeNull("error property should exist");
+            validatorProperty.Should().NotBeNull("validator property should exist");
+            
+            errorProperty!.GetValue(badRequestValue).Should().Be("The Name field is null or whitespace.");
+            validatorProperty!.GetValue(badRequestValue).Should().Be("SkuDtoValidator");
+            
             _mockSkuDtoValidator.Verify(x => x.Validate(invalidSkuDto), Times.Once);
             _mockProductService.Verify(x => x.AddProductAsync(It.IsAny<SkuDto>()), Times.Never);
         }
@@ -165,9 +175,18 @@ namespace Retail.Products.ComponentTests
 
             // Assert
             result.Should().BeOfType<BadRequestObjectResult>();
-            var badRequestValue = (result as BadRequestObjectResult)!.Value as dynamic;
-            ((string)badRequestValue.error).Should().Be("The Name field is null or whitespace.");
-            ((string)badRequestValue.validator).Should().Be("SkuDtoValidator");
+            var badRequestValue = (result as BadRequestObjectResult)!.Value;
+            
+            // Use reflection to check properties of anonymous object
+            var errorProperty = badRequestValue.GetType().GetProperty("error");
+            var validatorProperty = badRequestValue.GetType().GetProperty("validator");
+            
+            errorProperty.Should().NotBeNull("error property should exist");
+            validatorProperty.Should().NotBeNull("validator property should exist");
+            
+            errorProperty!.GetValue(badRequestValue).Should().Be("The Name field is null or whitespace.");
+            validatorProperty!.GetValue(badRequestValue).Should().Be("SkuDtoValidator");
+            
             _mockSkuDtoValidator.Verify(x => x.Validate(invalidSkuDto), Times.Once);
             _mockProductService.Verify(x => x.UpdateProductAsync(It.IsAny<long>(), It.IsAny<SkuDto>()), Times.Never);
         }

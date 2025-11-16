@@ -5,6 +5,11 @@ using Microsoft.Extensions.Logging;
 using NUnit.Framework;
 using Retail.Orders.Write.src.CleanArchitecture.Application.Commands;
 using Retail.Orders.Write.src.CleanArchitecture.Application.Handlers;
+using Retail.Orders.Write.src.CleanArchitecture.Application.Converters;
+using Retail.Orders.Write.src.CleanArchitecture.Application.Converters.Interfaces;
+using Retail.Orders.Write.src.CleanArchitecture.Application.Dto;
+using Retail.Orders.Write.src.CleanArchitecture.Application.Validation;
+using Retail.Orders.Write.src.CleanArchitecture.Application.Validation.Interfaces;
 using Retail.Orders.Write.src.CleanArchitecture.Domain.Entities;
 using Retail.Orders.Write.src.CleanArchitecture.Infrastructure.Data;
 using Retail.Orders.Write.src.CleanArchitecture.Infrastructure.Interfaces;
@@ -50,6 +55,29 @@ namespace Retail.Orders.Write.ServiceTests.StepDefinitions
 
             // Add unit of work
             services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+            // Register validators (required by handlers)
+            services.AddScoped<IMessageValidator<OrderDto>, OrderDtoValidator>();
+            services.AddScoped<IMessageValidator<LineItemDto>, LineItemDtoValidator>();
+
+            // Register converters (required by handlers)
+            // Note: Order converters depend on LineItem converters, so register LineItem converters first
+            // Register LineItem converters first (no dependencies)
+            services.AddScoped(typeof(IConverter<LineItemDto, LineItem>), typeof(LineItemConverter));
+            services.AddScoped(typeof(IConverter<LineItem, LineItemDto>), typeof(LineItemDtoConverter));
+            
+            // Register Order converters (depend on LineItem converters)
+            // Use factory methods to ensure proper dependency injection
+            services.AddScoped<IConverter<OrderDto, Order>>(sp =>
+            {
+                var lineItemConverter = sp.GetRequiredService<IConverter<LineItemDto, LineItem>>();
+                return new OrderConverter(lineItemConverter);
+            });
+            services.AddScoped<IConverter<Order, OrderDto>>(sp =>
+            {
+                var lineItemDtoConverter = sp.GetRequiredService<IConverter<LineItem, LineItemDto>>();
+                return new OrderDtoConverter(lineItemDtoConverter);
+            });
 
             // Add MediatR
             services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(
