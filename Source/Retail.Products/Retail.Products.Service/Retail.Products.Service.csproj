@@ -70,6 +70,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\CommonLibrary\CommonLibrary.csproj" />
     <ProjectReference Include="..\..\..\MessagingInfrastructure\MessagingInfrastructure.csproj" />
+    <ProjectReference Include="..\Retail.Products.Contracts\Retail.Products.Contracts.csproj" />
   </ItemGroup>
 
 </Project>
