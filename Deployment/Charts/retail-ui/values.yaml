@@ -1,0 +1,99 @@
+replicaCount: 1
+
+image:
+  repository: retail-ui
+  pullPolicy: IfNotPresent
+  tag: "latest"
+
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""
+
+podAnnotations: {}
+
+podSecurityContext:
+  fsGroup: 1000
+
+securityContext:
+  allowPrivilegeEscalation: false
+  runAsNonRoot: true
+  runAsUser: 1000
+  capabilities:
+    drop:
+    - ALL
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 7000
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+  hosts:
+    - host: customers.local
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []
+
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 250m
+    memory: 256Mi
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 3
+  targetCPUUtilizationPercentage: 80
+
+terminationGracePeriodSeconds: 30
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+config:
+  environment: Development
+  database:
+    server: "sqlserver-service"
+    port: 1433
+    database: "Retail.Customer"
+    trustServerCertificate: true
+  rabbitmq:
+    host: "rabbitmq-service"
+    port: 5672
+    username: "guest"
+    password: "guest"
+  openTelemetry:
+    enabled: true
+    otlpEndpoint: ""
+    enableConsoleExporter: true
+
+secrets:
+  dbPassword: "YourStrong@Passw0rd"
+  rabbitmqPassword: "guest"
+
+healthCheck:
+  livenessPath: /health/liveness
+  readinessPath: /health/readiness
+  livenessInitialDelaySeconds: 30
+  readinessInitialDelaySeconds: 10
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 3
+
+metrics:
+  enabled: true
+  path: /metrics

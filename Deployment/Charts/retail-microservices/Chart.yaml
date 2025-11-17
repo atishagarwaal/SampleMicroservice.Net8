@@ -1,0 +1,39 @@
+apiVersion: v2
+name: retail-microservices
+description: A Helm chart for Retail Microservices .NET 8 system
+type: application
+version: 1.0.0
+appVersion: "1.0.0"
+keywords:
+  - microservices
+  - retail
+  - dotnet
+  - aspnetcore
+maintainers:
+  - name: DevOps Team
+dependencies:
+  - name: retail-customers-service
+    version: 1.0.0
+    repository: file://../retail-customers-service
+    condition: retail-customers-service.enabled
+  - name: retail-products-service
+    version: 1.0.0
+    repository: file://../retail-products-service
+    condition: retail-products-service.enabled
+  - name: retail-orders-write-service
+    version: 1.0.0
+    repository: file://../retail-orders-write-service
+    condition: retail-orders-write-service.enabled
+  - name: retail-orders-read-service
+    version: 1.0.0
+    repository: file://../retail-orders-read-service
+    condition: retail-orders-read-service.enabled
+  - name: retail-bff
+    version: 1.0.0
+    repository: file://../retail-bff
+    condition: retail-bff.enabled
+  - name: retail-ui
+    version: 1.0.0
+    repository: file://../retail-ui
+    condition: retail-ui.enabled
+

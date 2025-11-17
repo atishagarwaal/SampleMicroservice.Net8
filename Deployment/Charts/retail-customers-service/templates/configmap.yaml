@@ -1,0 +1,50 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "retail-customers-service.fullname" . }}-config
+  labels:
+    {{- include "retail-customers-service.labels" . | nindent 4 }}
+data:
+  appsettings.json: |
+    {
+      "ConnectionStrings": {
+        "DefaultConnection": "Server={{ .Values.config.database.server }},{{ .Values.config.database.port }};Database={{ .Values.config.database.database }};Trust Server Certificate={{ .Values.config.database.trustServerCertificate }};User Id=sa;Password=$(DB_PASSWORD);MultipleActiveResultSets=True;"
+      },
+      "TopologyConfiguration": {
+        "HostName": "{{ .Values.config.rabbitmq.host }}",
+        "Port": {{ .Values.config.rabbitmq.port }},
+        "Username": "{{ .Values.config.rabbitmq.username }}",
+        "Password": "$(RABBITMQ_PASSWORD)"
+      },
+      "MessagingConfiguration": {
+        "PublishingRoutes": {},
+        "SubscriptionRoutes": {
+          "InventoryUpdated": {
+            "QueueName": "customerdomain.customerservice.event.queue",
+            "Exchange": "inventorydomain.topic.exchange",
+            "RoutingKey": "inventory.updated.event",
+            "DeadLetterExchange": "dlx.topic.exchange",
+            "DeadLetterRoutingKey": "inventory.updated.event.failure",
+            "MessageTTL": 86400000,
+            "MaxLength": 1000,
+            "EnablePriority": true,
+            "MaxPriority": 10
+          }
+        }
+      },
+      "Logging": {
+        "LogLevel": {
+          "Default": "Information",
+          "Microsoft.AspNetCore": "Warning"
+        }
+      },
+      "AllowedHosts": "*",
+      "OpenTelemetry": {
+        "EnableConsoleExporter": {{ .Values.config.openTelemetry.enableConsoleExporter | lower }}
+        {{- if .Values.config.openTelemetry.otlpEndpoint }},
+        "Otlp": {
+          "Endpoint": "{{ .Values.config.openTelemetry.otlpEndpoint }}"
+        }
+        {{- end }}
+      }
+    }

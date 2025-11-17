@@ -1,0 +1,7 @@
+apiVersion: v2
+name: retail-products-service
+description: A Helm chart for Retail.Products.Service
+type: application
+version: 1.0.0
+appVersion: "1.0.0"
+

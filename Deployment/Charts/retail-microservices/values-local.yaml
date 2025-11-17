@@ -1,0 +1,71 @@
+# Local development values for retail-microservices
+# Use with: helm install retail-microservices . -f values-local.yaml
+
+global:
+  environment: local
+  imageRegistry: ""
+  imagePullPolicy: Never  # Use local images
+  
+  # Local database configuration (using NodePort or LoadBalancer for external access)
+  sqlServer:
+    host: host.docker.internal  # For Docker Desktop Kubernetes
+    port: 1433
+    instanceName: ""
+    databasePrefix: "Retail"
+    
+  mongodb:
+    host: host.docker.internal
+    port: 27017
+    databaseName: "OrdersDb"
+    
+  rabbitmq:
+    host: host.docker.internal
+    port: 5672
+    username: guest
+    password: guest
+    managementPort: 15672
+
+# Override service types to NodePort for local access
+retail-customers-service:
+  service:
+    type: NodePort
+    nodePort: 30001
+    
+retail-products-service:
+  service:
+    type: NodePort
+    nodePort: 30003
+    
+retail-orders-write-service:
+  service:
+    type: NodePort
+    nodePort: 30002
+    
+retail-orders-read-service:
+  service:
+    type: NodePort
+    nodePort: 30005
+    
+retail-bff:
+  service:
+    type: NodePort
+    nodePort: 30004
+    
+retail-ui:
+  service:
+    type: NodePort
+    nodePort: 30000
+
+# Disable infrastructure deployment (use external services)
+infrastructure:
+  sqlserver:
+    enabled: false
+  mongodb:
+    enabled: false
+  rabbitmq:
+    enabled: false
+
+# Ingress disabled for local
+ingress:
+  enabled: false
+

@@ -1,0 +1,116 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "retail-customers-service.fullname" . }}
+  labels:
+    {{- include "retail-customers-service.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "retail-customers-service.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "retail-customers-service.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "retail-customers-service.serviceAccountName" . }}
+      {{- with .Values.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds | default 30 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          {{- with .Values.securityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.targetPort }}
+              protocol: TCP
+            {{- if .Values.metrics.enabled }}
+            - name: metrics
+              containerPort: 9090
+              protocol: TCP
+            {{- end }}
+          env:
+            - name: ASPNETCORE_ENVIRONMENT
+              value: {{ .Values.config.environment | quote }}
+            - name: ASPNETCORE_URLS
+              value: "http://+:{{ .Values.service.targetPort }}"
+            - name: ConnectionStrings__DefaultConnection
+              value: "Server={{ .Values.config.database.server }},{{ .Values.config.database.port }};Database={{ .Values.config.database.database }};Trust Server Certificate={{ .Values.config.database.trustServerCertificate }};User Id=sa;Password=$(DB_PASSWORD);MultipleActiveResultSets=True;"
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "retail-customers-service.fullname" . }}-secrets
+                  key: db-password
+            - name: TopologyConfiguration__HostName
+              value: {{ .Values.config.rabbitmq.host | quote }}
+            - name: TopologyConfiguration__Port
+              value: {{ .Values.config.rabbitmq.port | quote }}
+            - name: TopologyConfiguration__Username
+              value: {{ .Values.config.rabbitmq.username | quote }}
+            - name: TopologyConfiguration__Password
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "retail-customers-service.fullname" . }}-secrets
+                  key: rabbitmq-password
+            {{- if .Values.config.openTelemetry.enabled }}
+            - name: OTEL_SERVICE_NAME
+              value: "Retail.Customers"
+            - name: OTEL_SERVICE_VERSION
+              value: "1.0.0"
+            - name: OpenTelemetry__EnableConsoleExporter
+              value: {{ .Values.config.openTelemetry.enableConsoleExporter | quote }}
+            {{- if .Values.config.openTelemetry.otlpEndpoint }}
+            - name: OpenTelemetry__Otlp__Endpoint
+              value: {{ .Values.config.openTelemetry.otlpEndpoint | quote }}
+            {{- end }}
+            {{- end }}
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.healthCheck.livenessPath }}
+              port: http
+            initialDelaySeconds: {{ .Values.healthCheck.livenessInitialDelaySeconds | default 30 }}
+            periodSeconds: {{ .Values.healthCheck.periodSeconds | default 10 }}
+            timeoutSeconds: {{ .Values.healthCheck.timeoutSeconds | default 5 }}
+            successThreshold: 1
+            failureThreshold: {{ .Values.healthCheck.failureThreshold | default 3 }}
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.healthCheck.readinessPath }}
+              port: http
+            initialDelaySeconds: {{ .Values.healthCheck.readinessInitialDelaySeconds | default 10 }}
+            periodSeconds: {{ .Values.healthCheck.periodSeconds | default 10 }}
+            timeoutSeconds: {{ .Values.healthCheck.timeoutSeconds | default 5 }}
+            successThreshold: 1
+            failureThreshold: {{ .Values.healthCheck.failureThreshold | default 3 }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

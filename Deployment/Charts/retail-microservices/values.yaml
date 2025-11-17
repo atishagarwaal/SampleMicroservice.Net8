@@ -1,0 +1,269 @@
+# Default values for retail-microservices
+# This is a YAML-formatted file.
+
+global:
+  environment: local
+  imageRegistry: ""
+  imagePullPolicy: IfNotPresent
+  
+  # Database configuration
+  sqlServer:
+    host: sqlserver-service
+    port: 1433
+    instanceName: ""
+    databasePrefix: "Retail"
+    
+  # MongoDB configuration
+  mongodb:
+    host: mongodb-service
+    port: 27017
+    databaseName: "OrdersDb"
+    
+  # RabbitMQ configuration
+  rabbitmq:
+    host: rabbitmq-service
+    port: 5672
+    username: guest
+    password: guest
+    managementPort: 15672
+    
+  # OpenTelemetry configuration
+  openTelemetry:
+    enabled: true
+    otlpEndpoint: ""
+    enableConsoleExporter: true
+
+# Service configurations
+retail-customers-service:
+  enabled: true
+  image:
+    repository: retail-customers-service
+    tag: latest
+    pullPolicy: IfNotPresent
+  replicaCount: 1
+  service:
+    type: ClusterIP
+    port: 80
+    targetPort: 7001
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 250m
+      memory: 256Mi
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 3
+  healthCheck:
+    livenessPath: /health/liveness
+    readinessPath: /health/readiness
+  database:
+    name: Customer
+
+retail-products-service:
+  enabled: true
+  image:
+    repository: retail-products-service
+    tag: latest
+    pullPolicy: IfNotPresent
+  replicaCount: 1
+  service:
+    type: ClusterIP
+    port: 80
+    targetPort: 7003
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 250m
+      memory: 256Mi
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 3
+  healthCheck:
+    livenessPath: /health/liveness
+    readinessPath: /health/readiness
+  database:
+    name: Product
+
+retail-orders-write-service:
+  enabled: true
+  image:
+    repository: retail-orders-write-service
+    tag: latest
+    pullPolicy: IfNotPresent
+  replicaCount: 1
+  service:
+    type: ClusterIP
+    port: 80
+    targetPort: 7002
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 250m
+      memory: 256Mi
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 3
+  healthCheck:
+    livenessPath: /health/liveness
+    readinessPath: /health/readiness
+  database:
+    name: Order
+
+retail-orders-read-service:
+  enabled: true
+  image:
+    repository: retail-orders-read-service
+    tag: latest
+    pullPolicy: IfNotPresent
+  replicaCount: 1
+  service:
+    type: ClusterIP
+    port: 80
+    targetPort: 7005
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 250m
+      memory: 256Mi
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 3
+  healthCheck:
+    livenessPath: /health/liveness
+    readinessPath: /health/readiness
+
+retail-bff:
+  enabled: true
+  image:
+    repository: retail-bff
+    tag: latest
+    pullPolicy: IfNotPresent
+  replicaCount: 1
+  service:
+    type: ClusterIP
+    port: 80
+    targetPort: 7004
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 250m
+      memory: 256Mi
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 3
+  healthCheck:
+    livenessPath: /health/liveness
+    readinessPath: /health/readiness
+
+retail-ui:
+  enabled: true
+  image:
+    repository: retail-ui
+    tag: latest
+    pullPolicy: IfNotPresent
+  replicaCount: 1
+  service:
+    type: ClusterIP
+    port: 80
+    targetPort: 7000
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 250m
+      memory: 256Mi
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 2
+  healthCheck:
+    livenessPath: /health/liveness
+    readinessPath: /health/readiness
+
+# Infrastructure dependencies
+infrastructure:
+  sqlserver:
+    enabled: true
+    image:
+      repository: mcr.microsoft.com/mssql/server
+      tag: "2022-latest"
+    persistence:
+      enabled: true
+      size: 10Gi
+    resources:
+      limits:
+        cpu: 2000m
+        memory: 2Gi
+      requests:
+        cpu: 1000m
+        memory: 1Gi
+    saPassword: "YourStrong@Passw0rd"
+    
+  mongodb:
+    enabled: true
+    image:
+      repository: mongo
+      tag: "7.0"
+    persistence:
+      enabled: true
+      size: 10Gi
+    resources:
+      limits:
+        cpu: 1000m
+        memory: 1Gi
+      requests:
+        cpu: 500m
+        memory: 512Mi
+        
+  rabbitmq:
+    enabled: true
+    image:
+      repository: rabbitmq
+      tag: "3.12-management"
+    persistence:
+      enabled: true
+      size: 5Gi
+    resources:
+      limits:
+        cpu: 1000m
+        memory: 1Gi
+      requests:
+        cpu: 500m
+        memory: 512Mi
+    management:
+      enabled: true
+      port: 15672
+
+# Ingress configuration
+ingress:
+  enabled: true
+  className: "nginx"
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+  hosts:
+    - host: retail.local
+      paths:
+        - path: /
+          pathType: Prefix
+          service: retail-ui
+        - path: /api
+          pathType: Prefix
+          service: retail-bff
+  tls: []
+
