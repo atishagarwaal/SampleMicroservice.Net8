@@ -1,10 +1,21 @@
-# Sample Microservice .NET 8
+# Retail Microservices .NET 8
 
 A comprehensive microservices-based retail application built using .NET 8.0, demonstrating modern microservices architecture patterns and best practices.
 
 ## Overview
 
-This project showcases a complete microservices ecosystem for retail operations, including customer management, product catalog, order processing, and a Backend-for-Frontend (BFF) API. The system follows Clean Architecture principles and implements design patterns such as CQRS with MediatR, Repository Pattern, and Unit of Work.
+This project showcases a complete microservices ecosystem for retail operations, including customer management, product catalog, order processing, and a Backend-for-Frontend (BFF) API. The system follows Clean Architecture principles and implements design patterns such as CQRS, Event-Driven Architecture, Repository Pattern, and Unit of Work.
+
+### Key Features
+
+- **Microservices Architecture**: Independent, scalable services
+- **Event-Driven Communication**: RabbitMQ-based messaging with AsyncAPI contracts
+- **CQRS Pattern**: Separate read and write models for optimal performance
+- **Clean Architecture**: Layered architecture with clear boundaries
+- **Contract-First Development**: Type-safe contracts generated from AsyncAPI specs
+- **Comprehensive Testing**: Unit, component, and service tests
+- **Containerization**: Docker and Kubernetes support
+- **Observability**: Structured logging, metrics, and distributed tracing
 
 ## Architecture
 
@@ -105,14 +116,24 @@ SampleMicroservice.Net8/
 
 The project includes comprehensive testing at multiple levels:
 
-- **Unit Tests**: Individual component testing
+- **Unit Tests**: Individual component testing with >80% code coverage
 - **Component Tests**: Service integration testing
-- **Service Tests**: End-to-end functionality testing
+- **Service Tests**: End-to-end functionality testing using SpecFlow
 
-Run tests:
+### Running Tests
+
 ```bash
+# Run all tests
 dotnet test
+
+# Run with coverage
+dotnet test /p:CollectCoverage=true
+
+# Run specific test project
+dotnet test Tests/Retail.Customers/Retail.Customers.ComponentTests
 ```
+
+See [Testing Guidelines](.cursor/rules/testing-rules.mdc) for detailed testing requirements.
 
 ## Deployment
 
@@ -122,7 +143,11 @@ docker-compose up -d
 ```
 
 ### Kubernetes
-See `Documentation/DeploymentSetupGuide.md` for detailed deployment instructions.
+See [Deployment Guide](Documentation/Operations/Deployment.md) for detailed deployment instructions including:
+- Helm chart deployment
+- Kubernetes manifests
+- Local development setup
+- Production deployment considerations
 
 ## Contributing
 
@@ -135,10 +160,21 @@ See `Documentation/DeploymentSetupGuide.md` for detailed deployment instructions
 
 ## Documentation
 
-- [Service Manual](Documentation/ServiceManual.md)
-- [Deployment Guide](Documentation/DeploymentSetupGuide.md)
-- [Test Plan](Documentation/TestPlan.md)
-- [API Contracts](Contracts/README.md)
+For comprehensive documentation, see the [Documentation Index](Documentation/Index.md), which provides:
+
+- **Getting Started**: Development setup, tutorials, and quick start guides
+- **Architecture & Design**: ADRs, design patterns, and architectural decisions
+- **Requirements**: Functional and non-functional requirements
+- **Development Standards**: Coding guidelines and API documentation standards
+- **Contracts & Integration**: AsyncAPI specifications and contract generation
+- **Operations**: Service manual, deployment guides, and CI/CD documentation
+
+### Quick Links
+- [Development Guide](Documentation/Development-Guide.md) - Setup and development workflow
+- [Architecture Decision Records](Documentation/Architecture/Architecture-Decision-Records.md) - Architectural decisions
+- [Coding Guidelines](Documentation/Coding-Guidelines/README.md) - Coding standards and patterns
+- [Deployment Guide](Documentation/Operations/Deployment.md) - Deployment instructions
+
 
 ## License
 

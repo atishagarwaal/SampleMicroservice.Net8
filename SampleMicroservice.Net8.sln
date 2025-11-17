@@ -45,12 +45,71 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Contracts", "Contracts", "{
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentation", "{9EB14FF7-E272-4AA0-8ED0-99033DD1DB2F}"
 	ProjectSection(SolutionItems) = preProject
-		Documentation\AsyncAPI-Contract-Generation.md = Documentation\AsyncAPI-Contract-Generation.md
-		Documentation\Coding Guidelines.md = Documentation\Coding Guidelines.md
-		Documentation\Contract-Specifications.md = Documentation\Contract-Specifications.md
-		Documentation\README.md = Documentation\README.md
-		Documentation\RetailMicroservicesServiceManual.md = Documentation\RetailMicroservicesServiceManual.md
-		Documentation\Service-Architecture.md = Documentation\Service-Architecture.md
+		Documentation\Development-Guide.md = Documentation\Development-Guide.md
+		Documentation\Index.md = Documentation\Index.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Architecture", "Architecture", "{A1B2C3D4-E5F6-4A5B-8C9D-0E1F2A3B4C5D}"
+	ProjectSection(SolutionItems) = preProject
+		Documentation\Architecture\Architecture-Decision-Records.md = Documentation\Architecture\Architecture-Decision-Records.md
+		Documentation\Architecture\README.md = Documentation\Architecture\README.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Coding-Guidelines", "Coding-Guidelines", "{B2C3D4E5-F6A7-4B5C-9D0E-1F2A3B4C5D6E}"
+	ProjectSection(SolutionItems) = preProject
+		Documentation\Coding-Guidelines\README.md = Documentation\Coding-Guidelines\README.md
+		Documentation\Coding-Guidelines\CSharp-Coding-Standards.md = Documentation\Coding-Guidelines\CSharp-Coding-Standards.md
+		Documentation\Coding-Guidelines\Architecture-Principles.md = Documentation\Coding-Guidelines\Architecture-Principles.md
+		Documentation\Coding-Guidelines\Solution-Patterns.md = Documentation\Coding-Guidelines\Solution-Patterns.md
+		Documentation\Coding-Guidelines\Testing-Guidelines.md = Documentation\Coding-Guidelines\Testing-Guidelines.md
+		Documentation\Coding-Guidelines\Messaging-Patterns.md = Documentation\Coding-Guidelines\Messaging-Patterns.md
+		Documentation\Coding-Guidelines\Observability-Performance.md = Documentation\Coding-Guidelines\Observability-Performance.md
+		Documentation\Coding-Guidelines\Security-DevOps.md = Documentation\Coding-Guidelines\Security-DevOps.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Contracts", "Contracts", "{C3D4E5F6-A7B8-4C5D-9E0F-2A3B4C5D6E7F}"
+	ProjectSection(SolutionItems) = preProject
+		Documentation\Contracts\AsyncAPI-Contract-Generation.md = Documentation\Contracts\AsyncAPI-Contract-Generation.md
+		Documentation\Contracts\README.md = Documentation\Contracts\README.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Design", "Design", "{D4E5F6A7-B8C9-4D5E-0F1A-3B4C5D6E7F8A}"
+	ProjectSection(SolutionItems) = preProject
+		Documentation\Design\Event-Driven-Communication.md = Documentation\Design\Event-Driven-Communication.md
+		Documentation\Design\README.md = Documentation\Design\README.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Operations", "Operations", "{E5F6A7B8-C9D0-4E5F-1A2B-4C5D6E7F8A9B}"
+	ProjectSection(SolutionItems) = preProject
+		Documentation\Operations\Deployment.md = Documentation\Operations\Deployment.md
+		Documentation\Operations\Jenkinsfile.README.md = Documentation\Operations\Jenkinsfile.README.md
+		Documentation\Operations\README.md = Documentation\Operations\README.md
+		Documentation\Operations\ServiceManual.md = Documentation\Operations\ServiceManual.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ReleaseNotes", "ReleaseNotes", "{F6A7B8C9-D0E1-4F5A-2B3C-5D6E7F8A9B0C}"
+	ProjectSection(SolutionItems) = preProject
+		Documentation\ReleaseNotes\1.0.0-ReleaseNotes.md = Documentation\ReleaseNotes\1.0.0-ReleaseNotes.md
+		Documentation\ReleaseNotes\README.md = Documentation\ReleaseNotes\README.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Requirements", "Requirements", "{A7B8C9D0-E1F2-4A5B-3C4D-6E7F8A9B0C1D}"
+	ProjectSection(SolutionItems) = preProject
+		Documentation\Requirements\Functional-Requirements.md = Documentation\Requirements\Functional-Requirements.md
+		Documentation\Requirements\Non-Functional-Requirements.md = Documentation\Requirements\Non-Functional-Requirements.md
+		Documentation\Requirements\README.md = Documentation\Requirements\README.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Standards", "Standards", "{B8C9D0E1-F2A3-4B5C-4D5E-7F8A9B0C1D2E}"
+	ProjectSection(SolutionItems) = preProject
+		Documentation\Standards\API-Documentation-Standards.md = Documentation\Standards\API-Documentation-Standards.md
+		Documentation\Standards\README.md = Documentation\Standards\README.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tutorials", "Tutorials", "{C9D0E1F2-A3B4-4C5D-5E6F-8A9B0C1D2E3F}"
+	ProjectSection(SolutionItems) = preProject
+		Documentation\Tutorials\001-Creating-New-Service.md = Documentation\Tutorials\001-Creating-New-Service.md
+		Documentation\Tutorials\README.md = Documentation\Tutorials\README.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Source", "Source", "{E7C746B5-4C87-4AB5-B127-AAA0D63F1545}"
@@ -453,6 +512,15 @@ Global
 		{2F8A3548-0371-405A-8B66-1A8713EE021B} = {E7C746B5-4C87-4AB5-B127-AAA0D63F1545}
 		{D93CC6AF-7605-4B8C-AF82-B155F035F47B} = {E7C746B5-4C87-4AB5-B127-AAA0D63F1545}
 		{14CA7E77-BDF3-4C98-87AA-F16AC6F3E451} = {E7C746B5-4C87-4AB5-B127-AAA0D63F1545}
+		{A1B2C3D4-E5F6-4A5B-8C9D-0E1F2A3B4C5D} = {9EB14FF7-E272-4AA0-8ED0-99033DD1DB2F}
+		{B2C3D4E5-F6A7-4B5C-9D0E-1F2A3B4C5D6E} = {9EB14FF7-E272-4AA0-8ED0-99033DD1DB2F}
+		{C3D4E5F6-A7B8-4C5D-9E0F-2A3B4C5D6E7F} = {9EB14FF7-E272-4AA0-8ED0-99033DD1DB2F}
+		{D4E5F6A7-B8C9-4D5E-0F1A-3B4C5D6E7F8A} = {9EB14FF7-E272-4AA0-8ED0-99033DD1DB2F}
+		{E5F6A7B8-C9D0-4E5F-1A2B-4C5D6E7F8A9B} = {9EB14FF7-E272-4AA0-8ED0-99033DD1DB2F}
+		{F6A7B8C9-D0E1-4F5A-2B3C-5D6E7F8A9B0C} = {9EB14FF7-E272-4AA0-8ED0-99033DD1DB2F}
+		{A7B8C9D0-E1F2-4A5B-3C4D-6E7F8A9B0C1D} = {9EB14FF7-E272-4AA0-8ED0-99033DD1DB2F}
+		{B8C9D0E1-F2A3-4B5C-4D5E-7F8A9B0C1D2E} = {9EB14FF7-E272-4AA0-8ED0-99033DD1DB2F}
+		{C9D0E1F2-A3B4-4C5D-5E6F-8A9B0C1D2E3F} = {9EB14FF7-E272-4AA0-8ED0-99033DD1DB2F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {BBDC3B65-10EC-4A10-B062-B4B97CE74CBC}

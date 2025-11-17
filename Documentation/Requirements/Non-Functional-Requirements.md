@@ -609,9 +609,9 @@ This document covers all quality attributes and constraints for:
 
 ### B. References
 
-- [Service Architecture](./Service-Architecture.md)
+- [Design Documentation](../Design/README.md)
 - [Functional Requirements](./Functional-Requirements.md)
-- [Deployment Guide](./Deployment.md)
+- [Deployment Guide](../Operations/Deployment.md)
 
 ---
 

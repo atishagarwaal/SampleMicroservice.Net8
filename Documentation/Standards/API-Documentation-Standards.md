@@ -444,9 +444,9 @@ Before submitting a PR with API changes:
 
 ## References
 
-- [Coding Guidelines](./Coding-Guidelines.md)
-- [Contract Specifications](./Contract-Specifications.md)
-- [Service Architecture](./Service-Architecture.md)
+- [Coding Guidelines](./Coding-Guidelines/README.md)
+- [Contracts Documentation](./Contracts/README.md)
+- [Design Documentation](./Design/README.md)
 
 ---
 

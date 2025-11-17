@@ -128,7 +128,7 @@ graph TB
 
 **Error Handling**: Products → InventoryErrorEvent → Orders.Write → OrderCancelledEvent
 
-See [Service Architecture](./Service-Architecture.md) for detailed diagrams.
+See [Design Documentation](../Design/README.md) for detailed diagrams.
 
 ```mermaid
 sequenceDiagram
@@ -183,10 +183,7 @@ sequenceDiagram
 **RabbitMQ**: HostName, Port, Username, Password in `TopologyConfiguration`  
 **Ports**: 7000-7005 (see service list above)
 
-## Deployment
-
-**Development**: Run services separately, local SQL Server and RabbitMQ  
-**Production**: Docker containers, load balancing, database/RabbitMQ clustering
+**Deployment**: See [Deployment Guide](./Deployment.md) for detailed deployment instructions.
 
 ## Troubleshooting
 

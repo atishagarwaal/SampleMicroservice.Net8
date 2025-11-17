@@ -149,7 +149,7 @@ git checkout -b feature/SS-123456_FeatureName
 
 ### 2. Make Changes
 
-- Write code following [Coding Guidelines](./Coding-Guidelines.md)
+- Write code following [Coding Guidelines](./Coding-Guidelines/README.md)
 - Add tests for new functionality
 - Update documentation as needed
 
@@ -348,29 +348,7 @@ _logger.LogInformation("Processing order {OrderId} for customer {CustomerId}", o
 
 ### AsyncAPI Contract Generation
 
-Contracts are generated from AsyncAPI YAML specifications:
-
-1. **Install AsyncAPI Generator**
-   ```bash
-   npm install -g @asyncapi/generator@2.0.0
-   ```
-
-2. **Generate Contracts**
-   ```bash
-   # Customers Service
-   asyncapi-generator "Contracts/AsyncAPI/Retail-Customers-AsyncAPI-v1.0.0.yaml" @lagoni/asyncapi-quicktype-template@1.0.2 -o "Source/Retail.Customers/src/CleanArchitecture.Contracts" -p quicktypeLanguage=csharp
-
-   # Products Service
-   asyncapi-generator "Contracts/AsyncAPI/Retail-Products-AsyncAPI-v1.0.0.yaml" @lagoni/asyncapi-quicktype-template@1.0.2 -o "Source/Retail.Products/src/CleanArchitecture.Contracts" -p quicktypeLanguage=csharp
-
-   # Orders Write Service
-   asyncapi-generator "Contracts/AsyncAPI/Retail-Orders-Write-AsyncAPI-v1.0.0.yaml" @lagoni/asyncapi-quicktype-template@1.0.2 -o "Source/Retail.Orders.Write/src/CleanArchitecture.Contracts" -p quicktypeLanguage=csharp
-
-   # Orders Read Service
-   asyncapi-generator "Contracts/AsyncAPI/Retail-Orders-Read-AsyncAPI-v1.0.0.yaml" @lagoni/asyncapi-quicktype-template@1.0.2 -o "Source/Retail.Orders.Read/src/CleanArchitecture.Contracts" -p quicktypeLanguage=csharp
-   ```
-
-See [AsyncAPI Contract Generation](./AsyncAPI-Contract-Generation.md) for details.
+Contracts are generated from AsyncAPI YAML specifications. See the [AsyncAPI Contract Generation Guide](./Contracts/AsyncAPI-Contract-Generation.md) for complete instructions, prerequisites, and troubleshooting.
 
 ---
 
@@ -490,15 +468,15 @@ dotnet build
 1. Verify Node.js is installed: `node --version`
 2. Verify AsyncAPI generator is installed: `asyncapi-generator --version`
 3. Check AsyncAPI YAML syntax
-4. See [AsyncAPI Contract Generation](./AsyncAPI-Contract-Generation.md)
+4. See [AsyncAPI Contract Generation](./Contracts/AsyncAPI-Contract-Generation.md)
 
 ---
 
 ## Additional Resources
 
-- [Coding Guidelines](./Coding-Guidelines.md)
-- [Architecture Decision Records](./Architecture-Decision-Records.md)
-- [Service Architecture](./Service-Architecture.md)
+- [Coding Guidelines](./Coding-Guidelines/README.md)
+- [Architecture Decision Records](./Architecture/Architecture-Decision-Records.md)
+- [Design Documentation](./Design/README.md)
 - [Contributing Guide](../CONTRIBUTING.md)
 - [Testing Guidelines](../.cursor/rules/testing-rules.mdc)
 
