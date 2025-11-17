@@ -69,7 +69,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\CommonLibrary\CommonLibrary.csproj" />
     <ProjectReference Include="..\..\..\MessagingInfrastructure\MessagingInfrastructure.csproj" />
-    <ProjectReference Include="..\Retail.Customers.Contracts\Retail.Customers.Contracts.csproj" />
+    <ProjectReference Include="..\..\Retail.Products\Retail.Products.Contracts\Retail.Products.Contracts.csproj" />
   </ItemGroup>
 
 </Project>

@@ -37,7 +37,6 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\CommonLibrary\CommonLibrary.csproj" />
     <ProjectReference Include="..\..\..\MessagingInfrastructure\MessagingInfrastructure.csproj" />
-    <ProjectReference Include="..\Retail.Orders.Read.Contracts\Retail.Orders.Read.Contracts.csproj" />
     <ProjectReference Include="..\..\Retail.Products\Retail.Products.Contracts\Retail.Products.Contracts.csproj" />
   </ItemGroup>
 
