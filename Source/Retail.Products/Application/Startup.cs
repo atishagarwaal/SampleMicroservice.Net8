@@ -73,9 +73,17 @@ namespace Retail.Api.Products.Application
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                
+                // Liveness endpoint - indicates the service is running
                 endpoints.MapHealthChecks("/health/liveness", new HealthCheckOptions
                 {
-                    Predicate = _ => true
+                    Predicate = _ => false
+                });
+                
+                // Readiness endpoint - indicates the service is ready to accept traffic
+                endpoints.MapHealthChecks("/health/readiness", new HealthCheckOptions
+                {
+                    Predicate = check => check.Tags.Contains("database")
                 });
             });
         }

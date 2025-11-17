@@ -103,7 +103,8 @@ namespace Retail.Api.Customers.Application
             });
 
             // Add health checks
-            serviceCollection.AddHealthChecks();
+            serviceCollection.AddHealthChecks()
+                .AddDbContextCheck<ApplicationDbContext>("database");
         }
 
         /// <summary>
