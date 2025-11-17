@@ -8,7 +8,7 @@
 
   <!-- Usually you don't need to add explicit references, the SDK brings them in -->
   <ItemGroup>
-    <PackageReference Include="System.Text.Json" Version="8.0.0" />
+    <PackageReference Include="System.Text.Json" Version="8.0.5" />
   </ItemGroup>
 
   <ItemGroup>
