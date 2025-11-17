@@ -1,65 +1,37 @@
 # AsyncAPI Contract Generation Guide
 
-## Overview
-
-This guide explains how to generate C# contract types from AsyncAPI YAML specifications for our retail microservices architecture. The AsyncAPI specification provides a structured way to define message contracts, and we can automatically generate strongly-typed C# models from these definitions.
-
-## Table of Contents
-
-1. [Prerequisites](#prerequisites)
-2. [Contract Generation Process](#contract-generation-process)
-3. [Generated Contract Structure](#generated-contract-structure)
-4. [Integration with Microservices](#integration-with-microservices)
-5. [Best Practices](#best-practices)
-6. [Troubleshooting](#troubleshooting)
+This guide shows how to generate C# contracts from AsyncAPI YAML files.
 
 ## Prerequisites
 
-### 1. Node.js and npm
-Download and install from [nodejs.org](https://nodejs.org/).
+**Node.js**: Install from [nodejs.org](https://nodejs.org/) (v18+)
 
-Check the installation:
-```bash
-node -v
-npm -v
-```
-You should see version numbers like v18.x or higher.
-
-### 2. AsyncAPI Generator
-Install the official generator:
+**AsyncAPI Generator**:
 ```bash
 npm install -g @asyncapi/generator@2.0.0
 ```
 
-Check the installation:
-```bash
-asyncapi-generator --version
-```
-You should see: `2.0.0`
+Verify: `asyncapi-generator --version` should show `2.0.0`
 
-## Contract Generation Process
+## Generate Contracts
 
-### Step 1: Generate Contracts for All Services
-
-Run these commands to generate C# contracts for all microservices:
+Run these commands:
 
 ```bash
-# Retail Customers Service
+# Customers
 asyncapi-generator "Contracts/AsyncAPI/Retail-Customers-AsyncAPI-v1.0.0.yaml" @lagoni/asyncapi-quicktype-template@1.0.2 -o "Source/Retail.Customers/src/CleanArchitecture.Contracts" -p quicktypeLanguage=csharp
 
-# Retail Orders Read Service
+# Orders Read
 asyncapi-generator "Contracts/AsyncAPI/Retail-Orders-Read-AsyncAPI-v1.0.0.yaml" @lagoni/asyncapi-quicktype-template@1.0.2 -o "Source/Retail.Orders.Read/src/CleanArchitecture.Contracts" -p quicktypeLanguage=csharp
 
-# Retail Orders Write Service
+# Orders Write
 asyncapi-generator "Contracts/AsyncAPI/Retail-Orders-Write-AsyncAPI-v1.0.0.yaml" @lagoni/asyncapi-quicktype-template@1.0.2 -o "Source/Retail.Orders.Write/src/CleanArchitecture.Contracts" -p quicktypeLanguage=csharp
 
-# Retail Products Service
+# Products
 asyncapi-generator "Contracts/AsyncAPI/Retail-Products-AsyncAPI-v1.0.0.yaml" @lagoni/asyncapi-quicktype-template@1.0.2 -o "Source/Retail.Products/src/CleanArchitecture.Contracts" -p quicktypeLanguage=csharp
 ```
 
-### Step 2: Verify Generated Files
-
-After generation, you should see the following structure in each service:
+**Generated files**:
 
 ```
 Retail.Customers/src/CleanArchitecture.Contracts/
@@ -135,27 +107,18 @@ namespace InventoryUpdatedEventNamespace
 }
 ```
 
-### Key Features of Generated Contracts
+**Features**: Strongly typed, JSON serialization, validation, XML docs
 
-1. **Strongly Typed**: All properties are properly typed (Guid, DateTime, decimal, etc.)
-2. **JSON Serialization**: Built-in Newtonsoft.Json serialization support
-3. **Validation**: Required fields and constraints from AsyncAPI schema
-4. **Documentation**: XML comments from AsyncAPI descriptions
-5. **Namespace Isolation**: Each service has its own contract namespace
+## Using Contracts
 
-## Integration with Microservices
-
-### 1. Project References
-
-Add the generated contract projects to your microservice projects:
-
+**Add project reference**:
 ```xml
 <ProjectReference Include="src\CleanArchitecture.Contracts\Retail.Customers.Contracts.csproj" />
 ```
 
-### 2. Using Generated Contracts
+**Examples**:
 
-#### Publishing Events (Orders Write Service)
+**Publishing Events**:
 ```csharp
 using Retail.Orders.Write.Contracts;
 
@@ -196,7 +159,7 @@ public class OrderService
 }
 ```
 
-#### Consuming Events (Products Service)
+**Consuming Events**:
 ```csharp
 using Retail.Products.Contracts;
 
@@ -247,50 +210,19 @@ public class InventoryService
 
 ## Best Practices
 
-### 1. Contract Versioning
-- Use semantic versioning for AsyncAPI specifications
-- Maintain backward compatibility when possible
-- Document breaking changes clearly
-
-### 2. Schema Evolution
-- Add new optional fields rather than removing existing ones
-- Use `additionalProperties: true` for extensibility when appropriate
-- Validate schema changes against all consumers
-
-### 3. Error Handling
-- Always include error events in your AsyncAPI specifications
-- Use consistent error message structures across services
-- Implement proper retry and dead letter queue handling
-
-### 4. Documentation
-- Keep AsyncAPI YAML files as the single source of truth
-- Update documentation when contracts change
-- Use descriptive field names and descriptions
-
-### 5. Testing
-- Generate contracts as part of your CI/CD pipeline
-- Validate generated contracts against test data
-- Use contract testing to verify compatibility between services
+- **Versioning**: Use semantic versioning, maintain backward compatibility
+- **Schema Evolution**: Add optional fields, don't remove existing ones
+- **Error Handling**: Include error events, use consistent structures
+- **Testing**: Generate in CI/CD, validate contracts
 
 ## Troubleshooting
 
-### Common Issues
+- **Node.js not found**: Install from https://nodejs.org/
+- **Generator not found**: Run `npm install -g @asyncapi/generator@2.0.0`
+- **Permission errors**: Run as Administrator
+- **Template errors**: Validate YAML files first
 
-1. **Node.js Not Found**: Install Node.js from https://nodejs.org/
-2. **AsyncAPI Generator Not Found**: Run `npm install -g @asyncapi/generator@2.0.0`
-3. **Permission Errors**: Run command prompt as Administrator
-4. **Template Errors**: Ensure AsyncAPI YAML files are valid
-
-### Validation
-
-Validate AsyncAPI YAML files before generation:
+**Validate YAML**:
 ```bash
 npx @asyncapi/cli validate Contracts/AsyncAPI/Retail-Customers-AsyncAPI-v1.0.0.yaml
 ```
-
-## References
-
-- [AsyncAPI Generator on npm](https://www.npmjs.com/package/@asyncapi/generator)
-- [Quicktype Template (GitHub)](https://github.com/lagoni/asyncapi-quicktype-template)
-- [AsyncAPI Studio (Online Editor)](https://studio.asyncapi.com/)
-- [AsyncAPI Specification](https://www.asyncapi.com/docs/specifications/v2.0.0)
