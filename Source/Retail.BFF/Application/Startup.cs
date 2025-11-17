@@ -13,6 +13,7 @@ namespace Retail.BFFWeb.Api.Application
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
+    using Prometheus;
 
     /// <summary>
     /// Configures web host.
@@ -66,11 +67,18 @@ namespace Retail.BFFWeb.Api.Application
 
             app.UseHttpsRedirection();
             app.UseRouting();
+            
+            // Collect HTTP request metrics for Prometheus
+            app.UseHttpMetrics();
+            
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                
+                // Prometheus metrics endpoint
+                endpoints.MapMetrics();
                 
                 // Liveness endpoint - indicates the service is running
                 endpoints.MapHealthChecks("/health/liveness", new HealthCheckOptions

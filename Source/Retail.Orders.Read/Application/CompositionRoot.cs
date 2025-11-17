@@ -26,6 +26,7 @@ namespace Retail.Orders.Read.Application
     using Retail.Orders.Read.src.CleanArchitecture.Infrastructure.Interfaces;
     using Retail.Orders.Read.src.CleanArchitecture.Infrastructure.UnitOfWork;
     using CommonLibrary.Configuration;
+    using CommonLibrary.Telemetry;
 
     /// <summary>
     /// Configuration for this service.
@@ -46,6 +47,12 @@ namespace Retail.Orders.Read.Application
         /// <param name="serviceCollection">Service collection to register services to.</param>
         public static void ConfigureServices(HostBuilderContext context, IServiceCollection serviceCollection)
         {
+            // Configure OpenTelemetry for observability
+            serviceCollection.AddOpenTelemetry(
+                context.Configuration,
+                serviceName: "Retail.Orders.Read",
+                serviceVersion: "1.0.0");
+
             // Configure strongly-typed configuration classes
             serviceCollection.Configure<DatabaseConnectionConfiguration>(
                 context.Configuration.GetSection("ConnectionStrings"));

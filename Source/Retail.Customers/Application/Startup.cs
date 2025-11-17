@@ -14,6 +14,7 @@ namespace Retail.Api.Customers.Application
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
+    using Prometheus;
     using Retail.Api.Customers.src.CleanArchitecture.Application.Interfaces;
     using Retail.Api.Customers.src.CleanArchitecture.Infrastructure.Data;
 
@@ -69,11 +70,18 @@ namespace Retail.Api.Customers.Application
 
             app.UseHttpsRedirection();
             app.UseRouting();
+            
+            // Collect HTTP request metrics for Prometheus
+            app.UseHttpMetrics();
+            
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                
+                // Prometheus metrics endpoint
+                endpoints.MapMetrics();
                 
                 // Liveness endpoint - indicates the service is running
                 endpoints.MapHealthChecks("/health/liveness", new HealthCheckOptions

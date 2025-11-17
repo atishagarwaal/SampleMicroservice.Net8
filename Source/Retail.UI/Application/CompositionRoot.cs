@@ -6,6 +6,7 @@
 
 namespace Retail.UI.Application
 {
+    using CommonLibrary.Telemetry;
     using Microsoft.AspNetCore.Components;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
@@ -30,6 +31,12 @@ namespace Retail.UI.Application
         /// <param name="serviceCollection">Service collection to register services to.</param>
         public static void ConfigureServices(HostBuilderContext context, IServiceCollection serviceCollection)
         {
+            // Configure OpenTelemetry for observability
+            serviceCollection.AddOpenTelemetry(
+                context.Configuration,
+                serviceName: "Retail.UI",
+                serviceVersion: "1.0.0");
+
             // Add services to the container.
             serviceCollection.AddRazorComponents()
                 .AddInteractiveServerComponents();

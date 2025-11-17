@@ -12,6 +12,7 @@ namespace Retail.UI.Application
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
+    using Prometheus;
 
     /// <summary>
     /// Configures web host.
@@ -61,12 +62,18 @@ namespace Retail.UI.Application
             app.UseStaticFiles();
             app.UseAntiforgery();
             app.UseRouting();
+            
+            // Collect HTTP request metrics for Prometheus
+            app.UseHttpMetrics();
 
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapRazorPages();
                 endpoints.MapBlazorHub();
                 endpoints.MapFallbackToPage("/_Host");
+                
+                // Prometheus metrics endpoint
+                endpoints.MapMetrics();
                 
                 // Liveness endpoint - indicates the service is running
                 endpoints.MapHealthChecks("/health/liveness", new HealthCheckOptions

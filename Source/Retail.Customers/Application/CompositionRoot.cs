@@ -29,6 +29,7 @@ namespace Retail.Api.Customers.Application
     using Retail.Api.Customers.src.CleanArchitecture.Infrastructure.Repositories;
     using Retail.Api.Customers.src.CleanArchitecture.Infrastructure.UnitOfWork;
     using CommonLibrary.Configuration;
+    using CommonLibrary.Telemetry;
     using Microsoft.Extensions.Options;
 
     /// <summary>
@@ -50,6 +51,12 @@ namespace Retail.Api.Customers.Application
         /// <param name="serviceCollection">Service collection to register services to.</param>
         public static void ConfigureServices(HostBuilderContext context, IServiceCollection serviceCollection)
         {
+            // Configure OpenTelemetry for observability
+            serviceCollection.AddOpenTelemetry(
+                context.Configuration,
+                serviceName: "Retail.Customers",
+                serviceVersion: "1.0.0");
+
             // Configure strongly-typed configuration classes
             serviceCollection.Configure<DatabaseConnectionConfiguration>(
                 context.Configuration.GetSection("ConnectionStrings"));
