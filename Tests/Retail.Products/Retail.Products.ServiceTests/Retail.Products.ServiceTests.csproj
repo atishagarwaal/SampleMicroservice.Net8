@@ -27,7 +27,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\CommonLibrary\CommonLibrary.csproj" />
-    <ProjectReference Include="..\..\..\Source\Retail.Products\Retail.Products.csproj" />
+    <ProjectReference Include="..\..\..\Source\Retail.Products\Retail.Products.Service\Retail.Products.Service.csproj" />
   </ItemGroup>
 
   <ItemGroup>

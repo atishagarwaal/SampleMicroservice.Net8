@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <Version>1.0.0</Version>
+    <Authors>Your Company</Authors>
+    <Company>Your Company</Company>
+    <Product>Retail.Orders.Write.Contracts</Product>
+    <Description>Contracts assembly for Retail.Orders.Write service. Contains event definitions, message schemas, and AsyncAPI specifications.</Description>
+    <PackageId>Retail.Orders.Write.Contracts</PackageId>
+    <IsPackable>true</IsPackable>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\..\Contracts\AsyncAPI\Retail-Orders-Write-AsyncAPI-v1.0.0.yaml" Link="AsyncAPI\Retail-Orders-Write-AsyncAPI-v1.0.0.yaml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>
+

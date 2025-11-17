@@ -35,8 +35,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\CommonLibrary\CommonLibrary.csproj" />
-    <ProjectReference Include="..\..\MessagingInfrastructure\MessagingInfrastructure.csproj" />
+    <ProjectReference Include="..\..\..\CommonLibrary\CommonLibrary.csproj" />
+    <ProjectReference Include="..\..\..\MessagingInfrastructure\MessagingInfrastructure.csproj" />
   </ItemGroup>
 
 </Project>

@@ -48,7 +48,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Source\Retail.Customers\Retail.Customers.csproj" />
+    <ProjectReference Include="..\..\..\Source\Retail.Customers\Retail.Customers.Service\Retail.Customers.Service.csproj" />
   </ItemGroup>
 
   <ItemGroup>

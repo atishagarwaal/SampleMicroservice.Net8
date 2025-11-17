@@ -30,7 +30,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\CommonLibrary\CommonLibrary.csproj" />
-    <ProjectReference Include="..\..\..\Source\Retail.Orders.Read\Retail.Orders.Read.csproj" />
+    <ProjectReference Include="..\..\..\Source\Retail.Orders.Read\Retail.Orders.Read.Service\Retail.Orders.Read.Service.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,0 +1,887 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Retail.Products.Service</name>
+    </assembly>
+    <members>
+        <member name="T:Retail.Api.Products.Application.CompositionRoot">
+            <summary>
+            Configuration for this service.
+            </summary>
+        </member>
+        <member name="M:Retail.Api.Products.Application.CompositionRoot.#ctor">
+            <summary>
+            Prevents a default instance of the <see cref="T:Retail.Api.Products.Application.CompositionRoot"/> class from being created.
+            </summary>
+        </member>
+        <member name="M:Retail.Api.Products.Application.CompositionRoot.ConfigureServices(Microsoft.Extensions.Hosting.HostBuilderContext,Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            Configures application service with a dependency injection container.
+            </summary>
+            <param name="context">The application's builder context.</param>
+            <param name="serviceCollection">Service collection to register services to.</param>
+        </member>
+        <member name="M:Retail.Api.Products.Application.CompositionRoot.Configure(Microsoft.Extensions.Configuration.IConfigurationBuilder)">
+            <summary>
+            Configures the application.
+            </summary>
+            <param name="configurationBuilder">Configuration builder.</param>
+        </member>
+        <member name="T:Retail.Api.Products.Application.ProductApplication">
+            <summary>
+            Represents the Product microservice application lifecycle.
+            </summary>
+        </member>
+        <member name="M:Retail.Api.Products.Application.ProductApplication.#ctor(System.IServiceProvider,Microsoft.Extensions.Logging.ILogger{Retail.Api.Products.Application.ProductApplication})">
+            <summary>
+            Initializes a new instance of the <see cref="T:Retail.Api.Products.Application.ProductApplication"/> class.
+            </summary>
+            <param name="serviceProvider">The service provider.</param>
+            <param name="logger">The logger.</param>
+        </member>
+        <member name="M:Retail.Api.Products.Application.ProductApplication.StartAsync(System.Threading.CancellationToken)">
+            <summary>
+            Starts the application asynchronously.
+            </summary>
+            <param name="cancellationToken">Cancellation token to cancel the operation.</param>
+            <returns>A <see cref="T:System.Threading.Tasks.Task"/> representing the asynchronous operation.</returns>
+        </member>
+        <member name="M:Retail.Api.Products.Application.ProductApplication.StopAsync(System.Threading.CancellationToken)">
+            <summary>
+            Stops the application asynchronously.
+            </summary>
+            <param name="cancellationToken">Cancellation token to cancel the operation.</param>
+            <returns>A <see cref="T:System.Threading.Tasks.Task"/> representing the asynchronous operation.</returns>
+        </member>
+        <member name="T:Retail.Api.Products.Application.Startup">
+            <summary>
+            Configures web host.
+            </summary>
+        </member>
+        <member name="M:Retail.Api.Products.Application.Startup.#ctor(Microsoft.Extensions.Configuration.IConfiguration,Microsoft.AspNetCore.Hosting.IWebHostEnvironment)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Retail.Api.Products.Application.Startup"/> class.
+            </summary>
+            <param name="configuration">Configuration instance.</param>
+            <param name="environment">Web host environment.</param>
+        </member>
+        <member name="M:Retail.Api.Products.Application.Startup.ConfigureServices(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            Register services into the <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" />.
+            </summary>
+            <param name="services">The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/> to add the services to.</param>
+        </member>
+        <member name="M:Retail.Api.Products.Application.Startup.Configure(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
+            <summary>
+            Configures the application.
+            </summary>
+            <param name="app">An <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/> for the application to configure.</param>
+        </member>
+        <member name="T:Retail.Api.Products.Program">
+            <summary>
+            Contains the main entry point of the application.
+            </summary>
+        </member>
+        <member name="M:Retail.Api.Products.Program.Main(System.String[])">
+            <summary>
+            The main entry point of the application.
+            </summary>
+            <param name="args">Command line arguments which will be passed to the application host.</param>
+            <returns>A <see cref="T:System.Threading.Tasks.Task"/> representing the asynchronous operation.</returns>
+        </member>
+        <member name="T:Retail.Api.Products.src.CleanArchitecture.API.Controllers.ProductController">
+            <summary>
+            Product controller class.
+            </summary>
+        </member>
+        <member name="M:Retail.Api.Products.src.CleanArchitecture.API.Controllers.ProductController.#ctor(Retail.Api.Products.src.CleanArchitecture.Application.Interfaces.IProductService,Retail.Api.Products.src.CleanArchitecture.Application.Validation.Interfaces.IMessageValidator{Retail.Api.Products.src.CleanArchitecture.Application.Dto.SkuDto},Microsoft.Extensions.Logging.ILogger{Retail.Api.Products.src.CleanArchitecture.API.Controllers.ProductController})">
+            <summary>
+            Initializes a new instance of the <see cref="T:Retail.Api.Products.src.CleanArchitecture.API.Controllers.ProductController"/> class.
+            </summary>
+            <param name="productService">Instance of product service class.</param>
+            <param name="skuDtoValidator">Instance of SKU DTO validator.</param>
+            <param name="logger">Instance of logger.</param>
+        </member>
+        <member name="M:Retail.Api.Products.src.CleanArchitecture.API.Controllers.ProductController.Get">
+            <summary>
+            Method to return list of all products.
+            </summary>
+            <returns>List of products.</returns>
+        </member>
+        <member name="M:Retail.Api.Products.src.CleanArchitecture.API.Controllers.ProductController.Get(System.Int64)">
+            <summary>
+            Method to fetch product record based on Id.
+            </summary>
+            <returns>Product object.</returns>
+        </member>
+        <member name="M:Retail.Api.Products.src.CleanArchitecture.API.Controllers.ProductController.Post(Retail.Api.Products.src.CleanArchitecture.Application.Dto.SkuDto)">
+            <summary>
+            Method to add a new product record.
+            </summary>
+            <param name="value">Product record.</param>
+        </member>
+        <member name="M:Retail.Api.Products.src.CleanArchitecture.API.Controllers.ProductController.Put(System.Int64,Retail.Api.Products.src.CleanArchitecture.Application.Dto.SkuDto)">
+            <summary>
+            Method to update a product record.
+            </summary>
+            <param name="id">Product Id.</param>
+            <param name="value">Product record.</param>
+        </member>
+        <member name="M:Retail.Api.Products.src.CleanArchitecture.API.Controllers.ProductController.Delete(System.Int64)">
+            <summary>
+            Method to delete a product record.
+            </summary>
+            <param name="id">Product Id.</param>
+        </member>
+        <member name="T:Retail.Api.Products.src.CleanArchitecture.Application.Constants.MessageConstants">
+            <summary>
+            Constants class.
+            </summary>
+        </member>
+        <member name="F:Retail.Api.Products.src.CleanArchitecture.Application.Constants.MessageConstants.InvalidParameter">
+            <summary>
+            Get or sets InvalidParameter.
+            </summary>
+        </member>
+        <member name="F:Retail.Api.Products.src.CleanArchitecture.Application.Constants.MessageConstants.InternalServerError">
+            <summary>
+            Get or sets InternalServerError.
+            </summary>
+        </member>
+        <member name="T:Retail.Api.Products.src.CleanArchitecture.Application.Converters.Interfaces.IConverter`2">
+            <summary>
+            General purpose contract to convert from 'source' to 'target' type.
+            </summary>
+            <typeparam name="TSourceType">The source type to be converted.</typeparam>
+            <typeparam name="TTargetType">The target type to convert the source type to.</typeparam>
+        </member>
+        <member name="M:Retail.Api.Products.src.CleanArchitecture.Application.Converters.Interfaces.IConverter`2.Convert(`0)">
+            <summary>
+            Converts the source type to a specific target type object.
+            </summary>
+            <param name="sourceType">The source type to convert.</param>
+            <returns>The converted target type object.</returns>
+        </member>
+        <member name="T:Retail.Api.Products.src.CleanArchitecture.Application.Converters.SkuConverter">
+            <summary>
+            Converts <see cref="T:Retail.Api.Products.src.CleanArchitecture.Application.Dto.SkuDto"/> message to <see cref="T:Retail.Api.Products.src.CleanArchitecture.Domain.Entities.Sku"/> entity.
+            </summary>
+        </member>
+        <member name="M:Retail.Api.Products.src.CleanArchitecture.Application.Converters.SkuConverter.Convert(Retail.Api.Products.src.CleanArchitecture.Application.Dto.SkuDto)">
+            <summary>
+            Convert from <see cref="T:Retail.Api.Products.src.CleanArchitecture.Application.Dto.SkuDto"/> to <see cref="T:Retail.Api.Products.src.CleanArchitecture.Domain.Entities.Sku"/>.
+            </summary>
+            <param name="sourceType">The contract type message for <see cref="T:Retail.Api.Products.src.CleanArchitecture.Application.Dto.SkuDto"/>.</param>
+            <returns><see cref="T:Retail.Api.Products.src.CleanArchitecture.Domain.Entities.Sku"/> entity.</returns>
+        </member>
+        <member name="T:Retail.Api.Products.src.CleanArchitecture.Application.Converters.SkuDtoConverter">
+            <summary>
+            Converts <see cref="T:Retail.Api.Products.src.CleanArchitecture.Domain.Entities.Sku"/> entity to <see cref="T:Retail.Api.Products.src.CleanArchitecture.Application.Dto.SkuDto"/> message.
+            </summary>
+        </member>
+        <member name="M:Retail.Api.Products.src.CleanArchitecture.Application.Converters.SkuDtoConverter.Convert(Retail.Api.Products.src.CleanArchitecture.Domain.Entities.Sku)">
+            <summary>
+            Convert from <see cref="T:Retail.Api.Products.src.CleanArchitecture.Domain.Entities.Sku"/> to <see cref="T:Retail.Api.Products.src.CleanArchitecture.Application.Dto.SkuDto"/>.
+            </summary>
+            <param name="sourceType">The entity type for <see cref="T:Retail.Api.Products.src.CleanArchitecture.Domain.Entities.Sku"/>.</param>
+            <returns><see cref="T:Retail.Api.Products.src.CleanArchitecture.Application.Dto.SkuDto"/> message.</returns>
+        </member>
+        <member name="T:Retail.Api.Products.src.CleanArchitecture.Application.Dto.SkuDto">
+            <summary>
+            Defines Order entity.
+            </summary>
+        </member>
+        <member name="P:Retail.Api.Products.src.CleanArchitecture.Application.Dto.SkuDto.Id">
+            <summary>
+            Gets or sets the Id.
+            </summary>
+        </member>
+        <member name="P:Retail.Api.Products.src.CleanArchitecture.Application.Dto.SkuDto.Name">
+            <summary>
+            Gets or sets the name.
+            </summary>
+        </member>
+        <member name="P:Retail.Api.Products.src.CleanArchitecture.Application.Dto.SkuDto.UnitPrice">
+            <summary>
+            Gets or sets the total amount.
+            </summary>
+        </member>
+        <member name="P:Retail.Api.Products.src.CleanArchitecture.Application.Dto.SkuDto.Inventory">
+            <summary>
+            Gets or sets the inventory quantity.
+            </summary>
+        </member>
+        <member name="T:Retail.Api.Products.src.CleanArchitecture.Application.EventHandlers.OrderCreatedEventHandler">
+            <summary>
+            Event handler for OrderCreatedEvent.
+            </summary>
+        </member>
+        <member name="M:Retail.Api.Products.src.CleanArchitecture.Application.EventHandlers.OrderCreatedEventHandler.#ctor(Retail.Api.Products.src.CleanArchitecture.Application.Interfaces.IProductService,Microsoft.Extensions.Logging.ILogger{Retail.Api.Products.src.CleanArchitecture.Application.EventHandlers.OrderCreatedEventHandler})">
+            <summary>
+            Initializes a new instance of the <see cref="T:Retail.Api.Products.src.CleanArchitecture.Application.EventHandlers.OrderCreatedEventHandler"/> class.
+            </summary>
+            <param name="productService">Instance of product service.</param>
+            <param name="logger">Instance of logger.</param>
+        </member>
+        <member name="M:Retail.Api.Products.src.CleanArchitecture.Application.EventHandlers.OrderCreatedEventHandler.HandleAsync(OrderCreatedEventNameSpace.OrderCreatedEvent)">
+            <summary>
+            Handles the OrderCreatedEvent.
+            </summary>
+            <param name="orderCreatedEvent">The order created event.</param>
+            <returns>Task representing the async operation.</returns>
+        </member>
+        <member name="T:Retail.Api.Products.src.CleanArchitecture.Application.Interfaces.IProductService">
+            <summary>
+            Interface definition for product service.
+            </summary>
+        </member>
+        <member name="M:Retail.Api.Products.src.CleanArchitecture.Application.Interfaces.IProductService.GetAllProductsAsync">
+            <summary>
+            Method to fetch all products asynchronously.
+            </summary>
+            <returns>List of product.</returns>
+        </member>
+        <member name="M:Retail.Api.Products.src.CleanArchitecture.Application.Interfaces.IProductService.GetProductByIdAsync(System.Int64)">
+            <summary>
+            Method to fetch product record based on Id asynchronously.
+            </summary>
+            <param name="id">Product Id.</param>
+            <returns>Result containing the product object if found, or an error message if not found.</returns>
+        </member>
+        <member name="M:Retail.Api.Products.src.CleanArchitecture.Application.Interfaces.IProductService.AddProductAsync(Retail.Api.Products.src.CleanArchitecture.Application.Dto.SkuDto)">
+            <summary>
+            Method to add a new product record asynchronously.
+            </summary>
+            <param name="skuDto">Product record.</param>
+            <returns>Result containing the created product object if successful, or an error message if validation fails.</returns>
+        </member>
+        <member name="M:Retail.Api.Products.src.CleanArchitecture.Application.Interfaces.IProductService.UpdateProductAsync(System.Int64,Retail.Api.Products.src.CleanArchitecture.Application.Dto.SkuDto)">
+            <summary>
+            Method to update product record asynchronously.
+            </summary>
+            <param name="id">Product Id.</param>
+            <param name="skuDto">Product record.</param>
+            <returns>Result containing the updated product object if successful, or an error message if validation fails or product not found.</returns>
+        </member>
+        <member name="M:Retail.Api.Products.src.CleanArchitecture.Application.Interfaces.IProductService.DeleteProductAsync(System.Int64)">
+            <summary>
+            Method to delete product record asynchronously.
+            </summary>
+            <param name="id">Product Id.</param>
+            <returns>True if product was deleted, false if not found.</returns>
+        </member>
+        <member name="T:Retail.Api.Products.src.CleanArchitecture.Application.Service.ProductService">
+            <summary>
+            Product service class.
+            </summary>
+        </member>
+        <member name="M:Retail.Api.Products.src.CleanArchitecture.Application.Service.ProductService.#ctor(Retail.Api.Products.src.CleanArchitecture.Infrastructure.Interfaces.IUnitOfWork,Retail.Api.Products.src.CleanArchitecture.Application.Converters.Interfaces.IConverter{Retail.Api.Products.src.CleanArchitecture.Application.Dto.SkuDto,Retail.Api.Products.src.CleanArchitecture.Domain.Entities.Sku},Retail.Api.Products.src.CleanArchitecture.Application.Converters.Interfaces.IConverter{Retail.Api.Products.src.CleanArchitecture.Domain.Entities.Sku,Retail.Api.Products.src.CleanArchitecture.Application.Dto.SkuDto},Retail.Api.Products.src.CleanArchitecture.Application.Validation.Interfaces.IMessageValidator{Retail.Api.Products.src.CleanArchitecture.Application.Dto.SkuDto},MessagingLibrary.Interface.IMessagePublisher,Microsoft.Extensions.DependencyInjection.IServiceScopeFactory,Microsoft.Extensions.Logging.ILogger{Retail.Api.Products.src.CleanArchitecture.Application.Service.ProductService})">
+            <summary>
+            Initializes a new instance of the <see cref="T:Retail.Api.Products.src.CleanArchitecture.Application.Service.ProductService"/> class.
+            </summary>
+            <param name="unitOfWork">Instance of unit of work class.</param>
+            <param name="skuConverter">Instance of SKU converter.</param>
+            <param name="skuDtoConverter">Instance of SKU DTO converter.</param>
+            <param name="skuDtoValidator">Instance of SKU DTO validator.</param>
+            <param name="messagePublisher">Instance of message publisher.</param>
+            <param name="serviceScopeFactory">Instance of service scope factory.</param>
+            <param name="logger">Instance of logger.</param>
+        </member>
+        <member name="M:Retail.Api.Products.src.CleanArchitecture.Application.Service.ProductService.GetAllProductsAsync">
+            <summary>
+            Method to fetch all products asynchronously.
+            </summary>
+            <returns>List of products.</returns>
+        </member>
+        <member name="M:Retail.Api.Products.src.CleanArchitecture.Application.Service.ProductService.GetProductByIdAsync(System.Int64)">
+            <summary>
+            Method to fetch product record based on Id asynchronously.
+            </summary>
+            <param name="id">Product Id.</param>
+            <returns>Result containing the product object if found, or an error message if not found.</returns>
+        </member>
+        <member name="M:Retail.Api.Products.src.CleanArchitecture.Application.Service.ProductService.AddProductAsync(Retail.Api.Products.src.CleanArchitecture.Application.Dto.SkuDto)">
+            <summary>
+            Method to add a new product record asynchronously.
+            </summary>
+            <param name="skuDto">Product record.</param>
+            <returns>Result containing the created product object if successful, or an error message if validation fails.</returns>
+        </member>
+        <member name="M:Retail.Api.Products.src.CleanArchitecture.Application.Service.ProductService.UpdateProductAsync(System.Int64,Retail.Api.Products.src.CleanArchitecture.Application.Dto.SkuDto)">
+            <summary>
+            Method to update product record asynchronously.
+            </summary>
+            <param name="id">Product Id.</param>
+            <param name="skuDto">Product record.</param>
+            <returns>Result containing the updated product object if successful, or an error message if validation fails or product not found.</returns>
+        </member>
+        <member name="M:Retail.Api.Products.src.CleanArchitecture.Application.Service.ProductService.DeleteProductAsync(System.Int64)">
+            <summary>
+            Method to delete product record asynchronously.
+            </summary>
+            <param name="id">Product Id.</param>
+            <returns>True if deleted successfully, false otherwise.</returns>
+        </member>
+        <member name="M:Retail.Api.Products.src.CleanArchitecture.Application.Service.ProductService.HandleOrderCreatedEvent(OrderCreatedEventNameSpace.OrderCreatedEvent)">
+            <summary>
+            Handles the OrderCreatedEvent to update inventory.
+            </summary>
+            <param name="orderCreatedEvent">The order created event.</param>
+            <returns>Task representing the async operation.</returns>
+        </member>
+        <member name="T:Retail.Api.Products.src.CleanArchitecture.Application.Validation.FailureSeverity">
+            <summary>
+            Severity levels for errors raised during validation.
+            </summary>
+        </member>
+        <member name="F:Retail.Api.Products.src.CleanArchitecture.Application.Validation.FailureSeverity.Error">
+            <summary>
+            High severity. Exception raised, Error logged.
+            </summary>
+        </member>
+        <member name="F:Retail.Api.Products.src.CleanArchitecture.Application.Validation.FailureSeverity.Warn">
+            <summary>
+            Medium severity. No Exception raised, Warning logged.
+            </summary>
+        </member>
+        <member name="F:Retail.Api.Products.src.CleanArchitecture.Application.Validation.FailureSeverity.Info">
+            <summary>
+            Low severity. No Exception raised, Information logging not required.
+            </summary>
+        </member>
+        <member name="T:Retail.Api.Products.src.CleanArchitecture.Application.Validation.GenericValidator">
+            <summary>
+            Helper methods to validate the response from other services.
+            </summary>
+        </member>
+        <member name="M:Retail.Api.Products.src.CleanArchitecture.Application.Validation.GenericValidator.IsResponseNull``1(``0,System.String,Retail.Api.Products.src.CleanArchitecture.Application.Validation.ValidationData@,Retail.Api.Products.src.CleanArchitecture.Application.Validation.FailureSeverity)">
+            <summary>
+            Validates that the entity is not null.
+            </summary>
+            <typeparam name="T">The type of the resources.</typeparam>
+            <param name="response">The data to be validated.</param>
+            <param name="validatorName">Name of Validator.</param>
+            <param name="validationData">The validation data to return.</param>
+            <param name="failureSeverity">The severity level of the validation if it fails.</param>
+            <returns>True if the response is null, false otherwise.</returns>
+        </member>
+        <member name="M:Retail.Api.Products.src.CleanArchitecture.Application.Validation.GenericValidator.HasInvalidIdentifier``1(``0,System.String,Retail.Api.Products.src.CleanArchitecture.Application.Validation.ValidationData@)">
+            <summary>
+            Validates if the identifier value is valid.
+            </summary>
+            <typeparam name="T">Type of the identifier.</typeparam>
+            <param name="identifier">The identifier value to validate.</param>
+            <param name="validatorName">Name of Validator.</param>
+            <param name="validationData">The result of the validation.</param>
+            <returns>True, if the identifier has valid value. False otherwise.</returns>
+        </member>
+        <member name="M:Retail.Api.Products.src.CleanArchitecture.Application.Validation.GenericValidator.HasInvalidRequiredIdentifier``1(``0,System.String,System.String,Retail.Api.Products.src.CleanArchitecture.Application.Validation.ValidationData@)">
+            <summary>
+            Validates if a required identifier value is valid (must be greater than zero, cannot be zero for new entities).
+            </summary>
+            <typeparam name="T">Type of the identifier.</typeparam>
+            <param name="identifier">The identifier value to validate.</param>
+            <param name="validatorName">Name of Validator.</param>
+            <param name="fieldName">The name of the field being validated.</param>
+            <param name="validationData">The result of the validation.</param>
+            <returns>True, if the identifier is invalid (zero or negative). False otherwise.</returns>
+        </member>
+        <member name="M:Retail.Api.Products.src.CleanArchitecture.Application.Validation.GenericValidator.AreResourcesNullOrEmpty``1(System.Collections.Generic.IList{``0},System.String,System.String,Retail.Api.Products.src.CleanArchitecture.Application.Validation.ValidationData@,Retail.Api.Products.src.CleanArchitecture.Application.Validation.FailureSeverity)">
+            <summary>
+            Checks that a collection of resources is null or empty.
+            </summary>
+            <typeparam name="T">The type of the resources.</typeparam>
+            <param name="resources">The resources provided.</param>
+            <param name="validatorName">Name of Validator.</param>
+            <param name="nameOfResources">The string representation of the resources.</param>
+            <param name="validationData">The validation data that needs to be populated if validation fails.</param>
+            <param name="failureSeverity">The severity of the validation error.</param>
+            <returns>True if resources list is null or empty with lesser validation failure severity 'Warn', false otherwise.</returns>
+        </member>
+        <member name="M:Retail.Api.Products.src.CleanArchitecture.Application.Validation.GenericValidator.IsStringNullOrWhitespace(System.String,System.String,System.String,Retail.Api.Products.src.CleanArchitecture.Application.Validation.ValidationData@,Retail.Api.Products.src.CleanArchitecture.Application.Validation.FailureSeverity)">
+            <summary>
+            Validates if a string is null or whitespace.
+            </summary>
+            <param name="value">The string value to validate.</param>
+            <param name="validatorName">Name of Validator.</param>
+            <param name="fieldName">The name of the field being validated.</param>
+            <param name="validationData">The result of the validation.</param>
+            <param name="failureSeverity">The severity level of the validation if it fails.</param>
+            <returns>True if the string is null or whitespace, false otherwise.</returns>
+        </member>
+        <member name="M:Retail.Api.Products.src.CleanArchitecture.Application.Validation.GenericValidator.ExceedsMaxLength(System.String,System.Int32,System.String,System.String,Retail.Api.Products.src.CleanArchitecture.Application.Validation.ValidationData@,Retail.Api.Products.src.CleanArchitecture.Application.Validation.FailureSeverity)">
+            <summary>
+            Validates if a string exceeds a maximum length.
+            </summary>
+            <param name="value">The string value to validate.</param>
+            <param name="maxLength">The maximum allowed length.</param>
+            <param name="validatorName">Name of Validator.</param>
+            <param name="fieldName">The name of the field being validated.</param>
+            <param name="validationData">The validation data to return.</param>
+            <param name="failureSeverity">The severity level of the validation if it fails.</param>
+            <returns>True if the string exceeds the max length, false otherwise.</returns>
+        </member>
+        <member name="M:Retail.Api.Products.src.CleanArchitecture.Application.Validation.GenericValidator.IsLessThanZero(System.Double,System.String,System.String,Retail.Api.Products.src.CleanArchitecture.Application.Validation.ValidationData@,Retail.Api.Products.src.CleanArchitecture.Application.Validation.FailureSeverity)">
+            <summary>
+            Validates if a numeric value is less than zero.
+            </summary>
+            <param name="value">The value to validate.</param>
+            <param name="validatorName">Name of Validator.</param>
+            <param name="fieldName">The name of the field being validated.</param>
+            <param name="validationData">The result of the validation.</param>
+            <param name="failureSeverity">The severity level of the validation if it fails.</param>
+            <returns>True if the value is less than zero, false otherwise.</returns>
+        </member>
+        <member name="M:Retail.Api.Products.src.CleanArchitecture.Application.Validation.GenericValidator.IsLessThanZero(System.Int32,System.String,System.String,Retail.Api.Products.src.CleanArchitecture.Application.Validation.ValidationData@,Retail.Api.Products.src.CleanArchitecture.Application.Validation.FailureSeverity)">
+            <summary>
+            Validates if an integer value is less than zero.
+            </summary>
+            <param name="value">The value to validate.</param>
+            <param name="validatorName">Name of Validator.</param>
+            <param name="fieldName">The name of the field being validated.</param>
+            <param name="validationData">The result of the validation.</param>
+            <param name="failureSeverity">The severity level of the validation if it fails.</param>
+            <returns>True if the value is less than zero, false otherwise.</returns>
+        </member>
+        <member name="T:Retail.Api.Products.src.CleanArchitecture.Application.Validation.Interfaces.IMessageValidator`1">
+            <summary>
+            The interface for validating if a message is valid.
+            </summary>
+            <typeparam name="TMessage">The message to be validated.</typeparam>
+        </member>
+        <member name="M:Retail.Api.Products.src.CleanArchitecture.Application.Validation.Interfaces.IMessageValidator`1.Validate(`0)">
+            <summary>
+            Validates the given message and returns validation information.
+            </summary>
+            <param name="message">The message.</param>
+            <returns>The validation data.</returns>
+        </member>
+        <member name="T:Retail.Api.Products.src.CleanArchitecture.Application.Validation.SkuDtoValidator">
+            <summary>
+            Validates incoming <see cref="T:Retail.Api.Products.src.CleanArchitecture.Application.Dto.SkuDto"/> message.
+            </summary>
+        </member>
+        <member name="M:Retail.Api.Products.src.CleanArchitecture.Application.Validation.SkuDtoValidator.Validate(Retail.Api.Products.src.CleanArchitecture.Application.Dto.SkuDto)">
+            <summary>
+            Validates <see cref="T:Retail.Api.Products.src.CleanArchitecture.Application.Dto.SkuDto"/> message.
+            </summary>
+            <param name="message">The message to validate.</param>
+            <returns>The <see cref="T:Retail.Api.Products.src.CleanArchitecture.Application.Validation.ValidationData"/> to signify if the validation is successful or not.</returns>
+        </member>
+        <member name="T:Retail.Api.Products.src.CleanArchitecture.Application.Validation.ValidationData">
+            <summary>
+            Validation data returned by message validators.
+            </summary>
+        </member>
+        <member name="M:Retail.Api.Products.src.CleanArchitecture.Application.Validation.ValidationData.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Retail.Api.Products.src.CleanArchitecture.Application.Validation.ValidationData" /> class for validation success.
+            </summary>
+        </member>
+        <member name="M:Retail.Api.Products.src.CleanArchitecture.Application.Validation.ValidationData.#ctor(System.String,System.String,Retail.Api.Products.src.CleanArchitecture.Application.Validation.FailureSeverity)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Retail.Api.Products.src.CleanArchitecture.Application.Validation.ValidationData" /> class for validation failure.
+            </summary>
+            <param name="validatorName">The name of the validator.</param>
+            <param name="failureReason">The reason the validator failed.</param>
+            <param name="failureSeverity">The severity of the validator failure.</param>
+        </member>
+        <member name="P:Retail.Api.Products.src.CleanArchitecture.Application.Validation.ValidationData.IsValid">
+            <summary>
+            Gets a value indicating whether validation was successful.
+            </summary>
+        </member>
+        <member name="P:Retail.Api.Products.src.CleanArchitecture.Application.Validation.ValidationData.ValidatorName">
+            <summary>
+            Gets name of the validator that was unsuccessful.
+            </summary>
+        </member>
+        <member name="P:Retail.Api.Products.src.CleanArchitecture.Application.Validation.ValidationData.FailureReason">
+            <summary>
+            Gets reason validation failed.
+            </summary>
+        </member>
+        <member name="P:Retail.Api.Products.src.CleanArchitecture.Application.Validation.ValidationData.FailureSeverity">
+            <summary>
+            Gets severity of the validation error.
+            </summary>
+        </member>
+        <member name="T:Retail.Api.Products.src.CleanArchitecture.Domain.Entities.Sku">
+            <summary>
+            Defines Order entity.
+            </summary>
+        </member>
+        <member name="P:Retail.Api.Products.src.CleanArchitecture.Domain.Entities.Sku.Id">
+            <summary>
+            Gets or sets the Id.
+            </summary>
+        </member>
+        <member name="P:Retail.Api.Products.src.CleanArchitecture.Domain.Entities.Sku.Name">
+            <summary>
+            Gets or sets the name.
+            </summary>
+        </member>
+        <member name="P:Retail.Api.Products.src.CleanArchitecture.Domain.Entities.Sku.UnitPrice">
+            <summary>
+            Gets or sets the total amount.
+            </summary>
+        </member>
+        <member name="P:Retail.Api.Products.src.CleanArchitecture.Domain.Entities.Sku.Inventory">
+            <summary>
+            Gets or sets the inventory.
+            </summary>
+        </member>
+        <member name="T:Retail.Api.Products.src.CleanArchitecture.Infrastructure.Data.ApplicationDbContext">
+            <summary>
+            Application db context class.
+            </summary>
+        </member>
+        <member name="M:Retail.Api.Products.src.CleanArchitecture.Infrastructure.Data.ApplicationDbContext.#ctor(Microsoft.EntityFrameworkCore.DbContextOptions{Retail.Api.Products.src.CleanArchitecture.Infrastructure.Data.ApplicationDbContext})">
+            <summary>
+            Initializes a new instance of the <see cref="T:Retail.Api.Products.src.CleanArchitecture.Infrastructure.Data.ApplicationDbContext"/> class.
+            </summary>
+            <param name="options">db context options.</param>
+        </member>
+        <member name="P:Retail.Api.Products.src.CleanArchitecture.Infrastructure.Data.ApplicationDbContext.Skus">
+            <summary>
+            Gets or sets products.
+            </summary>
+        </member>
+        <member name="M:Retail.Api.Products.src.CleanArchitecture.Infrastructure.Data.ApplicationDbContext.OnModelCreating(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <summary>
+            Overrides the OnModelCreating method to configure the database context and model.
+            </summary>
+            <param name="modelBuilder">The model builder.</param>
+        </member>
+        <member name="T:Retail.Api.Products.src.CleanArchitecture.Infrastructure.Interfaces.IGenericRepository`1">
+            <summary>
+            Interface definition for data access layer
+            </summary>
+            <typeparam name="T">Generic type parameter.</typeparam>
+        </member>
+        <member name="M:Retail.Api.Products.src.CleanArchitecture.Infrastructure.Interfaces.IGenericRepository`1.AddAsync(`0)">
+            <summary>
+            Add a new object asynchronously.
+            </summary>
+            <param name="entity">An object type parameter T.</param>
+        </member>
+        <member name="M:Retail.Api.Products.src.CleanArchitecture.Infrastructure.Interfaces.IGenericRepository`1.GetAllAsync">
+            <summary>
+            Gets collection of object asynchronously.
+            </summary>
+            <returns>Returns collection of object of type parameter T.</returns>
+        </member>
+        <member name="M:Retail.Api.Products.src.CleanArchitecture.Infrastructure.Interfaces.IGenericRepository`1.GetByIdAsync(System.Int64)">
+            <summary>
+            Gets object by Id
+            </summary>
+            <param name="id">Generic type parameter.</param>
+            <returns>Returns object of type parameter T.</returns>
+        </member>
+        <member name="M:Retail.Api.Products.src.CleanArchitecture.Infrastructure.Interfaces.IGenericRepository`1.Remove(`0)">
+            <summary>
+            Remove an object.
+            </summary>
+            <param name="entity">An object type parameter T.</param>
+        </member>
+        <member name="M:Retail.Api.Products.src.CleanArchitecture.Infrastructure.Interfaces.IGenericRepository`1.Update(`0)">
+            <summary>
+            Update an object.
+            </summary>
+            <param name="entity">An object type parameter T.</param>
+        </member>
+        <member name="T:Retail.Api.Products.src.CleanArchitecture.Infrastructure.Interfaces.IUnitOfWork">
+            <summary>
+            Interface definition for unit of work.
+            </summary>
+        </member>
+        <member name="T:Retail.Api.Products.src.CleanArchitecture.Infrastructure.Repositories.ISkuRepository">
+            <summary>
+            Product repository class.
+            </summary>
+        </member>
+        <member name="M:Retail.Api.Products.src.CleanArchitecture.Infrastructure.Repositories.ISkuRepository.GetAllSkuByIdsAsync(System.Collections.Generic.List{System.Int64})">
+            <summary>
+            Gets collection of sku items asynchronously.
+            </summary>
+            <param name="skuids">Ids of objects.</param>
+            <returns>Returns collection of sku items.</returns>
+        </member>
+        <member name="T:Retail.Api.Products.src.CleanArchitecture.Infrastructure.Repositories.GenericRepository`1">
+            <summary>
+            Generic repository class.
+            </summary>
+        </member>
+        <member name="M:Retail.Api.Products.src.CleanArchitecture.Infrastructure.Repositories.GenericRepository`1.#ctor(Retail.Api.Products.src.CleanArchitecture.Infrastructure.Data.ApplicationDbContext)">
+            <summary>
+            Initializes a new instance of the GenericRepository class.
+            </summary>
+            <param name="dbcontext">Db context.</param>
+        </member>
+        <member name="M:Retail.Api.Products.src.CleanArchitecture.Infrastructure.Repositories.GenericRepository`1.AddAsync(`0)">
+            <summary>
+            Add a new object asynchronously.
+            </summary>
+            <param name="entity">An object type parameter T.</param>
+        </member>
+        <member name="M:Retail.Api.Products.src.CleanArchitecture.Infrastructure.Repositories.GenericRepository`1.GetAllAsync">
+            <summary>
+            Gets collection of object
+            </summary>
+            <returns>Returns collection of object of type parameter T.</returns>
+        </member>
+        <member name="M:Retail.Api.Products.src.CleanArchitecture.Infrastructure.Repositories.GenericRepository`1.GetByIdAsync(System.Int64)">
+            <summary>
+            Gets object by Id
+            </summary>
+            <param name="id">Generic type parameter.</param>
+            <returns>Returns object of type parameter T.</returns>
+        </member>
+        <member name="M:Retail.Api.Products.src.CleanArchitecture.Infrastructure.Repositories.GenericRepository`1.Remove(`0)">
+            <summary>
+            Remove an object.
+            </summary>
+            <param name="entity">An object type parameter T.</param>
+        </member>
+        <member name="M:Retail.Api.Products.src.CleanArchitecture.Infrastructure.Repositories.GenericRepository`1.Update(`0)">
+            <summary>
+            Update an object.
+            </summary>
+            <param name="entity">An object type parameter T.</param>
+        </member>
+        <member name="T:Retail.Api.Products.src.CleanArchitecture.Infrastructure.Repositories.SkuRepository">
+            <summary>
+            Product repository class.
+            </summary>
+        </member>
+        <member name="M:Retail.Api.Products.src.CleanArchitecture.Infrastructure.Repositories.SkuRepository.#ctor(Retail.Api.Products.src.CleanArchitecture.Infrastructure.Data.ApplicationDbContext,Microsoft.Extensions.Logging.ILogger{Retail.Api.Products.src.CleanArchitecture.Infrastructure.Repositories.SkuRepository})">
+            <summary>
+            Initializes a new instance of the <see cref="T:Retail.Api.Products.src.CleanArchitecture.Infrastructure.Repositories.SkuRepository"/> class.
+            </summary>
+            <param name="context">Db context.</param>
+            <param name="logger">Instance of logger.</param>
+        </member>
+        <member name="M:Retail.Api.Products.src.CleanArchitecture.Infrastructure.Repositories.SkuRepository.GetAllSkuByIdsAsync(System.Collections.Generic.List{System.Int64})">
+            <summary>
+            Gets collection of sku items asynchronously.
+            </summary>
+            <param name="skuids">Ids of objects.</param>
+            <returns>Returns collection of sku items.</returns>
+        </member>
+        <member name="T:Retail.Api.Products.src.CleanArchitecture.Infrastructure.UnitOfWork.UnitOfWork">
+            <summary>
+            Unit of work class.
+            </summary>
+        </member>
+        <member name="M:Retail.Api.Products.src.CleanArchitecture.Infrastructure.UnitOfWork.UnitOfWork.#ctor(Retail.Api.Products.src.CleanArchitecture.Infrastructure.Data.ApplicationDbContext,Microsoft.Extensions.Logging.ILogger{Retail.Api.Products.src.CleanArchitecture.Infrastructure.UnitOfWork.UnitOfWork},Microsoft.Extensions.Logging.ILoggerFactory)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Retail.Api.Products.src.CleanArchitecture.Infrastructure.UnitOfWork.UnitOfWork"/> class.
+            </summary>
+            <param name="entityContext">Entity framework Db context.</param>
+            <param name="logger">Instance of logger.</param>
+            <param name="loggerFactory">Instance of logger factory.</param>
+        </member>
+        <member name="M:Retail.Api.Products.src.CleanArchitecture.Infrastructure.UnitOfWork.UnitOfWork.BeginTransactionAsync">
+            <summary>
+            Method to begin transaction.
+            </summary>
+        </member>
+        <member name="M:Retail.Api.Products.src.CleanArchitecture.Infrastructure.UnitOfWork.UnitOfWork.CommitTransactionAsync">
+            <summary>
+            Method to commit changes.
+            </summary>
+        </member>
+        <member name="M:Retail.Api.Products.src.CleanArchitecture.Infrastructure.UnitOfWork.UnitOfWork.RollbackTransactionAsync">
+            <summary>
+            Method to rollback changes.
+            </summary>
+        </member>
+        <member name="M:Retail.Api.Products.src.CleanArchitecture.Infrastructure.UnitOfWork.UnitOfWork.CompleteAsync">
+            <summary>
+            Saves all changes made in this context to the database.
+            </summary>
+            <returns>The number of state entries written to the database.</returns>
+        </member>
+        <member name="M:Retail.Api.Products.src.CleanArchitecture.Infrastructure.UnitOfWork.UnitOfWork.Dispose">
+            <summary>
+            Disposes the unit of work and any active transaction.
+            </summary>
+        </member>
+        <member name="T:Retail.Api.Customers.src.CleanArchitecture.Application.Service.ServiceInitializer">
+            <summary>
+            Service initializer for setting up message subscriptions.
+            </summary>
+        </member>
+        <member name="M:Retail.Api.Customers.src.CleanArchitecture.Application.Service.ServiceInitializer.#ctor(MessagingLibrary.Interface.IMessageSubscriber,CommonLibrary.Handlers.IEventHandler{OrderCreatedEventNameSpace.OrderCreatedEvent},Microsoft.Extensions.Logging.ILogger{Retail.Api.Customers.src.CleanArchitecture.Application.Service.ServiceInitializer})">
+            <summary>
+            Initializes a new instance of the <see cref="T:Retail.Api.Customers.src.CleanArchitecture.Application.Service.ServiceInitializer"/> class.
+            </summary>
+            <param name="messageSubscriber">Instance of message subscriber.</param>
+            <param name="orderCreatedHandler">Instance of order created event handler.</param>
+            <param name="logger">Instance of logger.</param>
+        </member>
+        <member name="M:Retail.Api.Customers.src.CleanArchitecture.Application.Service.ServiceInitializer.Initialize">
+            <summary>
+            Initializes the service by subscribing to events.
+            </summary>
+            <returns>Task representing the async operation.</returns>
+        </member>
+        <member name="T:Retail.Products.Migrations.Initial">
+            <inheritdoc />
+        </member>
+        <member name="M:Retail.Products.Migrations.Initial.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Retail.Products.Migrations.Initial.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Retail.Products.Migrations.Initial.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="P:InventoryErrorEventNameSpace.InventoryErrorEvent.CustomerId">
+            <summary>
+            Unique identifier of the customer who placed the order
+            </summary>
+        </member>
+        <member name="P:InventoryErrorEventNameSpace.InventoryErrorEvent.Id">
+            <summary>
+            Unique identifier of the event
+            </summary>
+        </member>
+        <member name="P:InventoryErrorEventNameSpace.InventoryErrorEvent.LineItems">
+            <summary>
+            List of items in the order
+            </summary>
+        </member>
+        <member name="P:InventoryErrorEventNameSpace.InventoryErrorEvent.OrderDate">
+            <summary>
+            Date and time when the order was created
+            </summary>
+        </member>
+        <member name="P:InventoryErrorEventNameSpace.InventoryErrorEvent.OrderId">
+            <summary>
+            Unique identifier of the order
+            </summary>
+        </member>
+        <member name="P:InventoryErrorEventNameSpace.InventoryErrorEvent.TotalAmount">
+            <summary>
+            Total amount of the order
+            </summary>
+        </member>
+        <member name="P:InventoryErrorEventNameSpace.LineItem.Id">
+            <summary>
+            Unique identifier of the line item
+            </summary>
+        </member>
+        <member name="P:InventoryErrorEventNameSpace.LineItem.OrderId">
+            <summary>
+            Unique identifier of the order
+            </summary>
+        </member>
+        <member name="P:InventoryErrorEventNameSpace.LineItem.Qty">
+            <summary>
+            Quantity of the product ordered
+            </summary>
+        </member>
+        <member name="P:InventoryErrorEventNameSpace.LineItem.SkuId">
+            <summary>
+            Unique identifier of the product SKU
+            </summary>
+        </member>
+        <member name="P:InventoryUpdatedEventNameSpace.InventoryUpdatedEvent.CustomerId">
+            <summary>
+            Unique identifier of the customer who placed the order
+            </summary>
+        </member>
+        <member name="P:InventoryUpdatedEventNameSpace.InventoryUpdatedEvent.Id">
+            <summary>
+            Unique identifier of the event
+            </summary>
+        </member>
+        <member name="P:InventoryUpdatedEventNameSpace.InventoryUpdatedEvent.LineItems">
+            <summary>
+            List of items in the order
+            </summary>
+        </member>
+        <member name="P:InventoryUpdatedEventNameSpace.InventoryUpdatedEvent.OrderDate">
+            <summary>
+            Date and time when the order was created
+            </summary>
+        </member>
+        <member name="P:InventoryUpdatedEventNameSpace.InventoryUpdatedEvent.OrderId">
+            <summary>
+            Unique identifier of the order
+            </summary>
+        </member>
+        <member name="P:InventoryUpdatedEventNameSpace.InventoryUpdatedEvent.TotalAmount">
+            <summary>
+            Total amount of the order
+            </summary>
+        </member>
+        <member name="P:InventoryUpdatedEventNameSpace.LineItem.Id">
+            <summary>
+            Unique identifier of the line item
+            </summary>
+        </member>
+        <member name="P:InventoryUpdatedEventNameSpace.LineItem.OrderId">
+            <summary>
+            Unique identifier of the order
+            </summary>
+        </member>
+        <member name="P:InventoryUpdatedEventNameSpace.LineItem.Qty">
+            <summary>
+            Quantity of the product ordered
+            </summary>
+        </member>
+        <member name="P:InventoryUpdatedEventNameSpace.LineItem.SkuId">
+            <summary>
+            Unique identifier of the product SKU
+            </summary>
+        </member>
+        <member name="P:OrderCreatedEventNameSpace.OrderCreatedEvent.CustomerId">
+            <summary>
+            Unique identifier of the customer who placed the order
+            </summary>
+        </member>
+        <member name="P:OrderCreatedEventNameSpace.OrderCreatedEvent.LineItems">
+            <summary>
+            List of items in the order
+            </summary>
+        </member>
+        <member name="P:OrderCreatedEventNameSpace.OrderCreatedEvent.OrderDate">
+            <summary>
+            Date and time when the order was created
+            </summary>
+        </member>
+        <member name="P:OrderCreatedEventNameSpace.OrderCreatedEvent.OrderId">
+            <summary>
+            Unique identifier of the order
+            </summary>
+        </member>
+        <member name="P:OrderCreatedEventNameSpace.OrderCreatedEvent.TotalAmount">
+            <summary>
+            Total amount of the order
+            </summary>
+        </member>
+        <member name="P:OrderCreatedEventNameSpace.LineItem.Id">
+            <summary>
+            Unique identifier of the line item
+            </summary>
+        </member>
+        <member name="P:OrderCreatedEventNameSpace.LineItem.OrderId">
+            <summary>
+            Unique identifier of the order
+            </summary>
+        </member>
+        <member name="P:OrderCreatedEventNameSpace.LineItem.Qty">
+            <summary>
+            Quantity of the product ordered
+            </summary>
+        </member>
+        <member name="P:OrderCreatedEventNameSpace.LineItem.SkuId">
+            <summary>
+            Unique identifier of the product SKU
+            </summary>
+        </member>
+    </members>
+</doc>

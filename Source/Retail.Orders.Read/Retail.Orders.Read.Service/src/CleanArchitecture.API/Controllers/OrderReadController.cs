@@ -62,6 +62,7 @@ namespace Retail.Orders.Read.src.CleanArchitecture.API.Controllers
                         title: "Not Found");
                 }
                 
+                
                 var orderCount = result.Value.Count();
                 _logger.LogInformation("Successfully retrieved {OrderCount} orders", orderCount);
                 return Ok(result.Value);

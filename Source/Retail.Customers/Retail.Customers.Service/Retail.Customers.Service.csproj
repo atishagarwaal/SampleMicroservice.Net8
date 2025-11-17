@@ -4,12 +4,10 @@
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <UserSecretsId>27153808-2f49-4bfb-b127-840c09fa2bdf</UserSecretsId>
+    <UserSecretsId>bc0ae388-8d1b-441c-8d76-51dd55b5e887</UserSecretsId>
     <DockerDefaultTargetOS>Windows</DockerDefaultTargetOS>
     <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
     <CodeAnalysisTreatWarningsAsErrors>false</CodeAnalysisTreatWarningsAsErrors>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <DocumentationFile>$(OutputPath)$(AssemblyName).xml</DocumentationFile>
     <AnalysisLevel>latest</AnalysisLevel>
     <AnalysisMode>All</AnalysisMode>
   </PropertyGroup>
@@ -23,13 +21,18 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="DefaultRepositories\**" />
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+      <_Parameter1>Retail.Customers.UnitTests</_Parameter1>
+    </AssemblyAttribute>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+      <_Parameter1>DynamicProxyGenAssembly2, PublicKey=0024000004800000940000000602000000240000525341310004000001000100c547cac37abd99c8db225ef2f6c8a3602f3b3606cc9891605d02baa56104f4cfc0734aa39b93bf7852f7d9266654753cc297e7d2edfe0bac1cdcf9f717241550e0a7b191195b7667bb4f64bcb8e2121380fd1d9d46ad2d92d2d15605093924cceaf74c4861eff62abf69b9291ed0a340e113be11e6a7d3113e92484cf7045cc7</_Parameter1>
+    </AssemblyAttribute>
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Remove="tests\**" />
-    <Content Remove="DefaultRepositories\**" />
     <Content Remove="tests\**" />
-    <EmbeddedResource Remove="DefaultRepositories\**" />
     <EmbeddedResource Remove="tests\**" />
-    <None Remove="DefaultRepositories\**" />
     <None Remove="tests\**" />
   </ItemGroup>
   
@@ -45,8 +48,6 @@
   <ItemGroup Label="Packages">
     <PackageReference Include="Asp.Versioning.Mvc.ApiExplorer" Version="8.1.0" />
     <PackageReference Include="Dapper" Version="2.0.123" />
-    <PackageReference Include="MediatR" Version="12.4.1" />
-    <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="11.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="8.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" Version="5.1.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.0" />
@@ -66,12 +67,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="src\CleanArchitecture.Infrastructure\Migrations\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\..\CommonLibrary\CommonLibrary.csproj" />
-    <ProjectReference Include="..\..\MessagingInfrastructure\MessagingInfrastructure.csproj" />
+    <ProjectReference Include="..\..\..\CommonLibrary\CommonLibrary.csproj" />
+    <ProjectReference Include="..\..\..\MessagingInfrastructure\MessagingInfrastructure.csproj" />
   </ItemGroup>
 
 </Project>
