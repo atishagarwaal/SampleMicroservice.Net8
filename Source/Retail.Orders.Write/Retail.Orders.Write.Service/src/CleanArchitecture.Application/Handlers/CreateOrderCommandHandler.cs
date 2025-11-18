@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using CommonLibrary.MessageContract;
 using CommonLibrary.Results;
+using CommonLibrary.Telemetry;
 using MediatR;
 using MessagingInfrastructure;
 using MessagingLibrary.Interface;
@@ -32,6 +33,7 @@ namespace Retail.Orders.Write.src.CleanArchitecture.Application.Handlers
         private readonly IMessageValidator<OrderDto> _orderDtoValidator;
         private readonly IMessagePublisher _messagePublisher;
         private readonly ILogger<CreateOrderCommandHandler> _logger;
+        private readonly IMetricsService _metrics;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CreateOrderCommandHandler"/> class.
@@ -43,6 +45,7 @@ namespace Retail.Orders.Write.src.CleanArchitecture.Application.Handlers
         /// <param name="messagePublisher">Instance of message publisher.</param>
         /// <param name="serviceScopeFactory">Instance of service scope factory.</param>
         /// <param name="logger">Instance of logger.</param>
+        /// <param name="metrics">Instance of metrics service.</param>
         public CreateOrderCommandHandler(
             IUnitOfWork unitOfWork,
             IConverter<OrderDto, Order> orderConverter,
@@ -50,7 +53,8 @@ namespace Retail.Orders.Write.src.CleanArchitecture.Application.Handlers
             IMessageValidator<OrderDto> orderDtoValidator,
             IMessagePublisher messagePublisher,
             IServiceScopeFactory serviceScopeFactory,
-            ILogger<CreateOrderCommandHandler> logger)
+            ILogger<CreateOrderCommandHandler> logger,
+            IMetricsService metrics)
         {
             _unitOfWork = unitOfWork;
             _orderConverter = orderConverter;
@@ -59,6 +63,7 @@ namespace Retail.Orders.Write.src.CleanArchitecture.Application.Handlers
             _messagePublisher = messagePublisher;
             _serviceScopeFactory = serviceScopeFactory;
             _logger = logger;
+            _metrics = metrics;
         }
 
         /// <summary>
@@ -71,10 +76,12 @@ namespace Retail.Orders.Write.src.CleanArchitecture.Application.Handlers
         {
             if (request?.Order == null)
             {
+                this._metrics.IncrementCounter("orders_errors_total", 1, "null_request");
                 this._logger.LogError("CreateOrderCommand or Order is null");
                 return Result<OrderDto>.Failure("Order data is required.");
             }
 
+            using (this._metrics.TrackDuration("orders_operation_duration_seconds", "create"))
             using (this._logger.BeginScope(new Dictionary<string, object>
             {
                 ["CustomerId"] = request.Order.CustomerId,
@@ -82,6 +89,7 @@ namespace Retail.Orders.Write.src.CleanArchitecture.Application.Handlers
                 ["LineItemsCount"] = request.Order.LineItems?.Count ?? 0
             }))
             {
+                this._metrics.IncrementCounter("orders_created_attempts_total", 1);
                 this._logger.LogInformation("Handling CreateOrderCommand. LineItemsCount: {LineItemsCount}",
                     request.Order.LineItems?.Count ?? 0);
 
@@ -94,6 +102,7 @@ namespace Retail.Orders.Write.src.CleanArchitecture.Application.Handlers
                     var validationResult = this._orderDtoValidator.Validate(request.Order);
                     if (!validationResult.IsValid)
                     {
+                        this._metrics.IncrementCounter("orders_validation_errors_total", 1);
                         this._logger.LogWarning("Order validation failed. Validator: {ValidatorName}, Reason: {FailureReason}",
                             validationResult.ValidatorName, validationResult.FailureReason);
                         return Result<OrderDto>.Failure(validationResult.FailureReason ?? "Validation failed");
@@ -163,6 +172,8 @@ namespace Retail.Orders.Write.src.CleanArchitecture.Application.Handlers
 
                     await unitOfWork.CommitTransactionAsync();
 
+                    this._metrics.IncrementCounter("orders_created_total", 1);
+                    this._metrics.RecordHistogram("orders_total_amount", savedOrder.TotalAmount);
                     this._logger.LogInformation("Order created successfully. OrderId: {OrderId}, CustomerId: {CustomerId}",
                         savedOrder.Id, savedOrder.CustomerId);
 
@@ -170,6 +181,7 @@ namespace Retail.Orders.Write.src.CleanArchitecture.Application.Handlers
                 }
                 catch (Exception ex)
                 {
+                    this._metrics.IncrementCounter("orders_errors_total", 1, "create");
                     this._logger.LogError(ex, "Error creating order");
                     await unitOfWork.RollbackTransactionAsync();
                     return Result<OrderDto>.Failure($"An error occurred while creating order: {ex.Message}");

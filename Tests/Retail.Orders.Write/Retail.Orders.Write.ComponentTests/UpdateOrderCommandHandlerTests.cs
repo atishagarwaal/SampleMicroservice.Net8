@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using CommonLibrary.Telemetry;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -14,7 +15,6 @@ using Retail.Orders.Write.src.CleanArchitecture.Application.Validation;
 using Retail.Orders.Write.src.CleanArchitecture.Application.Validation.Interfaces;
 using Retail.Orders.Write.src.CleanArchitecture.Domain.Entities;
 using Retail.Orders.Write.src.CleanArchitecture.Infrastructure.Interfaces;
-using Moq;
 
 namespace Retail.Orders.Write.ComponentTests
 {
@@ -32,6 +32,7 @@ namespace Retail.Orders.Write.ComponentTests
         private Mock<IConverter<Order, OrderDto>> _mockOrderDtoConverter = null!;
         private Mock<IMessageValidator<OrderDto>> _mockOrderDtoValidator = null!;
         private Mock<ILogger<UpdateOrderCommandHandler>> _mockLogger = null!;
+        private Mock<IMetricsService> _mockMetrics = null!;
         private UpdateOrderCommandHandler _handler = null!;
 
         [TestInitialize]
@@ -44,6 +45,7 @@ namespace Retail.Orders.Write.ComponentTests
             _mockOrderDtoConverter = new Mock<IConverter<Order, OrderDto>>();
             _mockOrderDtoValidator = new Mock<IMessageValidator<OrderDto>>();
             _mockLogger = new Mock<ILogger<UpdateOrderCommandHandler>>();
+            _mockMetrics = new Mock<IMetricsService>();
 
             _mockUnitOfWork
                 .Setup(x => x.Orders)
@@ -58,12 +60,17 @@ namespace Retail.Orders.Write.ComponentTests
                 .Setup(x => x.Validate(It.IsAny<OrderDto>()))
                 .Returns(new ValidationData());
 
+            // Setup metrics mock
+            _mockMetrics.Setup(x => x.TrackDuration(It.IsAny<string>(), It.IsAny<string[]>()))
+                .Returns(Mock.Of<IDisposable>());
+
             _handler = new UpdateOrderCommandHandler(
                 _mockUnitOfWork.Object,
                 _mockOrderConverter.Object,
                 _mockOrderDtoConverter.Object,
                 _mockOrderDtoValidator.Object,
-                _mockLogger.Object);
+                _mockLogger.Object,
+                _mockMetrics.Object);
         }
 
         [TestMethod]

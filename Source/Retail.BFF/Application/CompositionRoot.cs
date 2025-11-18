@@ -40,6 +40,9 @@ namespace Retail.BFFWeb.Api.Application
                 serviceName: "Retail.BFF",
                 serviceVersion: "1.0.0");
 
+            // Register metrics service
+            serviceCollection.AddSingleton<CommonLibrary.Telemetry.IMetricsService, CommonLibrary.Telemetry.MetricsService>();
+
             serviceCollection.AddHttpClient();
 
             // Add services to the container.

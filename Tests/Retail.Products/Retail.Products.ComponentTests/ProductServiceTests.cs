@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CommonLibrary.MessageContract;
+using CommonLibrary.Telemetry;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -38,6 +39,7 @@ namespace Retail.Products.ComponentTests
         private Mock<IServiceProvider> _mockServiceProvider = null!;
         private Mock<IMessagePublisher> _mockMessagePublisher = null!;
         private Mock<ILogger<ProductService>> _mockLogger = null!;
+        private Mock<IMetricsService> _mockMetrics = null!;
         private ProductService _productService = null!;
 
         [TestInitialize]
@@ -53,6 +55,7 @@ namespace Retail.Products.ComponentTests
             _mockServiceProvider = new Mock<IServiceProvider>();
             _mockMessagePublisher = new Mock<IMessagePublisher>();
             _mockLogger = new Mock<ILogger<ProductService>>();
+            _mockMetrics = new Mock<IMetricsService>();
 
             _mockUnitOfWork
                 .Setup(x => x.Skus)
@@ -63,6 +66,10 @@ namespace Retail.Products.ComponentTests
                 .Setup(x => x.Validate(It.IsAny<SkuDto>()))
                 .Returns(new ValidationData());
 
+            // Setup metrics mock
+            _mockMetrics.Setup(x => x.TrackDuration(It.IsAny<string>(), It.IsAny<string[]>()))
+                .Returns(Mock.Of<IDisposable>());
+
             _productService = new ProductService(
                 _mockUnitOfWork.Object,
                 _mockSkuConverter.Object,
@@ -70,7 +77,8 @@ namespace Retail.Products.ComponentTests
                 _mockSkuDtoValidator.Object,
                 _mockMessagePublisher.Object,
                 _mockServiceScopeFactory.Object,
-                _mockLogger.Object);
+                _mockLogger.Object,
+                _mockMetrics.Object);
         }
 
         [TestMethod]

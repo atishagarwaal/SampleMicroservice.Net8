@@ -1,3 +1,4 @@
+using CommonLibrary.Telemetry;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using NUnit.Framework;
@@ -45,6 +46,7 @@ namespace Retail.Products.ServiceTests.StepDefinitions
             // Create ProductService manually with mocked dependencies
             var mockServiceScopeFactory = new Mock<Microsoft.Extensions.DependencyInjection.IServiceScopeFactory>();
             var mockLogger = new Mock<ILogger<Retail.Api.Products.src.CleanArchitecture.Application.Service.ProductService>>();
+            var mockMetrics = new Mock<IMetricsService>();
             
             // Set up IServiceScopeFactory to return a scope with ServiceProvider that can resolve IUnitOfWork
             var mockServiceScope = new Mock<IServiceScope>();
@@ -74,6 +76,10 @@ namespace Retail.Products.ServiceTests.StepDefinitions
             _mockSkuDtoValidator.Setup(x => x.Validate(It.IsAny<SkuDto>()))
                 .Returns(new ValidationData());
             
+            // Setup metrics mock
+            mockMetrics.Setup(x => x.TrackDuration(It.IsAny<string>(), It.IsAny<string[]>()))
+                .Returns(Mock.Of<IDisposable>());
+            
             _productService = new Retail.Api.Products.src.CleanArchitecture.Application.Service.ProductService(
                 MockUnitOfWork.Object,
                 _mockSkuConverter.Object,
@@ -81,7 +87,8 @@ namespace Retail.Products.ServiceTests.StepDefinitions
                 _mockSkuDtoValidator.Object,
                 MockMessagePublisher.Object,
                 mockServiceScopeFactory.Object,
-                mockLogger.Object);
+                mockLogger.Object,
+                mockMetrics.Object);
         }
 
         [AfterScenario]

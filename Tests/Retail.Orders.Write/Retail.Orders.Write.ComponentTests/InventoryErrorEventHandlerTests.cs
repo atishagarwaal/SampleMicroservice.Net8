@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using CommonLibrary.Telemetry;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -26,6 +27,7 @@ namespace Retail.Orders.Write.ComponentTests
         private Mock<IServiceProvider> _mockServiceProvider = null!;
         private Mock<IOrderRepository> _mockOrderRepository = null!;
         private Mock<ILogger<InventoryErrorEventHandler>> _mockLogger = null!;
+        private Mock<IMetricsService> _mockMetrics = null!;
         private InventoryErrorEventHandler _handler = null!;
 
         [TestInitialize]
@@ -37,6 +39,7 @@ namespace Retail.Orders.Write.ComponentTests
             _mockServiceProvider = new Mock<IServiceProvider>();
             _mockOrderRepository = new Mock<IOrderRepository>();
             _mockLogger = new Mock<ILogger<InventoryErrorEventHandler>>();
+            _mockMetrics = new Mock<IMetricsService>();
 
             _mockServiceScopeFactory
                 .Setup(x => x.CreateScope())
@@ -71,11 +74,16 @@ namespace Retail.Orders.Write.ComponentTests
                 .Setup(x => x.RollbackTransactionAsync())
                 .Returns(Task.CompletedTask);
 
+            // Setup metrics mock
+            _mockMetrics.Setup(x => x.TrackDuration(It.IsAny<string>(), It.IsAny<string[]>()))
+                .Returns(Mock.Of<IDisposable>());
+
             _handler = new InventoryErrorEventHandler(
                 _mockUnitOfWork.Object,
                 null!, // IMessagePublisher not used in current implementation
                 _mockServiceScopeFactory.Object,
-                _mockLogger.Object);
+                _mockLogger.Object,
+                _mockMetrics.Object);
         }
 
         [TestMethod]

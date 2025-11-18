@@ -3,6 +3,7 @@ using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using CommonLibrary.Telemetry;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -26,6 +27,7 @@ namespace Retail.BFF.UnitTests
         private Mock<IHttpClientFactory> _mockHttpClientFactory = null!;
         private Mock<IOptions<OrderServiceConfig>> _mockServiceConfig = null!;
         private Mock<ILogger<OrderProvider>> _mockLogger = null!;
+        private Mock<IMetricsService> _mockMetrics = null!;
         private Mock<HttpMessageHandler> _mockHttpMessageHandler = null!;
         private OrderProvider _orderProvider = null!;
 
@@ -35,6 +37,7 @@ namespace Retail.BFF.UnitTests
             _mockHttpClientFactory = new Mock<IHttpClientFactory>();
             _mockServiceConfig = new Mock<IOptions<OrderServiceConfig>>();
             _mockLogger = new Mock<ILogger<OrderProvider>>();
+            _mockMetrics = new Mock<IMetricsService>();
             _mockHttpMessageHandler = new Mock<HttpMessageHandler>();
 
             var serviceConfig = new OrderServiceConfig
@@ -52,10 +55,15 @@ namespace Retail.BFF.UnitTests
             var httpClient = new HttpClient(_mockHttpMessageHandler.Object);
             _mockHttpClientFactory.Setup(x => x.CreateClient(string.Empty)).Returns(httpClient);
 
+            // Setup metrics mock
+            _mockMetrics.Setup(x => x.TrackDuration(It.IsAny<string>(), It.IsAny<string[]>()))
+                .Returns(Mock.Of<IDisposable>());
+
             _orderProvider = new OrderProvider(
                 _mockHttpClientFactory.Object,
                 _mockServiceConfig.Object,
-                _mockLogger.Object);
+                _mockLogger.Object,
+                _mockMetrics.Object);
         }
 
         [TestMethod]
@@ -72,7 +80,8 @@ namespace Retail.BFF.UnitTests
             Action act = () => new OrderProvider(
                 _mockHttpClientFactory.Object,
                 null!,
-                _mockLogger.Object);
+                _mockLogger.Object,
+                _mockMetrics.Object);
 
             act.Should().Throw<ArgumentNullException>();
         }

@@ -1,10 +1,11 @@
-﻿using MediatR;
+﻿using CommonLibrary.Results;
+using CommonLibrary.Telemetry;
+using MediatR;
 using Microsoft.Extensions.Logging;
 using Retail.Orders.Read.src.CleanArchitecture.Application.Dto;
 using Retail.Orders.Read.src.CleanArchitecture.Application.Queries;
 using Retail.Orders.Read.src.CleanArchitecture.Application.Converters.Interfaces;
 using Retail.Orders.Read.src.CleanArchitecture.Infrastructure.Interfaces;
-using CommonLibrary.Results;
 
 namespace Retail.Orders.Read.src.CleanArchitecture.Application.Handlers
 {
@@ -17,6 +18,7 @@ namespace Retail.Orders.Read.src.CleanArchitecture.Application.Handlers
         private readonly IUnitOfWork _unitOfWork;
         private readonly IConverter<Domain.Entities.Order, OrderDto> _orderDtoConverter;
         private readonly ILogger<GetAllOrdersQueryHandler> _logger;
+        private readonly IMetricsService _metrics;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GetAllOrdersQueryHandler"/> class.
@@ -25,16 +27,19 @@ namespace Retail.Orders.Read.src.CleanArchitecture.Application.Handlers
         /// <param name="orderDtoConverter">Instance of order DTO converter.</param>
         /// <param name="serviceScopeFactory">Instance of service scope factory.</param>
         /// <param name="logger">Instance of logger.</param>
+        /// <param name="metrics">Instance of metrics service.</param>
         public GetAllOrdersQueryHandler(
             IUnitOfWork unitOfWork,
             IConverter<Domain.Entities.Order, OrderDto> orderDtoConverter,
             IServiceScopeFactory serviceScopeFactory,
-            ILogger<GetAllOrdersQueryHandler> logger)
+            ILogger<GetAllOrdersQueryHandler> logger,
+            IMetricsService metrics)
         {
             _unitOfWork = unitOfWork;
             _orderDtoConverter = orderDtoConverter;
             _serviceScopeFactory = serviceScopeFactory;
             _logger = logger;
+            _metrics = metrics;
         }
 
         /// <summary>
@@ -45,43 +50,49 @@ namespace Retail.Orders.Read.src.CleanArchitecture.Application.Handlers
         /// <returns>Result containing list of order DTOs.</returns>
         public async Task<Result<IEnumerable<OrderDto>>> Handle(GetAllOrdersQuery request, CancellationToken cancellationToken)
         {
-            _logger.LogInformation("Handling GetAllOrdersQuery");
-            
-            try
+            using (_metrics.TrackDuration("orders_read_operation_duration_seconds", "get_all"))
             {
-                using var scope = _serviceScopeFactory.CreateScope();
-                var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
-
-                var orders = await unitOfWork.Orders.GetAllAsync();
+                _logger.LogInformation("Handling GetAllOrdersQuery");
                 
-                if (orders == null)
+                try
                 {
-                    _logger.LogWarning("GetAllAsync returned null");
-                    return Result<IEnumerable<OrderDto>>.Failure("Failed to retrieve orders from database");
-                }
+                    using var scope = _serviceScopeFactory.CreateScope();
+                    var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
 
-                var orderCount = orders.Count();
-                _logger.LogDebug("Retrieved {OrderCount} orders from repository", orderCount);
-                
-                var result = orders
-                    .Where(order => order != null)
-                    .Select(order => _orderDtoConverter.Convert(order))
-                    .ToList();
-                
-                var validOrderCount = result.Count;
-                if (validOrderCount < orderCount)
-                {
-                    _logger.LogWarning("Filtered out {FilteredCount} null orders from {TotalCount} total orders", 
-                        orderCount - validOrderCount, orderCount);
+                    var orders = await unitOfWork.Orders.GetAllAsync();
+                    
+                    if (orders == null)
+                    {
+                        _metrics.IncrementCounter("orders_read_errors_total", 1, "null_result");
+                        _logger.LogWarning("GetAllAsync returned null");
+                        return Result<IEnumerable<OrderDto>>.Failure("Failed to retrieve orders from database");
+                    }
+
+                    var orderCount = orders.Count();
+                    _metrics.IncrementCounter("orders_read_total", orderCount);
+                    _logger.LogDebug("Retrieved {OrderCount} orders from repository", orderCount);
+                    
+                    var result = orders
+                        .Where(order => order != null)
+                        .Select(order => _orderDtoConverter.Convert(order))
+                        .ToList();
+                    
+                    var validOrderCount = result.Count;
+                    if (validOrderCount < orderCount)
+                    {
+                        _logger.LogWarning("Filtered out {FilteredCount} null orders from {TotalCount} total orders", 
+                            orderCount - validOrderCount, orderCount);
+                    }
+                    
+                    _logger.LogInformation("Successfully processed GetAllOrdersQuery. Returning {OrderCount} orders", validOrderCount);
+                    return Result<IEnumerable<OrderDto>>.Success(result);
                 }
-                
-                _logger.LogInformation("Successfully processed GetAllOrdersQuery. Returning {OrderCount} orders", validOrderCount);
-                return Result<IEnumerable<OrderDto>>.Success(result);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error handling GetAllOrdersQuery");
-                return Result<IEnumerable<OrderDto>>.Failure($"Error retrieving orders: {ex.Message}");
+                catch (Exception ex)
+                {
+                    _metrics.IncrementCounter("orders_read_errors_total", 1, "exception");
+                    _logger.LogError(ex, "Error handling GetAllOrdersQuery");
+                    return Result<IEnumerable<OrderDto>>.Failure($"Error retrieving orders: {ex.Message}");
+                }
             }
         }
     }

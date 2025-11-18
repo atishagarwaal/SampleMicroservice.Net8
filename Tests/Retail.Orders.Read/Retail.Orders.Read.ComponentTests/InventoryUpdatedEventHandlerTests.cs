@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using CommonLibrary.Telemetry;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -29,6 +30,7 @@ namespace Retail.Orders.Read.ComponentTests
         private Mock<IServiceProvider> _mockServiceProvider = null!;
         private Mock<IOrderRepository> _mockOrderRepository = null!;
         private Mock<ILogger<InventoryUpdatedEventHandler>> _mockLogger = null!;
+        private Mock<IMetricsService> _mockMetrics = null!;
         private InventoryUpdatedEventHandler _handler = null!;
 
         [TestInitialize]
@@ -40,6 +42,7 @@ namespace Retail.Orders.Read.ComponentTests
             _mockServiceProvider = new Mock<IServiceProvider>();
             _mockOrderRepository = new Mock<IOrderRepository>();
             _mockLogger = new Mock<ILogger<InventoryUpdatedEventHandler>>();
+            _mockMetrics = new Mock<IMetricsService>();
 
             _mockServiceScopeFactory
                 .Setup(x => x.CreateScope())
@@ -57,10 +60,15 @@ namespace Retail.Orders.Read.ComponentTests
                 .Setup(x => x.Orders)
                 .Returns(_mockOrderRepository.Object);
 
+            // Setup metrics mock
+            _mockMetrics.Setup(x => x.TrackDuration(It.IsAny<string>(), It.IsAny<string[]>()))
+                .Returns(Mock.Of<IDisposable>());
+
             _handler = new InventoryUpdatedEventHandler(
                 _mockUnitOfWork.Object,
                 _mockServiceScopeFactory.Object,
-                _mockLogger.Object);
+                _mockLogger.Object,
+                _mockMetrics.Object);
         }
 
         [TestMethod]

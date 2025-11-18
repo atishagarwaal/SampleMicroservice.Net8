@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CommonLibrary.MessageContract;
+using CommonLibrary.Telemetry;
 using FluentAssertions;
 using InventoryUpdatedEventNameSpace;
 using Microsoft.Extensions.DependencyInjection;
@@ -35,6 +36,7 @@ namespace Retail.Customers.ComponentTests
         private Mock<IConverter<CustomerDto, Customer>> _mockCustomerConverter = null!;
         private Mock<IConverter<Customer, CustomerDto>> _mockCustomerDtoConverter = null!;
         private Mock<ILogger<CustomerService>> _mockLogger = null!;
+        private Mock<IMetricsService> _mockMetrics = null!;
         private CustomerService _customerService = null!;
 
         [TestInitialize]
@@ -48,6 +50,7 @@ namespace Retail.Customers.ComponentTests
             _mockCustomerConverter = new Mock<IConverter<CustomerDto, Customer>>();
             _mockCustomerDtoConverter = new Mock<IConverter<Customer, CustomerDto>>();
             _mockLogger = new Mock<ILogger<CustomerService>>();
+            _mockMetrics = new Mock<IMetricsService>();
 
             _mockServiceScopeFactory
                 .Setup(x => x.CreateScope())
@@ -62,13 +65,18 @@ namespace Retail.Customers.ComponentTests
                 .Setup(x => x.Validate(It.IsAny<CustomerDto>()))
                 .Returns(new ValidationData());
 
+            // Setup metrics mock
+            _mockMetrics.Setup(x => x.TrackDuration(It.IsAny<string>(), It.IsAny<string[]>()))
+                .Returns(Mock.Of<IDisposable>());
+
             _customerService = new CustomerService(
                 _mockUnitOfWork.Object,
                 _mockServiceScopeFactory.Object,
                 _mockCustomerDtoValidator.Object,
                 _mockCustomerConverter.Object,
                 _mockCustomerDtoConverter.Object,
-                _mockLogger.Object);
+                _mockLogger.Object,
+                _mockMetrics.Object);
         }
 
         [TestMethod]

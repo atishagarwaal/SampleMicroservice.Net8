@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using CommonLibrary.Telemetry;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Retail.BFFWeb.Api.Configurations;
 using Retail.BFFWeb.Api.Model;
@@ -16,6 +17,7 @@ namespace Retail.BFFWeb.Api.Interface
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly OrderServiceConfig _serviceConfig;
         private readonly ILogger<OrderProvider> _logger;
+        private readonly IMetricsService _metrics;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="OrderProvider"/> class.
@@ -23,10 +25,12 @@ namespace Retail.BFFWeb.Api.Interface
         /// <param name="httpClientFactory">Instance of HTTP client factory.</param>
         /// <param name="serviceConfig">Instance of order service configuration.</param>
         /// <param name="logger">Instance of logger.</param>
+        /// <param name="metrics">Instance of metrics service.</param>
         public OrderProvider(
             IHttpClientFactory httpClientFactory,
             IOptions<OrderServiceConfig> serviceConfig,
-            ILogger<OrderProvider> logger)
+            ILogger<OrderProvider> logger,
+            IMetricsService metrics)
         {
             if (serviceConfig == null)
             {
@@ -36,6 +40,7 @@ namespace Retail.BFFWeb.Api.Interface
             _httpClientFactory = httpClientFactory;
             _serviceConfig = serviceConfig.Value;
             _logger = logger;
+            _metrics = metrics;
         }
 
         /// <summary>
@@ -44,34 +49,41 @@ namespace Retail.BFFWeb.Api.Interface
         /// <returns>List of orders.</returns>
         public async Task<IEnumerable<OrderDto>> GetAllOrdersAsync()
         {
-            _logger.LogInformation("Fetching all orders from order service");
-            
-            try
+            using (_metrics.TrackDuration("bff_external_call_duration_seconds", "orders", "get_all"))
             {
-                using var client = _httpClientFactory.CreateClient();
+                this._metrics.IncrementCounter("bff_external_calls_total", 1, "orders", "get_all");
+                _logger.LogInformation("Fetching all orders from order service");
+                
+                try
+                {
+                    using var client = _httpClientFactory.CreateClient();
 
-                var url = _serviceConfig.BaseUrl + _serviceConfig.Endpoints.GetAllOrdersV1;
-                _logger.LogDebug("Calling order service endpoint: {Url}", url);
-                
-                var response = await client.GetAsync(url);
-                
-                if (response.IsSuccessStatusCode)
-                {
-                    var data = await response.Content.ReadFromJsonAsync<IEnumerable<OrderDto>>();
-                    var orderCount = data?.Count() ?? 0;
-                    _logger.LogInformation("Successfully retrieved {OrderCount} orders from order service", orderCount);
-                    return data ?? Enumerable.Empty<OrderDto>();
+                    var url = _serviceConfig.BaseUrl + _serviceConfig.Endpoints.GetAllOrdersV1;
+                    _logger.LogDebug("Calling order service endpoint: {Url}", url);
+                    
+                    var response = await client.GetAsync(url);
+                    
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var data = await response.Content.ReadFromJsonAsync<IEnumerable<OrderDto>>();
+                        var orderCount = data?.Count() ?? 0;
+                        this._metrics.IncrementCounter("bff_external_calls_success_total", 1, "orders", "get_all");
+                        _logger.LogInformation("Successfully retrieved {OrderCount} orders from order service", orderCount);
+                        return data ?? Enumerable.Empty<OrderDto>();
+                    }
+                    else
+                    {
+                        this._metrics.IncrementCounter("bff_external_calls_errors_total", 1, "orders", "get_all", response.StatusCode.ToString());
+                        _logger.LogWarning("Order service returned non-success status code: {StatusCode}", response.StatusCode);
+                        return Enumerable.Empty<OrderDto>();
+                    }
                 }
-                else
+                catch (Exception ex)
                 {
-                    _logger.LogWarning("Order service returned non-success status code: {StatusCode}", response.StatusCode);
-                    return Enumerable.Empty<OrderDto>();
+                    this._metrics.IncrementCounter("bff_external_calls_errors_total", 1, "orders", "get_all", "exception");
+                    _logger.LogError(ex, "Error fetching all orders from order service");
+                    throw;
                 }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error fetching all orders from order service");
-                throw;
             }
         }
 
@@ -82,34 +94,41 @@ namespace Retail.BFFWeb.Api.Interface
         /// <returns>Order object.</returns>
         public async Task<OrderDto> GetOrderByIdAsync(long id)
         {
-            _logger.LogInformation("Fetching order with Id {OrderId} from order service", id);
-            
-            try
+            using (_metrics.TrackDuration("bff_external_call_duration_seconds", "orders", "get_by_id"))
             {
-                using var client = _httpClientFactory.CreateClient();
-
-                var url = _serviceConfig.BaseUrl + _serviceConfig.Endpoints.GetOrderByIdV1 + "/" + id;
-                _logger.LogDebug("Calling order service endpoint: {Url}", url);
-
-                var jsonString = await client.GetStringAsync(url);
-
-                var serviceData = JsonSerializer.Deserialize<OrderDto>(jsonString);
-
-                if (serviceData == null)
+                this._metrics.IncrementCounter("bff_external_calls_total", 1, "orders", "get_by_id");
+                _logger.LogInformation("Fetching order with Id {OrderId} from order service", id);
+                
+                try
                 {
-                    _logger.LogWarning("Order service returned null for OrderId {OrderId}", id);
-                }
-                else
-                {
-                    _logger.LogInformation("Successfully retrieved order with Id {OrderId}", id);
-                }
+                    using var client = _httpClientFactory.CreateClient();
 
-                return serviceData;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error fetching order with Id {OrderId} from order service", id);
-                throw;
+                    var url = _serviceConfig.BaseUrl + _serviceConfig.Endpoints.GetOrderByIdV1 + "/" + id;
+                    _logger.LogDebug("Calling order service endpoint: {Url}", url);
+
+                    var jsonString = await client.GetStringAsync(url);
+
+                    var serviceData = JsonSerializer.Deserialize<OrderDto>(jsonString);
+
+                    if (serviceData == null)
+                    {
+                        this._metrics.IncrementCounter("bff_external_calls_errors_total", 1, "orders", "get_by_id", "null_response");
+                        _logger.LogWarning("Order service returned null for OrderId {OrderId}", id);
+                    }
+                    else
+                    {
+                        this._metrics.IncrementCounter("bff_external_calls_success_total", 1, "orders", "get_by_id");
+                        _logger.LogInformation("Successfully retrieved order with Id {OrderId}", id);
+                    }
+
+                    return serviceData;
+                }
+                catch (Exception ex)
+                {
+                    this._metrics.IncrementCounter("bff_external_calls_errors_total", 1, "orders", "get_by_id", "exception");
+                    _logger.LogError(ex, "Error fetching order with Id {OrderId} from order service", id);
+                    throw;
+                }
             }
         }
     }

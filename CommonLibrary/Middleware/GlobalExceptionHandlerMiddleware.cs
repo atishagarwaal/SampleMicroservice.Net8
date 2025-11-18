@@ -11,6 +11,7 @@ namespace CommonLibrary.Middleware
     using System.Net;
     using System.Text.Json;
     using System.Threading.Tasks;
+    using CommonLibrary.Telemetry;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Logging;
 
@@ -21,18 +22,22 @@ namespace CommonLibrary.Middleware
     {
         private readonly RequestDelegate _next;
         private readonly ILogger<GlobalExceptionHandlerMiddleware> _logger;
+        private readonly IMetricsService _metrics;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GlobalExceptionHandlerMiddleware"/> class.
         /// </summary>
         /// <param name="next">The next middleware in the pipeline.</param>
         /// <param name="logger">The logger instance.</param>
+        /// <param name="metrics">The metrics service instance.</param>
         public GlobalExceptionHandlerMiddleware(
             RequestDelegate next,
-            ILogger<GlobalExceptionHandlerMiddleware> logger)
+            ILogger<GlobalExceptionHandlerMiddleware> logger,
+            IMetricsService metrics)
         {
             _next = next;
             _logger = logger;
+            _metrics = metrics;
         }
 
         /// <summary>
@@ -48,6 +53,8 @@ namespace CommonLibrary.Middleware
             }
             catch (Exception ex)
             {
+                var statusCode = GetStatusCode(ex);
+                _metrics.IncrementCounter("http_errors_total", 1, statusCode.ToString(), ex.GetType().Name);
                 _logger.LogError(ex, "An unhandled exception occurred. RequestPath: {RequestPath}, Method: {Method}",
                     context.Request.Path, context.Request.Method);
                 await HandleExceptionAsync(context, ex);

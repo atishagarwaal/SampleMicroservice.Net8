@@ -57,6 +57,9 @@ namespace Retail.Api.Products.Application
                 serviceName: "Retail.Products",
                 serviceVersion: "1.0.0");
 
+            // Register metrics service
+            serviceCollection.AddSingleton<CommonLibrary.Telemetry.IMetricsService, CommonLibrary.Telemetry.MetricsService>();
+
             // Configure strongly-typed configuration classes
             serviceCollection.Configure<DatabaseConnectionConfiguration>(
                 context.Configuration.GetSection("ConnectionStrings"));

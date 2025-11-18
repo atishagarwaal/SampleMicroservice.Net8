@@ -1,6 +1,8 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using CommonLibrary.Results;
+using CommonLibrary.Telemetry;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -12,7 +14,6 @@ using Retail.Orders.Read.src.CleanArchitecture.Application.Queries;
 using Retail.Orders.Read.src.CleanArchitecture.Application.Converters.Interfaces;
 using Retail.Orders.Read.src.CleanArchitecture.Domain.Entities;
 using Retail.Orders.Read.src.CleanArchitecture.Infrastructure.Interfaces;
-using CommonLibrary.Results;
 
 namespace Retail.Orders.Read.ComponentTests
 {
@@ -29,6 +30,7 @@ namespace Retail.Orders.Read.ComponentTests
         private Mock<IServiceProvider> _mockServiceProvider = null!;
         private Mock<IConverter<Order, OrderDto>> _mockOrderDtoConverter = null!;
         private Mock<ILogger<GetOrderByIdQueryHandler>> _mockLogger = null!;
+        private Mock<IMetricsService> _mockMetrics = null!;
         private GetOrderByIdQueryHandler _handler = null!;
 
         [TestInitialize]
@@ -40,6 +42,7 @@ namespace Retail.Orders.Read.ComponentTests
             _mockServiceProvider = new Mock<IServiceProvider>();
             _mockOrderDtoConverter = new Mock<IConverter<Order, OrderDto>>();
             _mockLogger = new Mock<ILogger<GetOrderByIdQueryHandler>>();
+            _mockMetrics = new Mock<IMetricsService>();
 
             _mockServiceScopeFactory
                 .Setup(x => x.CreateScope())
@@ -53,11 +56,16 @@ namespace Retail.Orders.Read.ComponentTests
                 .Setup(x => x.GetService(typeof(IUnitOfWork)))
                 .Returns(_mockUnitOfWork.Object);
 
+            // Setup metrics mock
+            _mockMetrics.Setup(x => x.TrackDuration(It.IsAny<string>(), It.IsAny<string[]>()))
+                .Returns(Mock.Of<IDisposable>());
+
             _handler = new GetOrderByIdQueryHandler(
                 _mockUnitOfWork.Object,
                 _mockOrderDtoConverter.Object,
                 _mockServiceScopeFactory.Object,
-                _mockLogger.Object);
+                _mockLogger.Object,
+                _mockMetrics.Object);
         }
 
         [TestMethod]

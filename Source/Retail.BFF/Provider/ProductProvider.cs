@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using CommonLibrary.Telemetry;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Retail.BFFWeb.Api.Configurations;
@@ -17,6 +18,7 @@ namespace Retail.BFFWeb.Api.Interface
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly ProductServiceConfig _serviceConfig;
         private readonly ILogger<ProductProvider> _logger;
+        private readonly IMetricsService _metrics;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ProductProvider"/> class.
@@ -24,10 +26,12 @@ namespace Retail.BFFWeb.Api.Interface
         /// <param name="httpClientFactory">Instance of HTTP client factory.</param>
         /// <param name="serviceConfig">Instance of product service configuration.</param>
         /// <param name="logger">Instance of logger.</param>
+        /// <param name="metrics">Instance of metrics service.</param>
         public ProductProvider(
             IHttpClientFactory httpClientFactory,
             IOptions<ProductServiceConfig> serviceConfig,
-            ILogger<ProductProvider> logger)
+            ILogger<ProductProvider> logger,
+            IMetricsService metrics)
         {
             if (serviceConfig == null)
             {
@@ -37,6 +41,7 @@ namespace Retail.BFFWeb.Api.Interface
             _httpClientFactory = httpClientFactory;
             _serviceConfig = serviceConfig.Value;
             _logger = logger;
+            _metrics = metrics;
         }
 
         /// <summary>
@@ -45,34 +50,41 @@ namespace Retail.BFFWeb.Api.Interface
         /// <returns>List of products.</returns>
         public async Task<IEnumerable<SkuDto>> GetAllProductsAsync()
         {
-            _logger.LogInformation("Fetching all products from product service");
-            
-            try
+            using (_metrics.TrackDuration("bff_external_call_duration_seconds", "products", "get_all"))
             {
-                using var client = _httpClientFactory.CreateClient();
+                this._metrics.IncrementCounter("bff_external_calls_total", 1, "products", "get_all");
+                _logger.LogInformation("Fetching all products from product service");
+                
+                try
+                {
+                    using var client = _httpClientFactory.CreateClient();
 
-                var url = _serviceConfig.BaseUrl + _serviceConfig.Endpoints.GetAllProductsV1;
-                _logger.LogDebug("Calling product service endpoint: {Url}", url);
-                
-                var response = await client.GetAsync(url);
-                
-                if (response.IsSuccessStatusCode)
-                {
-                    var data = await response.Content.ReadFromJsonAsync<IEnumerable<SkuDto>>();
-                    var productCount = data?.Count() ?? 0;
-                    _logger.LogInformation("Successfully retrieved {ProductCount} products from product service", productCount);
-                    return data ?? Enumerable.Empty<SkuDto>();
+                    var url = _serviceConfig.BaseUrl + _serviceConfig.Endpoints.GetAllProductsV1;
+                    _logger.LogDebug("Calling product service endpoint: {Url}", url);
+                    
+                    var response = await client.GetAsync(url);
+                    
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var data = await response.Content.ReadFromJsonAsync<IEnumerable<SkuDto>>();
+                        var productCount = data?.Count() ?? 0;
+                        this._metrics.IncrementCounter("bff_external_calls_success_total", 1, "products", "get_all");
+                        _logger.LogInformation("Successfully retrieved {ProductCount} products from product service", productCount);
+                        return data ?? Enumerable.Empty<SkuDto>();
+                    }
+                    else
+                    {
+                        this._metrics.IncrementCounter("bff_external_calls_errors_total", 1, "products", "get_all", response.StatusCode.ToString());
+                        _logger.LogWarning("Product service returned non-success status code: {StatusCode}", response.StatusCode);
+                        return Enumerable.Empty<SkuDto>();
+                    }
                 }
-                else
+                catch (Exception ex)
                 {
-                    _logger.LogWarning("Product service returned non-success status code: {StatusCode}", response.StatusCode);
-                    return Enumerable.Empty<SkuDto>();
+                    this._metrics.IncrementCounter("bff_external_calls_errors_total", 1, "products", "get_all", "exception");
+                    _logger.LogError(ex, "Error fetching all products from product service");
+                    throw;
                 }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error fetching all products from product service");
-                throw;
             }
         }
 
@@ -83,39 +95,46 @@ namespace Retail.BFFWeb.Api.Interface
         /// <returns>Product object.</returns>
         public async Task<SkuDto> GetProductByIdAsync(long id)
         {
-            _logger.LogInformation("Fetching product with Id {ProductId} from product service", id);
-            
-            try
+            using (_metrics.TrackDuration("bff_external_call_duration_seconds", "products", "get_by_id"))
             {
-                using var client = _httpClientFactory.CreateClient();
-
-                client.BaseAddress = new Uri(_serviceConfig.BaseUrl);
-
-                var url = _serviceConfig.Endpoints.GetProductByIdV1.Replace("{id}", id.ToString());
-                _logger.LogDebug("Calling product service endpoint: {Url}", url);
-
-                var jsonString = await client.GetStringAsync(url);
-
-                var serviceData = JsonSerializer.Deserialize<SkuDto>(jsonString, new JsonSerializerOptions
+                this._metrics.IncrementCounter("bff_external_calls_total", 1, "products", "get_by_id");
+                _logger.LogInformation("Fetching product with Id {ProductId} from product service", id);
+                
+                try
                 {
-                    PropertyNameCaseInsensitive = true
-                });
+                    using var client = _httpClientFactory.CreateClient();
 
-                if (serviceData == null)
-                {
-                    _logger.LogWarning("Product service returned null for ProductId {ProductId}", id);
+                    client.BaseAddress = new Uri(_serviceConfig.BaseUrl);
+
+                    var url = _serviceConfig.Endpoints.GetProductByIdV1.Replace("{id}", id.ToString());
+                    _logger.LogDebug("Calling product service endpoint: {Url}", url);
+
+                    var jsonString = await client.GetStringAsync(url);
+
+                    var serviceData = JsonSerializer.Deserialize<SkuDto>(jsonString, new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true
+                    });
+
+                    if (serviceData == null)
+                    {
+                        this._metrics.IncrementCounter("bff_external_calls_errors_total", 1, "products", "get_by_id", "null_response");
+                        _logger.LogWarning("Product service returned null for ProductId {ProductId}", id);
+                    }
+                    else
+                    {
+                        this._metrics.IncrementCounter("bff_external_calls_success_total", 1, "products", "get_by_id");
+                        _logger.LogInformation("Successfully retrieved product with Id {ProductId}", id);
+                    }
+
+                    return serviceData;
                 }
-                else
+                catch (Exception ex)
                 {
-                    _logger.LogInformation("Successfully retrieved product with Id {ProductId}", id);
+                    this._metrics.IncrementCounter("bff_external_calls_errors_total", 1, "products", "get_by_id", "exception");
+                    _logger.LogError(ex, "Error fetching product with Id {ProductId} from product service", id);
+                    throw;
                 }
-
-                return serviceData;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error fetching product with Id {ProductId} from product service", id);
-                throw;
             }
         }
     }

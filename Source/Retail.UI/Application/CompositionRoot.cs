@@ -37,6 +37,9 @@ namespace Retail.UI.Application
                 serviceName: "Retail.UI",
                 serviceVersion: "1.0.0");
 
+            // Register metrics service
+            serviceCollection.AddSingleton<CommonLibrary.Telemetry.IMetricsService, CommonLibrary.Telemetry.MetricsService>();
+
             // Add services to the container.
             serviceCollection.AddRazorComponents()
                 .AddInteractiveServerComponents();

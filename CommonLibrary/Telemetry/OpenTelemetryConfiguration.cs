@@ -99,7 +99,9 @@ namespace CommonLibrary.Telemetry
                         builder.AddConsoleExporter();
                     }
 
-                    // Prometheus exporter is already configured via prometheus-net.AspNetCore
+                    // Add Prometheus exporter for OpenTelemetry metrics
+                    // This works alongside prometheus-net.AspNetCore to provide comprehensive metrics
+                    builder.AddPrometheusExporter();
                 })
                 .WithLogging(builder =>
                 {

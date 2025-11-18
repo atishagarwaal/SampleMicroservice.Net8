@@ -1,10 +1,11 @@
-﻿using MediatR;
+﻿using CommonLibrary.Results;
+using CommonLibrary.Telemetry;
+using MediatR;
 using Microsoft.Extensions.Logging;
 using Retail.Orders.Read.src.CleanArchitecture.Application.Dto;
 using Retail.Orders.Read.src.CleanArchitecture.Application.Queries;
 using Retail.Orders.Read.src.CleanArchitecture.Application.Converters.Interfaces;
 using Retail.Orders.Read.src.CleanArchitecture.Infrastructure.Interfaces;
-using CommonLibrary.Results;
 
 namespace Retail.Orders.Read.src.CleanArchitecture.Application.Handlers
 {
@@ -17,6 +18,7 @@ namespace Retail.Orders.Read.src.CleanArchitecture.Application.Handlers
         private readonly IUnitOfWork _unitOfWork;
         private readonly IConverter<Domain.Entities.Order, OrderDto> _orderDtoConverter;
         private readonly ILogger<GetOrderByIdQueryHandler> _logger;
+        private readonly IMetricsService _metrics;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GetOrderByIdQueryHandler"/> class.
@@ -25,16 +27,19 @@ namespace Retail.Orders.Read.src.CleanArchitecture.Application.Handlers
         /// <param name="orderDtoConverter">Instance of order DTO converter.</param>
         /// <param name="serviceScopeFactory">Instance of service scope factory.</param>
         /// <param name="logger">Instance of logger.</param>
+        /// <param name="metrics">Instance of metrics service.</param>
         public GetOrderByIdQueryHandler(
             IUnitOfWork unitOfWork,
             IConverter<Domain.Entities.Order, OrderDto> orderDtoConverter,
             IServiceScopeFactory serviceScopeFactory,
-            ILogger<GetOrderByIdQueryHandler> logger)
+            ILogger<GetOrderByIdQueryHandler> logger,
+            IMetricsService metrics)
         {
             _unitOfWork = unitOfWork;
             _orderDtoConverter = orderDtoConverter;
             _serviceScopeFactory = serviceScopeFactory;
             _logger = logger;
+            _metrics = metrics;
         }
 
         /// <summary>
@@ -45,37 +50,44 @@ namespace Retail.Orders.Read.src.CleanArchitecture.Application.Handlers
         /// <returns>Result containing order DTO.</returns>
         public async Task<Result<OrderDto>> Handle(GetOrderByIdQuery request, CancellationToken cancellationToken)
         {
-            _logger.LogInformation("Handling GetOrderByIdQuery for OrderId {OrderId}", request.Id);
-            
-            try
+            using (_metrics.TrackDuration("orders_read_operation_duration_seconds", "get_by_id"))
             {
-                if (request.Id == 0)
-                {
-                    _logger.LogWarning("Invalid order Id provided: {OrderId}", request.Id);
-                    return Result<OrderDto>.Failure("Invalid order ID provided");
-                }
-
-                using var scope = _serviceScopeFactory.CreateScope();
-                var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
-
-                var order = await unitOfWork.Orders.GetByIdAsync(request.Id);
+                _logger.LogInformation("Handling GetOrderByIdQuery for OrderId {OrderId}", request.Id);
                 
-                if (order == null)
+                try
                 {
-                    _logger.LogWarning("Order with Id {OrderId} not found in repository", request.Id);
-                    return Result<OrderDto>.Failure($"Order with ID {request.Id} not found");
-                }
+                    if (request.Id == 0)
+                    {
+                        _metrics.IncrementCounter("orders_read_errors_total", 1, "invalid_id");
+                        _logger.LogWarning("Invalid order Id provided: {OrderId}", request.Id);
+                        return Result<OrderDto>.Failure("Invalid order ID provided");
+                    }
 
-                _logger.LogDebug("Order with Id {OrderId} found. Converting to DTO", request.Id);
-                var result = _orderDtoConverter.Convert(order);
-                
-                _logger.LogInformation("Successfully processed GetOrderByIdQuery for OrderId {OrderId}", request.Id);
-                return Result<OrderDto>.Success(result);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error handling GetOrderByIdQuery for OrderId {OrderId}", request.Id);
-                return Result<OrderDto>.Failure($"Error retrieving order: {ex.Message}");
+                    using var scope = _serviceScopeFactory.CreateScope();
+                    var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
+
+                    var order = await unitOfWork.Orders.GetByIdAsync(request.Id);
+                    
+                    if (order == null)
+                    {
+                        _metrics.IncrementCounter("orders_read_not_found_total", 1);
+                        _logger.LogWarning("Order with Id {OrderId} not found in repository", request.Id);
+                        return Result<OrderDto>.Failure($"Order with ID {request.Id} not found");
+                    }
+
+                    _metrics.IncrementCounter("orders_read_total", 1);
+                    _logger.LogDebug("Order with Id {OrderId} found. Converting to DTO", request.Id);
+                    var result = _orderDtoConverter.Convert(order);
+                    
+                    _logger.LogInformation("Successfully processed GetOrderByIdQuery for OrderId {OrderId}", request.Id);
+                    return Result<OrderDto>.Success(result);
+                }
+                catch (Exception ex)
+                {
+                    _metrics.IncrementCounter("orders_read_errors_total", 1, "exception");
+                    _logger.LogError(ex, "Error handling GetOrderByIdQuery for OrderId {OrderId}", request.Id);
+                    return Result<OrderDto>.Failure($"Error retrieving order: {ex.Message}");
+                }
             }
         }
     }

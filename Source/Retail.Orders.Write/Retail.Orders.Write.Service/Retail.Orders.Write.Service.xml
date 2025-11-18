@@ -293,7 +293,7 @@
             Event handler for InventoryErrorEvent.
             </summary>
         </member>
-        <member name="M:Retail.Orders.Write.src.CleanArchitecture.Application.EventHandlers.InventoryErrorEventHandler.#ctor(Retail.Orders.Write.src.CleanArchitecture.Infrastructure.Interfaces.IUnitOfWork,MessagingLibrary.Interface.IMessagePublisher,Microsoft.Extensions.DependencyInjection.IServiceScopeFactory,Microsoft.Extensions.Logging.ILogger{Retail.Orders.Write.src.CleanArchitecture.Application.EventHandlers.InventoryErrorEventHandler})">
+        <member name="M:Retail.Orders.Write.src.CleanArchitecture.Application.EventHandlers.InventoryErrorEventHandler.#ctor(Retail.Orders.Write.src.CleanArchitecture.Infrastructure.Interfaces.IUnitOfWork,MessagingLibrary.Interface.IMessagePublisher,Microsoft.Extensions.DependencyInjection.IServiceScopeFactory,Microsoft.Extensions.Logging.ILogger{Retail.Orders.Write.src.CleanArchitecture.Application.EventHandlers.InventoryErrorEventHandler},CommonLibrary.Telemetry.IMetricsService)">
             <summary>
             Initializes a new instance of the <see cref="T:Retail.Orders.Write.src.CleanArchitecture.Application.EventHandlers.InventoryErrorEventHandler"/> class.
             </summary>
@@ -301,6 +301,7 @@
             <param name="messagePublisher">Instance of message publisher.</param>
             <param name="serviceScopeFactory">Instance of service scope factory.</param>
             <param name="logger">Instance of logger.</param>
+            <param name="metrics">Instance of metrics service.</param>
         </member>
         <member name="M:Retail.Orders.Write.src.CleanArchitecture.Application.EventHandlers.InventoryErrorEventHandler.HandleAsync(InventoryErrorEventNameSpace.InventoryErrorEvent)">
             <summary>
@@ -314,7 +315,7 @@
             Handler for CreateOrderCommand.
             </summary>
         </member>
-        <member name="M:Retail.Orders.Write.src.CleanArchitecture.Application.Handlers.CreateOrderCommandHandler.#ctor(Retail.Orders.Write.src.CleanArchitecture.Infrastructure.Interfaces.IUnitOfWork,Retail.Orders.Write.src.CleanArchitecture.Application.Converters.Interfaces.IConverter{Retail.Orders.Write.src.CleanArchitecture.Application.Dto.OrderDto,Retail.Orders.Write.src.CleanArchitecture.Domain.Entities.Order},Retail.Orders.Write.src.CleanArchitecture.Application.Converters.Interfaces.IConverter{Retail.Orders.Write.src.CleanArchitecture.Domain.Entities.Order,Retail.Orders.Write.src.CleanArchitecture.Application.Dto.OrderDto},Retail.Orders.Write.src.CleanArchitecture.Application.Validation.Interfaces.IMessageValidator{Retail.Orders.Write.src.CleanArchitecture.Application.Dto.OrderDto},MessagingLibrary.Interface.IMessagePublisher,Microsoft.Extensions.DependencyInjection.IServiceScopeFactory,Microsoft.Extensions.Logging.ILogger{Retail.Orders.Write.src.CleanArchitecture.Application.Handlers.CreateOrderCommandHandler})">
+        <member name="M:Retail.Orders.Write.src.CleanArchitecture.Application.Handlers.CreateOrderCommandHandler.#ctor(Retail.Orders.Write.src.CleanArchitecture.Infrastructure.Interfaces.IUnitOfWork,Retail.Orders.Write.src.CleanArchitecture.Application.Converters.Interfaces.IConverter{Retail.Orders.Write.src.CleanArchitecture.Application.Dto.OrderDto,Retail.Orders.Write.src.CleanArchitecture.Domain.Entities.Order},Retail.Orders.Write.src.CleanArchitecture.Application.Converters.Interfaces.IConverter{Retail.Orders.Write.src.CleanArchitecture.Domain.Entities.Order,Retail.Orders.Write.src.CleanArchitecture.Application.Dto.OrderDto},Retail.Orders.Write.src.CleanArchitecture.Application.Validation.Interfaces.IMessageValidator{Retail.Orders.Write.src.CleanArchitecture.Application.Dto.OrderDto},MessagingLibrary.Interface.IMessagePublisher,Microsoft.Extensions.DependencyInjection.IServiceScopeFactory,Microsoft.Extensions.Logging.ILogger{Retail.Orders.Write.src.CleanArchitecture.Application.Handlers.CreateOrderCommandHandler},CommonLibrary.Telemetry.IMetricsService)">
             <summary>
             Initializes a new instance of the <see cref="T:Retail.Orders.Write.src.CleanArchitecture.Application.Handlers.CreateOrderCommandHandler"/> class.
             </summary>
@@ -325,6 +326,7 @@
             <param name="messagePublisher">Instance of message publisher.</param>
             <param name="serviceScopeFactory">Instance of service scope factory.</param>
             <param name="logger">Instance of logger.</param>
+            <param name="metrics">Instance of metrics service.</param>
         </member>
         <member name="M:Retail.Orders.Write.src.CleanArchitecture.Application.Handlers.CreateOrderCommandHandler.Handle(Retail.Orders.Write.src.CleanArchitecture.Application.Commands.CreateOrderCommand,System.Threading.CancellationToken)">
             <summary>
@@ -339,13 +341,14 @@
             Handler for DeleteOrderCommand.
             </summary>
         </member>
-        <member name="M:Retail.Orders.Write.src.CleanArchitecture.Application.Handlers.DeleteOrderCommandHandler.#ctor(Retail.Orders.Write.src.CleanArchitecture.Infrastructure.Interfaces.IUnitOfWork,Microsoft.Extensions.DependencyInjection.IServiceScopeFactory,Microsoft.Extensions.Logging.ILogger{Retail.Orders.Write.src.CleanArchitecture.Application.Handlers.DeleteOrderCommandHandler})">
+        <member name="M:Retail.Orders.Write.src.CleanArchitecture.Application.Handlers.DeleteOrderCommandHandler.#ctor(Retail.Orders.Write.src.CleanArchitecture.Infrastructure.Interfaces.IUnitOfWork,Microsoft.Extensions.DependencyInjection.IServiceScopeFactory,Microsoft.Extensions.Logging.ILogger{Retail.Orders.Write.src.CleanArchitecture.Application.Handlers.DeleteOrderCommandHandler},CommonLibrary.Telemetry.IMetricsService)">
             <summary>
             Initializes a new instance of the <see cref="T:Retail.Orders.Write.src.CleanArchitecture.Application.Handlers.DeleteOrderCommandHandler"/> class.
             </summary>
             <param name="unitOfWork">Instance of unit of work class.</param>
             <param name="serviceScopeFactory">Instance of service scope factory.</param>
             <param name="logger">Instance of logger.</param>
+            <param name="metrics">Instance of metrics service.</param>
         </member>
         <member name="M:Retail.Orders.Write.src.CleanArchitecture.Application.Handlers.DeleteOrderCommandHandler.Handle(Retail.Orders.Write.src.CleanArchitecture.Application.Commands.DeleteOrderCommand,System.Threading.CancellationToken)">
             <summary>
@@ -360,7 +363,7 @@
             Handler for UpdateOrderCommand.
             </summary>
         </member>
-        <member name="M:Retail.Orders.Write.src.CleanArchitecture.Application.Handlers.UpdateOrderCommandHandler.#ctor(Retail.Orders.Write.src.CleanArchitecture.Infrastructure.Interfaces.IUnitOfWork,Retail.Orders.Write.src.CleanArchitecture.Application.Converters.Interfaces.IConverter{Retail.Orders.Write.src.CleanArchitecture.Application.Dto.OrderDto,Retail.Orders.Write.src.CleanArchitecture.Domain.Entities.Order},Retail.Orders.Write.src.CleanArchitecture.Application.Converters.Interfaces.IConverter{Retail.Orders.Write.src.CleanArchitecture.Domain.Entities.Order,Retail.Orders.Write.src.CleanArchitecture.Application.Dto.OrderDto},Retail.Orders.Write.src.CleanArchitecture.Application.Validation.Interfaces.IMessageValidator{Retail.Orders.Write.src.CleanArchitecture.Application.Dto.OrderDto},Microsoft.Extensions.Logging.ILogger{Retail.Orders.Write.src.CleanArchitecture.Application.Handlers.UpdateOrderCommandHandler})">
+        <member name="M:Retail.Orders.Write.src.CleanArchitecture.Application.Handlers.UpdateOrderCommandHandler.#ctor(Retail.Orders.Write.src.CleanArchitecture.Infrastructure.Interfaces.IUnitOfWork,Retail.Orders.Write.src.CleanArchitecture.Application.Converters.Interfaces.IConverter{Retail.Orders.Write.src.CleanArchitecture.Application.Dto.OrderDto,Retail.Orders.Write.src.CleanArchitecture.Domain.Entities.Order},Retail.Orders.Write.src.CleanArchitecture.Application.Converters.Interfaces.IConverter{Retail.Orders.Write.src.CleanArchitecture.Domain.Entities.Order,Retail.Orders.Write.src.CleanArchitecture.Application.Dto.OrderDto},Retail.Orders.Write.src.CleanArchitecture.Application.Validation.Interfaces.IMessageValidator{Retail.Orders.Write.src.CleanArchitecture.Application.Dto.OrderDto},Microsoft.Extensions.Logging.ILogger{Retail.Orders.Write.src.CleanArchitecture.Application.Handlers.UpdateOrderCommandHandler},CommonLibrary.Telemetry.IMetricsService)">
             <summary>
             Initializes a new instance of the <see cref="T:Retail.Orders.Write.src.CleanArchitecture.Application.Handlers.UpdateOrderCommandHandler"/> class.
             </summary>
@@ -369,6 +372,7 @@
             <param name="orderDtoConverter">Instance of order DTO converter.</param>
             <param name="orderDtoValidator">Instance of order DTO validator.</param>
             <param name="logger">Instance of logger.</param>
+            <param name="metrics">Instance of metrics service.</param>
         </member>
         <member name="M:Retail.Orders.Write.src.CleanArchitecture.Application.Handlers.UpdateOrderCommandHandler.Handle(Retail.Orders.Write.src.CleanArchitecture.Application.Commands.UpdateOrderCommand,System.Threading.CancellationToken)">
             <summary>

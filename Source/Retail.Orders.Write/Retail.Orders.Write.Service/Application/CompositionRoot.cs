@@ -58,6 +58,9 @@ namespace Retail.Orders.Write.Application
                 serviceName: "Retail.Orders.Write",
                 serviceVersion: "1.0.0");
 
+            // Register metrics service
+            serviceCollection.AddSingleton<CommonLibrary.Telemetry.IMetricsService, CommonLibrary.Telemetry.MetricsService>();
+
             // Configure strongly-typed configuration classes
             serviceCollection.Configure<DatabaseConnectionConfiguration>(
                 context.Configuration.GetSection("ConnectionStrings"));

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using CommonLibrary.Telemetry;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -18,7 +19,6 @@ using Retail.Orders.Write.src.CleanArchitecture.Domain.Entities;
 using Retail.Orders.Write.src.CleanArchitecture.Infrastructure.Interfaces;
 using MessagingLibrary.Interface;
 using OrderCreatedEventNameSpace;
-using Moq;
 
 namespace Retail.Orders.Write.ComponentTests
 {
@@ -39,6 +39,7 @@ namespace Retail.Orders.Write.ComponentTests
         private Mock<IMessageValidator<OrderDto>> _mockOrderDtoValidator = null!;
         private Mock<IMessagePublisher> _mockMessagePublisher = null!;
         private Mock<ILogger<CreateOrderCommandHandler>> _mockLogger = null!;
+        private Mock<IMetricsService> _mockMetrics = null!;
         private CreateOrderCommandHandler _handler = null!;
 
         [TestInitialize]
@@ -54,6 +55,7 @@ namespace Retail.Orders.Write.ComponentTests
             _mockOrderDtoValidator = new Mock<IMessageValidator<OrderDto>>();
             _mockMessagePublisher = new Mock<IMessagePublisher>();
             _mockLogger = new Mock<ILogger<CreateOrderCommandHandler>>();
+            _mockMetrics = new Mock<IMetricsService>();
 
             _mockUnitOfWork
                 .Setup(x => x.Orders)
@@ -76,6 +78,10 @@ namespace Retail.Orders.Write.ComponentTests
                 .Setup(x => x.Validate(It.IsAny<OrderDto>()))
                 .Returns(new ValidationData());
 
+            // Setup metrics mock
+            _mockMetrics.Setup(x => x.TrackDuration(It.IsAny<string>(), It.IsAny<string[]>()))
+                .Returns(Mock.Of<IDisposable>());
+
             _handler = new CreateOrderCommandHandler(
                 _mockUnitOfWork.Object,
                 _mockOrderConverter.Object,
@@ -83,7 +89,8 @@ namespace Retail.Orders.Write.ComponentTests
                 _mockOrderDtoValidator.Object,
                 _mockMessagePublisher.Object,
                 _mockServiceScopeFactory.Object,
-                _mockLogger.Object);
+                _mockLogger.Object,
+                _mockMetrics.Object);
         }
 
         [TestMethod]

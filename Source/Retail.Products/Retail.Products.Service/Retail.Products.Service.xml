@@ -275,7 +275,7 @@
             Product service class.
             </summary>
         </member>
-        <member name="M:Retail.Api.Products.src.CleanArchitecture.Application.Service.ProductService.#ctor(Retail.Api.Products.src.CleanArchitecture.Infrastructure.Interfaces.IUnitOfWork,Retail.Api.Products.src.CleanArchitecture.Application.Converters.Interfaces.IConverter{Retail.Api.Products.src.CleanArchitecture.Application.Dto.SkuDto,Retail.Api.Products.src.CleanArchitecture.Domain.Entities.Sku},Retail.Api.Products.src.CleanArchitecture.Application.Converters.Interfaces.IConverter{Retail.Api.Products.src.CleanArchitecture.Domain.Entities.Sku,Retail.Api.Products.src.CleanArchitecture.Application.Dto.SkuDto},Retail.Api.Products.src.CleanArchitecture.Application.Validation.Interfaces.IMessageValidator{Retail.Api.Products.src.CleanArchitecture.Application.Dto.SkuDto},MessagingLibrary.Interface.IMessagePublisher,Microsoft.Extensions.DependencyInjection.IServiceScopeFactory,Microsoft.Extensions.Logging.ILogger{Retail.Api.Products.src.CleanArchitecture.Application.Service.ProductService})">
+        <member name="M:Retail.Api.Products.src.CleanArchitecture.Application.Service.ProductService.#ctor(Retail.Api.Products.src.CleanArchitecture.Infrastructure.Interfaces.IUnitOfWork,Retail.Api.Products.src.CleanArchitecture.Application.Converters.Interfaces.IConverter{Retail.Api.Products.src.CleanArchitecture.Application.Dto.SkuDto,Retail.Api.Products.src.CleanArchitecture.Domain.Entities.Sku},Retail.Api.Products.src.CleanArchitecture.Application.Converters.Interfaces.IConverter{Retail.Api.Products.src.CleanArchitecture.Domain.Entities.Sku,Retail.Api.Products.src.CleanArchitecture.Application.Dto.SkuDto},Retail.Api.Products.src.CleanArchitecture.Application.Validation.Interfaces.IMessageValidator{Retail.Api.Products.src.CleanArchitecture.Application.Dto.SkuDto},MessagingLibrary.Interface.IMessagePublisher,Microsoft.Extensions.DependencyInjection.IServiceScopeFactory,Microsoft.Extensions.Logging.ILogger{Retail.Api.Products.src.CleanArchitecture.Application.Service.ProductService},CommonLibrary.Telemetry.IMetricsService)">
             <summary>
             Initializes a new instance of the <see cref="T:Retail.Api.Products.src.CleanArchitecture.Application.Service.ProductService"/> class.
             </summary>
@@ -286,6 +286,7 @@
             <param name="messagePublisher">Instance of message publisher.</param>
             <param name="serviceScopeFactory">Instance of service scope factory.</param>
             <param name="logger">Instance of logger.</param>
+            <param name="metrics">Instance of metrics service.</param>
         </member>
         <member name="M:Retail.Api.Products.src.CleanArchitecture.Application.Service.ProductService.GetAllProductsAsync">
             <summary>
