@@ -42,14 +42,8 @@ namespace Retail.Orders.Read.Application
     /// Configuration for this service.
     /// </summary>
     [ExcludeFromCodeCoverage]
-    public class CompositionRoot
+    public static class CompositionRoot
     {
-        /// <summary>
-        /// Prevents a default instance of the <see cref="CompositionRoot"/> class from being created.
-        /// </summary>
-        protected CompositionRoot()
-        {
-        }
 
         /// <summary>
         /// Configures application service with a dependency injection container.
