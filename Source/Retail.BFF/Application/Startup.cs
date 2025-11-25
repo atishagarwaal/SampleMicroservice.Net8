@@ -23,17 +23,14 @@ namespace Retail.BFFWeb.Api.Application
     public class Startup
     {
         private readonly IConfiguration configuration;
-        private readonly IWebHostEnvironment environment;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Startup"/> class.
         /// </summary>
         /// <param name="configuration">Configuration instance.</param>
-        /// <param name="environment">Web host environment.</param>
-        public Startup(IConfiguration configuration, IWebHostEnvironment environment)
+        public Startup(IConfiguration configuration)
         {
             this.configuration = configuration;
-            this.environment = environment;
         }
 
         /// <summary>
@@ -49,33 +46,34 @@ namespace Retail.BFFWeb.Api.Application
         /// <summary>
         /// Configures the application.
         /// </summary>
-        /// <param name="app">An <see cref="IApplicationBuilder"/> for the application to configure.</param>
-        public void Configure(IApplicationBuilder app)
+        /// <param name="webApplicationBuilder">An <see cref="IApplicationBuilder"/> for the applicationBuilder to configure.</param>
+        /// <param name="webEnvironment">An <see cref="IWebHostEnvironment"/> for the applicationBuilder to configure.</param>
+        public static void Configure(IApplicationBuilder webApplicationBuilder, IWebHostEnvironment webEnvironment)
         {
-            this.environment.ApplicationName = "Retail.BFF";
+            webEnvironment.ApplicationName = typeof(Startup).Assembly.GetName().Name;
 
             // Register global exception handling middleware early in the pipeline
-            app.UseMiddleware<GlobalExceptionHandlerMiddleware>();
+            webApplicationBuilder.UseMiddleware<GlobalExceptionHandlerMiddleware>();
 
-            if (this.environment.IsDevelopment())
+            if (webEnvironment.IsDevelopment())
             {
-                app.UseDeveloperExceptionPage();
-                app.UseSwagger();
-                app.UseSwaggerUI(c =>
+                webApplicationBuilder.UseDeveloperExceptionPage();
+                webApplicationBuilder.UseSwagger();
+                webApplicationBuilder.UseSwaggerUI(c =>
                 {
                     c.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
                 });
             }
 
-            app.UseHttpsRedirection();
-            app.UseRouting();
+            webApplicationBuilder.UseHttpsRedirection();
+            webApplicationBuilder.UseRouting();
             
             // Collect HTTP request metrics for Prometheus
-            app.UseHttpMetrics();
+            webApplicationBuilder.UseHttpMetrics();
             
-            app.UseAuthorization();
+            webApplicationBuilder.UseAuthorization();
 
-            app.UseEndpoints(endpoints =>
+            webApplicationBuilder.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
                 

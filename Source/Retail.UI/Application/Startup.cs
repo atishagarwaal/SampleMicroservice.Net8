@@ -22,17 +22,14 @@ namespace Retail.UI.Application
     public class Startup
     {
         private readonly IConfiguration configuration;
-        private readonly IWebHostEnvironment environment;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Startup"/> class.
         /// </summary>
         /// <param name="configuration">Configuration instance.</param>
-        /// <param name="environment">Web host environment.</param>
-        public Startup(IConfiguration configuration, IWebHostEnvironment environment)
+        public Startup(IConfiguration configuration)
         {
             this.configuration = configuration;
-            this.environment = environment;
         }
 
         /// <summary>
@@ -48,27 +45,28 @@ namespace Retail.UI.Application
         /// <summary>
         /// Configures the application.
         /// </summary>
-        /// <param name="app">An <see cref="IApplicationBuilder"/> for the application to configure.</param>
-        public void Configure(IApplicationBuilder app)
+        /// <param name="webApplicationBuilder">An <see cref="IApplicationBuilder"/> for the applicationBuilder to configure.</param>
+        /// <param name="webEnvironment">An <see cref="IWebHostEnvironment"/> for the applicationBuilder to configure.</param>
+        public static void Configure(IApplicationBuilder webApplicationBuilder, IWebHostEnvironment webEnvironment)
         {
-            this.environment.ApplicationName = "Retail.UI";
+            webEnvironment.ApplicationName = typeof(Startup).Assembly.GetName().Name;
 
             // Configure the HTTP request pipeline.
-            if (!this.environment.IsDevelopment())
+            if (!webEnvironment.IsDevelopment())
             {
-                app.UseExceptionHandler("/Error", createScopeForErrors: true);
-                app.UseHsts();
+                webApplicationBuilder.UseExceptionHandler("/Error", createScopeForErrors: true);
+                webApplicationBuilder.UseHsts();
             }
 
-            app.UseHttpsRedirection();
-            app.UseStaticFiles();
-            app.UseAntiforgery();
-            app.UseRouting();
+            webApplicationBuilder.UseHttpsRedirection();
+            webApplicationBuilder.UseStaticFiles();
+            webApplicationBuilder.UseAntiforgery();
+            webApplicationBuilder.UseRouting();
             
             // Collect HTTP request metrics for Prometheus
-            app.UseHttpMetrics();
+            webApplicationBuilder.UseHttpMetrics();
 
-            app.UseEndpoints(endpoints =>
+            webApplicationBuilder.UseEndpoints(endpoints =>
             {
                 endpoints.MapRazorPages();
                 endpoints.MapBlazorHub();
