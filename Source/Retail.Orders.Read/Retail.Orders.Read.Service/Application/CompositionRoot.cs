@@ -85,10 +85,10 @@ namespace Retail.Orders.Read.Application
             serviceCollection.AddScoped<IServiceInitializer, ServiceInitializer>();
 
             // Register converters
-            serviceCollection.AddScoped<IConverter<LineItemDto, Retail.Orders.Read.src.CleanArchitecture.Domain.Entities.LineItem>, LineItemConverter>();
-            serviceCollection.AddScoped<IConverter<Retail.Orders.Read.src.CleanArchitecture.Domain.Entities.LineItem, LineItemDto>, LineItemDtoConverter>();
-            serviceCollection.AddScoped<IConverter<OrderDto, Retail.Orders.Read.src.CleanArchitecture.Domain.Entities.Order>, OrderConverter>();
-            serviceCollection.AddScoped<IConverter<Retail.Orders.Read.src.CleanArchitecture.Domain.Entities.Order, OrderDto>, OrderDtoConverter>();
+            serviceCollection.AddSingleton<IConverter<LineItemDto, Retail.Orders.Read.src.CleanArchitecture.Domain.Entities.LineItem>, LineItemConverter>();
+            serviceCollection.AddSingleton<IConverter<Retail.Orders.Read.src.CleanArchitecture.Domain.Entities.LineItem, LineItemDto>, LineItemDtoConverter>();
+            serviceCollection.AddSingleton<IConverter<OrderDto, Retail.Orders.Read.src.CleanArchitecture.Domain.Entities.Order>, OrderConverter>();
+            serviceCollection.AddSingleton<IConverter<Retail.Orders.Read.src.CleanArchitecture.Domain.Entities.Order, OrderDto>, OrderDtoConverter>();
 
             // Register application lifecycle
             serviceCollection.AddSingleton<OrderReadApplication>();

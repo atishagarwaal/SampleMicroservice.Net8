@@ -31,8 +31,8 @@ namespace Retail.Customers.ServiceTests.Common
                 options.UseInMemoryDatabase(databaseName: $"TestDb_{Guid.NewGuid()}"));
 
             // Register converters
-            services.AddScoped<Retail.Api.Customers.src.CleanArchitecture.Application.Converters.Interfaces.IConverter<CustomerDto, Customer>, Retail.Api.Customers.src.CleanArchitecture.Application.Converters.CustomerConverter>();
-            services.AddScoped<Retail.Api.Customers.src.CleanArchitecture.Application.Converters.Interfaces.IConverter<Customer, CustomerDto>, Retail.Api.Customers.src.CleanArchitecture.Application.Converters.CustomerDtoConverter>();
+            services.AddSingleton<Retail.Api.Customers.src.CleanArchitecture.Application.Converters.Interfaces.IConverter<CustomerDto, Customer>, Retail.Api.Customers.src.CleanArchitecture.Application.Converters.CustomerConverter>();
+            services.AddSingleton<Retail.Api.Customers.src.CleanArchitecture.Application.Converters.Interfaces.IConverter<Customer, CustomerDto>, Retail.Api.Customers.src.CleanArchitecture.Application.Converters.CustomerDtoConverter>();
 
             // Register validators
             services.AddScoped<Retail.Api.Customers.src.CleanArchitecture.Application.Validation.Interfaces.IMessageValidator<CustomerDto>, Retail.Api.Customers.src.CleanArchitecture.Application.Validation.CustomerDtoValidator>();

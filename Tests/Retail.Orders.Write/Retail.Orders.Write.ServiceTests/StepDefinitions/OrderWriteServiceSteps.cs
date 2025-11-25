@@ -63,17 +63,17 @@ namespace Retail.Orders.Write.ServiceTests.StepDefinitions
             // Register converters (required by handlers)
             // Note: Order converters depend on LineItem converters, so register LineItem converters first
             // Register LineItem converters first (no dependencies)
-            services.AddScoped(typeof(IConverter<LineItemDto, LineItem>), typeof(LineItemConverter));
-            services.AddScoped(typeof(IConverter<LineItem, LineItemDto>), typeof(LineItemDtoConverter));
+            services.AddSingleton(typeof(IConverter<LineItemDto, LineItem>), typeof(LineItemConverter));
+            services.AddSingleton(typeof(IConverter<LineItem, LineItemDto>), typeof(LineItemDtoConverter));
             
             // Register Order converters (depend on LineItem converters)
             // Use factory methods to ensure proper dependency injection
-            services.AddScoped<IConverter<OrderDto, Order>>(sp =>
+            services.AddSingleton<IConverter<OrderDto, Order>>(sp =>
             {
                 var lineItemConverter = sp.GetRequiredService<IConverter<LineItemDto, LineItem>>();
                 return new OrderConverter(lineItemConverter);
             });
-            services.AddScoped<IConverter<Order, OrderDto>>(sp =>
+            services.AddSingleton<IConverter<Order, OrderDto>>(sp =>
             {
                 var lineItemDtoConverter = sp.GetRequiredService<IConverter<LineItem, LineItemDto>>();
                 return new OrderDtoConverter(lineItemDtoConverter);

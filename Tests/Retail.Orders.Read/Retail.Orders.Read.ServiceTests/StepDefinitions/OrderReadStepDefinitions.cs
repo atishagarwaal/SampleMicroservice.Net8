@@ -46,10 +46,10 @@ namespace Retail.Orders.Read.ServiceTests.StepDefinitions
             services.AddScoped<IOrderRepository, OrderRepository>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 
-            services.AddScoped<IConverter<LineItemDto, LineItem>, LineItemConverter>();
-            services.AddScoped<IConverter<LineItem, LineItemDto>, LineItemDtoConverter>();
-            services.AddScoped<IConverter<OrderDto, Order>, OrderConverter>();
-            services.AddScoped<IConverter<Order, OrderDto>, OrderDtoConverter>();
+            services.AddSingleton<IConverter<LineItemDto, LineItem>, LineItemConverter>();
+            services.AddSingleton<IConverter<LineItem, LineItemDto>, LineItemDtoConverter>();
+            services.AddSingleton<IConverter<OrderDto, Order>, OrderConverter>();
+            services.AddSingleton<IConverter<Order, OrderDto>, OrderDtoConverter>();
 
             services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(
                 typeof(GetAllOrdersQuery).Assembly,

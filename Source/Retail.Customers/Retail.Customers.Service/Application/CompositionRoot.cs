@@ -96,10 +96,10 @@ namespace Retail.Api.Customers.Application
             serviceCollection.AddScoped<IMessageValidator<CustomerDto>, CustomerDtoValidator>();
 
             // Register converters
-            serviceCollection.AddScoped<IConverter<CustomerDto, Customer>, CustomerConverter>();
-            serviceCollection.AddScoped<IConverter<Customer, CustomerDto>, CustomerDtoConverter>();
-            serviceCollection.AddScoped<IConverter<NotificationDto, Notification>, NotificationConverter>();
-            serviceCollection.AddScoped<IConverter<Notification, NotificationDto>, NotificationDtoConverter>();
+            serviceCollection.AddSingleton<IConverter<CustomerDto, Customer>, CustomerConverter>();
+            serviceCollection.AddSingleton<IConverter<Customer, CustomerDto>, CustomerDtoConverter>();
+            serviceCollection.AddSingleton<IConverter<NotificationDto, Notification>, NotificationConverter>();
+            serviceCollection.AddSingleton<IConverter<Notification, NotificationDto>, NotificationDtoConverter>();
 
             // Register application lifecycle
             serviceCollection.AddSingleton<CustomerApplication>();

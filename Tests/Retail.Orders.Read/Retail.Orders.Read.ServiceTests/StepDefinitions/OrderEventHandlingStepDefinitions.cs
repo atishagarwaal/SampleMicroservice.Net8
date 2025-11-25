@@ -47,10 +47,10 @@ namespace Retail.Orders.Read.ServiceTests.StepDefinitions
             services.AddScoped<IOrderRepository, OrderRepository>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 
-            services.AddScoped<IConverter<LineItemDto, Retail.Orders.Read.src.CleanArchitecture.Domain.Entities.LineItem>, LineItemConverter>();
-            services.AddScoped<IConverter<Retail.Orders.Read.src.CleanArchitecture.Domain.Entities.LineItem, LineItemDto>, LineItemDtoConverter>();
-            services.AddScoped<IConverter<OrderDto, Order>, OrderConverter>();
-            services.AddScoped<IConverter<Order, OrderDto>, OrderDtoConverter>();
+            services.AddSingleton<IConverter<LineItemDto, Retail.Orders.Read.src.CleanArchitecture.Domain.Entities.LineItem>, LineItemConverter>();
+            services.AddSingleton<IConverter<Retail.Orders.Read.src.CleanArchitecture.Domain.Entities.LineItem, LineItemDto>, LineItemDtoConverter>();
+            services.AddSingleton<IConverter<OrderDto, Order>, OrderConverter>();
+            services.AddSingleton<IConverter<Order, OrderDto>, OrderDtoConverter>();
 
             services.AddScoped<InventoryUpdatedEventHandler>();
         }

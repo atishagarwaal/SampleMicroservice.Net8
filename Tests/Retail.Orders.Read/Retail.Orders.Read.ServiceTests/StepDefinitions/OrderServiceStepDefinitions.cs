@@ -54,10 +54,10 @@ namespace Retail.Orders.Read.ServiceTests.StepDefinitions
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             // Register converters
-            services.AddScoped<IConverter<LineItemDto, LineItem>, LineItemConverter>();
-            services.AddScoped<IConverter<LineItem, LineItemDto>, LineItemDtoConverter>();
-            services.AddScoped<IConverter<OrderDto, Order>, OrderConverter>();
-            services.AddScoped<IConverter<Order, OrderDto>, OrderDtoConverter>();
+            services.AddSingleton<IConverter<LineItemDto, LineItem>, LineItemConverter>();
+            services.AddSingleton<IConverter<LineItem, LineItemDto>, LineItemDtoConverter>();
+            services.AddSingleton<IConverter<OrderDto, Order>, OrderConverter>();
+            services.AddSingleton<IConverter<Order, OrderDto>, OrderDtoConverter>();
 
             // Add MediatR
             services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(

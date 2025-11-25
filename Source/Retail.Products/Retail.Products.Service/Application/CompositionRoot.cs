@@ -94,8 +94,8 @@ namespace Retail.Api.Products.Application
             serviceCollection.AddScoped<IMessageValidator<SkuDto>, SkuDtoValidator>();
 
             // Register converters
-            serviceCollection.AddScoped<IConverter<SkuDto, Retail.Api.Products.src.CleanArchitecture.Domain.Entities.Sku>, SkuConverter>();
-            serviceCollection.AddScoped<IConverter<Retail.Api.Products.src.CleanArchitecture.Domain.Entities.Sku, SkuDto>, SkuDtoConverter>();
+            serviceCollection.AddSingleton<IConverter<SkuDto, Retail.Api.Products.src.CleanArchitecture.Domain.Entities.Sku>, SkuConverter>();
+            serviceCollection.AddSingleton<IConverter<Retail.Api.Products.src.CleanArchitecture.Domain.Entities.Sku, SkuDto>, SkuDtoConverter>();
 
             // Register application lifecycle
             serviceCollection.AddSingleton<ProductApplication>();
