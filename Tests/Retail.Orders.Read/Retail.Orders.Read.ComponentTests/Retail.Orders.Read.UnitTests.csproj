@@ -33,16 +33,6 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="9.0.1" />
   </ItemGroup>
 
-  <PropertyGroup Label="Code Analysis Warning Suppressions">
-    <NoWarn Label="Underscores">$(NoWarn);CA1707</NoWarn>
-    <NoWarn Label="Missing Documentation">$(NoWarn);CS1591;SA1600;SA1636;SA1633;</NoWarn>
-    <NoWarn Label="Missing AttributeUsageAttribute">$(NoWarn);CA1018</NoWarn>
-    <NoWarn Label="Tuple Parenthesis Spacing">$(NoWarn);SA1008;SA1009;</NoWarn>
-    <NoWarn Label="Closing Parenthesis should be on same line">$(NoWarn);SA1111;</NoWarn>
-    <NoWarn Label="Repeated statement">$(NoWarn);S3358;</NoWarn>
-    <NoWarn Label="NuGet restore with HTTP">$(NoWarn);NU1803</NoWarn>
-  </PropertyGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\..\..\Source\Retail.Orders.Read\Retail.Orders.Read.Service\Retail.Orders.Read.Service.csproj" />
   </ItemGroup>

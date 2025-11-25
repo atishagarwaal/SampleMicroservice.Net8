@@ -61,13 +61,4 @@
     </SpecFlowFeatureFiles>
   </ItemGroup>
 
-  <PropertyGroup Label="Code Analysis Warning Suppressions">
-    <NoWarn Label="Underscores">$(NoWarn);CA1707</NoWarn>
-    <NoWarn Label="Missing Documentation">$(NoWarn);CS1591;SA1600</NoWarn>
-    <NoWarn Label="Possible null reference.">$(NoWarn);CS8602;CS8603;CS8604</NoWarn>
-    <NoWarn Label="Missing AttributeUsageAttribute">$(NoWarn);CA1018</NoWarn>
-    <NoWarn Label="Tuple Parenthesis Spacing">$(NoWarn);SA1008;</NoWarn>
-    <NoWarn Label="NuGet restore with HTTP">$(NoWarn);NU1803</NoWarn>
-  </PropertyGroup>
-
 </Project>
