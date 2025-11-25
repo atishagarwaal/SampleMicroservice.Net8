@@ -142,15 +142,19 @@ This document explains why we made key architectural decisions. Each ADR include
 
 **Problem**: DI configuration scattered in Program.cs, hard to test and understand.
 
-**Solution**: CompositionRoot class:
+**Solution**: CompositionRoot **static class**:
 - Centralized service registration
 - All DI in one place
 - Separate from middleware setup
 - Testable independently
+- **Static class** prevents instantiation
+- **Organized registration** by category (Application Infrastructure, DataStore, Domain Services, Converters, Validators, Messaging, API Infrastructure)
 
 **Trade-offs**:
 - ✅ Clear registration, easy to test
 - ✅ Consistent pattern
+- ✅ Static class improves clarity
+- ✅ Organized registration improves maintainability
 - ❌ Extra abstraction layer
 
 **How we handle it**: Template for new services, code analysis, documentation
@@ -226,10 +230,11 @@ This document explains why we made key architectural decisions. Each ADR include
 **Problem**: Build properties duplicated, inconsistent, hard to maintain.
 
 **Solution**: Centralized config:
-- Directory.Build.props at root
-- Common.props for shared properties
-- Tests.Common.props for tests
-- Automatic inheritance
+- `Directory.Build.props` at root
+- `Build/Common.props` for shared properties
+- `Build/Tests.Common.props` for test projects (comprehensive NoWarn suppressions, code analysis packages)
+- `Tests/Directory.Build.props` imports `Tests.Common.props` for all test projects
+- Automatic inheritance via MSBuild import order
 
 **Trade-offs**:
 - ✅ Single source of truth, consistent
@@ -237,6 +242,122 @@ This document explains why we made key architectural decisions. Each ADR include
 - ❌ Need to understand MSBuild import order
 
 **How we handle it**: Documentation, code analysis rules, reviews
+
+---
+
+## ADR-013: IConverter<TFrom, TTo> Pattern
+
+**Status**: Accepted
+
+**Problem**: Reflection-based mapping libraries (AutoMapper) have runtime errors, poor testability, and performance overhead.
+
+**Solution**: Custom `IConverter<TFrom, TTo>` interface:
+- Type-safe conversions with compile-time checking
+- Easy to mock and test
+- Explicit dependencies
+- Singleton lifetime for stateless converters (performance)
+- Using aliases for long namespace names
+
+**Trade-offs**:
+- ✅ Compile-time safety
+- ✅ Better testability
+- ✅ Better performance (Singleton)
+- ✅ Explicit dependencies
+- ❌ More boilerplate than AutoMapper
+- ❌ Need to write converters manually
+
+**How we handle it**: Template converters, code analysis, documentation
+
+---
+
+## ADR-014: Service Registration Organization
+
+**Status**: Accepted
+
+**Problem**: Service registrations in CompositionRoot were unordered and hard to navigate.
+
+**Solution**: Organized registration by category:
+1. Application Infrastructure
+2. General Configuration
+3. DataStore
+4. Domain Services
+5. Converters
+6. Validators
+7. Messaging
+8. API Infrastructure
+
+**Trade-offs**:
+- ✅ Clear organization
+- ✅ Easy to find registrations
+- ✅ Consistent across services
+- ❌ Need discipline to maintain order
+
+**How we handle it**: Code analysis, code reviews, documentation
+
+---
+
+## ADR-015: Configurable Metrics
+
+**Status**: Accepted
+
+**Problem**: Prometheus metrics always enabled, cannot disable for development or specific environments.
+
+**Solution**: `MetricsConfiguration` class with `Enabled` flag:
+- Conditional metrics registration
+- `EmptyMetricsService` (no-op) when disabled
+- Conditional `UseHttpMetrics()` and `MapMetrics()` calls
+
+**Trade-offs**:
+- ✅ Flexible configuration
+- ✅ Can disable in development
+- ✅ No performance overhead when disabled
+- ❌ Extra configuration to manage
+
+**How we handle it**: Default enabled, documentation, configuration examples
+
+---
+
+## ADR-016: RabbitMQ Topology Manager
+
+**Status**: Accepted
+
+**Problem**: RabbitMQ topology initialization logic embedded in Application classes, hard to test and reuse.
+
+**Solution**: Extract to `IRabbitMQTopologyManager`:
+- Dedicated class for topology setup
+- Testable independently
+- Reusable across services
+- Clear separation of concerns
+
+**Trade-offs**:
+- ✅ Better testability
+- ✅ Better modularity
+- ✅ Reusable
+- ❌ Extra abstraction layer
+
+**How we handle it**: Shared implementation in CommonLibrary, documentation
+
+---
+
+## ADR-017: Structured Logging Extensions
+
+**Status**: Accepted
+
+**Problem**: Application lifecycle logging inconsistent, direct LogInformation calls, no shared patterns.
+
+**Solution**: Shared `ApplicationLoggerExtensions` in CommonLibrary:
+- `LoggerMessage.Define` for performance
+- Consistent EventIds and messages
+- Shared across all services
+- Extension methods for clarity
+
+**Trade-offs**:
+- ✅ Consistent logging
+- ✅ Better performance (compiled delegates)
+- ✅ Shared patterns
+- ❌ Extra abstraction
+
+**How we handle it**: Shared library, documentation, code analysis
 
 ---
 

@@ -6,24 +6,25 @@ This document documents the standard patterns and practices used across all serv
 
 ## 🧱 Composition Root Pattern
 
-All services use a `CompositionRoot` class to centralize dependency injection configuration. This pattern separates service registration from web host configuration.
+All services use a `CompositionRoot` **static class** to centralize dependency injection configuration. This pattern separates service registration from web host configuration.
 
 **Structure:**
 ```csharp
 namespace Retail.Api.Customers.Application
 {
+    using System.Diagnostics.CodeAnalysis;
+    using CommonLibrary.Configuration;
+    using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Hosting;
+    using Microsoft.Extensions.Options;
+
     /// <summary>
     /// Configuration for this service.
     /// </summary>
-    public class CompositionRoot
+    [ExcludeFromCodeCoverage]
+    public static class CompositionRoot
     {
-        /// <summary>
-        /// Prevents a default instance of the <see cref="CompositionRoot"/> class from being created.
-        /// </summary>
-        protected CompositionRoot()
-        {
-        }
-
         /// <summary>
         /// Configures application service with a dependency injection container.
         /// </summary>
@@ -31,25 +32,64 @@ namespace Retail.Api.Customers.Application
         /// <param name="serviceCollection">Service collection to register services to.</param>
         public static void ConfigureServices(HostBuilderContext context, IServiceCollection serviceCollection)
         {
-            // Configure OpenTelemetry for observability
-            serviceCollection.AddOpenTelemetry(
-                context.Configuration,
-                serviceName: "Retail.Customers",
-                serviceVersion: "1.0.0");
+            // Application Infrastructure
+            serviceCollection.AddSingleton<CustomerApplication>();
+            serviceCollection.AddSingleton<Microsoft.Extensions.Hosting.IHostedService>(sp => sp.GetRequiredService<CustomerApplication>());
+            serviceCollection.AddScoped<IServiceInitializer, ServiceInitializer>();
 
-            // Configure strongly-typed configuration classes
+            // General Configuration
             serviceCollection.Configure<DatabaseConnectionConfiguration>(
                 context.Configuration.GetSection("ConnectionStrings"));
+            serviceCollection.Configure<MetricsConfiguration>(
+                context.Configuration.GetSection(nameof(MetricsConfiguration)));
 
-            // Configure database connection
+            // DataStore
             serviceCollection.AddDbContext<ApplicationDbContext>((serviceProvider, options) =>
             {
                 var dbConfig = serviceProvider.GetRequiredService<IOptions<DatabaseConnectionConfiguration>>().Value;
                 options.UseSqlServer(dbConfig.DefaultConnection);
             }, ServiceLifetime.Scoped);
+            serviceCollection.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+            serviceCollection.AddScoped<IUnitOfWork, UnitOfWork>();
 
-            // Register services, repositories, and application lifecycle
-            // ...
+            // Domain Services
+            serviceCollection.AddScoped<ICustomerService, CustomerService>();
+
+            // Converters (Singleton lifetime for stateless converters)
+            serviceCollection.AddSingleton<IConverter<CustomerDto, Customer>, CustomerConverter>();
+            serviceCollection.AddSingleton<IConverter<Customer, CustomerDto>, CustomerDtoConverter>();
+
+            // Validators
+            serviceCollection.AddScoped<IMessageValidator<CustomerDto>, CustomerDtoValidator>();
+
+            // Messaging
+            serviceCollection.AddRabbitMQServices(context.Configuration);
+            serviceCollection.AddSingleton<IRabbitMQTopologyManager, RabbitMQTopologyManager>();
+            serviceCollection.AddScoped<IEventHandler<InventoryUpdatedEvent>, InventoryUpdatedEventHandler>();
+
+            // API Infrastructure
+            serviceCollection.AddOpenTelemetry(
+                context.Configuration,
+                serviceName: "Retail.Customers",
+                serviceVersion: "1.0.0");
+            serviceCollection.AddSingleton<CommonLibrary.Telemetry.IMetricsService>(services =>
+            {
+                var metricsConfiguration = services.GetRequiredService<IOptions<MetricsConfiguration>>();
+                if (metricsConfiguration.Value.Enabled)
+                {
+                    return new CommonLibrary.Telemetry.MetricsService();
+                }
+                else
+                {
+                    return new CommonLibrary.Telemetry.EmptyMetricsService();
+                }
+            });
+            serviceCollection.AddApiVersioning(/* ... */);
+            serviceCollection.AddEndpointsApiExplorer();
+            serviceCollection.AddControllers();
+            serviceCollection.AddSwaggerGen(/* ... */);
+            serviceCollection.AddHealthChecks()
+                .AddDbContextCheck<ApplicationDbContext>("database");
         }
 
         /// <summary>
@@ -67,11 +107,13 @@ namespace Retail.Api.Customers.Application
 ```
 
 **Key Points:**
+- ✅ **Static class** - Cannot be instantiated, contains only static methods
 - ✅ Use static methods for configuration
-- ✅ Protected constructor prevents instantiation
 - ✅ Separate `Configure` for configuration sources and `ConfigureServices` for DI
+- ✅ **Organized service registration** - Group registrations by category (see Service Registration Organization below)
 - ✅ Use strongly-typed configuration classes (see below)
-- ✅ Register OpenTelemetry early for observability
+- ✅ Register OpenTelemetry and metrics early for observability
+- ✅ Use `[ExcludeFromCodeCoverage]` attribute
 
 ---
 
@@ -109,34 +151,45 @@ namespace Retail.Api.Customers.Application
         /// <summary>
         /// Configures the application.
         /// </summary>
-        public void Configure(IApplicationBuilder app)
+        /// <param name="webApplicationBuilder">The application builder.</param>
+        /// <param name="webEnvironment">The web hosting environment.</param>
+        public static void Configure(IApplicationBuilder webApplicationBuilder, IWebHostEnvironment webEnvironment)
         {
-            this.environment.ApplicationName = "Retail.Customers";
+            webEnvironment.ApplicationName = typeof(Startup).Assembly.GetName().Name;
+
+            // Get metrics configuration
+            var metricsConfig = webApplicationBuilder.ApplicationServices.GetRequiredService<IOptions<MetricsConfiguration>>().Value;
 
             // Register global exception handling middleware early in the pipeline
-            app.UseMiddleware<GlobalExceptionHandlerMiddleware>();
+            webApplicationBuilder.UseMiddleware<GlobalExceptionHandlerMiddleware>();
 
-            if (this.environment.IsDevelopment())
+            if (webEnvironment.IsDevelopment())
             {
-                app.UseDeveloperExceptionPage();
-                app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "v1"));
+                webApplicationBuilder.UseDeveloperExceptionPage();
+                webApplicationBuilder.UseSwagger();
+                webApplicationBuilder.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "v1"));
             }
 
-            app.UseHttpsRedirection();
-            app.UseRouting();
+            webApplicationBuilder.UseHttpsRedirection();
+            webApplicationBuilder.UseRouting();
             
-            // Collect HTTP request metrics for Prometheus
-            app.UseHttpMetrics();
+            // Conditionally collect HTTP request metrics for Prometheus
+            if (metricsConfig.Enabled)
+            {
+                webApplicationBuilder.UseHttpMetrics();
+            }
             
-            app.UseAuthorization();
+            webApplicationBuilder.UseAuthorization();
 
-            app.UseEndpoints(endpoints =>
+            webApplicationBuilder.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
                 
-                // Prometheus metrics endpoint
-                endpoints.MapMetrics();
+                // Conditionally expose Prometheus metrics endpoint
+                if (metricsConfig.Enabled)
+                {
+                    endpoints.MapMetrics();
+                }
                 
                 // Liveness endpoint - indicates the service is running
                 endpoints.MapHealthChecks("/health/liveness", new HealthCheckOptions
@@ -393,8 +446,178 @@ namespace Retail.Api.Customers
 - ✅ Use `Host.CreateDefaultBuilder` for standard configuration
 - ✅ Configure host configuration before web host defaults
 - ✅ Use `CompositionRoot` for all configuration
-- ✅ Start `IApplication` before running host
+- ✅ Start `IHostedService` (Application class) before running host
 - ✅ Log critical exceptions before termination
+
+---
+
+## 📋 Service Registration Organization
+
+Service registrations in `CompositionRoot.ConfigureServices` should be organized into clear, logical categories with comments. This improves readability and maintainability.
+
+**Organization Pattern:**
+```csharp
+public static void ConfigureServices(HostBuilderContext context, IServiceCollection serviceCollection)
+{
+    // 1. Application Infrastructure
+    serviceCollection.AddSingleton<CustomerApplication>();
+    serviceCollection.AddSingleton<IHostedService>(sp => sp.GetRequiredService<CustomerApplication>());
+    serviceCollection.AddScoped<IServiceInitializer, ServiceInitializer>();
+
+    // 2. General Configuration
+    serviceCollection.Configure<DatabaseConnectionConfiguration>(
+        context.Configuration.GetSection("ConnectionStrings"));
+    serviceCollection.Configure<MetricsConfiguration>(
+        context.Configuration.GetSection(nameof(MetricsConfiguration)));
+
+    // 3. DataStore
+    serviceCollection.AddDbContext<ApplicationDbContext>(/* ... */);
+    serviceCollection.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+    serviceCollection.AddScoped<IUnitOfWork, UnitOfWork>();
+
+    // 4. Domain Services
+    serviceCollection.AddScoped<ICustomerService, CustomerService>();
+
+    // 5. Converters
+    serviceCollection.AddSingleton<IConverter<CustomerDto, Customer>, CustomerConverter>();
+    serviceCollection.AddSingleton<IConverter<Customer, CustomerDto>, CustomerDtoConverter>();
+
+    // 6. Validators
+    serviceCollection.AddScoped<IMessageValidator<CustomerDto>, CustomerDtoValidator>();
+
+    // 7. Messaging
+    serviceCollection.AddRabbitMQServices(context.Configuration);
+    serviceCollection.AddSingleton<IRabbitMQTopologyManager, RabbitMQTopologyManager>();
+    serviceCollection.AddScoped<IEventHandler<InventoryUpdatedEvent>, InventoryUpdatedEventHandler>();
+
+    // 8. API Infrastructure
+    serviceCollection.AddOpenTelemetry(/* ... */);
+    serviceCollection.AddSingleton<IMetricsService>(/* ... */);
+    serviceCollection.AddApiVersioning(/* ... */);
+    serviceCollection.AddEndpointsApiExplorer();
+    serviceCollection.AddControllers();
+    serviceCollection.AddSwaggerGen(/* ... */);
+    serviceCollection.AddHealthChecks()/* ... */;
+}
+```
+
+**Key Points:**
+- ✅ Group related registrations together
+- ✅ Use clear section comments
+- ✅ Follow consistent ordering across all services
+- ✅ Register infrastructure services last (OpenTelemetry, Metrics, API versioning, Swagger)
+
+---
+
+## 🔄 IConverter<TFrom, TTo> Pattern
+
+Services use a custom `IConverter<TFrom, TTo>` interface for type-safe data transformation. This pattern provides compile-time safety and better testability than reflection-based mapping libraries.
+
+**Interface:**
+```csharp
+namespace CommonLibrary.Application
+{
+    /// <summary>
+    /// Defines a converter that transforms objects from one type to another.
+    /// </summary>
+    /// <typeparam name="TFrom">The source type.</typeparam>
+    /// <typeparam name="TTo">The target type.</typeparam>
+    public interface IConverter<in TFrom, out TTo>
+    {
+        /// <summary>
+        /// Converts the specified source object to the target type.
+        /// </summary>
+        /// <param name="source">The source object to convert.</param>
+        /// <returns>The converted object.</returns>
+        TTo Convert(TFrom source);
+    }
+}
+```
+
+**Implementation Example:**
+```csharp
+namespace Retail.Api.Customers.src.CleanArchitecture.Application.Converters
+{
+    using Dto = Retail.Api.Customers.src.CleanArchitecture.Application.Dto;
+    using DomainEntities = Retail.Api.Customers.src.CleanArchitecture.Domain.Entities;
+
+    /// <summary>
+    /// Converts CustomerDto to Customer domain entity.
+    /// </summary>
+    public class CustomerConverter : IConverter<Dto.CustomerDto, DomainEntities.Customer>
+    {
+        /// <summary>
+        /// Converts CustomerDto to Customer.
+        /// </summary>
+        public DomainEntities.Customer Convert(Dto.CustomerDto source)
+        {
+            if (source == null)
+            {
+                return null;
+            }
+
+            return new DomainEntities.Customer
+            {
+                Id = source.Id,
+                Name = source.Name,
+                Email = source.Email
+            };
+        }
+    }
+}
+```
+
+**Registration:**
+```csharp
+// In CompositionRoot.ConfigureServices
+// Converters (Singleton lifetime for stateless converters)
+serviceCollection.AddSingleton<IConverter<CustomerDto, Customer>, CustomerConverter>();
+serviceCollection.AddSingleton<IConverter<Customer, CustomerDto>, CustomerDtoConverter>();
+```
+
+**Key Points:**
+- ✅ **Singleton lifetime** - Converters are stateless and thread-safe, register as Singleton for performance
+- ✅ **Type safety** - Compile-time checking prevents runtime mapping errors
+- ✅ **Testability** - Easy to mock and test converters independently
+- ✅ **Using aliases** - Use namespace aliases for long namespace names (see Using Aliases Pattern below)
+- ✅ **Explicit dependencies** - Clear what conversions are needed
+- ✅ **Composability** - Converters can depend on other converters via DI
+
+---
+
+## 📝 Using Aliases Pattern
+
+Use namespace aliases (`using Alias = Full.Namespace.Name;`) to improve readability when working with long namespace names, especially in converter files.
+
+**Example:**
+```csharp
+namespace Retail.Api.Customers.src.CleanArchitecture.Application.Converters
+{
+    using Dto = Retail.Api.Customers.src.CleanArchitecture.Application.Dto;
+    using DomainEntities = Retail.Api.Customers.src.CleanArchitecture.Domain.Entities;
+
+    /// <summary>
+    /// Converts CustomerDto to Customer domain entity.
+    /// </summary>
+    public class CustomerConverter : IConverter<Dto.CustomerDto, DomainEntities.Customer>
+    {
+        public DomainEntities.Customer Convert(Dto.CustomerDto source)
+        {
+            return new DomainEntities.Customer
+            {
+                Id = source.Id,
+                Name = source.Name
+            };
+        }
+    }
+}
+```
+
+**Key Points:**
+- ✅ Use aliases for frequently used long namespaces
+- ✅ Common aliases: `Dto` for DTO namespaces, `DomainEntities` for Domain entity namespaces
+- ✅ Improves code readability and reduces line length
+- ✅ Use consistently across all converter files
 
 ---
 
@@ -478,7 +701,9 @@ endpoints.MapHealthChecks("/health/readiness", new HealthCheckOptions
 
 ## 📦 Build Configuration Pattern
 
-All projects inherit from `Directory.Build.props` and `Build/Common.props` for centralized build properties.
+All projects inherit from `Directory.Build.props` and `Build/Common.props` for centralized build properties. Test projects additionally inherit from `Build/Tests.Common.props` for test-specific configuration.
+
+### Production Projects
 
 **Directory.Build.props:**
 ```xml
@@ -487,7 +712,7 @@ All projects inherit from `Directory.Build.props` and `Build/Common.props` for c
 </Project>
 ```
 
-**Common.props:**
+**Build/Common.props:**
 ```xml
 <Project>
   <PropertyGroup Label="Package Information Properties">
@@ -507,11 +732,285 @@ All projects inherit from `Directory.Build.props` and `Build/Common.props` for c
 </Project>
 ```
 
+### Test Projects
+
+**Tests/Directory.Build.props:**
+```xml
+<Project>
+  <!-- Imports Tests.Common.props which contains test-specific properties -->
+  <Import Project="$(MSBuildThisFileDirectory)..\Build\Tests.Common.props" 
+          Condition="Exists('$(MSBuildThisFileDirectory)..\Build\Tests.Common.props')" />
+</Project>
+```
+
+**Build/Tests.Common.props:**
+```xml
+<Project>
+  <PropertyGroup Label="Test Project Properties">
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+    <LangVersion>latest</LangVersion>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+  </PropertyGroup>
+
+  <ItemGroup Label="Code Analysis Packages">
+    <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="9.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.556">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <PropertyGroup Label="Code Analysis Warning Suppressions">
+    <!-- Comprehensive suppressions for test projects -->
+    <NoWarn Label="Underscores">$(NoWarn);CA1707</NoWarn>
+    <NoWarn Label="Trailing spaces">$(NoWarn);SA1028</NoWarn>
+    <NoWarn Label="Using statements order">$(NoWarn);SA1210</NoWarn>
+    <NoWarn Label="Constant field location">$(NoWarn);SA1203</NoWarn>
+    <NoWarn Label="Single type in a file">$(NoWarn);SA1402</NoWarn>
+    <NoWarn Label="Missing or misformatted Documentation">$(NoWarn);CS1591;SA1600;SA1636;SA1633;SA1624</NoWarn>
+    <NoWarn Label="Missing AttributeUsageAttribute">$(NoWarn);CA1018</NoWarn>
+    <NoWarn Label="Tuple Parenthesis Spacing">$(NoWarn);SA1008;SA1009</NoWarn>
+    <NoWarn Label="Closing Parenthesis should be on same line">$(NoWarn);SA1111</NoWarn>
+    <NoWarn Label="Repeated statement">$(NoWarn);S3358</NoWarn>
+    <NoWarn Label="NuGet restore with HTTP">$(NoWarn);NU1803</NoWarn>
+    <NoWarn Label="Possible null reference">$(NoWarn);CS8602;CS8603;CS8604;CS8620;CS8625;CS8632</NoWarn>
+  </PropertyGroup>
+</Project>
+```
+
 **Key Points:**
-- ✅ Centralize build properties in `Common.props`
+- ✅ Centralize build properties in `Common.props` for production projects
+- ✅ Centralize test configuration in `Tests.Common.props` for test projects
 - ✅ Enable XML documentation generation
 - ✅ Use consistent code analysis rules
 - ✅ Apply to all projects via `Directory.Build.props`
+- ✅ Test projects inherit both `Common.props` and `Tests.Common.props`
+- ✅ Don't duplicate suppressions in individual test projects
+
+---
+
+## 🐰 RabbitMQ Topology Manager Pattern
+
+RabbitMQ topology initialization (exchanges, queues, bindings) is extracted into a dedicated, testable class `IRabbitMQTopologyManager`. This pattern improves modularity and testability.
+
+**Interface:**
+```csharp
+namespace CommonLibrary.Infrastructure
+{
+    using System.Threading;
+    using System.Threading.Tasks;
+
+    /// <summary>
+    /// Manages RabbitMQ topology setup (exchanges, queues, bindings).
+    /// </summary>
+    public interface IRabbitMQTopologyManager
+    {
+        /// <summary>
+        /// Sets up the RabbitMQ topology asynchronously.
+        /// </summary>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        Task SetupTopologyAsync(CancellationToken cancellationToken = default);
+    }
+}
+```
+
+**Usage in Application Class:**
+```csharp
+public async Task StartAsync(CancellationToken cancellationToken)
+{
+    this.logger.LogServiceStartup("Customer Service");
+
+    using (var scope = this.serviceProvider.CreateScope())
+    {
+        this.logger.LogTopologySetup();
+        var topologyManager = scope.ServiceProvider.GetRequiredService<IRabbitMQTopologyManager>();
+        await topologyManager.SetupTopologyAsync(cancellationToken).ConfigureAwait(false);
+
+        this.logger.LogServiceSubscriptionsInitialization();
+        var serviceInitializer = scope.ServiceProvider.GetRequiredService<IServiceInitializer>();
+        await serviceInitializer.Initialize().ConfigureAwait(false);
+    }
+
+    this.logger.LogServiceStartedSuccessfully("Customer Service");
+}
+```
+
+**Registration:**
+```csharp
+// In CompositionRoot.ConfigureServices
+// Messaging
+serviceCollection.AddRabbitMQServices(context.Configuration);
+serviceCollection.AddSingleton<IRabbitMQTopologyManager, RabbitMQTopologyManager>();
+```
+
+**Key Points:**
+- ✅ Extract topology setup logic into dedicated class
+- ✅ Register as Singleton
+- ✅ Use in Application class startup sequence
+- ✅ Improves testability and modularity
+
+---
+
+## 📊 Metrics Configuration Pattern
+
+Metrics collection is configurable via `MetricsConfiguration` to enable/disable Prometheus metrics. This provides flexibility for different environments.
+
+**Configuration Class:**
+```csharp
+namespace CommonLibrary.Configuration
+{
+    /// <summary>
+    /// Configuration for metrics collection.
+    /// </summary>
+    public class MetricsConfiguration
+    {
+        /// <summary>
+        /// Gets or sets a value indicating whether metrics are enabled.
+        /// </summary>
+        public bool Enabled { get; set; } = true;
+
+        /// <summary>
+        /// Gets or sets the service name for metrics.
+        /// </summary>
+        public string ServiceName { get; set; } = string.Empty;
+    }
+}
+```
+
+**appsettings.json:**
+```json
+{
+  "MetricsConfiguration": {
+    "Enabled": true,
+    "ServiceName": "Retail.Customers"
+  }
+}
+```
+
+**Registration:**
+```csharp
+// In CompositionRoot.ConfigureServices
+// General Configuration
+serviceCollection.Configure<MetricsConfiguration>(
+    context.Configuration.GetSection(nameof(MetricsConfiguration)));
+
+// API Infrastructure
+serviceCollection.AddSingleton<CommonLibrary.Telemetry.IMetricsService>(services =>
+{
+    var metricsConfiguration = services.GetRequiredService<IOptions<MetricsConfiguration>>();
+    if (metricsConfiguration.Value.Enabled)
+    {
+        return new CommonLibrary.Telemetry.MetricsService();
+    }
+    else
+    {
+        return new CommonLibrary.Telemetry.EmptyMetricsService();
+    }
+});
+```
+
+**Usage in Startup:**
+```csharp
+public static void Configure(IApplicationBuilder webApplicationBuilder, IWebHostEnvironment webEnvironment)
+{
+    var metricsConfig = webApplicationBuilder.ApplicationServices
+        .GetRequiredService<IOptions<MetricsConfiguration>>().Value;
+
+    // ... middleware setup ...
+
+    if (metricsConfig.Enabled)
+    {
+        webApplicationBuilder.UseHttpMetrics();
+    }
+
+    webApplicationBuilder.UseEndpoints(endpoints =>
+    {
+        endpoints.MapControllers();
+        if (metricsConfig.Enabled)
+        {
+            endpoints.MapMetrics();
+        }
+        // ... health checks ...
+    });
+}
+```
+
+**Key Points:**
+- ✅ Use `MetricsConfiguration` for conditional metrics
+- ✅ Provide `EmptyMetricsService` (no-op) when disabled
+- ✅ Conditionally register `UseHttpMetrics()` and `MapMetrics()` based on configuration
+- ✅ Allows disabling metrics in development or specific environments
+
+---
+
+## 📝 Structured Logging Extensions Pattern
+
+Application lifecycle logging uses structured logging extensions with `LoggerMessage.Define` for consistency and performance. Extensions are shared in `CommonLibrary.Logging`.
+
+**Shared Extensions:**
+```csharp
+namespace CommonLibrary.Logging
+{
+    using System;
+    using Microsoft.Extensions.Logging;
+
+    /// <summary>
+    /// Extension methods for application lifecycle logging.
+    /// </summary>
+    public static class ApplicationLoggerExtensions
+    {
+        private static readonly Action<ILogger, string, Exception?> LogServiceStartupAction =
+            LoggerMessage.Define<string>(
+                LogLevel.Information,
+                new EventId(1001, nameof(LogServiceStartup)),
+                "Starting service instance: {ServiceName}");
+
+        /// <summary>
+        /// Logs service startup.
+        /// </summary>
+        public static void LogServiceStartup(this ILogger logger, string serviceName) =>
+            LogServiceStartupAction(logger, serviceName, null);
+
+        // ... other extension methods ...
+    }
+}
+```
+
+**Usage in Application Class:**
+```csharp
+public async Task StartAsync(CancellationToken cancellationToken)
+{
+    this.logger.LogServiceStartup("Customer Service");
+
+    using (var scope = this.serviceProvider.CreateScope())
+    {
+        this.logger.LogTopologySetup();
+        var topologyManager = scope.ServiceProvider.GetRequiredService<IRabbitMQTopologyManager>();
+        await topologyManager.SetupTopologyAsync(cancellationToken).ConfigureAwait(false);
+
+        this.logger.LogServiceSubscriptionsInitialization();
+        var serviceInitializer = scope.ServiceProvider.GetRequiredService<IServiceInitializer>();
+        await serviceInitializer.Initialize().ConfigureAwait(false);
+
+        this.logger.LogDatabaseCreation();
+        var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        await db.Database.EnsureCreatedAsync(cancellationToken).ConfigureAwait(false);
+        this.logger.LogDatabaseInitializationCompleted();
+    }
+
+    this.logger.LogServiceStartedSuccessfully("Customer Service");
+}
+```
+
+**Key Points:**
+- ✅ Use `LoggerMessage.Define` for performance (compiled delegates)
+- ✅ Shared extensions in `CommonLibrary.Logging`
+- ✅ Consistent EventIds and log messages across all services
+- ✅ Use extension methods instead of direct `LogInformation` calls
 
 ---
 
@@ -519,18 +1018,21 @@ All projects inherit from `Directory.Build.props` and `Build/Common.props` for c
 
 When creating a new service, ensure:
 
-- ✅ `CompositionRoot` class with `Configure` and `ConfigureServices` methods
-- ✅ `Startup` class with `Configure` method
-- ✅ `*Application` class implementing `IApplication` and `IHostedService`
+- ✅ `CompositionRoot` **static class** with `Configure` and `ConfigureServices` methods
+- ✅ `Startup` class with **static** `Configure` method
+- ✅ `*Application` class implementing `IHostedService`
 - ✅ `Program.cs` following standard pattern
 - ✅ Strongly-typed configuration classes registered
 - ✅ Global exception handler middleware registered
 - ✅ Health checks configured (liveness and readiness)
 - ✅ OpenTelemetry configured
-- ✅ Prometheus metrics exposed
+- ✅ Metrics configuration with conditional Prometheus metrics
 - ✅ Swagger configured (Development only)
 - ✅ Repository and Unit of Work registered
-- ✅ Service registered as singleton with multiple interfaces
+- ✅ Converters registered as **Singleton**
+- ✅ Service registration organized by category
+- ✅ RabbitMQ topology manager registered
+- ✅ Structured logging extensions used
 
 ---
 

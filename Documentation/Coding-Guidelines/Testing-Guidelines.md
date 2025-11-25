@@ -184,6 +184,129 @@ Assert.IsNotNull(result);
 
 ---
 
+## 🏗️ Test Project Configuration
+
+All test projects follow a standardized configuration pattern using centralized build properties. This ensures consistency across all test projects and simplifies maintenance.
+
+### Centralized Configuration
+
+Test projects inherit configuration from `Build/Tests.Common.props` via `Tests/Directory.Build.props`. This provides:
+
+- **Comprehensive code analysis warning suppressions** - Standardized suppressions for test-specific scenarios
+- **Code analysis packages** - Microsoft.CodeAnalysis.NetAnalyzers and StyleCop.Analyzers
+- **Test project properties** - Standard settings for all test projects
+
+### Configuration Structure
+
+**Tests/Directory.Build.props:**
+```xml
+<Project>
+  <!-- Imports Tests.Common.props which contains test-specific properties -->
+  <Import Project="$(MSBuildThisFileDirectory)..\Build\Tests.Common.props" 
+          Condition="Exists('$(MSBuildThisFileDirectory)..\Build\Tests.Common.props')" />
+</Project>
+```
+
+**Build/Tests.Common.props:**
+```xml
+<Project>
+  <PropertyGroup Label="Test Project Properties">
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+    <LangVersion>latest</LangVersion>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+  </PropertyGroup>
+
+  <ItemGroup Label="Code Analysis Packages">
+    <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="9.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.556">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <PropertyGroup Label="Code Analysis Warning Suppressions">
+    <NoWarn Label="Underscores">$(NoWarn);CA1707</NoWarn>
+    <NoWarn Label="Trailing spaces">$(NoWarn);SA1028</NoWarn>
+    <NoWarn Label="Using statements order">$(NoWarn);SA1210</NoWarn>
+    <NoWarn Label="Constant field location">$(NoWarn);SA1203</NoWarn>
+    <NoWarn Label="Single type in a file">$(NoWarn);SA1402</NoWarn>
+    <NoWarn Label="Missing or misformatted Documentation">$(NoWarn);CS1591;SA1600;SA1636;SA1633;SA1624</NoWarn>
+    <NoWarn Label="Missing AttributeUsageAttribute">$(NoWarn);CA1018</NoWarn>
+    <NoWarn Label="Tuple Parenthesis Spacing">$(NoWarn);SA1008;SA1009</NoWarn>
+    <NoWarn Label="Closing Parenthesis should be on same line">$(NoWarn);SA1111</NoWarn>
+    <NoWarn Label="Repeated statement">$(NoWarn);S3358</NoWarn>
+    <NoWarn Label="NuGet restore with HTTP">$(NoWarn);NU1803</NoWarn>
+    <NoWarn Label="Possible null reference">$(NoWarn);CS8602;CS8603;CS8604;CS8620;CS8625;CS8632</NoWarn>
+  </PropertyGroup>
+</Project>
+```
+
+### Test Project Structure
+
+Individual test projects should **not** duplicate suppressions or code analysis packages. They inherit these from `Tests.Common.props` automatically.
+
+**✅ Correct - Minimal test project:**
+```xml
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="coverlet.collector" Version="6.0.4">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
+    <!-- Test framework packages (NUnit, SpecFlow, etc.) -->
+  </ItemGroup>
+
+  <!-- No duplicate NoWarn suppressions - inherited from Tests.Common.props -->
+</Project>
+```
+
+**❌ Incorrect - Duplicate suppressions:**
+```xml
+<!-- Don't duplicate suppressions that are already in Tests.Common.props -->
+<PropertyGroup Label="Code Analysis Warning Suppressions">
+  <NoWarn>$(NoWarn);CS1591;SA1600</NoWarn>  <!-- Already in Tests.Common.props -->
+</PropertyGroup>
+```
+
+### Code Coverage
+
+All test projects should include coverlet packages for code coverage collection:
+
+```xml
+<ItemGroup>
+  <PackageReference Include="coverlet.collector" Version="6.0.4">
+    <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    <PrivateAssets>all</PrivateAssets>
+  </PackageReference>
+  <!-- Optional: coverlet.msbuild for MSBuild integration -->
+  <PackageReference Include="coverlet.msbuild" Version="6.0.4">
+    <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    <PrivateAssets>all</PrivateAssets>
+  </PackageReference>
+</ItemGroup>
+```
+
+### Key Points
+
+- ✅ **Use centralized configuration** - All suppressions in `Tests.Common.props`
+- ✅ **Don't duplicate** - Individual projects inherit automatically
+- ✅ **Include coverlet** - For code coverage collection
+- ✅ **Consistent packages** - Code analysis packages configured centrally
+- ✅ **Standard properties** - Test project properties set in `Tests.Common.props`
+
+---
+
 ## Related Documentation
 
 - [C# Coding Standards](./CSharp-Coding-Standards.md) - Code style and organization

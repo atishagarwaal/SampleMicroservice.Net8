@@ -137,21 +137,78 @@ serviceCollection.AddOpenTelemetry(
 
 ### Prometheus Metrics
 
-Services expose Prometheus metrics for monitoring.
+Services expose Prometheus metrics for monitoring. Metrics collection is configurable via `MetricsConfiguration` to enable/disable metrics in different environments.
+
+**Configuration:**
+```json
+// appsettings.json
+{
+  "MetricsConfiguration": {
+    "Enabled": true,
+    "ServiceName": "Retail.Customers"
+  }
+}
+```
 
 **Registration:**
 ```csharp
-// In Startup.Configure
-app.UseHttpMetrics();  // Collect HTTP request metrics
+// In CompositionRoot.ConfigureServices
+// General Configuration
+serviceCollection.Configure<MetricsConfiguration>(
+    context.Configuration.GetSection(nameof(MetricsConfiguration)));
 
-// In endpoints
-endpoints.MapMetrics();  // Expose /metrics endpoint
+// API Infrastructure
+serviceCollection.AddSingleton<IMetricsService>(services =>
+{
+    var metricsConfiguration = services.GetRequiredService<IOptions<MetricsConfiguration>>();
+    if (metricsConfiguration.Value.Enabled)
+    {
+        return new MetricsService();
+    }
+    else
+    {
+        return new EmptyMetricsService();  // No-op implementation
+    }
+});
+```
+
+**Usage:**
+```csharp
+// In Startup.Configure (static method)
+public static void Configure(IApplicationBuilder webApplicationBuilder, IWebHostEnvironment webEnvironment)
+{
+    var metricsConfig = webApplicationBuilder.ApplicationServices
+        .GetRequiredService<IOptions<MetricsConfiguration>>().Value;
+
+    // ... other middleware ...
+
+    // Conditionally collect HTTP request metrics
+    if (metricsConfig.Enabled)
+    {
+        webApplicationBuilder.UseHttpMetrics();
+    }
+
+    webApplicationBuilder.UseEndpoints(endpoints =>
+    {
+        endpoints.MapControllers();
+        
+        // Conditionally expose /metrics endpoint
+        if (metricsConfig.Enabled)
+        {
+            endpoints.MapMetrics();
+        }
+        
+        // ... health checks ...
+    });
+}
 ```
 
 **Key Points:**
-- ✅ Use `UseHttpMetrics()` for automatic HTTP metrics
-- ✅ Expose `/metrics` endpoint for Prometheus scraping
+- ✅ Use `MetricsConfiguration` for conditional metrics
+- ✅ Provide `EmptyMetricsService` (no-op) when disabled
+- ✅ Conditionally call `UseHttpMetrics()` and `MapMetrics()` based on configuration
 - ✅ Use consistent metric naming: `service_feature_metric`
+- ✅ Allows disabling metrics in development or specific environments
 
 ---
 
