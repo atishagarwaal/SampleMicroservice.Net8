@@ -11,6 +11,7 @@ namespace Retail.Orders.Read.Application
     using System.Threading;
     using System.Threading.Tasks;
     using CommonLibrary.Infrastructure;
+    using CommonLibrary.Logging;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
@@ -45,21 +46,21 @@ namespace Retail.Orders.Read.Application
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task StartAsync(CancellationToken cancellationToken)
         {
-            this.logger.LogInformation("Starting Order Read Service");
+            this.logger.LogServiceStartup("Order Read Service");
 
             using (var scope = this.serviceProvider.CreateScope())
             {
-                this.logger.LogInformation("Setting up RabbitMQ topology");
+                this.logger.LogTopologySetup();
                 var topologyManager = scope.ServiceProvider.GetRequiredService<IRabbitMQTopologyManager>();
                 await topologyManager.SetupTopologyAsync(cancellationToken).ConfigureAwait(false);
 
-                this.logger.LogInformation("Initializing service subscriptions");
+                this.logger.LogServiceSubscriptionsInitialization();
                 var serviceInitializer = scope.ServiceProvider.GetRequiredService<IServiceInitializer>();
                 await serviceInitializer.Initialize().ConfigureAwait(false);
-                this.logger.LogInformation("Service subscriptions initialized successfully");
+                this.logger.LogServiceSubscriptionsInitialized();
             }
 
-            this.logger.LogInformation("Order Read Service started successfully");
+            this.logger.LogServiceStartedSuccessfully("Order Read Service");
         }
 
         /// <summary>
@@ -69,7 +70,7 @@ namespace Retail.Orders.Read.Application
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public Task StopAsync(CancellationToken cancellationToken)
         {
-            this.logger.LogInformation("Stopping Order Read Service");
+            this.logger.LogServiceStopping("Order Read Service");
             return Task.CompletedTask;
         }
     }

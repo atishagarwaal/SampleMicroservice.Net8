@@ -11,6 +11,7 @@ namespace Retail.Api.Products.Application
     using System.Threading;
     using System.Threading.Tasks;
     using CommonLibrary.Infrastructure;
+    using CommonLibrary.Logging;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
@@ -46,25 +47,25 @@ namespace Retail.Api.Products.Application
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task StartAsync(CancellationToken cancellationToken)
         {
-            this.logger.LogInformation("Starting Product Service");
+            this.logger.LogServiceStartup("Product Service");
 
             using (var scope = this.serviceProvider.CreateScope())
             {
-                this.logger.LogInformation("Setting up RabbitMQ topology");
+                this.logger.LogTopologySetup();
                 var topologyManager = scope.ServiceProvider.GetRequiredService<IRabbitMQTopologyManager>();
                 await topologyManager.SetupTopologyAsync(cancellationToken).ConfigureAwait(false);
 
-                this.logger.LogInformation("Initializing service subscriptions");
+                this.logger.LogServiceSubscriptionsInitialization();
                 var serviceInitializer = scope.ServiceProvider.GetRequiredService<IServiceInitializer>();
                 await serviceInitializer.Initialize().ConfigureAwait(false);
 
-                this.logger.LogInformation("Ensuring database is created");
+                this.logger.LogDatabaseCreation();
                 var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
                 await db.Database.EnsureCreatedAsync(cancellationToken).ConfigureAwait(false);
-                this.logger.LogInformation("Database initialization completed");
+                this.logger.LogDatabaseInitializationCompleted();
             }
 
-            this.logger.LogInformation("Product Service started successfully");
+            this.logger.LogServiceStartedSuccessfully("Product Service");
         }
 
         /// <summary>
@@ -74,7 +75,7 @@ namespace Retail.Api.Products.Application
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public Task StopAsync(CancellationToken cancellationToken)
         {
-            this.logger.LogInformation("Stopping Product Service");
+            this.logger.LogServiceStopping("Product Service");
             return Task.CompletedTask;
         }
     }
