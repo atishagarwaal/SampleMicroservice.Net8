@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using CommonLibrary.Exceptions;
 using CommonLibrary.MessageContract;
 using CommonLibrary.Results;
 using CommonLibrary.Telemetry;
@@ -146,7 +147,7 @@ namespace Retail.Orders.Write.src.CleanArchitecture.Application.Handlers
                         // This is unexpected - order should exist after save
                         this._logger.LogError("Order not found after save. OrderId: {OrderId}", orderRecord.Id);
                         await unitOfWork.RollbackTransactionAsync();
-                        throw new InvalidOperationException($"Order with ID {orderRecord.Id} was not found after save");
+                        throw new NotFoundException($"Order with ID {orderRecord.Id} was not found after save");
                     }
 
                     // Create and publish the event

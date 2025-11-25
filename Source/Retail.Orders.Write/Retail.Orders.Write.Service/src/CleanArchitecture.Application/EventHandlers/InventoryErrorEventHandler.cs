@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using CommonLibrary.Exceptions;
 using CommonLibrary.Handlers;
 using CommonLibrary.MessageContract;
 using CommonLibrary.Telemetry;
@@ -81,7 +82,7 @@ namespace Retail.Orders.Write.src.CleanArchitecture.Application.EventHandlers
                     {
                         this._metrics.IncrementCounter("orders_not_found_total", 1);
                         _logger.LogWarning("Order not found for deletion. OrderId: {OrderId}", inventoryUpdateFailedEvent.OrderId);
-                        throw new Exception("Order does not exist");
+                        throw new NotFoundException($"Order with ID {inventoryUpdateFailedEvent.OrderId} does not exist");
                     }
 
                     _logger.LogInformation("Removing order due to inventory error. OrderId: {OrderId}, CustomerId: {CustomerId}",

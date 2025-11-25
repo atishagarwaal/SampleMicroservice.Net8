@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using CommonLibrary.Exceptions;
 using CommonLibrary.Results;
 using CommonLibrary.Telemetry;
 using MediatR;
@@ -129,7 +130,7 @@ namespace Retail.Orders.Write.src.CleanArchitecture.Application.Handlers
                     {
                         // This is unexpected - order should exist after update
                         this._logger.LogError("Order not found after update. OrderId: {OrderId}", order.Id);
-                        throw new InvalidOperationException($"Order with ID {order.Id} was not found after update");
+                        throw new NotFoundException($"Order with ID {order.Id} was not found after update");
                     }
 
                     this._metrics.IncrementCounter("orders_updated_total", 1);

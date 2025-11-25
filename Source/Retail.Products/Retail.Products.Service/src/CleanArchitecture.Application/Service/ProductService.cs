@@ -1,4 +1,5 @@
-﻿using CommonLibrary.MessageContract;
+﻿using CommonLibrary.Exceptions;
+using CommonLibrary.MessageContract;
 using CommonLibrary.Results;
 using CommonLibrary.Telemetry;
 using InventoryErrorEventNameSpace;
@@ -240,7 +241,7 @@ namespace Retail.Api.Products.src.CleanArchitecture.Application.Service
                     {
                         // This is unexpected - product should exist after update
                         this._logger.LogError("Product not found after update. ProductId: {ProductId}", id);
-                        throw new InvalidOperationException($"Product with ID {id} was not found after update");
+                        throw new NotFoundException($"Product with ID {id} was not found after update");
                     }
 
                     this._metrics.IncrementCounter("products_updated_total", 1);
@@ -346,7 +347,7 @@ namespace Retail.Api.Products.src.CleanArchitecture.Application.Service
                 if (orderCreatedEvent.LineItems == null || orderCreatedEvent.LineItems.Length == 0)
                 {
                     _logger.LogError("OrderCreatedEvent has no LineItems. OrderId: {OrderId}", orderCreatedEvent.OrderId);
-                    throw new InvalidOperationException($"OrderCreatedEvent for OrderId {orderCreatedEvent.OrderId} has no LineItems");
+                    throw new BusinessRuleException($"OrderCreatedEvent for OrderId {orderCreatedEvent.OrderId} has no LineItems");
                 }
 
                 using var scope = _serviceScopeFactory.CreateScope();
@@ -364,7 +365,7 @@ namespace Retail.Api.Products.src.CleanArchitecture.Application.Service
                     {
                         this._metrics.IncrementCounter("inventory_update_errors_total", 1, "insufficient_inventory");
                         _logger.LogError("Insufficient inventory for order. OrderId: {OrderId}", orderCreatedEvent.OrderId);
-                        throw new Exception("Inventory is not sufficient");
+                        throw new BusinessRuleException($"Insufficient inventory for order {orderCreatedEvent.OrderId}");
                     }
 
                     foreach (var sku in skuList)
