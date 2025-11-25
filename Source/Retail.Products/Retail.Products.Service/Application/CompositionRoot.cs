@@ -56,8 +56,7 @@ namespace Retail.Api.Products.Application
         public static void ConfigureServices(HostBuilderContext context, IServiceCollection serviceCollection)
         {
             // Application Infrastructure
-            serviceCollection.AddSingleton<ProductApplication>();
-            serviceCollection.AddSingleton<Microsoft.Extensions.Hosting.IHostedService>(sp => sp.GetRequiredService<ProductApplication>());
+            serviceCollection.AddSingleton<Microsoft.Extensions.Hosting.IHostedService, ProductApplication>();
             serviceCollection.AddScoped<IServiceInitializer, ServiceInitializer>();
 
             // General Configuration

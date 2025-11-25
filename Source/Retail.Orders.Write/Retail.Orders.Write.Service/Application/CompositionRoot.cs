@@ -57,8 +57,7 @@ namespace Retail.Orders.Write.Application
         public static void ConfigureServices(HostBuilderContext context, IServiceCollection serviceCollection)
         {
             // Application Infrastructure
-            serviceCollection.AddSingleton<OrderWriteApplication>();
-            serviceCollection.AddSingleton<Microsoft.Extensions.Hosting.IHostedService>(sp => sp.GetRequiredService<OrderWriteApplication>());
+            serviceCollection.AddSingleton<Microsoft.Extensions.Hosting.IHostedService, OrderWriteApplication>();
             serviceCollection.AddScoped<IServiceInitializer, ServiceInitializer>();
 
             // General Configuration

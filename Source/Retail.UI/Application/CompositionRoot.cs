@@ -30,8 +30,7 @@ namespace Retail.UI.Application
         public static void ConfigureServices(HostBuilderContext context, IServiceCollection serviceCollection)
         {
             // Application Infrastructure
-            serviceCollection.AddSingleton<UIApplication>();
-            serviceCollection.AddSingleton<Microsoft.Extensions.Hosting.IHostedService>(sp => sp.GetRequiredService<UIApplication>());
+            serviceCollection.AddSingleton<Microsoft.Extensions.Hosting.IHostedService, UIApplication>();
 
             // General Configuration
             serviceCollection.Configure<MetricsConfiguration>(

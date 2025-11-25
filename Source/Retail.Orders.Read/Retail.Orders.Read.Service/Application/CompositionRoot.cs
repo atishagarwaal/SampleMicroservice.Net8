@@ -53,8 +53,7 @@ namespace Retail.Orders.Read.Application
         public static void ConfigureServices(HostBuilderContext context, IServiceCollection serviceCollection)
         {
             // Application Infrastructure
-            serviceCollection.AddSingleton<OrderReadApplication>();
-            serviceCollection.AddSingleton<Microsoft.Extensions.Hosting.IHostedService>(sp => sp.GetRequiredService<OrderReadApplication>());
+            serviceCollection.AddSingleton<Microsoft.Extensions.Hosting.IHostedService, OrderReadApplication>();
             serviceCollection.AddScoped<IServiceInitializer, ServiceInitializer>();
 
             // General Configuration

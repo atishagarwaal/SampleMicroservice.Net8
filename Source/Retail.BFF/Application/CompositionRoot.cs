@@ -33,8 +33,7 @@ namespace Retail.BFFWeb.Api.Application
         public static void ConfigureServices(HostBuilderContext context, IServiceCollection serviceCollection)
         {
             // Application Infrastructure
-            serviceCollection.AddSingleton<BFFApplication>();
-            serviceCollection.AddSingleton<Microsoft.Extensions.Hosting.IHostedService>(sp => sp.GetRequiredService<BFFApplication>());
+            serviceCollection.AddSingleton<Microsoft.Extensions.Hosting.IHostedService, BFFApplication>();
 
             // General Configuration
             serviceCollection.Configure<MetricsConfiguration>(
