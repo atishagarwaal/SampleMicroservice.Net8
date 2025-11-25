@@ -66,45 +66,34 @@ namespace Retail.Orders.Write.src.CleanArchitecture.API.Controllers
             _logger.LogInformation("Creating order. CustomerId: {CustomerId}, TotalAmount: {TotalAmount}, LineItemsCount: {LineItemsCount}",
                 value.CustomerId, value.TotalAmount, value.LineItems?.Count ?? 0);
 
-            try
+            // Validate using validator
+            var validationResult = _orderDtoValidator.Validate(value);
+            if (!validationResult.IsValid)
             {
-                // Validate using validator
-                var validationResult = _orderDtoValidator.Validate(value);
-                if (!validationResult.IsValid)
-                {
-                    _logger.LogWarning("Order validation failed. Validator: {ValidatorName}, Reason: {FailureReason}",
-                        validationResult.ValidatorName, validationResult.FailureReason);
-                    return Problem(
-                        detail: validationResult.FailureReason,
-                        statusCode: 400,
-                        title: "Bad Request");
-                }
-
-                var command = new CreateOrderCommand { Order = value };
-                var result = await this._mediator.Send(command);
-
-                if (result.IsFailure)
-                {
-                    this._logger.LogWarning("Failed to create order: {Error}", result.Error);
-                    return Problem(
-                        detail: result.Error,
-                        statusCode: 400,
-                        title: "Bad Request");
-                }
-
-                this._logger.LogInformation("Order created successfully. OrderId: {OrderId}, CustomerId: {CustomerId}",
-                    result.Value.Id, result.Value.CustomerId);
-                return Ok(result.Value);
-            }
-            catch (Exception ex)
-            {
-                this._logger.LogError(ex, "Error creating order. CustomerId: {CustomerId}, TotalAmount: {TotalAmount}",
-                    value.CustomerId, value.TotalAmount);
+                _logger.LogWarning("Order validation failed. Validator: {ValidatorName}, Reason: {FailureReason}",
+                    validationResult.ValidatorName, validationResult.FailureReason);
                 return Problem(
-                    detail: MessageConstants.InternalServerError,
-                    statusCode: 500,
-                    title: "Internal Server Error");
+                    detail: validationResult.FailureReason,
+                    statusCode: 400,
+                    title: "Bad Request");
             }
+
+            // Exceptions are handled by GlobalExceptionHandlerMiddleware
+            var command = new CreateOrderCommand { Order = value };
+            var result = await this._mediator.Send(command);
+
+            if (result.IsFailure)
+            {
+                this._logger.LogWarning("Failed to create order: {Error}", result.Error);
+                return Problem(
+                    detail: result.Error,
+                    statusCode: 400,
+                    title: "Bad Request");
+            }
+
+            this._logger.LogInformation("Order created successfully. OrderId: {OrderId}, CustomerId: {CustomerId}",
+                result.Value.Id, result.Value.CustomerId);
+            return Ok(result.Value);
         }
 
         /// <summary>
@@ -129,56 +118,45 @@ namespace Retail.Orders.Write.src.CleanArchitecture.API.Controllers
             _logger.LogInformation("Updating order. OrderId: {OrderId}, CustomerId: {CustomerId}, TotalAmount: {TotalAmount}",
                 id, value.CustomerId, value.TotalAmount);
 
-            try
+            // Validate using validator
+            var validationResult = _orderDtoValidator.Validate(value);
+            if (!validationResult.IsValid)
             {
-                // Validate using validator
-                var validationResult = _orderDtoValidator.Validate(value);
-                if (!validationResult.IsValid)
-                {
-                    _logger.LogWarning("Order validation failed. OrderId: {OrderId}, Validator: {ValidatorName}, Reason: {FailureReason}",
-                        id, validationResult.ValidatorName, validationResult.FailureReason);
-                    return Problem(
-                        detail: validationResult.FailureReason,
-                        statusCode: 400,
-                        title: "Bad Request");
-                }
+                _logger.LogWarning("Order validation failed. OrderId: {OrderId}, Validator: {ValidatorName}, Reason: {FailureReason}",
+                    id, validationResult.ValidatorName, validationResult.FailureReason);
+                return Problem(
+                    detail: validationResult.FailureReason,
+                    statusCode: 400,
+                    title: "Bad Request");
+            }
 
-                value.Id = id; // Ensure the ID from the route is used
-                var command = new UpdateOrderCommand { Order = value };
-                var result = await this._mediator.Send(command);
+            value.Id = id; // Ensure the ID from the route is used
+            // Exceptions are handled by GlobalExceptionHandlerMiddleware
+            var command = new UpdateOrderCommand { Order = value };
+            var result = await this._mediator.Send(command);
 
-                if (result.IsFailure)
+            if (result.IsFailure)
+            {
+                this._logger.LogWarning("Failed to update order. OrderId: {OrderId}, Error: {Error}", id, result.Error);
+                
+                // Check if it's a not found error (404) or validation error (400)
+                if (result.Error != null && result.Error.Contains("not found", StringComparison.OrdinalIgnoreCase))
                 {
-                    this._logger.LogWarning("Failed to update order with Id {OrderId}: {Error}", id, result.Error);
-                    
-                    // Check if it's a not found error (404) or validation error (400)
-                    if (result.Error != null && result.Error.Contains("not found", StringComparison.OrdinalIgnoreCase))
-                    {
-                        return Problem(
-                            detail: result.Error,
-                            statusCode: 404,
-                            title: "Not Found");
-                    }
-                    
                     return Problem(
                         detail: result.Error,
-                        statusCode: 400,
-                        title: "Bad Request");
+                        statusCode: 404,
+                        title: "Not Found");
                 }
-
-                this._logger.LogInformation("Order updated successfully. OrderId: {OrderId}, CustomerId: {CustomerId}",
-                    id, result.Value.CustomerId);
-                return Ok(result.Value);
-            }
-            catch (Exception ex)
-            {
-                this._logger.LogError(ex, "Error updating order. OrderId: {OrderId}, CustomerId: {CustomerId}",
-                    id, value.CustomerId);
+                
                 return Problem(
-                    detail: MessageConstants.InternalServerError,
-                    statusCode: 500,
-                    title: "Internal Server Error");
+                    detail: result.Error,
+                    statusCode: 400,
+                    title: "Bad Request");
             }
+
+            this._logger.LogInformation("Order updated successfully. OrderId: {OrderId}, CustomerId: {CustomerId}",
+                id, result.Value.CustomerId);
+            return Ok(result.Value);
         }
 
         /// <summary>
@@ -191,39 +169,29 @@ namespace Retail.Orders.Write.src.CleanArchitecture.API.Controllers
         {
             _logger.LogInformation("Deleting order. OrderId: {OrderId}", id);
 
-            try
+            if (id == 0)
             {
-                if (id == 0)
-                {
-                    _logger.LogWarning("Invalid order ID provided for deletion. OrderId: {OrderId}", id);
-                    return Problem(
-                        detail: MessageConstants.InvalidParameter,
-                        statusCode: 400,
-                        title: "Bad Request");
-                }
-
-                var command = new DeleteOrderCommand { Id = id };
-                var result = await _mediator.Send(command);
-
-                if (result)
-                {
-                    _logger.LogInformation("Order deleted successfully. OrderId: {OrderId}", id);
-                }
-                else
-                {
-                    _logger.LogWarning("Order not found for deletion. OrderId: {OrderId}", id);
-                }
-
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error deleting order. OrderId: {OrderId}", id);
+                _logger.LogWarning("Invalid order ID provided. OrderId: {OrderId}", id);
                 return Problem(
-                    detail: MessageConstants.InternalServerError,
-                    statusCode: 500,
-                    title: "Internal Server Error");
+                    detail: MessageConstants.InvalidParameter,
+                    statusCode: 400,
+                    title: "Bad Request");
             }
+
+            // Exceptions are handled by GlobalExceptionHandlerMiddleware
+            var command = new DeleteOrderCommand { Id = id };
+            var result = await _mediator.Send(command);
+
+            if (result)
+            {
+                _logger.LogInformation("Order deleted successfully. OrderId: {OrderId}", id);
+            }
+            else
+            {
+                _logger.LogWarning("Order not found for deletion. OrderId: {OrderId}", id);
+            }
+
+            return Ok(result);
         }
     }
 }

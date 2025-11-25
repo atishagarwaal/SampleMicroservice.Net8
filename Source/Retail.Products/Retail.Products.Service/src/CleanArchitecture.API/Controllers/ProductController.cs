@@ -48,34 +48,13 @@ namespace Retail.Api.Products.src.CleanArchitecture.API.Controllers
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            _logger.LogInformation("Getting all products");
-            try
-            {
-                // Call business service
-                var list = await _productService.GetAllProductsAsync();
-
-                // Check if list is null
-                if (list == null)
-                {
-                    _logger.LogWarning("Product list is null");
-                    return Problem(
-                        detail: "No products found",
-                        statusCode: 404,
-                        title: "Not Found");
-                }
-
-                var count = list.Count();
-                _logger.LogInformation("Retrieved {ProductCount} products", count);
-                return Ok(list);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error retrieving all products");
-                return Problem(
-                    detail: MessageConstants.InternalServerError,
-                    statusCode: 500,
-                    title: "Internal Server Error");
-            }
+            _logger.LogInformation("Retrieving all products");
+            
+            // Exceptions are handled by GlobalExceptionHandlerMiddleware
+            var list = await _productService.GetAllProductsAsync();
+            var count = list.Count();
+            _logger.LogInformation("Retrieved {ProductCount} products", count);
+            return Ok(list);
         }
 
         /// <summary>
@@ -85,39 +64,30 @@ namespace Retail.Api.Products.src.CleanArchitecture.API.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(long id)
         {
-            _logger.LogInformation("Getting product by ID. ProductId: {ProductId}", id);
-            try
+            _logger.LogInformation("Retrieving product. ProductId: {ProductId}", id);
+            
+            if (id == 0)
             {
-                // Validate parameters
-                if (id == 0)
-                {
-                    _logger.LogWarning("Invalid product ID provided. ProductId: {ProductId}", id);
-                    return Problem(
-                        detail: MessageConstants.InvalidParameter,
-                        statusCode: 400,
-                        title: "Bad Request");
-                }
-
-                // Call business service
-                var result = await this._productService.GetProductByIdAsync(id);
-
-                if (result.IsFailure)
-                {
-                    this._logger.LogWarning("Failed to retrieve product with Id {ProductId}: {Error}", id, result.Error);
-                    return Problem(
-                        detail: result.Error,
-                        statusCode: 404,
-                        title: "Not Found");
-                }
-
-                this._logger.LogInformation("Product retrieved successfully. ProductId: {ProductId}", id);
-                return Ok(result.Value);
+                _logger.LogWarning("Invalid product ID provided. ProductId: {ProductId}", id);
+                return Problem(
+                    detail: MessageConstants.InvalidParameter,
+                    statusCode: 400,
+                    title: "Bad Request");
             }
-            catch (Exception ex)
+
+            // Exceptions are handled by GlobalExceptionHandlerMiddleware
+            var result = await this._productService.GetProductByIdAsync(id);
+
+            if (result.IsFailure)
             {
-                _logger.LogError(ex, "Error retrieving product. ProductId: {ProductId}", id);
-                return StatusCode(500, MessageConstants.InternalServerError);
+                this._logger.LogWarning("Product not found. ProductId: {ProductId}", id);
+                return Problem(
+                    detail: result.Error,
+                    statusCode: 404,
+                    title: "Not Found");
             }
+
+            return Ok(result.Value);
         }
 
         /// <summary>
@@ -137,44 +107,34 @@ namespace Retail.Api.Products.src.CleanArchitecture.API.Controllers
             }
 
             _logger.LogInformation("Creating product. Name: {ProductName}", value.Name);
-            try
+            
+            // Validate using validator
+            var validationResult = _skuDtoValidator.Validate(value);
+            if (!validationResult.IsValid)
             {
-                // Validate using validator
-                var validationResult = _skuDtoValidator.Validate(value);
-                if (!validationResult.IsValid)
-                {
-                    _logger.LogWarning("Product validation failed. Validator: {ValidatorName}, Reason: {FailureReason}",
-                        validationResult.ValidatorName, validationResult.FailureReason);
-                    return Problem(
-                        detail: validationResult.FailureReason,
-                        statusCode: 400,
-                        title: "Bad Request");
-                }
-
-                // Call business service
-                var result = await this._productService.AddProductAsync(value);
-
-                if (result.IsFailure)
-                {
-                    this._logger.LogWarning("Failed to create product: {Error}", result.Error);
-                    return Problem(
-                        detail: result.Error,
-                        statusCode: 400,
-                        title: "Bad Request");
-                }
-
-                this._logger.LogInformation("Product created successfully. ProductId: {ProductId}, Name: {ProductName}",
-                    result.Value.Id, result.Value.Name);
-                return Ok(result.Value);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error creating product. Name: {ProductName}", value.Name);
+                _logger.LogWarning("Product validation failed. Validator: {ValidatorName}, Reason: {FailureReason}",
+                    validationResult.ValidatorName, validationResult.FailureReason);
                 return Problem(
-                    detail: MessageConstants.InternalServerError,
-                    statusCode: 500,
-                    title: "Internal Server Error");
+                    detail: validationResult.FailureReason,
+                    statusCode: 400,
+                    title: "Bad Request");
             }
+
+            // Exceptions are handled by GlobalExceptionHandlerMiddleware
+            var result = await this._productService.AddProductAsync(value);
+
+            if (result.IsFailure)
+            {
+                this._logger.LogWarning("Failed to create product: {Error}", result.Error);
+                return Problem(
+                    detail: result.Error,
+                    statusCode: 400,
+                    title: "Bad Request");
+            }
+
+            this._logger.LogInformation("Product created successfully. ProductId: {ProductId}, Name: {ProductName}",
+                result.Value.Id, result.Value.Name);
+            return Ok(result.Value);
         }
 
         /// <summary>
@@ -196,55 +156,44 @@ namespace Retail.Api.Products.src.CleanArchitecture.API.Controllers
             }
 
             _logger.LogInformation("Updating product. ProductId: {ProductId}, Name: {ProductName}", id, value.Name);
-            try
+            
+            // Validate using validator
+            var validationResult = _skuDtoValidator.Validate(value);
+            if (!validationResult.IsValid)
             {
-                // Validate using validator
-                var validationResult = _skuDtoValidator.Validate(value);
-                if (!validationResult.IsValid)
-                {
-                    _logger.LogWarning("Product validation failed. ProductId: {ProductId}, Validator: {ValidatorName}, Reason: {FailureReason}",
-                        id, validationResult.ValidatorName, validationResult.FailureReason);
-                    return Problem(
-                        detail: validationResult.FailureReason,
-                        statusCode: 400,
-                        title: "Bad Request");
-                }
+                _logger.LogWarning("Product validation failed. ProductId: {ProductId}, Validator: {ValidatorName}, Reason: {FailureReason}",
+                    id, validationResult.ValidatorName, validationResult.FailureReason);
+                return Problem(
+                    detail: validationResult.FailureReason,
+                    statusCode: 400,
+                    title: "Bad Request");
+            }
 
-                // Call business service
-                var result = await this._productService.UpdateProductAsync(id, value);
+            // Exceptions are handled by GlobalExceptionHandlerMiddleware
+            var result = await this._productService.UpdateProductAsync(id, value);
 
-                if (result.IsFailure)
+            if (result.IsFailure)
+            {
+                this._logger.LogWarning("Failed to update product. ProductId: {ProductId}, Error: {Error}", id, result.Error);
+                
+                // Check if it's a not found error (404) or validation error (400)
+                if (result.Error != null && result.Error.Contains("not found", StringComparison.OrdinalIgnoreCase))
                 {
-                    this._logger.LogWarning("Failed to update product with Id {ProductId}: {Error}", id, result.Error);
-                    
-                    // Check if it's a not found error (404) or validation error (400)
-                    if (result.Error != null && result.Error.Contains("not found", StringComparison.OrdinalIgnoreCase))
-                    {
-                        return Problem(
-                            detail: result.Error,
-                            statusCode: 404,
-                            title: "Not Found");
-                    }
-                    
                     return Problem(
                         detail: result.Error,
-                        statusCode: 400,
-                        title: "Bad Request");
+                        statusCode: 404,
+                        title: "Not Found");
                 }
-
-                this._logger.LogInformation("Product updated successfully. ProductId: {ProductId}, Name: {ProductName}",
-                    id, result.Value.Name);
-                return Ok(result.Value);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error updating product. ProductId: {ProductId}, Name: {ProductName}",
-                    id, value.Name);
+                
                 return Problem(
-                    detail: MessageConstants.InternalServerError,
-                    statusCode: 500,
-                    title: "Internal Server Error");
+                    detail: result.Error,
+                    statusCode: 400,
+                    title: "Bad Request");
             }
+
+            this._logger.LogInformation("Product updated successfully. ProductId: {ProductId}, Name: {ProductName}",
+                id, result.Value.Name);
+            return Ok(result.Value);
         }
 
         /// <summary>
@@ -255,40 +204,29 @@ namespace Retail.Api.Products.src.CleanArchitecture.API.Controllers
         public async Task<IActionResult> Delete(long id)
         {
             _logger.LogInformation("Deleting product. ProductId: {ProductId}", id);
-            try
+            
+            if (id == 0)
             {
-                // Validate parameters
-                if (id == 0)
-                {
-                    _logger.LogWarning("Invalid product ID provided for deletion. ProductId: {ProductId}", id);
-                    return Problem(
-                        detail: MessageConstants.InvalidParameter,
-                        statusCode: 400,
-                        title: "Bad Request");
-                }
-
-                // Call business service
-                var result = await _productService.DeleteProductAsync(id);
-
-                if (result)
-                {
-                    _logger.LogInformation("Product deleted successfully. ProductId: {ProductId}", id);
-                }
-                else
-                {
-                    _logger.LogWarning("Product not found for deletion. ProductId: {ProductId}", id);
-                }
-
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error deleting product. ProductId: {ProductId}", id);
+                _logger.LogWarning("Invalid product ID provided. ProductId: {ProductId}", id);
                 return Problem(
-                    detail: MessageConstants.InternalServerError,
-                    statusCode: 500,
-                    title: "Internal Server Error");
+                    detail: MessageConstants.InvalidParameter,
+                    statusCode: 400,
+                    title: "Bad Request");
             }
+
+            // Exceptions are handled by GlobalExceptionHandlerMiddleware
+            var result = await _productService.DeleteProductAsync(id);
+
+            if (result)
+            {
+                _logger.LogInformation("Product deleted successfully. ProductId: {ProductId}", id);
+            }
+            else
+            {
+                _logger.LogWarning("Product not found for deletion. ProductId: {ProductId}", id);
+            }
+
+            return Ok(result);
         }
     }
 }

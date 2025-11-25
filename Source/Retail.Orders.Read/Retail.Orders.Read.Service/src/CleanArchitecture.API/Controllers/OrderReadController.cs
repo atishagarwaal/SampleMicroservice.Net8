@@ -49,33 +49,22 @@ namespace Retail.Orders.Read.src.CleanArchitecture.API.Controllers
         {
             _logger.LogInformation("Retrieving all orders");
             
-            try
+            // Exceptions are handled by GlobalExceptionHandlerMiddleware
+            var query = new GetAllOrdersQuery();
+            var result = await _mediator.Send(query);
+            
+            if (result.IsFailure)
             {
-                var query = new GetAllOrdersQuery();
-                var result = await _mediator.Send(query);
-                
-                if (result.IsFailure)
-                {
-                    _logger.LogWarning("Failed to retrieve orders: {Error}", result.Error);
-                    return Problem(
-                        detail: result.Error,
-                        statusCode: 404,
-                        title: "Not Found");
-                }
-                
-                
-                var orderCount = result.Value.Count();
-                _logger.LogInformation("Successfully retrieved {OrderCount} orders", orderCount);
-                return Ok(result.Value);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error retrieving all orders");
+                _logger.LogWarning("Failed to retrieve orders: {Error}", result.Error);
                 return Problem(
-                    detail: MessageConstants.InternalServerError,
-                    statusCode: 500,
-                    title: "Internal Server Error");
+                    detail: result.Error,
+                    statusCode: 404,
+                    title: "Not Found");
             }
+            
+            var orderCount = result.Value.Count();
+            _logger.LogInformation("Retrieved {OrderCount} orders", orderCount);
+            return Ok(result.Value);
         }
 
         /// <summary>
@@ -86,52 +75,31 @@ namespace Retail.Orders.Read.src.CleanArchitecture.API.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(long id)
         {
-            _logger.LogInformation("Retrieving order with Id {OrderId}", id);
+            _logger.LogInformation("Retrieving order. OrderId: {OrderId}", id);
             
-            try
+            if (id == 0)
             {
-                if (id == 0)
-                {
-                    _logger.LogWarning("Invalid order Id provided: {OrderId}", id);
-                    return Problem(
-                        detail: MessageConstants.InvalidParameter,
-                        statusCode: 400,
-                        title: "Bad Request");
-                }
-                
-                var query = new GetOrderByIdQuery { Id = id };
-                var result = await _mediator.Send(query);
-                
-                if (result.IsFailure)
-                {
-                    _logger.LogWarning("Failed to retrieve order with Id {OrderId}: {Error}", id, result.Error);
-                    
-                    // Check if it's a not found error (404) or other error (500)
-                    if (result.Error != null && result.Error.Contains("not found", StringComparison.OrdinalIgnoreCase))
-                    {
-                        return Problem(
-                            detail: result.Error,
-                            statusCode: 404,
-                            title: "Not Found");
-                    }
-                    
-                    return Problem(
-                        detail: result.Error,
-                        statusCode: 500,
-                        title: "Internal Server Error");
-                }
-                
-                _logger.LogInformation("Successfully retrieved order with Id {OrderId}", id);
-                return Ok(result.Value);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error retrieving order with Id {OrderId}", id);
+                _logger.LogWarning("Invalid order Id provided. OrderId: {OrderId}", id);
                 return Problem(
-                    detail: MessageConstants.InternalServerError,
-                    statusCode: 500,
-                    title: "Internal Server Error");
+                    detail: MessageConstants.InvalidParameter,
+                    statusCode: 400,
+                    title: "Bad Request");
             }
+            
+            // Exceptions are handled by GlobalExceptionHandlerMiddleware
+            var query = new GetOrderByIdQuery { Id = id };
+            var result = await _mediator.Send(query);
+            
+            if (result.IsFailure)
+            {
+                _logger.LogWarning("Order not found. OrderId: {OrderId}", id);
+                return Problem(
+                    detail: result.Error,
+                    statusCode: 404,
+                    title: "Not Found");
+            }
+            
+            return Ok(result.Value);
         }
     }
 }

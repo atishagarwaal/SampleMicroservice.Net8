@@ -374,3 +374,5 @@ FodyWeavers.xsd
 /Retail.Orders.Write/src/CleanArchitecture.Contracts/.keep
 /Retail.Products/src/CleanArchitecture.Contracts/.keep
 /Documentation/Gap-Analysis.md
+/COMPLEXITY_ANALYSIS.md
+/COMPLEXITY_ANALYSIS_REVIEW.md

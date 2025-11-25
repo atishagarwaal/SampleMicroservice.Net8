@@ -11,9 +11,12 @@ namespace CommonLibrary.Middleware
     using System.Net;
     using System.Text.Json;
     using System.Threading.Tasks;
+    using CommonLibrary.Exceptions;
     using CommonLibrary.Telemetry;
     using Microsoft.AspNetCore.Http;
+    using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
+    using MongoDB.Driver;
 
     /// <summary>
     /// Global exception handling middleware that catches unhandled exceptions and returns consistent error responses.
@@ -104,9 +107,13 @@ namespace CommonLibrary.Middleware
                 ArgumentNullException => (int)HttpStatusCode.BadRequest,
                 ArgumentException => (int)HttpStatusCode.BadRequest,
                 InvalidOperationException => (int)HttpStatusCode.BadRequest,
+                BusinessRuleException => (int)HttpStatusCode.BadRequest,
                 UnauthorizedAccessException => (int)HttpStatusCode.Unauthorized,
                 KeyNotFoundException => (int)HttpStatusCode.NotFound,
+                NotFoundException => (int)HttpStatusCode.NotFound,
                 NotImplementedException => (int)HttpStatusCode.NotImplemented,
+                DbUpdateException => (int)HttpStatusCode.InternalServerError,
+                MongoException => (int)HttpStatusCode.InternalServerError,
                 _ => (int)HttpStatusCode.InternalServerError
             };
         }

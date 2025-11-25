@@ -57,31 +57,11 @@ namespace Retail.Api.Customers.src.CleanArchitecture.API.Controllers
         {
             _logger.LogInformation("Retrieving all customers");
             
-            try
-            {
-                var list = await _customerService.GetAllCustomersAsync();
-
-                if (list == null)
-                {
-                    _logger.LogWarning("GetAllCustomersAsync returned null result");
-                    return Problem(
-                        detail: "No customers found",
-                        statusCode: 404,
-                        title: "Not Found");
-                }
-
-                var customerCount = list.Count();
-                _logger.LogInformation("Successfully retrieved {CustomerCount} customers", customerCount);
-                return Ok(list);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error retrieving all customers");
-                return Problem(
-                    detail: MessageConstants.InternalServerError,
-                    statusCode: 500,
-                    title: "Internal Server Error");
-            }
+            // Exceptions are handled by GlobalExceptionHandlerMiddleware
+            var list = await _customerService.GetAllCustomersAsync();
+            var customerCount = list.Count();
+            _logger.LogInformation("Retrieved {CustomerCount} customers", customerCount);
+            return Ok(list);
         }
 
         /// <summary>
@@ -203,40 +183,30 @@ namespace Retail.Api.Customers.src.CleanArchitecture.API.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(long id)
         {
-            _logger.LogInformation("Deleting customer with Id {CustomerId}", id);
+            _logger.LogInformation("Deleting customer. CustomerId: {CustomerId}", id);
             
-            try
+            if (id == 0)
             {
-                if (id == 0)
-                {
-                    _logger.LogWarning("Invalid customer Id provided for deletion: {CustomerId}", id);
-                    return Problem(
-                        detail: MessageConstants.InvalidParameter,
-                        statusCode: 400,
-                        title: "Bad Request");
-                }
-
-                var result = await _customerService.DeleteCustomerAsync(id);
-
-                if (result)
-                {
-                    _logger.LogInformation("Customer deleted successfully. CustomerId: {CustomerId}", id);
-                }
-                else
-                {
-                    _logger.LogWarning("Customer with Id {CustomerId} not found for deletion", id);
-                }
-
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error deleting customer with Id {CustomerId}", id);
+                _logger.LogWarning("Invalid customer ID provided. CustomerId: {CustomerId}", id);
                 return Problem(
-                    detail: MessageConstants.InternalServerError,
-                    statusCode: 500,
-                    title: "Internal Server Error");
+                    detail: MessageConstants.InvalidParameter,
+                    statusCode: 400,
+                    title: "Bad Request");
             }
+
+            // Exceptions are handled by GlobalExceptionHandlerMiddleware
+            var result = await _customerService.DeleteCustomerAsync(id);
+
+            if (result)
+            {
+                _logger.LogInformation("Customer deleted successfully. CustomerId: {CustomerId}", id);
+            }
+            else
+            {
+                _logger.LogWarning("Customer not found for deletion. CustomerId: {CustomerId}", id);
+            }
+
+            return Ok(result);
         }
     }
 }

@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using CommonLibrary.Telemetry;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Retail.Orders.Write.src.CleanArchitecture.Application.Commands;
@@ -87,12 +88,21 @@ namespace Retail.Orders.Write.src.CleanArchitecture.Application.Handlers
                         order.Id, order.CustomerId);
                     return true;
                 }
+                catch (DbUpdateException ex)
+                {
+                    // Unexpected error: database failure
+                    this._metrics.IncrementCounter("orders_errors_total", 1, "delete");
+                    _logger.LogError(ex, "Database error deleting order. OrderId: {OrderId}", request.Id);
+                    await unitOfWork.RollbackTransactionAsync();
+                    throw; // Let middleware handle
+                }
                 catch (Exception ex)
                 {
+                    // Unexpected error: system failure
                     this._metrics.IncrementCounter("orders_errors_total", 1, "delete");
-                    _logger.LogError(ex, "Error deleting order. OrderId: {OrderId}", request.Id);
+                    _logger.LogError(ex, "Unexpected error deleting order. OrderId: {OrderId}", request.Id);
                     await unitOfWork.RollbackTransactionAsync();
-                    throw;
+                    throw; // Let middleware handle
                 }
             }
         }

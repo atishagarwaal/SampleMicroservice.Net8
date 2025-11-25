@@ -5,6 +5,7 @@ using InventoryErrorEventNameSpace;
 using InventoryUpdatedEventNameSpace;
 using MessagingInfrastructure;
 using MessagingLibrary.Interface;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OrderCreatedEventNameSpace;
@@ -117,11 +118,19 @@ namespace Retail.Api.Products.src.CleanArchitecture.Application.Service
                         id, record.Name);
                     return Result<SkuDto>.Success(this._skuDtoConverter.Convert(record));
                 }
+                catch (DbUpdateException ex)
+                {
+                    // Unexpected error: database failure
+                    this._metrics.IncrementCounter("products_errors_total", 1, "get_by_id");
+                    this._logger.LogError(ex, "Database error fetching product. ProductId: {ProductId}", id);
+                    throw; // Let middleware handle
+                }
                 catch (Exception ex)
                 {
+                    // Unexpected error: system failure
                     this._metrics.IncrementCounter("products_errors_total", 1, "get_by_id");
-                    this._logger.LogError(ex, "Error fetching product with Id {ProductId}", id);
-                    return Result<SkuDto>.Failure($"An error occurred while fetching product with ID {id}: {ex.Message}");
+                    this._logger.LogError(ex, "Unexpected error fetching product. ProductId: {ProductId}", id);
+                    throw; // Let middleware handle
                 }
             }
         }
@@ -164,12 +173,21 @@ namespace Retail.Api.Products.src.CleanArchitecture.Application.Service
 
                     return Result<SkuDto>.Success(this._skuDtoConverter.Convert(result));
                 }
+                catch (DbUpdateException ex)
+                {
+                    // Unexpected error: database failure
+                    this._metrics.IncrementCounter("products_errors_total", 1, "create");
+                    this._logger.LogError(ex, "Database error creating product. Name: {ProductName}", skuDto.Name);
+                    await this._unitOfWork.RollbackTransactionAsync();
+                    throw; // Let middleware handle
+                }
                 catch (Exception ex)
                 {
+                    // Unexpected error: system failure
                     this._metrics.IncrementCounter("products_errors_total", 1, "create");
-                    this._logger.LogError(ex, "Error adding product. Name: {ProductName}", skuDto.Name);
+                    this._logger.LogError(ex, "Unexpected error creating product. Name: {ProductName}", skuDto.Name);
                     await this._unitOfWork.RollbackTransactionAsync();
-                    return Result<SkuDto>.Failure($"An error occurred while adding product: {ex.Message}");
+                    throw; // Let middleware handle
                 }
             }
         }
@@ -220,8 +238,9 @@ namespace Retail.Api.Products.src.CleanArchitecture.Application.Service
                     var updatedRecord = await this._unitOfWork.Skus.GetByIdAsync(id);
                     if (updatedRecord == null)
                     {
+                        // This is unexpected - product should exist after update
                         this._logger.LogError("Product not found after update. ProductId: {ProductId}", id);
-                        return Result<SkuDto>.Failure($"Product with ID {id} was not found after update");
+                        throw new InvalidOperationException($"Product with ID {id} was not found after update");
                     }
 
                     this._metrics.IncrementCounter("products_updated_total", 1);
@@ -230,13 +249,21 @@ namespace Retail.Api.Products.src.CleanArchitecture.Application.Service
 
                     return Result<SkuDto>.Success(this._skuDtoConverter.Convert(updatedRecord));
                 }
+                catch (DbUpdateException ex)
+                {
+                    // Unexpected error: database failure
+                    this._metrics.IncrementCounter("products_errors_total", 1, "update");
+                    this._logger.LogError(ex, "Database error updating product. ProductId: {ProductId}", id);
+                    await this._unitOfWork.RollbackTransactionAsync();
+                    throw; // Let middleware handle
+                }
                 catch (Exception ex)
                 {
+                    // Unexpected error: system failure
                     this._metrics.IncrementCounter("products_errors_total", 1, "update");
-                    this._logger.LogError(ex, "Error updating product. ProductId: {ProductId}, Name: {ProductName}",
-                        id, skuDto.Name);
+                    this._logger.LogError(ex, "Unexpected error updating product. ProductId: {ProductId}", id);
                     await this._unitOfWork.RollbackTransactionAsync();
-                    return Result<SkuDto>.Failure($"An error occurred while updating product: {ex.Message}");
+                    throw; // Let middleware handle
                 }
             }
         }
@@ -260,9 +287,9 @@ namespace Retail.Api.Products.src.CleanArchitecture.Application.Service
                     return false;
                 }
 
-                await _unitOfWork.BeginTransactionAsync();
                 try
                 {
+                    await _unitOfWork.BeginTransactionAsync();
                     _unitOfWork.Skus.Remove(record);
                     await _unitOfWork.CompleteAsync();
                     await _unitOfWork.CommitTransactionAsync();
@@ -272,12 +299,21 @@ namespace Retail.Api.Products.src.CleanArchitecture.Application.Service
                         id, record.Name);
                     return true;
                 }
+                catch (DbUpdateException ex)
+                {
+                    // Unexpected error: database failure
+                    this._metrics.IncrementCounter("products_errors_total", 1, "delete");
+                    _logger.LogError(ex, "Database error deleting product. ProductId: {ProductId}", id);
+                    await _unitOfWork.RollbackTransactionAsync();
+                    throw; // Let middleware handle
+                }
                 catch (Exception ex)
                 {
+                    // Unexpected error: system failure
                     this._metrics.IncrementCounter("products_errors_total", 1, "delete");
-                    _logger.LogError(ex, "Error deleting product. ProductId: {ProductId}", id);
+                    _logger.LogError(ex, "Unexpected error deleting product. ProductId: {ProductId}", id);
                     await _unitOfWork.RollbackTransactionAsync();
-                    throw;
+                    throw; // Let middleware handle
                 }
             }
         }

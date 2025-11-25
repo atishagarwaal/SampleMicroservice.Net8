@@ -2,6 +2,7 @@
 using CommonLibrary.Results;
 using CommonLibrary.Telemetry;
 using InventoryUpdatedEventNameSpace;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Retail.Api.Customers.src.CleanArchitecture.Application.Dto;
@@ -125,11 +126,19 @@ namespace Retail.Api.Customers.src.CleanArchitecture.Application.Service
                     this._logger.LogInformation("Successfully fetched customer with Id {CustomerId}", id);
                     return Result<CustomerDto>.Success(result);
                 }
+                catch (DbUpdateException ex)
+                {
+                    // Unexpected error: database failure
+                    this._metrics.IncrementCounter("customers_errors_total", 1, "get_by_id");
+                    this._logger.LogError(ex, "Database error fetching customer. CustomerId: {CustomerId}", id);
+                    throw; // Let middleware handle
+                }
                 catch (Exception ex)
                 {
+                    // Unexpected error: system failure
                     this._metrics.IncrementCounter("customers_errors_total", 1, "get_by_id");
-                    this._logger.LogError(ex, "Error fetching customer with Id {CustomerId}", id);
-                    return Result<CustomerDto>.Failure($"An error occurred while fetching customer with ID {id}: {ex.Message}");
+                    this._logger.LogError(ex, "Unexpected error fetching customer. CustomerId: {CustomerId}", id);
+                    throw; // Let middleware handle
                 }
             }
         }
@@ -169,13 +178,23 @@ namespace Retail.Api.Customers.src.CleanArchitecture.Application.Service
                     this._logger.LogInformation("Customer added successfully. CustomerId: {CustomerId}", result.Id);
                     return Result<CustomerDto>.Success(this._customerDtoConverter.Convert(result));
                 }
-                catch (Exception ex)
+                catch (DbUpdateException ex)
                 {
+                    // Unexpected error: database failure
                     this._metrics.IncrementCounter("customers_errors_total", 1, "create");
-                    this._logger.LogError(ex, "Error adding customer. FirstName: {FirstName}, LastName: {LastName}", 
+                    this._logger.LogError(ex, "Database error creating customer. FirstName: {FirstName}, LastName: {LastName}", 
                         custDto.FirstName, custDto.LastName);
                     await this._unitOfWork.RollbackTransactionAsync();
-                    return Result<CustomerDto>.Failure($"An error occurred while adding customer: {ex.Message}");
+                    throw; // Let middleware handle
+                }
+                catch (Exception ex)
+                {
+                    // Unexpected error: system failure
+                    this._metrics.IncrementCounter("customers_errors_total", 1, "create");
+                    this._logger.LogError(ex, "Unexpected error creating customer. FirstName: {FirstName}, LastName: {LastName}", 
+                        custDto.FirstName, custDto.LastName);
+                    await this._unitOfWork.RollbackTransactionAsync();
+                    throw; // Let middleware handle
                 }
             }
         }
@@ -226,12 +245,21 @@ namespace Retail.Api.Customers.src.CleanArchitecture.Application.Service
                     this._logger.LogInformation("Customer updated successfully. CustomerId: {CustomerId}", id);
                     return Result<CustomerDto>.Success(this._customerDtoConverter.Convert(existingCustomer));
                 }
+                catch (DbUpdateException ex)
+                {
+                    // Unexpected error: database failure
+                    this._metrics.IncrementCounter("customers_errors_total", 1, "update");
+                    this._logger.LogError(ex, "Database error updating customer. CustomerId: {CustomerId}", id);
+                    await this._unitOfWork.RollbackTransactionAsync();
+                    throw; // Let middleware handle
+                }
                 catch (Exception ex)
                 {
+                    // Unexpected error: system failure
                     this._metrics.IncrementCounter("customers_errors_total", 1, "update");
-                    this._logger.LogError(ex, "Error updating customer with Id {CustomerId}", id);
+                    this._logger.LogError(ex, "Unexpected error updating customer. CustomerId: {CustomerId}", id);
                     await this._unitOfWork.RollbackTransactionAsync();
-                    return Result<CustomerDto>.Failure($"An error occurred while updating customer: {ex.Message}");
+                    throw; // Let middleware handle
                 }
             }
         }
@@ -256,9 +284,9 @@ namespace Retail.Api.Customers.src.CleanArchitecture.Application.Service
                     return false;
                 }
 
-                await _unitOfWork.BeginTransactionAsync();
                 try
                 {
+                    await _unitOfWork.BeginTransactionAsync();
                     _unitOfWork.Customers.Remove(record);
                     await _unitOfWork.CompleteAsync();
                     await _unitOfWork.CommitTransactionAsync();
@@ -267,12 +295,21 @@ namespace Retail.Api.Customers.src.CleanArchitecture.Application.Service
                     _logger.LogInformation("Customer deleted successfully. CustomerId: {CustomerId}", id);
                     return true;
                 }
+                catch (DbUpdateException ex)
+                {
+                    // Unexpected error: database failure
+                    this._metrics.IncrementCounter("customers_errors_total", 1, "delete");
+                    _logger.LogError(ex, "Database error deleting customer. CustomerId: {CustomerId}", id);
+                    await _unitOfWork.RollbackTransactionAsync();
+                    throw; // Let middleware handle
+                }
                 catch (Exception ex)
                 {
+                    // Unexpected error: system failure
                     this._metrics.IncrementCounter("customers_errors_total", 1, "delete");
-                    _logger.LogError(ex, "Error deleting customer with Id {CustomerId}", id);
+                    _logger.LogError(ex, "Unexpected error deleting customer. CustomerId: {CustomerId}", id);
                     await _unitOfWork.RollbackTransactionAsync();
-                    throw;
+                    throw; // Let middleware handle
                 }
             }
         }

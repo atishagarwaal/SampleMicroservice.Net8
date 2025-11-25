@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using CommonLibrary.Results;
 using CommonLibrary.Telemetry;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Retail.Orders.Write.src.CleanArchitecture.Application.Commands;
 using Retail.Orders.Write.src.CleanArchitecture.Application.Converters.Interfaces;
@@ -126,8 +127,9 @@ namespace Retail.Orders.Write.src.CleanArchitecture.Application.Handlers
                     var updatedOrder = await this._unitOfWork.Orders.GetByIdAsync(order.Id);
                     if (updatedOrder == null)
                     {
+                        // This is unexpected - order should exist after update
                         this._logger.LogError("Order not found after update. OrderId: {OrderId}", order.Id);
-                        return Result<OrderDto>.Failure($"Order with ID {order.Id} was not found after update");
+                        throw new InvalidOperationException($"Order with ID {order.Id} was not found after update");
                     }
 
                     this._metrics.IncrementCounter("orders_updated_total", 1);
@@ -136,12 +138,21 @@ namespace Retail.Orders.Write.src.CleanArchitecture.Application.Handlers
 
                     return Result<OrderDto>.Success(this._orderDtoConverter.Convert(updatedOrder));
                 }
+                catch (DbUpdateException ex)
+                {
+                    // Unexpected error: database failure
+                    this._metrics.IncrementCounter("orders_errors_total", 1, "update");
+                    this._logger.LogError(ex, "Database error updating order. OrderId: {OrderId}", request.Order.Id);
+                    await this._unitOfWork.RollbackTransactionAsync();
+                    throw; // Let middleware handle
+                }
                 catch (Exception ex)
                 {
+                    // Unexpected error: system failure
                     this._metrics.IncrementCounter("orders_errors_total", 1, "update");
-                    this._logger.LogError(ex, "Error updating order. OrderId: {OrderId}", request.Order.Id);
+                    this._logger.LogError(ex, "Unexpected error updating order. OrderId: {OrderId}", request.Order.Id);
                     await this._unitOfWork.RollbackTransactionAsync();
-                    return Result<OrderDto>.Failure($"An error occurred while updating order: {ex.Message}");
+                    throw; // Let middleware handle
                 }
             }
         }

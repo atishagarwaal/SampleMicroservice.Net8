@@ -2,6 +2,7 @@
 using CommonLibrary.Telemetry;
 using MediatR;
 using Microsoft.Extensions.Logging;
+using MongoDB.Driver;
 using Retail.Orders.Read.src.CleanArchitecture.Application.Dto;
 using Retail.Orders.Read.src.CleanArchitecture.Application.Queries;
 using Retail.Orders.Read.src.CleanArchitecture.Application.Converters.Interfaces;
@@ -82,11 +83,19 @@ namespace Retail.Orders.Read.src.CleanArchitecture.Application.Handlers
                     _logger.LogInformation("Successfully processed GetOrderByIdQuery for OrderId {OrderId}", request.Id);
                     return Result<OrderDto>.Success(result);
                 }
+                catch (MongoException ex)
+                {
+                    // Unexpected error: MongoDB database failure
+                    _metrics.IncrementCounter("orders_read_errors_total", 1, "exception");
+                    _logger.LogError(ex, "MongoDB error handling GetOrderByIdQuery. OrderId: {OrderId}", request.Id);
+                    throw; // Let middleware handle
+                }
                 catch (Exception ex)
                 {
+                    // Unexpected error: system failure
                     _metrics.IncrementCounter("orders_read_errors_total", 1, "exception");
-                    _logger.LogError(ex, "Error handling GetOrderByIdQuery for OrderId {OrderId}", request.Id);
-                    return Result<OrderDto>.Failure($"Error retrieving order: {ex.Message}");
+                    _logger.LogError(ex, "Unexpected error handling GetOrderByIdQuery. OrderId: {OrderId}", request.Id);
+                    throw; // Let middleware handle
                 }
             }
         }

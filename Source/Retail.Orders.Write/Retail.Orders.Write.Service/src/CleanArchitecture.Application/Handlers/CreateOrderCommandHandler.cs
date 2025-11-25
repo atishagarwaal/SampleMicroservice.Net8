@@ -9,6 +9,7 @@ using CommonLibrary.Telemetry;
 using MediatR;
 using MessagingInfrastructure;
 using MessagingLibrary.Interface;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OrderCreatedEventNameSpace;
@@ -142,9 +143,10 @@ namespace Retail.Orders.Write.src.CleanArchitecture.Application.Handlers
                     var savedOrder = await unitOfWork.Orders.GetByIdAsync(orderRecord.Id);
                     if (savedOrder == null)
                     {
-                        this._logger.LogError("Failed to retrieve saved order with ID {OrderId}", orderRecord.Id);
+                        // This is unexpected - order should exist after save
+                        this._logger.LogError("Order not found after save. OrderId: {OrderId}", orderRecord.Id);
                         await unitOfWork.RollbackTransactionAsync();
-                        return Result<OrderDto>.Failure($"Order with ID {orderRecord.Id} was not found after save");
+                        throw new InvalidOperationException($"Order with ID {orderRecord.Id} was not found after save");
                     }
 
                     // Create and publish the event
@@ -179,12 +181,21 @@ namespace Retail.Orders.Write.src.CleanArchitecture.Application.Handlers
 
                     return Result<OrderDto>.Success(this._orderDtoConverter.Convert(savedOrder));
                 }
+                catch (DbUpdateException ex)
+                {
+                    // Unexpected error: database failure
+                    this._metrics.IncrementCounter("orders_errors_total", 1, "create");
+                    this._logger.LogError(ex, "Database error creating order");
+                    await unitOfWork.RollbackTransactionAsync();
+                    throw; // Let middleware handle
+                }
                 catch (Exception ex)
                 {
+                    // Unexpected error: system failure
                     this._metrics.IncrementCounter("orders_errors_total", 1, "create");
-                    this._logger.LogError(ex, "Error creating order");
+                    this._logger.LogError(ex, "Unexpected error creating order");
                     await unitOfWork.RollbackTransactionAsync();
-                    return Result<OrderDto>.Failure($"An error occurred while creating order: {ex.Message}");
+                    throw; // Let middleware handle
                 }
             }
         }
