@@ -5,38 +5,38 @@
 namespace Retail.Orders.Write.src.CleanArchitecture.Application.Converters
 {
     using Retail.Orders.Write.src.CleanArchitecture.Application.Converters.Interfaces;
-    using Retail.Orders.Write.src.CleanArchitecture.Application.Dto;
-    using Retail.Orders.Write.src.CleanArchitecture.Domain.Entities;
+    using Dto = Retail.Orders.Write.src.CleanArchitecture.Application.Dto;
+    using DomainEntities = Retail.Orders.Write.src.CleanArchitecture.Domain.Entities;
 
     /// <summary>
-    /// Converts <see cref="Order"/> entity to <see cref="OrderDto"/> message.
+    /// Converts <see cref="DomainEntities.Order"/> entity to <see cref="Dto.OrderDto"/> message.
     /// </summary>
-    public class OrderDtoConverter : IConverter<Order, OrderDto>
+    public class OrderDtoConverter : IConverter<DomainEntities.Order, Dto.OrderDto>
     {
-        private readonly IConverter<LineItem, LineItemDto> _lineItemDtoConverter;
+        private readonly IConverter<DomainEntities.LineItem, Dto.LineItemDto> _lineItemDtoConverter;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="OrderDtoConverter"/> class.
         /// </summary>
         /// <param name="lineItemDtoConverter">Instance of line item DTO converter.</param>
-        public OrderDtoConverter(IConverter<LineItem, LineItemDto> lineItemDtoConverter)
+        public OrderDtoConverter(IConverter<DomainEntities.LineItem, Dto.LineItemDto> lineItemDtoConverter)
         {
             _lineItemDtoConverter = lineItemDtoConverter ?? throw new ArgumentNullException(nameof(lineItemDtoConverter));
         }
 
         /// <summary>
-        /// Convert from <see cref="Order"/> to <see cref="OrderDto"/>.
+        /// Convert from <see cref="DomainEntities.Order"/> to <see cref="Dto.OrderDto"/>.
         /// </summary>
-        /// <param name="sourceType">The entity type for <see cref="Order"/>.</param>
-        /// <returns><see cref="OrderDto"/> message.</returns>
-        public OrderDto Convert(Order sourceType)
+        /// <param name="sourceType">The entity type for <see cref="DomainEntities.Order"/>.</param>
+        /// <returns><see cref="Dto.OrderDto"/> message.</returns>
+        public Dto.OrderDto Convert(DomainEntities.Order sourceType)
         {
             if (sourceType == null)
             {
                 throw new ArgumentNullException(nameof(sourceType));
             }
 
-            var orderDto = new OrderDto
+            var orderDto = new Dto.OrderDto
             {
                 Id = sourceType.Id,
                 CustomerId = sourceType.CustomerId,

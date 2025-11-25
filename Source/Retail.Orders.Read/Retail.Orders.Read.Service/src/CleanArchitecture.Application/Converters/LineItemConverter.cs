@@ -5,27 +5,27 @@
 namespace Retail.Orders.Read.src.CleanArchitecture.Application.Converters
 {
     using Retail.Orders.Read.src.CleanArchitecture.Application.Converters.Interfaces;
-    using Retail.Orders.Read.src.CleanArchitecture.Application.Dto;
-    using Retail.Orders.Read.src.CleanArchitecture.Domain.Entities;
+    using Dto = Retail.Orders.Read.src.CleanArchitecture.Application.Dto;
+    using DomainEntities = Retail.Orders.Read.src.CleanArchitecture.Domain.Entities;
 
     /// <summary>
-    /// Converts <see cref="LineItemDto"/> message to <see cref="LineItem"/> entity.
+    /// Converts <see cref="Dto.LineItemDto"/> message to <see cref="DomainEntities.LineItem"/> entity.
     /// </summary>
-    public class LineItemConverter : IConverter<LineItemDto, LineItem>
+    public class LineItemConverter : IConverter<Dto.LineItemDto, DomainEntities.LineItem>
     {
         /// <summary>
-        /// Convert from <see cref="LineItemDto"/> to <see cref="LineItem"/>.
+        /// Convert from <see cref="Dto.LineItemDto"/> to <see cref="DomainEntities.LineItem"/>.
         /// </summary>
-        /// <param name="sourceType">The contract type message for <see cref="LineItemDto"/>.</param>
-        /// <returns><see cref="LineItem"/> entity.</returns>
-        public LineItem Convert(LineItemDto sourceType)
+        /// <param name="sourceType">The contract type message for <see cref="Dto.LineItemDto"/>.</param>
+        /// <returns><see cref="DomainEntities.LineItem"/> entity.</returns>
+        public DomainEntities.LineItem Convert(Dto.LineItemDto sourceType)
         {
             if (sourceType == null)
             {
                 throw new ArgumentNullException(nameof(sourceType));
             }
 
-            return new LineItem
+            return new DomainEntities.LineItem
             {
                 Id = sourceType.Id,
                 OrderId = sourceType.OrderId,
