@@ -10,6 +10,8 @@ namespace Retail.BFFWeb.Api.Application
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
+    using Microsoft.Extensions.Options;
+    using CommonLibrary.Configuration;
     using CommonLibrary.Telemetry;
     using Retail.BFFWeb.Api.Configurations;
     using Retail.BFFWeb.Api.Interface;
@@ -42,8 +44,23 @@ namespace Retail.BFFWeb.Api.Application
                 serviceName: "Retail.BFF",
                 serviceVersion: "1.0.0");
 
-            // Register metrics service
-            serviceCollection.AddSingleton<CommonLibrary.Telemetry.IMetricsService, CommonLibrary.Telemetry.MetricsService>();
+            // Configure strongly-typed configuration classes
+            serviceCollection.Configure<MetricsConfiguration>(
+                context.Configuration.GetSection(nameof(MetricsConfiguration)));
+
+            // Register metrics service conditionally based on configuration
+            serviceCollection.AddSingleton<CommonLibrary.Telemetry.IMetricsService>(services =>
+            {
+                var metricsConfiguration = services.GetRequiredService<IOptions<MetricsConfiguration>>();
+                if (metricsConfiguration.Value.Enabled)
+                {
+                    return new CommonLibrary.Telemetry.MetricsService();
+                }
+                else
+                {
+                    return new CommonLibrary.Telemetry.EmptyMetricsService();
+                }
+            });
 
             serviceCollection.AddHttpClient();
 

@@ -30,6 +30,7 @@ namespace Retail.Api.Products.Application
     using Retail.Api.Products.src.CleanArchitecture.Infrastructure.UnitOfWork;
     using CommonLibrary.Configuration;
     using CommonLibrary.Telemetry;
+    using Microsoft.Extensions.Options;
     using Asp.Versioning.ApiExplorer;
     using Asp.Versioning;
     using Microsoft.Extensions.Options;
@@ -65,12 +66,25 @@ namespace Retail.Api.Products.Application
                 serviceName: "Retail.Products",
                 serviceVersion: "1.0.0");
 
-            // Register metrics service
-            serviceCollection.AddSingleton<CommonLibrary.Telemetry.IMetricsService, CommonLibrary.Telemetry.MetricsService>();
-
             // Configure strongly-typed configuration classes
             serviceCollection.Configure<DatabaseConnectionConfiguration>(
                 context.Configuration.GetSection("ConnectionStrings"));
+            serviceCollection.Configure<MetricsConfiguration>(
+                context.Configuration.GetSection(nameof(MetricsConfiguration)));
+
+            // Register metrics service conditionally based on configuration
+            serviceCollection.AddSingleton<CommonLibrary.Telemetry.IMetricsService>(services =>
+            {
+                var metricsConfiguration = services.GetRequiredService<IOptions<MetricsConfiguration>>();
+                if (metricsConfiguration.Value.Enabled)
+                {
+                    return new CommonLibrary.Telemetry.MetricsService();
+                }
+                else
+                {
+                    return new CommonLibrary.Telemetry.EmptyMetricsService();
+                }
+            });
 
             // Configure database connection
             serviceCollection.AddDbContext<ApplicationDbContext>((serviceProvider, options) =>

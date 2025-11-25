@@ -29,6 +29,7 @@ namespace Retail.Orders.Read.Application
     using CommonLibrary.Telemetry;
     using Asp.Versioning.ApiExplorer;
     using Asp.Versioning;
+    using Microsoft.Extensions.Options;
     using Microsoft.OpenApi.Models;
     using System;
     using System.IO;
@@ -61,14 +62,27 @@ namespace Retail.Orders.Read.Application
                 serviceName: "Retail.Orders.Read",
                 serviceVersion: "1.0.0");
 
-            // Register metrics service
-            serviceCollection.AddSingleton<CommonLibrary.Telemetry.IMetricsService, CommonLibrary.Telemetry.MetricsService>();
-
             // Configure strongly-typed configuration classes
             serviceCollection.Configure<DatabaseConnectionConfiguration>(
                 context.Configuration.GetSection("ConnectionStrings"));
             serviceCollection.Configure<MongoDBSettings>(
                 context.Configuration.GetSection(nameof(MongoDBSettings)));
+            serviceCollection.Configure<MetricsConfiguration>(
+                context.Configuration.GetSection(nameof(MetricsConfiguration)));
+
+            // Register metrics service conditionally based on configuration
+            serviceCollection.AddSingleton<CommonLibrary.Telemetry.IMetricsService>(services =>
+            {
+                var metricsConfiguration = services.GetRequiredService<IOptions<MetricsConfiguration>>();
+                if (metricsConfiguration.Value.Enabled)
+                {
+                    return new CommonLibrary.Telemetry.MetricsService();
+                }
+                else
+                {
+                    return new CommonLibrary.Telemetry.EmptyMetricsService();
+                }
+            });
 
             // Configure MongoDB connection
             serviceCollection.AddScoped<ApplicationDbContext>();

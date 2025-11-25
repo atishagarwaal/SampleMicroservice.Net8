@@ -15,7 +15,9 @@ namespace Retail.Orders.Write.Application
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
+    using Microsoft.Extensions.Options;
     using Prometheus;
+    using CommonLibrary.Configuration;
     using Retail.Orders.Write.src.CleanArchitecture.Application.Interfaces;
     using Retail.Orders.Write.src.CleanArchitecture.Infrastructure.Data;
 
@@ -81,8 +83,14 @@ namespace Retail.Orders.Write.Application
             webApplicationBuilder.UseHttpsRedirection();
             webApplicationBuilder.UseRouting();
             
-            // Collect HTTP request metrics for Prometheus
-            webApplicationBuilder.UseHttpMetrics();
+            // Get metrics configuration
+            var metricsConfiguration = webApplicationBuilder.ApplicationServices.GetRequiredService<IOptions<MetricsConfiguration>>().Value;
+            
+            // Collect HTTP request metrics for Prometheus (conditional)
+            if (metricsConfiguration.Enabled)
+            {
+                webApplicationBuilder.UseHttpMetrics();
+            }
             
             webApplicationBuilder.UseAuthorization();
 
@@ -90,8 +98,11 @@ namespace Retail.Orders.Write.Application
             {
                 endpoints.MapControllers();
                 
-                // Prometheus metrics endpoint
-                endpoints.MapMetrics();
+                // Prometheus metrics endpoint (conditional)
+                if (metricsConfiguration.Enabled)
+                {
+                    endpoints.MapMetrics();
+                }
                 
                 // Liveness endpoint - indicates the service is running
                 endpoints.MapHealthChecks("/health/liveness", new HealthCheckOptions
