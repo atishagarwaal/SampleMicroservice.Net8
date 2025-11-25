@@ -38,10 +38,12 @@ namespace Retail.Api.Customers.Application
     using System.IO;
     using System.Reflection;
     using Asp.Versioning;
+    using System.Diagnostics.CodeAnalysis;
 
     /// <summary>
     /// Configuration for this service.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public class CompositionRoot
     {
         /// <summary>

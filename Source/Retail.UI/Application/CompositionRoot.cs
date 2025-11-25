@@ -11,10 +11,12 @@ namespace Retail.UI.Application
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
+    using System.Diagnostics.CodeAnalysis;
 
     /// <summary>
     /// Configuration for this service.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public class CompositionRoot
     {
         /// <summary>

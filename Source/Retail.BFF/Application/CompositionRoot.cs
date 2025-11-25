@@ -14,10 +14,12 @@ namespace Retail.BFFWeb.Api.Application
     using Retail.BFFWeb.Api.Configurations;
     using Retail.BFFWeb.Api.Interface;
     using Retail.BFFWeb.Api.Provider;
+    using System.Diagnostics.CodeAnalysis;
 
     /// <summary>
     /// Configuration for this service.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public class CompositionRoot
     {
         /// <summary>

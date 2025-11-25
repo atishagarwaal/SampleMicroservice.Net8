@@ -6,6 +6,7 @@
 
 namespace Retail.Api.Products.Application
 {
+    using System.Diagnostics.CodeAnalysis;
     using CommonLibrary.Middleware;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Diagnostics.HealthChecks;
@@ -21,6 +22,7 @@ namespace Retail.Api.Products.Application
     /// <summary>
     /// Configures web host.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public class Startup
     {
         private readonly IConfiguration configuration;

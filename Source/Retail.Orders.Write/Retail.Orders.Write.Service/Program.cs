@@ -6,6 +6,7 @@
 
 namespace Retail.Orders.Write
 {
+    using System.Diagnostics.CodeAnalysis;
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Hosting;
@@ -17,6 +18,7 @@ namespace Retail.Orders.Write
     /// <summary>
     /// Contains the main entry point of the application.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public static class Program
     {
         /// <summary>

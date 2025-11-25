@@ -6,6 +6,7 @@
 
 namespace Retail.UI
 {
+    using System.Diagnostics.CodeAnalysis;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Hosting;
@@ -15,6 +16,7 @@ namespace Retail.UI
     /// <summary>
     /// Contains the main entry point of the application.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public static class Program
     {
         /// <summary>

@@ -38,10 +38,12 @@ namespace Retail.Orders.Write.Application
     using System;
     using System.IO;
     using System.Reflection;
+    using System.Diagnostics.CodeAnalysis;
 
     /// <summary>
     /// Configuration for this service.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public class CompositionRoot
     {
         /// <summary>
