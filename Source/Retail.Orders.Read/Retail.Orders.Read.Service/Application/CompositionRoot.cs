@@ -52,13 +52,12 @@ namespace Retail.Orders.Read.Application
         /// <param name="serviceCollection">Service collection to register services to.</param>
         public static void ConfigureServices(HostBuilderContext context, IServiceCollection serviceCollection)
         {
-            // Configure OpenTelemetry for observability
-            serviceCollection.AddOpenTelemetry(
-                context.Configuration,
-                serviceName: "Retail.Orders.Read",
-                serviceVersion: "1.0.0");
+            // Application Infrastructure
+            serviceCollection.AddSingleton<OrderReadApplication>();
+            serviceCollection.AddSingleton<Microsoft.Extensions.Hosting.IHostedService>(sp => sp.GetRequiredService<OrderReadApplication>());
+            serviceCollection.AddScoped<IServiceInitializer, ServiceInitializer>();
 
-            // Configure strongly-typed configuration classes
+            // General Configuration
             serviceCollection.Configure<DatabaseConnectionConfiguration>(
                 context.Configuration.GetSection("ConnectionStrings"));
             serviceCollection.Configure<MongoDBSettings>(
@@ -66,7 +65,35 @@ namespace Retail.Orders.Read.Application
             serviceCollection.Configure<MetricsConfiguration>(
                 context.Configuration.GetSection(nameof(MetricsConfiguration)));
 
-            // Register metrics service conditionally based on configuration
+            // DataStore
+            serviceCollection.AddScoped<ApplicationDbContext>();
+            serviceCollection.AddScoped<IUnitOfWork, UnitOfWork>();
+
+            // Domain Services
+            serviceCollection.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(
+                typeof(GetAllOrdersQuery).Assembly,
+                typeof(GetOrderByIdQuery).Assembly
+            ));
+
+            // Converters
+            serviceCollection.AddSingleton<IConverter<LineItemDto, Retail.Orders.Read.src.CleanArchitecture.Domain.Entities.LineItem>, LineItemConverter>();
+            serviceCollection.AddSingleton<IConverter<Retail.Orders.Read.src.CleanArchitecture.Domain.Entities.LineItem, LineItemDto>, LineItemDtoConverter>();
+            serviceCollection.AddSingleton<IConverter<OrderDto, Retail.Orders.Read.src.CleanArchitecture.Domain.Entities.Order>, OrderConverter>();
+            serviceCollection.AddSingleton<IConverter<Retail.Orders.Read.src.CleanArchitecture.Domain.Entities.Order, OrderDto>, OrderDtoConverter>();
+
+            // Validators
+            // (No validators in Orders.Read service)
+
+            // Messaging
+            serviceCollection.AddRabbitMQServices(context.Configuration);
+            serviceCollection.AddSingleton<IRabbitMQTopologyManager, RabbitMQTopologyManager>();
+            serviceCollection.AddScoped<IEventHandler<InventoryUpdatedEvent>, InventoryUpdatedEventHandler>();
+
+            // API Infrastructure
+            serviceCollection.AddOpenTelemetry(
+                context.Configuration,
+                serviceName: "Retail.Orders.Read",
+                serviceVersion: "1.0.0");
             serviceCollection.AddSingleton<CommonLibrary.Telemetry.IMetricsService>(services =>
             {
                 var metricsConfiguration = services.GetRequiredService<IOptions<MetricsConfiguration>>();
@@ -79,38 +106,6 @@ namespace Retail.Orders.Read.Application
                     return new CommonLibrary.Telemetry.EmptyMetricsService();
                 }
             });
-
-            // Configure MongoDB connection
-            serviceCollection.AddScoped<ApplicationDbContext>();
-            serviceCollection.AddScoped<IUnitOfWork, UnitOfWork>();
-
-            // Register MediatR with all relevant assemblies
-            serviceCollection.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(
-                typeof(GetAllOrdersQuery).Assembly,
-                typeof(GetOrderByIdQuery).Assembly
-            ));
-
-            // Register event handlers with proper logging
-            serviceCollection.AddScoped<IEventHandler<InventoryUpdatedEvent>, InventoryUpdatedEventHandler>();
-            serviceCollection.AddScoped<IServiceInitializer, ServiceInitializer>();
-
-            // Register converters
-            serviceCollection.AddSingleton<IConverter<LineItemDto, Retail.Orders.Read.src.CleanArchitecture.Domain.Entities.LineItem>, LineItemConverter>();
-            serviceCollection.AddSingleton<IConverter<Retail.Orders.Read.src.CleanArchitecture.Domain.Entities.LineItem, LineItemDto>, LineItemDtoConverter>();
-            serviceCollection.AddSingleton<IConverter<OrderDto, Retail.Orders.Read.src.CleanArchitecture.Domain.Entities.Order>, OrderConverter>();
-            serviceCollection.AddSingleton<IConverter<Retail.Orders.Read.src.CleanArchitecture.Domain.Entities.Order, OrderDto>, OrderDtoConverter>();
-
-            // Register application lifecycle
-            serviceCollection.AddSingleton<OrderReadApplication>();
-            serviceCollection.AddSingleton<Microsoft.Extensions.Hosting.IHostedService>(sp => sp.GetRequiredService<OrderReadApplication>());
-
-            // Add RabbitMQ from the common project
-            serviceCollection.AddRabbitMQServices(context.Configuration);
-
-            // Register RabbitMQ topology manager
-            serviceCollection.AddSingleton<IRabbitMQTopologyManager, RabbitMQTopologyManager>();
-
-            // Add API versioning
             serviceCollection.AddApiVersioning(options =>
             {
                 options.DefaultApiVersion = new ApiVersion(1, 0);
@@ -125,10 +120,8 @@ namespace Retail.Orders.Read.Application
                 options.GroupNameFormat = "'v'VVV";
                 options.SubstituteApiVersionInUrl = true;
             });
-
             serviceCollection.AddEndpointsApiExplorer();
             serviceCollection.AddControllers();
-
             serviceCollection.AddSwaggerGen(c =>
             {
 #pragma warning disable ASP0000 // Do not call 'IServiceCollection.BuildServiceProvider' in 'ConfigureServices'
@@ -155,8 +148,6 @@ namespace Retail.Orders.Read.Application
                     c.IncludeXmlComments(xmlPath);
                 }
             });
-
-            // Add health checks
             serviceCollection.AddHealthChecks();
         }
 

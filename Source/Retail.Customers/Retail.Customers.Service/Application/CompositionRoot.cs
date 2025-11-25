@@ -56,19 +56,49 @@ namespace Retail.Api.Customers.Application
         /// <param name="serviceCollection">Service collection to register services to.</param>
         public static void ConfigureServices(HostBuilderContext context, IServiceCollection serviceCollection)
         {
-            // Configure OpenTelemetry for observability
-            serviceCollection.AddOpenTelemetry(
-                context.Configuration,
-                serviceName: "Retail.Customers",
-                serviceVersion: "1.0.0");
+            // Application Infrastructure
+            serviceCollection.AddSingleton<CustomerApplication>();
+            serviceCollection.AddSingleton<Microsoft.Extensions.Hosting.IHostedService>(sp => sp.GetRequiredService<CustomerApplication>());
+            serviceCollection.AddScoped<IServiceInitializer, ServiceInitializer>();
 
-            // Configure strongly-typed configuration classes
+            // General Configuration
             serviceCollection.Configure<DatabaseConnectionConfiguration>(
                 context.Configuration.GetSection("ConnectionStrings"));
             serviceCollection.Configure<MetricsConfiguration>(
                 context.Configuration.GetSection(nameof(MetricsConfiguration)));
 
-            // Register metrics service conditionally based on configuration
+            // DataStore
+            serviceCollection.AddDbContext<ApplicationDbContext>((serviceProvider, options) =>
+            {
+                var dbConfig = serviceProvider.GetRequiredService<IOptions<DatabaseConnectionConfiguration>>().Value;
+                options.UseSqlServer(dbConfig.DefaultConnection);
+            }, ServiceLifetime.Scoped);
+            serviceCollection.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+            serviceCollection.AddScoped<IUnitOfWork, UnitOfWork>();
+            serviceCollection.AddScoped<INotificationRepository, NotificationRepository>();
+
+            // Domain Services
+            serviceCollection.AddScoped<ICustomerService, CustomerService>();
+
+            // Converters
+            serviceCollection.AddSingleton<IConverter<CustomerDto, Customer>, CustomerConverter>();
+            serviceCollection.AddSingleton<IConverter<Customer, CustomerDto>, CustomerDtoConverter>();
+            serviceCollection.AddSingleton<IConverter<NotificationDto, Notification>, NotificationConverter>();
+            serviceCollection.AddSingleton<IConverter<Notification, NotificationDto>, NotificationDtoConverter>();
+
+            // Validators
+            serviceCollection.AddScoped<IMessageValidator<CustomerDto>, CustomerDtoValidator>();
+
+            // Messaging
+            serviceCollection.AddRabbitMQServices(context.Configuration);
+            serviceCollection.AddSingleton<IRabbitMQTopologyManager, RabbitMQTopologyManager>();
+            serviceCollection.AddScoped<IEventHandler<InventoryUpdatedEvent>, InventoryUpdatedEventHandler>();
+
+            // API Infrastructure
+            serviceCollection.AddOpenTelemetry(
+                context.Configuration,
+                serviceName: "Retail.Customers",
+                serviceVersion: "1.0.0");
             serviceCollection.AddSingleton<CommonLibrary.Telemetry.IMetricsService>(services =>
             {
                 var metricsConfiguration = services.GetRequiredService<IOptions<MetricsConfiguration>>();
@@ -81,43 +111,6 @@ namespace Retail.Api.Customers.Application
                     return new CommonLibrary.Telemetry.EmptyMetricsService();
                 }
             });
-
-            // Configure database connection
-            serviceCollection.AddDbContext<ApplicationDbContext>((serviceProvider, options) =>
-            {
-                var dbConfig = serviceProvider.GetRequiredService<IOptions<DatabaseConnectionConfiguration>>().Value;
-                options.UseSqlServer(dbConfig.DefaultConnection);
-            }, ServiceLifetime.Scoped);
-
-            // Configure services
-            serviceCollection.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
-            serviceCollection.AddScoped<IUnitOfWork, UnitOfWork>();
-            serviceCollection.AddScoped<ICustomerService, CustomerService>();
-            serviceCollection.AddScoped<INotificationRepository, NotificationRepository>();
-
-            // Add RabbitMQ from the common project
-            serviceCollection.AddRabbitMQServices(context.Configuration);
-
-            // Register RabbitMQ topology manager
-            serviceCollection.AddSingleton<IRabbitMQTopologyManager, RabbitMQTopologyManager>();
-
-            serviceCollection.AddScoped<IEventHandler<InventoryUpdatedEvent>, InventoryUpdatedEventHandler>();
-            serviceCollection.AddScoped<IServiceInitializer, ServiceInitializer>();
-
-            // Register validators
-            serviceCollection.AddScoped<IMessageValidator<CustomerDto>, CustomerDtoValidator>();
-
-            // Register converters
-            serviceCollection.AddSingleton<IConverter<CustomerDto, Customer>, CustomerConverter>();
-            serviceCollection.AddSingleton<IConverter<Customer, CustomerDto>, CustomerDtoConverter>();
-            serviceCollection.AddSingleton<IConverter<NotificationDto, Notification>, NotificationConverter>();
-            serviceCollection.AddSingleton<IConverter<Notification, NotificationDto>, NotificationDtoConverter>();
-
-            // Register application lifecycle
-            serviceCollection.AddSingleton<CustomerApplication>();
-            serviceCollection.AddSingleton<Microsoft.Extensions.Hosting.IHostedService>(sp => sp.GetRequiredService<CustomerApplication>());
-
-            // Add API versioning
             serviceCollection.AddApiVersioning(options =>
             {
                 options.DefaultApiVersion = new ApiVersion(1, 0);
@@ -132,10 +125,8 @@ namespace Retail.Api.Customers.Application
                 options.GroupNameFormat = "'v'VVV";
                 options.SubstituteApiVersionInUrl = true;
             });
-
             serviceCollection.AddEndpointsApiExplorer();
             serviceCollection.AddControllers();
-
             serviceCollection.AddSwaggerGen(c =>
             {
 #pragma warning disable ASP0000 // Do not call 'IServiceCollection.BuildServiceProvider' in 'ConfigureServices'
@@ -162,8 +153,6 @@ namespace Retail.Api.Customers.Application
                     c.IncludeXmlComments(xmlPath);
                 }
             });
-
-            // Add health checks
             serviceCollection.AddHealthChecks()
                 .AddDbContextCheck<ApplicationDbContext>("database");
         }

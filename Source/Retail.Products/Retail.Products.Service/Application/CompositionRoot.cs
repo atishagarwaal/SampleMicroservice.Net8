@@ -55,19 +55,46 @@ namespace Retail.Api.Products.Application
         /// <param name="serviceCollection">Service collection to register services to.</param>
         public static void ConfigureServices(HostBuilderContext context, IServiceCollection serviceCollection)
         {
-            // Configure OpenTelemetry for observability
-            serviceCollection.AddOpenTelemetry(
-                context.Configuration,
-                serviceName: "Retail.Products",
-                serviceVersion: "1.0.0");
+            // Application Infrastructure
+            serviceCollection.AddSingleton<ProductApplication>();
+            serviceCollection.AddSingleton<Microsoft.Extensions.Hosting.IHostedService>(sp => sp.GetRequiredService<ProductApplication>());
+            serviceCollection.AddScoped<IServiceInitializer, ServiceInitializer>();
 
-            // Configure strongly-typed configuration classes
+            // General Configuration
             serviceCollection.Configure<DatabaseConnectionConfiguration>(
                 context.Configuration.GetSection("ConnectionStrings"));
             serviceCollection.Configure<MetricsConfiguration>(
                 context.Configuration.GetSection(nameof(MetricsConfiguration)));
 
-            // Register metrics service conditionally based on configuration
+            // DataStore
+            serviceCollection.AddDbContext<ApplicationDbContext>((serviceProvider, options) =>
+            {
+                var dbConfig = serviceProvider.GetRequiredService<IOptions<DatabaseConnectionConfiguration>>().Value;
+                options.UseSqlServer(dbConfig.DefaultConnection);
+            }, ServiceLifetime.Scoped);
+            serviceCollection.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+            serviceCollection.AddScoped<IUnitOfWork, UnitOfWork>();
+
+            // Domain Services
+            serviceCollection.AddScoped<IProductService, ProductService>();
+
+            // Converters
+            serviceCollection.AddSingleton<IConverter<SkuDto, Retail.Api.Products.src.CleanArchitecture.Domain.Entities.Sku>, SkuConverter>();
+            serviceCollection.AddSingleton<IConverter<Retail.Api.Products.src.CleanArchitecture.Domain.Entities.Sku, SkuDto>, SkuDtoConverter>();
+
+            // Validators
+            serviceCollection.AddScoped<IMessageValidator<SkuDto>, SkuDtoValidator>();
+
+            // Messaging
+            serviceCollection.AddRabbitMQServices(context.Configuration);
+            serviceCollection.AddSingleton<IRabbitMQTopologyManager, RabbitMQTopologyManager>();
+            serviceCollection.AddScoped<IEventHandler<OrderCreatedEvent>, OrderCreatedEventHandler>();
+
+            // API Infrastructure
+            serviceCollection.AddOpenTelemetry(
+                context.Configuration,
+                serviceName: "Retail.Products",
+                serviceVersion: "1.0.0");
             serviceCollection.AddSingleton<CommonLibrary.Telemetry.IMetricsService>(services =>
             {
                 var metricsConfiguration = services.GetRequiredService<IOptions<MetricsConfiguration>>();
@@ -80,40 +107,6 @@ namespace Retail.Api.Products.Application
                     return new CommonLibrary.Telemetry.EmptyMetricsService();
                 }
             });
-
-            // Configure database connection
-            serviceCollection.AddDbContext<ApplicationDbContext>((serviceProvider, options) =>
-            {
-                var dbConfig = serviceProvider.GetRequiredService<IOptions<DatabaseConnectionConfiguration>>().Value;
-                options.UseSqlServer(dbConfig.DefaultConnection);
-            }, ServiceLifetime.Scoped);
-
-            // Configure services
-            serviceCollection.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
-            serviceCollection.AddScoped<IUnitOfWork, UnitOfWork>();
-            serviceCollection.AddScoped<IProductService, ProductService>();
-
-            // Add RabbitMQ from the common project
-            serviceCollection.AddRabbitMQServices(context.Configuration);
-
-            // Register RabbitMQ topology manager
-            serviceCollection.AddSingleton<IRabbitMQTopologyManager, RabbitMQTopologyManager>();
-
-            serviceCollection.AddScoped<IEventHandler<OrderCreatedEvent>, OrderCreatedEventHandler>();
-            serviceCollection.AddScoped<IServiceInitializer, ServiceInitializer>();
-
-            // Register validators
-            serviceCollection.AddScoped<IMessageValidator<SkuDto>, SkuDtoValidator>();
-
-            // Register converters
-            serviceCollection.AddSingleton<IConverter<SkuDto, Retail.Api.Products.src.CleanArchitecture.Domain.Entities.Sku>, SkuConverter>();
-            serviceCollection.AddSingleton<IConverter<Retail.Api.Products.src.CleanArchitecture.Domain.Entities.Sku, SkuDto>, SkuDtoConverter>();
-
-            // Register application lifecycle
-            serviceCollection.AddSingleton<ProductApplication>();
-            serviceCollection.AddSingleton<Microsoft.Extensions.Hosting.IHostedService>(sp => sp.GetRequiredService<ProductApplication>());
-
-            // Add API versioning
             serviceCollection.AddApiVersioning(options =>
             {
                 options.DefaultApiVersion = new ApiVersion(1, 0);
@@ -128,10 +121,8 @@ namespace Retail.Api.Products.Application
                 options.GroupNameFormat = "'v'VVV";
                 options.SubstituteApiVersionInUrl = true;
             });
-
             serviceCollection.AddEndpointsApiExplorer();
             serviceCollection.AddControllers();
-
             serviceCollection.AddSwaggerGen(c =>
             {
 #pragma warning disable ASP0000 // Do not call 'IServiceCollection.BuildServiceProvider' in 'ConfigureServices'
@@ -158,8 +149,6 @@ namespace Retail.Api.Products.Application
                     c.IncludeXmlComments(xmlPath);
                 }
             });
-
-            // Add health checks
             serviceCollection.AddHealthChecks()
                 .AddDbContextCheck<ApplicationDbContext>("database");
         }

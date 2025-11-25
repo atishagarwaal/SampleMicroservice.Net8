@@ -56,19 +56,53 @@ namespace Retail.Orders.Write.Application
         /// <param name="serviceCollection">Service collection to register services to.</param>
         public static void ConfigureServices(HostBuilderContext context, IServiceCollection serviceCollection)
         {
-            // Configure OpenTelemetry for observability
-            serviceCollection.AddOpenTelemetry(
-                context.Configuration,
-                serviceName: "Retail.Orders.Write",
-                serviceVersion: "1.0.0");
+            // Application Infrastructure
+            serviceCollection.AddSingleton<OrderWriteApplication>();
+            serviceCollection.AddSingleton<Microsoft.Extensions.Hosting.IHostedService>(sp => sp.GetRequiredService<OrderWriteApplication>());
+            serviceCollection.AddScoped<IServiceInitializer, ServiceInitializer>();
 
-            // Configure strongly-typed configuration classes
+            // General Configuration
             serviceCollection.Configure<DatabaseConnectionConfiguration>(
                 context.Configuration.GetSection("ConnectionStrings"));
             serviceCollection.Configure<MetricsConfiguration>(
                 context.Configuration.GetSection(nameof(MetricsConfiguration)));
 
-            // Register metrics service conditionally based on configuration
+            // DataStore
+            serviceCollection.AddDbContext<ApplicationDbContext>((serviceProvider, options) =>
+            {
+                var dbConfig = serviceProvider.GetRequiredService<IOptions<DatabaseConnectionConfiguration>>().Value;
+                options.UseSqlServer(dbConfig.DefaultConnection);
+            }, ServiceLifetime.Scoped);
+            serviceCollection.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+            serviceCollection.AddScoped<IUnitOfWork, UnitOfWork>();
+
+            // Domain Services
+            serviceCollection.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(
+                typeof(CreateOrderCommand).Assembly,
+                typeof(DeleteOrderCommand).Assembly,
+                typeof(UpdateOrderCommand).Assembly)
+            );
+
+            // Converters
+            serviceCollection.AddSingleton<IConverter<LineItemDto, Retail.Orders.Write.src.CleanArchitecture.Domain.Entities.LineItem>, LineItemConverter>();
+            serviceCollection.AddSingleton<IConverter<Retail.Orders.Write.src.CleanArchitecture.Domain.Entities.LineItem, LineItemDto>, LineItemDtoConverter>();
+            serviceCollection.AddSingleton<IConverter<OrderDto, Retail.Orders.Write.src.CleanArchitecture.Domain.Entities.Order>, OrderConverter>();
+            serviceCollection.AddSingleton<IConverter<Retail.Orders.Write.src.CleanArchitecture.Domain.Entities.Order, OrderDto>, OrderDtoConverter>();
+
+            // Validators
+            serviceCollection.AddScoped<IMessageValidator<OrderDto>, OrderDtoValidator>();
+            serviceCollection.AddScoped<IMessageValidator<LineItemDto>, LineItemDtoValidator>();
+
+            // Messaging
+            serviceCollection.AddRabbitMQServices(context.Configuration);
+            serviceCollection.AddSingleton<IRabbitMQTopologyManager, RabbitMQTopologyManager>();
+            serviceCollection.AddScoped<IEventHandler<InventoryErrorEvent>, InventoryErrorEventHandler>();
+
+            // API Infrastructure
+            serviceCollection.AddOpenTelemetry(
+                context.Configuration,
+                serviceName: "Retail.Orders.Write",
+                serviceVersion: "1.0.0");
             serviceCollection.AddSingleton<CommonLibrary.Telemetry.IMetricsService>(services =>
             {
                 var metricsConfiguration = services.GetRequiredService<IOptions<MetricsConfiguration>>();
@@ -81,48 +115,6 @@ namespace Retail.Orders.Write.Application
                     return new CommonLibrary.Telemetry.EmptyMetricsService();
                 }
             });
-
-            // Configure database connection
-            serviceCollection.AddDbContext<ApplicationDbContext>((serviceProvider, options) =>
-            {
-                var dbConfig = serviceProvider.GetRequiredService<IOptions<DatabaseConnectionConfiguration>>().Value;
-                options.UseSqlServer(dbConfig.DefaultConnection);
-            }, ServiceLifetime.Scoped);
-
-            serviceCollection.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
-            serviceCollection.AddScoped<IUnitOfWork, UnitOfWork>();
-
-            // Register MediatR with all relevant assemblies
-            serviceCollection.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(
-                typeof(CreateOrderCommand).Assembly,
-                typeof(DeleteOrderCommand).Assembly,
-                typeof(UpdateOrderCommand).Assembly)
-            );
-
-            serviceCollection.AddScoped<IEventHandler<InventoryErrorEvent>, InventoryErrorEventHandler>();
-            serviceCollection.AddScoped<IServiceInitializer, ServiceInitializer>();
-
-            // Register application lifecycle
-            serviceCollection.AddSingleton<OrderWriteApplication>();
-            serviceCollection.AddSingleton<Microsoft.Extensions.Hosting.IHostedService>(sp => sp.GetRequiredService<OrderWriteApplication>());
-
-            // Register validators
-            serviceCollection.AddScoped<IMessageValidator<OrderDto>, OrderDtoValidator>();
-            serviceCollection.AddScoped<IMessageValidator<LineItemDto>, LineItemDtoValidator>();
-
-            // Register converters
-            serviceCollection.AddSingleton<IConverter<LineItemDto, Retail.Orders.Write.src.CleanArchitecture.Domain.Entities.LineItem>, LineItemConverter>();
-            serviceCollection.AddSingleton<IConverter<Retail.Orders.Write.src.CleanArchitecture.Domain.Entities.LineItem, LineItemDto>, LineItemDtoConverter>();
-            serviceCollection.AddSingleton<IConverter<OrderDto, Retail.Orders.Write.src.CleanArchitecture.Domain.Entities.Order>, OrderConverter>();
-            serviceCollection.AddSingleton<IConverter<Retail.Orders.Write.src.CleanArchitecture.Domain.Entities.Order, OrderDto>, OrderDtoConverter>();
-
-            // Add RabbitMQ from the common project
-            serviceCollection.AddRabbitMQServices(context.Configuration);
-
-            // Register RabbitMQ topology manager
-            serviceCollection.AddSingleton<IRabbitMQTopologyManager, RabbitMQTopologyManager>();
-
-            // Add API versioning
             serviceCollection.AddApiVersioning(options =>
             {
                 options.DefaultApiVersion = new ApiVersion(1, 0);
@@ -137,10 +129,8 @@ namespace Retail.Orders.Write.Application
                 options.GroupNameFormat = "'v'VVV";
                 options.SubstituteApiVersionInUrl = true;
             });
-
             serviceCollection.AddEndpointsApiExplorer();
             serviceCollection.AddControllers();
-
             serviceCollection.AddSwaggerGen(c =>
             {
 #pragma warning disable ASP0000 // Do not call 'IServiceCollection.BuildServiceProvider' in 'ConfigureServices'
@@ -167,8 +157,6 @@ namespace Retail.Orders.Write.Application
                     c.IncludeXmlComments(xmlPath);
                 }
             });
-
-            // Add health checks
             serviceCollection.AddHealthChecks()
                 .AddDbContextCheck<ApplicationDbContext>("database");
         }

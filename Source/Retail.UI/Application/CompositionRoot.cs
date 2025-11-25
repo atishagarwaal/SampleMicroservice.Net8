@@ -29,17 +29,30 @@ namespace Retail.UI.Application
         /// <param name="serviceCollection">Service collection to register services to.</param>
         public static void ConfigureServices(HostBuilderContext context, IServiceCollection serviceCollection)
         {
-            // Configure OpenTelemetry for observability
+            // Application Infrastructure
+            serviceCollection.AddSingleton<UIApplication>();
+            serviceCollection.AddSingleton<Microsoft.Extensions.Hosting.IHostedService>(sp => sp.GetRequiredService<UIApplication>());
+
+            // General Configuration
+            serviceCollection.Configure<MetricsConfiguration>(
+                context.Configuration.GetSection(nameof(MetricsConfiguration)));
+
+            // Domain Services
+            serviceCollection.AddRazorComponents()
+                .AddInteractiveServerComponents();
+            serviceCollection.AddHttpClient();
+            serviceCollection.AddScoped<System.Net.Http.HttpClient>(sp =>
+            {
+                var navigationManager = sp.GetRequiredService<NavigationManager>();
+                return new System.Net.Http.HttpClient { BaseAddress = new System.Uri(navigationManager.BaseUri) };
+            });
+            serviceCollection.AddRazorPages();
+
+            // API Infrastructure
             serviceCollection.AddOpenTelemetry(
                 context.Configuration,
                 serviceName: "Retail.UI",
                 serviceVersion: "1.0.0");
-
-            // Configure strongly-typed configuration classes
-            serviceCollection.Configure<MetricsConfiguration>(
-                context.Configuration.GetSection(nameof(MetricsConfiguration)));
-
-            // Register metrics service conditionally based on configuration
             serviceCollection.AddSingleton<CommonLibrary.Telemetry.IMetricsService>(services =>
             {
                 var metricsConfiguration = services.GetRequiredService<IOptions<MetricsConfiguration>>();
@@ -52,28 +65,6 @@ namespace Retail.UI.Application
                     return new CommonLibrary.Telemetry.EmptyMetricsService();
                 }
             });
-
-            // Add services to the container.
-            serviceCollection.AddRazorComponents()
-                .AddInteractiveServerComponents();
-
-            // Optionally keep factory for named clients too
-            serviceCollection.AddHttpClient();
-
-            // Register HttpClient (default for @inject HttpClient)
-            serviceCollection.AddScoped<System.Net.Http.HttpClient>(sp =>
-            {
-                var navigationManager = sp.GetRequiredService<NavigationManager>();
-                return new System.Net.Http.HttpClient { BaseAddress = new System.Uri(navigationManager.BaseUri) };
-            });
-
-            serviceCollection.AddRazorPages();
-
-            // Register application lifecycle
-            serviceCollection.AddSingleton<UIApplication>();
-            serviceCollection.AddSingleton<Microsoft.Extensions.Hosting.IHostedService>(sp => sp.GetRequiredService<UIApplication>());
-
-            // Add health checks
             serviceCollection.AddHealthChecks();
         }
 

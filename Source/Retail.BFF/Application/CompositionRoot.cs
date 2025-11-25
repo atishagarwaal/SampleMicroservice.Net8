@@ -32,17 +32,28 @@ namespace Retail.BFFWeb.Api.Application
         /// <param name="serviceCollection">Service collection to register services to.</param>
         public static void ConfigureServices(HostBuilderContext context, IServiceCollection serviceCollection)
         {
-            // Configure OpenTelemetry for observability
+            // Application Infrastructure
+            serviceCollection.AddSingleton<BFFApplication>();
+            serviceCollection.AddSingleton<Microsoft.Extensions.Hosting.IHostedService>(sp => sp.GetRequiredService<BFFApplication>());
+
+            // General Configuration
+            serviceCollection.Configure<MetricsConfiguration>(
+                context.Configuration.GetSection(nameof(MetricsConfiguration)));
+            serviceCollection.Configure<CustomerServiceConfig>(context.Configuration.GetSection("CustomerServiceConfig"));
+            serviceCollection.Configure<OrderServiceConfig>(context.Configuration.GetSection("OrderServiceConfig"));
+            serviceCollection.Configure<ProductServiceConfig>(context.Configuration.GetSection("ProductServiceConfig"));
+
+            // Domain Services
+            serviceCollection.AddHttpClient();
+            serviceCollection.AddSingleton<ICustomerProvider, CustomerProvider>();
+            serviceCollection.AddSingleton<IOrderProvider, OrderProvider>();
+            serviceCollection.AddSingleton<IProductProvider, ProductProvider>();
+
+            // API Infrastructure
             serviceCollection.AddOpenTelemetry(
                 context.Configuration,
                 serviceName: "Retail.BFF",
                 serviceVersion: "1.0.0");
-
-            // Configure strongly-typed configuration classes
-            serviceCollection.Configure<MetricsConfiguration>(
-                context.Configuration.GetSection(nameof(MetricsConfiguration)));
-
-            // Register metrics service conditionally based on configuration
             serviceCollection.AddSingleton<CommonLibrary.Telemetry.IMetricsService>(services =>
             {
                 var metricsConfiguration = services.GetRequiredService<IOptions<MetricsConfiguration>>();
@@ -55,38 +66,17 @@ namespace Retail.BFFWeb.Api.Application
                     return new CommonLibrary.Telemetry.EmptyMetricsService();
                 }
             });
-
-            serviceCollection.AddHttpClient();
-
-            // Add services to the container.
-            serviceCollection.AddSingleton<ICustomerProvider, CustomerProvider>();
-            serviceCollection.AddSingleton<IOrderProvider, OrderProvider>();
-            serviceCollection.AddSingleton<IProductProvider, ProductProvider>();
-
-            // Register application lifecycle
-            serviceCollection.AddSingleton<BFFApplication>();
-            serviceCollection.AddSingleton<Microsoft.Extensions.Hosting.IHostedService>(sp => sp.GetRequiredService<BFFApplication>());
-
-            serviceCollection.Configure<CustomerServiceConfig>(context.Configuration.GetSection("CustomerServiceConfig"));
-            serviceCollection.Configure<OrderServiceConfig>(context.Configuration.GetSection("OrderServiceConfig"));
-            serviceCollection.Configure<ProductServiceConfig>(context.Configuration.GetSection("ProductServiceConfig"));
-
             serviceCollection.AddControllers();
-
-            // Add API versioning
             serviceCollection.AddApiVersioning(options =>
             {
                 options.AssumeDefaultVersionWhenUnspecified = true;
                 options.DefaultApiVersion = new ApiVersion(1, 0);
                 options.ReportApiVersions = true;
             });
-
             serviceCollection.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "Aggregated Data", Version = "v1" });
             });
-
-            // Add health checks
             serviceCollection.AddHealthChecks();
         }
 
