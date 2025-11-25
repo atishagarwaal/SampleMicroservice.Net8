@@ -95,7 +95,6 @@ namespace Retail.Orders.Write.Application
 
             // Register application lifecycle
             serviceCollection.AddSingleton<OrderWriteApplication>();
-            serviceCollection.AddSingleton<CommonLibrary.Application.IApplication>(sp => sp.GetRequiredService<OrderWriteApplication>());
             serviceCollection.AddSingleton<Microsoft.Extensions.Hosting.IHostedService>(sp => sp.GetRequiredService<OrderWriteApplication>());
 
             // Register validators

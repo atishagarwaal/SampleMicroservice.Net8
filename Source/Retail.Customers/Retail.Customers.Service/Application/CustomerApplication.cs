@@ -7,9 +7,9 @@
 namespace Retail.Api.Customers.Application
 {
     using System;
+    using System.Diagnostics.CodeAnalysis;
     using System.Threading;
     using System.Threading.Tasks;
-    using CommonLibrary.Application;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
@@ -19,10 +19,11 @@ namespace Retail.Api.Customers.Application
     /// <summary>
     /// Represents the Customer microservice application lifecycle.
     /// </summary>
-    public class CustomerApplication : IApplication, IHostedService
+    [ExcludeFromCodeCoverage]
+    public class CustomerApplication : IHostedService
     {
-        private readonly IServiceProvider _serviceProvider;
-        private readonly ILogger<CustomerApplication> _logger;
+        private readonly IServiceProvider serviceProvider;
+        private readonly ILogger<CustomerApplication> logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CustomerApplication"/> class.
@@ -33,8 +34,8 @@ namespace Retail.Api.Customers.Application
             IServiceProvider serviceProvider,
             ILogger<CustomerApplication> logger)
         {
-            this._serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
-            this._logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            this.serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
+            this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         /// <summary>
@@ -44,21 +45,21 @@ namespace Retail.Api.Customers.Application
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task StartAsync(CancellationToken cancellationToken)
         {
-            this._logger.LogInformation("Starting Customer Service");
+            this.logger.LogInformation("Starting Customer Service");
 
-            using (var scope = this._serviceProvider.CreateScope())
+            using (var scope = this.serviceProvider.CreateScope())
             {
-                this._logger.LogInformation("Initializing service subscriptions");
+                this.logger.LogInformation("Initializing service subscriptions");
                 var serviceInitializer = scope.ServiceProvider.GetRequiredService<IServiceInitializer>();
-                await serviceInitializer.Initialize();
+                await serviceInitializer.Initialize().ConfigureAwait(false);
 
-                this._logger.LogInformation("Ensuring database is created");
+                this.logger.LogInformation("Ensuring database is created");
                 var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-                await db.Database.EnsureCreatedAsync(cancellationToken);
-                this._logger.LogInformation("Database initialization completed");
+                await db.Database.EnsureCreatedAsync(cancellationToken).ConfigureAwait(false);
+                this.logger.LogInformation("Database initialization completed");
             }
 
-            this._logger.LogInformation("Customer Service started successfully");
+            this.logger.LogInformation("Customer Service started successfully");
         }
 
         /// <summary>
@@ -68,7 +69,7 @@ namespace Retail.Api.Customers.Application
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public Task StopAsync(CancellationToken cancellationToken)
         {
-            this._logger.LogInformation("Stopping Customer Service");
+            this.logger.LogInformation("Stopping Customer Service");
             return Task.CompletedTask;
         }
     }

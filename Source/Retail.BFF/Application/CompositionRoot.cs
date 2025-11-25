@@ -54,7 +54,6 @@ namespace Retail.BFFWeb.Api.Application
 
             // Register application lifecycle
             serviceCollection.AddSingleton<BFFApplication>();
-            serviceCollection.AddSingleton<CommonLibrary.Application.IApplication>(sp => sp.GetRequiredService<BFFApplication>());
             serviceCollection.AddSingleton<Microsoft.Extensions.Hosting.IHostedService>(sp => sp.GetRequiredService<BFFApplication>());
 
             serviceCollection.Configure<CustomerServiceConfig>(context.Configuration.GetSection("CustomerServiceConfig"));

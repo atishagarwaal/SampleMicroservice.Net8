@@ -103,7 +103,6 @@ namespace Retail.Api.Customers.Application
 
             // Register application lifecycle
             serviceCollection.AddSingleton<CustomerApplication>();
-            serviceCollection.AddSingleton<CommonLibrary.Application.IApplication>(sp => sp.GetRequiredService<CustomerApplication>());
             serviceCollection.AddSingleton<Microsoft.Extensions.Hosting.IHostedService>(sp => sp.GetRequiredService<CustomerApplication>());
 
             // Add API versioning

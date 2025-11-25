@@ -7,18 +7,19 @@
 namespace Retail.BFFWeb.Api.Application
 {
     using System;
+    using System.Diagnostics.CodeAnalysis;
     using System.Threading;
     using System.Threading.Tasks;
-    using CommonLibrary.Application;
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
 
     /// <summary>
     /// Represents the BFF microservice application lifecycle.
     /// </summary>
-    public class BFFApplication : IApplication, IHostedService
+    [ExcludeFromCodeCoverage]
+    public class BFFApplication : IHostedService
     {
-        private readonly ILogger<BFFApplication> _logger;
+        private readonly ILogger<BFFApplication> logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BFFApplication"/> class.
@@ -26,7 +27,7 @@ namespace Retail.BFFWeb.Api.Application
         /// <param name="logger">The logger.</param>
         public BFFApplication(ILogger<BFFApplication> logger)
         {
-            this._logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         /// <summary>
@@ -36,8 +37,8 @@ namespace Retail.BFFWeb.Api.Application
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public Task StartAsync(CancellationToken cancellationToken)
         {
-            this._logger.LogInformation("Starting BFF Service");
-            this._logger.LogInformation("BFF Service started successfully");
+            this.logger.LogInformation("Starting BFF Service");
+            this.logger.LogInformation("BFF Service started successfully");
             return Task.CompletedTask;
         }
 
@@ -48,7 +49,7 @@ namespace Retail.BFFWeb.Api.Application
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public Task StopAsync(CancellationToken cancellationToken)
         {
-            this._logger.LogInformation("Stopping BFF Service");
+            this.logger.LogInformation("Stopping BFF Service");
             return Task.CompletedTask;
         }
     }

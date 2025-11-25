@@ -60,7 +60,6 @@ namespace Retail.UI.Application
 
             // Register application lifecycle
             serviceCollection.AddSingleton<UIApplication>();
-            serviceCollection.AddSingleton<CommonLibrary.Application.IApplication>(sp => sp.GetRequiredService<UIApplication>());
             serviceCollection.AddSingleton<Microsoft.Extensions.Hosting.IHostedService>(sp => sp.GetRequiredService<UIApplication>());
 
             // Add health checks

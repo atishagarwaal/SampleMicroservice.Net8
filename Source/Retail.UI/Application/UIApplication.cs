@@ -7,18 +7,19 @@
 namespace Retail.UI.Application
 {
     using System;
+    using System.Diagnostics.CodeAnalysis;
     using System.Threading;
     using System.Threading.Tasks;
-    using CommonLibrary.Application;
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
 
     /// <summary>
     /// Represents the Retail UI application lifecycle.
     /// </summary>
-    public class UIApplication : IApplication, IHostedService
+    [ExcludeFromCodeCoverage]
+    public class UIApplication : IHostedService
     {
-        private readonly ILogger<UIApplication> _logger;
+        private readonly ILogger<UIApplication> logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UIApplication"/> class.
@@ -26,7 +27,7 @@ namespace Retail.UI.Application
         /// <param name="logger">The logger.</param>
         public UIApplication(ILogger<UIApplication> logger)
         {
-            this._logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         /// <summary>
@@ -36,8 +37,8 @@ namespace Retail.UI.Application
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public Task StartAsync(CancellationToken cancellationToken)
         {
-            this._logger.LogInformation("Starting Retail UI application");
-            this._logger.LogInformation("Retail UI application started successfully");
+            this.logger.LogInformation("Starting Retail UI application");
+            this.logger.LogInformation("Retail UI application started successfully");
             return Task.CompletedTask;
         }
 
@@ -48,7 +49,7 @@ namespace Retail.UI.Application
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public Task StopAsync(CancellationToken cancellationToken)
         {
-            this._logger.LogInformation("Stopping Retail UI application");
+            this.logger.LogInformation("Stopping Retail UI application");
             return Task.CompletedTask;
         }
     }

@@ -40,9 +40,6 @@ namespace Retail.BFFWeb.Api
 
             try
             {
-                var application = host.Services.GetRequiredService<CommonLibrary.Application.IApplication>();
-                await application.StartAsync(System.Threading.CancellationToken.None);
-
                 await host.RunAsync();
             }
             catch (System.Exception ex)

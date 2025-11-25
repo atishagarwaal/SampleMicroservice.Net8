@@ -92,7 +92,6 @@ namespace Retail.Orders.Read.Application
 
             // Register application lifecycle
             serviceCollection.AddSingleton<OrderReadApplication>();
-            serviceCollection.AddSingleton<CommonLibrary.Application.IApplication>(sp => sp.GetRequiredService<OrderReadApplication>());
             serviceCollection.AddSingleton<Microsoft.Extensions.Hosting.IHostedService>(sp => sp.GetRequiredService<OrderReadApplication>());
 
             // Add RabbitMQ from the common project

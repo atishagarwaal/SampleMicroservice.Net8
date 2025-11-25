@@ -7,9 +7,9 @@
 namespace Retail.Orders.Read.Application
 {
     using System;
+    using System.Diagnostics.CodeAnalysis;
     using System.Threading;
     using System.Threading.Tasks;
-    using CommonLibrary.Application;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
@@ -18,10 +18,11 @@ namespace Retail.Orders.Read.Application
     /// <summary>
     /// Represents the Order Read microservice application lifecycle.
     /// </summary>
-    public class OrderReadApplication : IApplication, IHostedService
+    [ExcludeFromCodeCoverage]
+    public class OrderReadApplication : IHostedService
     {
-        private readonly IServiceProvider _serviceProvider;
-        private readonly ILogger<OrderReadApplication> _logger;
+        private readonly IServiceProvider serviceProvider;
+        private readonly ILogger<OrderReadApplication> logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="OrderReadApplication"/> class.
@@ -32,8 +33,8 @@ namespace Retail.Orders.Read.Application
             IServiceProvider serviceProvider,
             ILogger<OrderReadApplication> logger)
         {
-            this._serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
-            this._logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            this.serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
+            this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         /// <summary>
@@ -43,17 +44,17 @@ namespace Retail.Orders.Read.Application
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task StartAsync(CancellationToken cancellationToken)
         {
-            this._logger.LogInformation("Starting Order Read Service");
+            this.logger.LogInformation("Starting Order Read Service");
 
-            using (var scope = this._serviceProvider.CreateScope())
+            using (var scope = this.serviceProvider.CreateScope())
             {
-                this._logger.LogInformation("Initializing service subscriptions");
+                this.logger.LogInformation("Initializing service subscriptions");
                 var serviceInitializer = scope.ServiceProvider.GetRequiredService<IServiceInitializer>();
-                await serviceInitializer.Initialize();
-                this._logger.LogInformation("Service subscriptions initialized successfully");
+                await serviceInitializer.Initialize().ConfigureAwait(false);
+                this.logger.LogInformation("Service subscriptions initialized successfully");
             }
 
-            this._logger.LogInformation("Order Read Service started successfully");
+            this.logger.LogInformation("Order Read Service started successfully");
         }
 
         /// <summary>
@@ -63,7 +64,7 @@ namespace Retail.Orders.Read.Application
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public Task StopAsync(CancellationToken cancellationToken)
         {
-            this._logger.LogInformation("Stopping Order Read Service");
+            this.logger.LogInformation("Stopping Order Read Service");
             return Task.CompletedTask;
         }
     }

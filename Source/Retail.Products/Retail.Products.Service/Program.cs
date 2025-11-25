@@ -42,9 +42,6 @@ namespace Retail.Api.Products
 
             try
             {
-                var application = host.Services.GetRequiredService<CommonLibrary.Application.IApplication>();
-                await application.StartAsync(CancellationToken.None);
-
                 await host.RunAsync();
             }
             catch (System.Exception ex)
