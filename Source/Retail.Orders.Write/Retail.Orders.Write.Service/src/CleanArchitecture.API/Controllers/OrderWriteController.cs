@@ -12,6 +12,7 @@ using Retail.Orders.Write.src.CleanArchitecture.Application.Interfaces;
 using Retail.Orders.Write.src.CleanArchitecture.Application.Validation.Interfaces;
 using System.Runtime.InteropServices;
 using Microsoft.Extensions.Logging;
+using Asp.Versioning;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 

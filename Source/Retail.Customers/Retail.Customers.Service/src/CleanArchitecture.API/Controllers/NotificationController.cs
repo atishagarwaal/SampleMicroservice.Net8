@@ -5,6 +5,7 @@ using Retail.Api.Customers.src.CleanArchitecture.Application.Interfaces;
 using Retail.Api.Customers.src.CleanArchitecture.Infrastructure.Interfaces;
 using Retail.Api.Customers.src.CleanArchitecture.Application.Converters.Interfaces;
 using Retail.Api.Customers.src.CleanArchitecture.Domain.Entities;
+using Asp.Versioning;
 
 namespace Retail.Api.Customers.src.CleanArchitecture.API.Controllers
 {

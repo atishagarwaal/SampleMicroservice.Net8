@@ -30,7 +30,14 @@ namespace Retail.Api.Customers.Application
     using Retail.Api.Customers.src.CleanArchitecture.Infrastructure.UnitOfWork;
     using CommonLibrary.Configuration;
     using CommonLibrary.Telemetry;
+    using Microsoft.AspNetCore.Mvc;
+    using Asp.Versioning.ApiExplorer;
     using Microsoft.Extensions.Options;
+    using Microsoft.OpenApi.Models;
+    using System;
+    using System.IO;
+    using System.Reflection;
+    using Asp.Versioning;
 
     /// <summary>
     /// Configuration for this service.
@@ -100,16 +107,47 @@ namespace Retail.Api.Customers.Application
             // Add API versioning
             serviceCollection.AddApiVersioning(options =>
             {
-                options.AssumeDefaultVersionWhenUnspecified = true;
-                options.DefaultApiVersion = new Microsoft.AspNetCore.Mvc.ApiVersion(1, 0);
+                options.DefaultApiVersion = new ApiVersion(1, 0);
                 options.ReportApiVersions = true;
+                options.AssumeDefaultVersionWhenUnspecified = true;
+                options.ApiVersionReader = ApiVersionReader.Combine(
+                    new UrlSegmentApiVersionReader(),
+                    new HeaderApiVersionReader("X-Api-Version"));
+            })
+            .AddApiExplorer(options =>
+            {
+                options.GroupNameFormat = "'v'VVV";
+                options.SubstituteApiVersionInUrl = true;
             });
 
+            serviceCollection.AddEndpointsApiExplorer();
             serviceCollection.AddControllers();
 
             serviceCollection.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "Customer", Version = "v1" });
+#pragma warning disable ASP0000 // Do not call 'IServiceCollection.BuildServiceProvider' in 'ConfigureServices'
+                using var serviceProvider = serviceCollection.BuildServiceProvider();
+#pragma warning restore ASP0000 // Do not call 'IServiceCollection.BuildServiceProvider' in 'ConfigureServices'
+                var provider = serviceProvider.GetRequiredService<Asp.Versioning.ApiExplorer.IApiVersionDescriptionProvider>();
+                var version = System.Reflection.Assembly.GetExecutingAssembly()
+                    .GetCustomAttribute<System.Reflection.AssemblyInformationalVersionAttribute>()?.InformationalVersion;
+
+                foreach (var description in provider.ApiVersionDescriptions)
+                {
+                    c.SwaggerDoc(description.GroupName, new Microsoft.OpenApi.Models.OpenApiInfo
+                    {
+                        Version = description.ApiVersion.ToString(),
+                        Title = $"Customer Service version {version} - OpenAPI {description.ApiVersion}",
+                        Description = $"Customer service API v{description.ApiVersion}",
+                    });
+                }
+
+                var xmlFile = $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                var xmlPath = System.IO.Path.Combine(System.AppContext.BaseDirectory, xmlFile);
+                if (System.IO.File.Exists(xmlPath))
+                {
+                    c.IncludeXmlComments(xmlPath);
+                }
             });
 
             // Add health checks

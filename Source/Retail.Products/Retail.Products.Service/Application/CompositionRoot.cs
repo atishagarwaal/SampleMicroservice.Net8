@@ -30,7 +30,13 @@ namespace Retail.Api.Products.Application
     using Retail.Api.Products.src.CleanArchitecture.Infrastructure.UnitOfWork;
     using CommonLibrary.Configuration;
     using CommonLibrary.Telemetry;
+    using Asp.Versioning.ApiExplorer;
+    using Asp.Versioning;
     using Microsoft.Extensions.Options;
+    using Microsoft.OpenApi.Models;
+    using System;
+    using System.IO;
+    using System.Reflection;
 
     /// <summary>
     /// Configuration for this service.
@@ -94,19 +100,50 @@ namespace Retail.Api.Products.Application
             serviceCollection.AddSingleton<CommonLibrary.Application.IApplication>(sp => sp.GetRequiredService<ProductApplication>());
             serviceCollection.AddSingleton<Microsoft.Extensions.Hosting.IHostedService>(sp => sp.GetRequiredService<ProductApplication>());
 
-            serviceCollection.AddControllers();
-
             // Add API versioning
             serviceCollection.AddApiVersioning(options =>
             {
-                options.AssumeDefaultVersionWhenUnspecified = true;
                 options.DefaultApiVersion = new ApiVersion(1, 0);
                 options.ReportApiVersions = true;
+                options.AssumeDefaultVersionWhenUnspecified = true;
+                options.ApiVersionReader = ApiVersionReader.Combine(
+                    new UrlSegmentApiVersionReader(),
+                    new HeaderApiVersionReader("X-Api-Version"));
+            })
+            .AddApiExplorer(options =>
+            {
+                options.GroupNameFormat = "'v'VVV";
+                options.SubstituteApiVersionInUrl = true;
             });
+
+            serviceCollection.AddEndpointsApiExplorer();
+            serviceCollection.AddControllers();
 
             serviceCollection.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "Product", Version = "v1" });
+#pragma warning disable ASP0000 // Do not call 'IServiceCollection.BuildServiceProvider' in 'ConfigureServices'
+                using var serviceProvider = serviceCollection.BuildServiceProvider();
+#pragma warning restore ASP0000 // Do not call 'IServiceCollection.BuildServiceProvider' in 'ConfigureServices'
+                var provider = serviceProvider.GetRequiredService<IApiVersionDescriptionProvider>();
+                var version = Assembly.GetExecutingAssembly()
+                    .GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion;
+
+                foreach (var description in provider.ApiVersionDescriptions)
+                {
+                    c.SwaggerDoc(description.GroupName, new OpenApiInfo
+                    {
+                        Version = description.ApiVersion.ToString(),
+                        Title = $"Product Service version {version} - OpenAPI {description.ApiVersion}",
+                        Description = $"Product service API v{description.ApiVersion}",
+                    });
+                }
+
+                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                if (File.Exists(xmlPath))
+                {
+                    c.IncludeXmlComments(xmlPath);
+                }
             });
 
             // Add health checks

@@ -10,6 +10,7 @@ using Retail.Orders.Read.src.CleanArchitecture.Application.Interfaces;
 using Retail.Orders.Read.src.CleanArchitecture.Application.Queries;
 using System.Runtime.InteropServices;
 using CommonLibrary.Results;
+using Asp.Versioning;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 

@@ -71,11 +71,12 @@
             </summary>
             <param name="services">The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/> to add the services to.</param>
         </member>
-        <member name="M:Retail.Orders.Write.Application.Startup.Configure(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
+        <member name="M:Retail.Orders.Write.Application.Startup.Configure(Microsoft.AspNetCore.Builder.IApplicationBuilder,Microsoft.AspNetCore.Hosting.IWebHostEnvironment)">
             <summary>
             Configures the application.
             </summary>
-            <param name="app">An <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/> for the application to configure.</param>
+            <param name="webApplicationBuilder">An <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/> for the applicationBuilder to configure.</param>
+            <param name="webEnvironment">An <see cref="T:Microsoft.AspNetCore.Hosting.IWebHostEnvironment"/> for the applicationBuilder to configure.</param>
         </member>
         <member name="T:Retail.Orders.Write.Program">
             <summary>

@@ -10,6 +10,7 @@ namespace Retail.Api.Products.Application
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Diagnostics.HealthChecks;
     using Microsoft.AspNetCore.Hosting;
+    using Asp.Versioning.ApiExplorer;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
@@ -49,33 +50,41 @@ namespace Retail.Api.Products.Application
         /// <summary>
         /// Configures the application.
         /// </summary>
-        /// <param name="app">An <see cref="IApplicationBuilder"/> for the application to configure.</param>
-        public void Configure(IApplicationBuilder app)
+        /// <param name="webApplicationBuilder">An <see cref="IApplicationBuilder"/> for the applicationBuilder to configure.</param>
+        /// <param name="webEnvironment">An <see cref="IWebHostEnvironment"/> for the applicationBuilder to configure.</param>
+        public static void Configure(IApplicationBuilder webApplicationBuilder, IWebHostEnvironment webEnvironment)
         {
-            this.environment.ApplicationName = "Retail.Products";
+            webEnvironment.ApplicationName = typeof(Startup).Assembly.GetName().Name;
 
             // Register global exception handling middleware early in the pipeline
-            app.UseMiddleware<GlobalExceptionHandlerMiddleware>();
+            webApplicationBuilder.UseMiddleware<GlobalExceptionHandlerMiddleware>();
 
-            if (this.environment.IsDevelopment())
+            if (webEnvironment.IsDevelopment())
             {
-                app.UseDeveloperExceptionPage();
-                app.UseSwagger();
-                app.UseSwaggerUI(c =>
-                {
-                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
-                });
+                webApplicationBuilder.UseDeveloperExceptionPage();
             }
 
-            app.UseHttpsRedirection();
-            app.UseRouting();
+            webApplicationBuilder.UseSwagger();
+            webApplicationBuilder.UseSwaggerUI(c =>
+            {
+                var provider = webApplicationBuilder.ApplicationServices.GetRequiredService<IApiVersionDescriptionProvider>();
+                c.DocumentTitle = "Product Service";
+                foreach (var description in provider.ApiVersionDescriptions)
+                {
+                    c.SwaggerEndpoint($"/swagger/{description.GroupName}/swagger.json", 
+                        description.GroupName.ToUpperInvariant());
+                }
+            });
+
+            webApplicationBuilder.UseHttpsRedirection();
+            webApplicationBuilder.UseRouting();
             
             // Collect HTTP request metrics for Prometheus
-            app.UseHttpMetrics();
+            webApplicationBuilder.UseHttpMetrics();
             
-            app.UseAuthorization();
+            webApplicationBuilder.UseAuthorization();
 
-            app.UseEndpoints(endpoints =>
+            webApplicationBuilder.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
                 
