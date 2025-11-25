@@ -25,7 +25,7 @@ These tutorials demonstrate practical implementation of microservices patterns. 
 Learn how to create a new microservice following the established patterns:
 - Project structure and Clean Architecture layers
 - Composition Root and Startup patterns
-- Application Host pattern (IApplication)
+- Application Host pattern (IHostedService)
 - Configuration management
 - Basic API controller setup
 

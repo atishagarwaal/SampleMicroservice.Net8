@@ -33,8 +33,7 @@ namespace Retail.Api.Customers.Application
         public static void ConfigureServices(HostBuilderContext context, IServiceCollection serviceCollection)
         {
             // Application Infrastructure
-            serviceCollection.AddSingleton<CustomerApplication>();
-            serviceCollection.AddSingleton<Microsoft.Extensions.Hosting.IHostedService>(sp => sp.GetRequiredService<CustomerApplication>());
+            serviceCollection.AddSingleton<Microsoft.Extensions.Hosting.IHostedService, CustomerApplication>();
             serviceCollection.AddScoped<IServiceInitializer, ServiceInitializer>();
 
             // General Configuration
@@ -220,24 +219,9 @@ namespace Retail.Api.Customers.Application
 
 ---
 
-## 🎯 Application Host Pattern (IApplication)
+## 🎯 Application Host Pattern
 
-All services implement `IApplication` interface for explicit lifecycle management. This pattern provides a consistent way to handle startup and shutdown logic.
-
-**Interface:**
-```csharp
-namespace CommonLibrary.Application
-{
-    /// <summary>
-    /// Defines the contract for application lifecycle management.
-    /// </summary>
-    public interface IApplication
-    {
-        Task StartAsync(CancellationToken cancellationToken);
-        Task StopAsync(CancellationToken cancellationToken);
-    }
-}
-```
+All services implement `IHostedService` directly for explicit lifecycle management. This pattern provides a consistent way to handle startup and shutdown logic.
 
 **Implementation:**
 ```csharp
@@ -246,40 +230,45 @@ namespace Retail.Api.Customers.Application
     /// <summary>
     /// Represents the Customer microservice application lifecycle.
     /// </summary>
-    public class CustomerApplication : IApplication, IHostedService
+    public class CustomerApplication : IHostedService
     {
-        private readonly IServiceProvider _serviceProvider;
-        private readonly ILogger<CustomerApplication> _logger;
+        private readonly IServiceProvider serviceProvider;
+        private readonly ILogger<CustomerApplication> logger;
 
         public CustomerApplication(
             IServiceProvider serviceProvider,
             ILogger<CustomerApplication> logger)
         {
-            this._serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
-            this._logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            this.serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
+            this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         public async Task StartAsync(CancellationToken cancellationToken)
         {
-            this._logger.LogInformation("Starting Customer Service");
+            this.logger.LogServiceStartup("Customer Service");
 
-            using (var scope = this._serviceProvider.CreateScope())
+            using (var scope = this.serviceProvider.CreateScope())
             {
-                // Initialize service subscriptions (messaging, etc.)
-                var serviceInitializer = scope.ServiceProvider.GetRequiredService<IServiceInitializer>();
-                await serviceInitializer.Initialize();
+                this.logger.LogTopologySetup();
+                var topologyManager = scope.ServiceProvider.GetRequiredService<IRabbitMQTopologyManager>();
+                await topologyManager.SetupTopologyAsync(cancellationToken).ConfigureAwait(false);
 
-                // Ensure database is created
+                this.logger.LogServiceSubscriptionsInitialization();
+                var serviceInitializer = scope.ServiceProvider.GetRequiredService<IServiceInitializer>();
+                await serviceInitializer.Initialize().ConfigureAwait(false);
+
+                this.logger.LogDatabaseCreation();
                 var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-                await db.Database.EnsureCreatedAsync(cancellationToken);
+                await db.Database.EnsureCreatedAsync(cancellationToken).ConfigureAwait(false);
+                this.logger.LogDatabaseInitializationCompleted();
             }
 
-            this._logger.LogInformation("Customer Service started successfully");
+            this.logger.LogServiceStartedSuccessfully("Customer Service");
         }
 
         public Task StopAsync(CancellationToken cancellationToken)
         {
-            this._logger.LogInformation("Stopping Customer Service");
+            this.logger.LogServiceStopping("Customer Service");
             return Task.CompletedTask;
         }
     }
@@ -289,22 +278,15 @@ namespace Retail.Api.Customers.Application
 **Registration:**
 ```csharp
 // In CompositionRoot.ConfigureServices
-serviceCollection.AddSingleton<CustomerApplication>();
-serviceCollection.AddSingleton<IApplication>(sp => sp.GetRequiredService<CustomerApplication>());
-serviceCollection.AddSingleton<IHostedService>(sp => sp.GetRequiredService<CustomerApplication>());
-```
-
-**Usage in Program.cs:**
-```csharp
-var application = host.Services.GetRequiredService<IApplication>();
-await application.StartAsync(CancellationToken.None);
-await host.RunAsync();
+// Application Infrastructure
+serviceCollection.AddSingleton<Microsoft.Extensions.Hosting.IHostedService, CustomerApplication>();
 ```
 
 **Key Points:**
-- ✅ Implement both `IApplication` and `IHostedService`
+- ✅ Implement `IHostedService` directly (no separate `IApplication` interface)
+- ✅ Register as `IHostedService` using single registration pattern
 - ✅ Use scoped services for initialization (create scope)
-- ✅ Log lifecycle events
+- ✅ Log lifecycle events using structured logging extensions
 - ✅ Handle graceful shutdown in `StopAsync`
 
 ---
@@ -427,9 +409,6 @@ namespace Retail.Api.Customers
 
             try
             {
-                var application = host.Services.GetRequiredService<IApplication>();
-                await application.StartAsync(CancellationToken.None);
-
                 await host.RunAsync();
             }
             catch (Exception ex)
@@ -446,7 +425,7 @@ namespace Retail.Api.Customers
 - ✅ Use `Host.CreateDefaultBuilder` for standard configuration
 - ✅ Configure host configuration before web host defaults
 - ✅ Use `CompositionRoot` for all configuration
-- ✅ Start `IHostedService` (Application class) before running host
+- ✅ `IHostedService` (Application class) starts automatically when host runs
 - ✅ Log critical exceptions before termination
 
 ---
@@ -460,8 +439,7 @@ Service registrations in `CompositionRoot.ConfigureServices` should be organized
 public static void ConfigureServices(HostBuilderContext context, IServiceCollection serviceCollection)
 {
     // 1. Application Infrastructure
-    serviceCollection.AddSingleton<CustomerApplication>();
-    serviceCollection.AddSingleton<IHostedService>(sp => sp.GetRequiredService<CustomerApplication>());
+    serviceCollection.AddSingleton<Microsoft.Extensions.Hosting.IHostedService, CustomerApplication>();
     serviceCollection.AddScoped<IServiceInitializer, ServiceInitializer>();
 
     // 2. General Configuration
@@ -1020,7 +998,7 @@ When creating a new service, ensure:
 
 - ✅ `CompositionRoot` **static class** with `Configure` and `ConfigureServices` methods
 - ✅ `Startup` class with **static** `Configure` method
-- ✅ `*Application` class implementing `IHostedService`
+- ✅ `*Application` class implementing `IHostedService` (registered as `IHostedService`)
 - ✅ `Program.cs` following standard pattern
 - ✅ Strongly-typed configuration classes registered
 - ✅ Global exception handler middleware registered

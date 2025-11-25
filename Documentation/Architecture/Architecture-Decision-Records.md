@@ -209,17 +209,19 @@ This document explains why we made key architectural decisions. Each ADR include
 
 **Problem**: Application logic mixed with host setup, hard to test and understand lifecycle.
 
-**Solution**: IApplication interface:
-- Defines lifecycle (StartAsync/StopAsync)
+**Solution**: Application classes implementing `IHostedService` directly:
+- Application classes implement `IHostedService` for lifecycle management
+- Single service registration pattern (`AddSingleton<IHostedService, ApplicationClass>`)
 - Separates application logic from host
 - Testable independently
 
 **Trade-offs**:
 - ✅ Clear lifecycle, testable
 - ✅ Better organization
-- ❌ Extra abstraction
+- ✅ Simpler registration (single registration instead of double)
+- ✅ No unnecessary abstraction layer
 
-**How we handle it**: Base implementation, template, documentation
+**How we handle it**: Template implementation, documentation, single registration pattern
 
 ---
 

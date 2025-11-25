@@ -358,7 +358,7 @@ Contracts are generated from AsyncAPI YAML specifications. See the [AsyncAPI Con
 
 1. Create service project structure
 2. Add `CompositionRoot.cs` and `Startup.cs`
-3. Implement `IApplication` interface
+3. Implement `IHostedService` interface in Application class
 4. Add to solution: `dotnet sln add Source/NewService/NewService.Service`
 5. Create AsyncAPI contract
 6. Generate contracts

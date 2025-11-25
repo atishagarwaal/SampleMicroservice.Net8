@@ -19,7 +19,7 @@ This directory contains comprehensive coding guidelines organized by topic. Thes
 
 | Document | Purpose | Content Focus |
 |----------|---------|---------------|
-| **[Solution-Patterns.md](./Solution-Patterns.md)** | Solution patterns | Composition Root, Startup, IApplication, strongly-typed configuration, health checks |
+| **[Solution-Patterns.md](./Solution-Patterns.md)** | Solution patterns | Composition Root, Startup, Application Host (IHostedService), strongly-typed configuration, health checks |
 
 ### Domain-Specific Guidelines
 

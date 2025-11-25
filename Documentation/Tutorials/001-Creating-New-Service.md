@@ -9,7 +9,7 @@ By the end of this tutorial, you will:
 - Know how to set up a new service project
 - Implement the Composition Root pattern
 - Configure the Startup class
-- Implement the Application Host pattern (IApplication)
+- Implement the Application Host pattern (IHostedService)
 - Set up basic API controllers
 
 ## Prerequisites
@@ -125,8 +125,8 @@ namespace Retail.Inventory.Service.Application
             // Services
             services.AddScoped<IInventoryService, InventoryService>();
 
-            // Application Host
-            services.AddHostedService<InventoryApplication>();
+            // Application Infrastructure
+            services.AddSingleton<Microsoft.Extensions.Hosting.IHostedService, InventoryApplication>();
         }
 
         /// <summary>
@@ -234,7 +234,7 @@ namespace Retail.Inventory.Service.Application
     /// <summary>
     /// Application lifecycle management.
     /// </summary>
-    public class InventoryApplication : BackgroundService, IApplication
+    public class InventoryApplication : IHostedService
     {
         private readonly ILogger<InventoryApplication> _logger;
 
@@ -432,7 +432,7 @@ You've successfully created a new microservice with:
 - ✅ Clean Architecture structure (API, Application, Domain, Infrastructure)
 - ✅ Composition Root pattern for dependency injection
 - ✅ Startup class for middleware configuration
-- ✅ Application Host pattern (IApplication)
+- ✅ Application Host pattern (IHostedService)
 - ✅ Basic API controller
 - ✅ Configuration management
 - ✅ Health check endpoints
