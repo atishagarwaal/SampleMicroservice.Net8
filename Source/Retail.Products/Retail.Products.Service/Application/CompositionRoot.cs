@@ -29,11 +29,12 @@ namespace Retail.Api.Products.Application
     using Retail.Api.Products.src.CleanArchitecture.Infrastructure.Repositories;
     using Retail.Api.Products.src.CleanArchitecture.Infrastructure.UnitOfWork;
     using CommonLibrary.Configuration;
+    using CommonLibrary.Infrastructure;
     using CommonLibrary.Telemetry;
-    using Microsoft.Extensions.Options;
     using Asp.Versioning.ApiExplorer;
     using Asp.Versioning;
     using Microsoft.Extensions.Options;
+    using RabbitMQ.Client;
     using Microsoft.OpenApi.Models;
     using System;
     using System.IO;
@@ -100,6 +101,9 @@ namespace Retail.Api.Products.Application
 
             // Add RabbitMQ from the common project
             serviceCollection.AddRabbitMQServices(context.Configuration);
+
+            // Register RabbitMQ topology manager
+            serviceCollection.AddSingleton<IRabbitMQTopologyManager, RabbitMQTopologyManager>();
 
             serviceCollection.AddScoped<IEventHandler<OrderCreatedEvent>, OrderCreatedEventHandler>();
             serviceCollection.AddScoped<IServiceInitializer, ServiceInitializer>();

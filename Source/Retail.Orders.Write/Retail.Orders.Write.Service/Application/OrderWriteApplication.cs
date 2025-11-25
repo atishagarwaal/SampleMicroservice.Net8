@@ -10,6 +10,7 @@ namespace Retail.Orders.Write.Application
     using System.Diagnostics.CodeAnalysis;
     using System.Threading;
     using System.Threading.Tasks;
+    using CommonLibrary.Infrastructure;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
@@ -49,6 +50,10 @@ namespace Retail.Orders.Write.Application
 
             using (var scope = this.serviceProvider.CreateScope())
             {
+                this.logger.LogInformation("Setting up RabbitMQ topology");
+                var topologyManager = scope.ServiceProvider.GetRequiredService<IRabbitMQTopologyManager>();
+                await topologyManager.SetupTopologyAsync(cancellationToken).ConfigureAwait(false);
+
                 this.logger.LogInformation("Initializing service subscriptions");
                 var serviceInitializer = scope.ServiceProvider.GetRequiredService<IServiceInitializer>();
                 await serviceInitializer.Initialize().ConfigureAwait(false);
